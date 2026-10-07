@@ -18,5 +18,5 @@ The code (HTML, CSS, JavaScript, tests, tools) is under the MIT licence in `LICE
 
 ## Not covered by this licence
 
-- **wger.de material:** exercise descriptions, images and muscle-map SVGs are loaded at runtime from wger.de under CC BY-SA 3.0 (or CC BY-SA 4.0, as wger states), with their attribution shown in the app. They are not part of this repository.
+- **wger.de material:** exercise descriptions, images and muscle-map SVGs are loaded at runtime from wger.de under CC BY-SA 3.0, with their attribution shown in the app. They are not part of this repository.
 - **Cited papers:** the numbers taken from published studies are facts with their sources given. The papers themselves are not included and keep their own copyright.
