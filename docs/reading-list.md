@@ -16,7 +16,25 @@ Each would close one remaining `TODO`. All were seen in search results only (the
 
 ### Hip extension strength vs knee angle
 
-The hamstrings' share at the hip: no candidate found yet.
+The hamstrings' share at the hip (deadlift, RDL, hip thrust, split squat). Authors still to check in both:
+- Isometric hip extension at 15° vs 90° of knee bend, 10 men, torque plus EMG of the hamstrings, adductor magnus and gluteus maximus. Japanese Journal of Physical Fitness and Sports Medicine: <https://jlc.jst.go.jp/DN/JLC/20011214456?from=WPRIM>. Snippet: more torque and more hamstring EMG with the knee nearly straight; more gluteus maximus EMG with it bent.
+- Sprinters and hurdlers, supine dynamometer, isometric and concentric hip extension with the knee at 30° vs about 90°: <https://lida.sport-iat.de/ta/Record/4080023?lng=en>. Snippet: 29–42% more hip-extension torque with the knee straighter, at every speed.
+
+### Machine cam profiles
+
+- Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. Eight knee-extension machines from six makers, resistive torque measured at five knee angles. Would replace the illustrative leg-extension cam with measured ones (makers likely anonymised).
+
+### Muscle activation weights
+
+The largest group of `TODO`s (every `muscles` entry). No single source covers them; it needs EMG studies per exercise, ideally ones that report several muscles in the same lift. No candidates checked yet.
+
+## Open data worth a look
+
+Seen in search results; the sites are blocked from the build environment, so none has been opened yet.
+- **Chen J, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183.** 962 passive, isometric and isokinetic datasets from the literature. Could check or replace the leg strength curves and give strength vs a second joint's angle. Preprint: <https://www.biorxiv.org/content/10.1101/2024.06.22.600197>; author copy: <https://www.hs.mh.tum.de/fileadmin/w00bbr/nd/pdf/Chen_JBiomech_2025.pdf>. Check whether the collected data are published with it, and under which licence.
+- **Muscle moment arm–joint angle relations in the hip, knee, and ankle: a visualization of datasets** (same group, open access): <https://pmc.ncbi.nlm.nih.gov/articles/PMC12283864/>. Moment arms per muscle would let the muscle weights follow the joint angle instead of being flat guesses.
+- **OpenSim full-body model** (Rajagopal et al. 2016): <https://simtk.org/home/full_body>. Precomputing moment arms or muscle forces offline and storing them as JSON keeps the site build-free. Check the model's licence first.
+- **Hip rate of torque development and peak torque**, six hip movements, 30 people: <https://e-space.mmu.ac.uk/634821/> (doi:10.23634/MMU.00634821). Could cross-check the hip abduction, adduction and rotation peaks.
 
 ## Classic strength-curve sources (not found online)
 

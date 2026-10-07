@@ -42,14 +42,14 @@ Each of these was a real break: the exercise either gave wrong numbers or couldn
 
 ## Still limited (added, but the numbers are approximate)
 
-- **Muscles that cross two joints.** Strength curves and muscle weights depend on one joint angle only. But the triceps long head is stronger overhead, the hamstrings are stronger in a seated leg curl than a lying one, and the gastrocnemius goes slack in a seated calf raise. These differences can't be shown, except for one estimated 0.5 factor on the gastrocnemius in the seated calf raise. Fix: strength and weight tables that take both joint angles, or per-variant curves.
+- **Muscles that cross two joints.** Muscle weights depend on one joint angle only, so the long heads of the triceps and biceps and the hamstrings keep the same share in every posture. The only exception is the gastrocnemius in the seated calf raise (modifier 0.65). Strength is now corrected per variant for the other joint's angle (see *Two-joint muscles and grip* below). Fix for the weights: tables that take both joint angles.
 - **Stabiliser demand is one-directional and arm-specific.** It only counts torque that rotates the upper arm backwards (as in a curl). In a pushdown or a pulldown the shoulder holding work isn't counted, so the new exercises have no stabiliser muscles.
 - **Flat 2D.** In a standing cable fly gravity is perpendicular to the plane, so holding the arms up isn't counted. Cables that run beside the body are drawn through it.
 - **One range of motion per exercise.** A standing cable kickback realistically uses 30° to −25°, the kneeling one 90° to −25°. The incline front raise keeps getting harder past 90°, outside the range.
 - **A variant can't change the joint set-up.** The common *seated* hip-abduction machine (hip bent 90°, knee bent, horizontal plane) is a different chain from standing abduction, so it was left out. The same applies to seated vs lying leg curls if both hip angles needed to be shown properly.
 - **Straight limbs.** The soft elbow in a fly and the forward lean in a straight-arm pulldown aren't modelled.
 - **Machine cams are illustrative.** None was measured, and stack kg don't compare with dumbbell kg.
-- **wger links.** The starter library has no exercise ids (its `Movement Pattern` column is empty and `Equipment` is unreliable, e.g. "None (Bodyweight)" for the leg-extension machine), so the wger panel stays hidden for new exercises (`TODO` in each file).
+- **wger links.** The starter library has no exercise ids (its `Movement Pattern` column is empty and `Equipment` is unreliable, e.g. "None (Bodyweight)" for the leg-extension machine). All 23 ids are now set by hand from wger's public exercise list; four have no exact match there, so they link the closest entry and name the alternatives in their note.
 
 ## Multi-joint model
 
