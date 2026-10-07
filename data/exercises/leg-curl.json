@@ -19,12 +19,12 @@
     "note": "Hip→knee and knee→ankle in metres, typical adult.",
     "massLabel": "lower leg"
   },
-  "defaults": {"loadKg": 15, "peakTorqueNm": 110, "variant": "lying", "bodyMassKg": 75},
+  "defaults": {"loadKg": 10, "peakTorqueNm": 110, "variant": "lying", "bodyMassKg": 75},
   "ui": {"load": [0, 100, 1], "strength": [40, 250]},
   "strengthCurve": {
     "label": "Knee flexor strength",
     "points": [[0, 0.9], [15, 0.97], [30, 1.0], [45, 0.97], [60, 0.9], [75, 0.78], [90, 0.61], [103, 0.45]],
-    "note": "Relative isometric knee-flexion torque vs knee flexion, peak about 30°, measured seated with the hip flexed about 70° (tested 0–103°). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m). The seated test position matches the seated leg curl best; lying, the hamstrings are shorter and somewhat weaker (not modelled).",
+    "note": "Relative isometric knee-flexion torque vs knee flexion, peak about 30°, measured seated with the hip flexed about 70° (tested 0–103°). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m). The seated test position matches the seated leg curl best; lying, the hamstrings are shorter and somewhat weaker (not modelled). Variants correct this for the hip angle (two-joint hamstrings): see each variant's strength note.",
     "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
   },
   "postures": {
@@ -100,7 +100,12 @@
         }
       },
       "defaultLoadKg": 15,
-      "notes": "Face down with the hip straight. The pad is behind the ankle; lifting the lower leg's weight also adds torque until it passes vertical (90°)."
+      "notes": "Face down with the hip straight. The pad is behind the ankle; lifting the lower leg's weight also adds torque until it passes vertical (90°).",
+      "strengthScale": {
+        "factor": 0.61,
+        "note": "hip straight, so the hamstrings are shorter: knee-flexion strength about 61% of the seated test's. Guex et al. measured 62 Nm with the hip straight vs 110 Nm at 90° of hip flexion (knee at 45°); the base curve was measured with the hip at about 70° (101 Nm by interpolation). Measured at one knee angle only, so the factor is applied across the range.",
+        "source": "Guex K, Gojanovic B, Millet GP (2012). Influence of hip-flexion angle on hamstrings isokinetic activity in sprinters. J Athl Train 47(4):390–395. doi:10.4085/1062-6050-47.4.04 (Table: isometric, knee at 45°, 10 sprinters)"
+      }
     },
     {
       "id": "seated",
@@ -118,7 +123,12 @@
         }
       },
       "defaultLoadKg": 15,
-      "notes": "Hip bent 90°, so the hamstrings work from a longer length. Here the lower leg's weight helps the curl. The extra strength from the longer hamstrings is not modelled."
+      "notes": "Hip bent 90°, so the hamstrings work from a longer length. Here the lower leg's weight helps the curl. The extra strength from the longer hamstrings is not modelled.",
+      "strengthScale": {
+        "factor": 1.09,
+        "note": "hip bent 90°, hamstrings lengthened: about 109% of the base curve's strength (Guex et al.: 110 Nm at 90° of hip flexion vs about 101 Nm at the base curve's 70°). Measured at one knee angle only.",
+        "source": "Guex K, Gojanovic B, Millet GP (2012). Influence of hip-flexion angle on hamstrings isokinetic activity in sprinters. J Athl Train 47(4):390–395. doi:10.4085/1062-6050-47.4.04 (Table: isometric, knee at 45°, 10 sprinters)"
+      }
     },
     {
       "id": "standing",
@@ -128,7 +138,12 @@
       "proximalAngle": 0,
       "load": {"type": "gravity"},
       "defaultLoadKg": 4,
-      "notes": "Torque = (m·L + lower-leg weight)·g·sin(knee angle): nothing at the start, largest with the lower leg horizontal at 90°."
+      "notes": "Torque = (m·L + lower-leg weight)·g·sin(knee angle): nothing at the start, largest with the lower leg horizontal at 90°.",
+      "strengthScale": {
+        "factor": 0.61,
+        "note": "hip straight, so the hamstrings are shorter: knee-flexion strength about 61% of the seated test's. Guex et al. measured 62 Nm with the hip straight vs 110 Nm at 90° of hip flexion (knee at 45°); the base curve was measured with the hip at about 70° (101 Nm by interpolation). Measured at one knee angle only, so the factor is applied across the range.",
+        "source": "Guex K, Gojanovic B, Millet GP (2012). Influence of hip-flexion angle on hamstrings isokinetic activity in sprinters. J Athl Train 47(4):390–395. doi:10.4085/1062-6050-47.4.04 (Table: isometric, knee at 45°, 10 sprinters)"
+      }
     }
   ],
   "wger": {"exerciseId": null, "name": "Leg Curls (laying)", "note": "TODO: look up the wger exercise id"}

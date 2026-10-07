@@ -82,6 +82,11 @@ for (const id of single) {
     }
     for (const v of ex.variants) {
       for (const k of Object.keys(v.muscleModifiers ?? {})) assert.ok(ex.muscles.some((m) => m.id === k), `${v.id}: ${k}`);
+      if (v.strengthScale) {
+        const sc = v.strengthScale;
+        assert.ok(sc.note && sc.source, `${v.id}: strength scale note and source`);
+        assert.ok(sc.points ? sorted(sc.points) && sc.points.every(([, f]) => f > 0.3 && f < 1.5) : sc.factor > 0.3 && sc.factor < 1.5, `${v.id}: strength scale`);
+      }
       if (v.load.type === "machine") {
         const cam = v.load.camProfile;
         assert.ok(sorted(cam.points) && cam.note && cam.source, `${v.id} cam`);

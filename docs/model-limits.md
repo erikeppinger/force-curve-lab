@@ -91,7 +91,7 @@ The tests check the classic hand formulas (e.g. squat hip torque = Σ m·g·hori
 - **Contacts push straight up** (no friction) in the split squat and hip thrust, and the foot's push is taken at the mid-foot. That's what makes those lifts solvable. Real feet also push sideways and move their centre of pressure.
 - **Bench press shoulders don't move.** The shoulder joints are fixed on the bench; real shoulder blades retract and move. The default elbow placement (as close under the bar as the arm allows) brings the elbow moment arms near the measured ones, but not for every grip; see the 3D bench section.
 - **Spine as one rigid trunk.** Erector-spinae load is approximated by the hip's effort.
-- **Strength per joint ignores the other joints.** As with the single-joint model, two-joint muscles (hamstrings, rectus femoris, gastrocnemius) aren't credited for their length at the other joint.
+- **Strength per joint ignores the other joints.** Two-joint muscles (hamstrings, rectus femoris, gastrocnemius) aren't credited for their length at the other joint in the multi-joint lifts. The single-joint leg curl, biceps curl and triceps extension now are (see "Two-joint muscles and grip").
 - **Deadlift at the floor is past the measured hip strength.** Anderson's hip-extension curve was tested up to 74° of hip flexion; the deadlift starts near 135°, where the app holds the 74° value flat. The effort near the floor is an extrapolation, so its near-limit readings at a modest 50 kg say more about the strength curve than about real lifters. The bar path, the lats pulling the bar back and the shoulders sitting in front of the bar are not modelled; arms are straight lines from shoulder to bar.
 - **Rows in the side view only.** The elbows stay in the side-view plane (tucked). Flared elbows turn the pull into horizontal abduction (rear delts), which needs the 3D arm model. The shoulder blades (rhomboids, middle trapezius) aren't modelled. The hand path is a straight line, and the trunk is held perfectly still, with no hip drive or body English. The cable row ignores pulley friction and the stack's inertia. The chest pad's contact isn't solved; the model just assumes it holds the trunk.
 - **One driver range per exercise.** The glute bridge only reaches about 0–35° of hip flexion before the hips hit the floor (the UI flags it), but shares the hip thrust's 0–80° range. The split squat starts at 40° of front-knee bend because a rear foot on the floor can't be reached with a straighter front leg.
@@ -268,7 +268,7 @@ Every strength curve, peak strength and limb mass now carries its source in the 
 - **Thigh mass is 14% of body mass, not 10%.** That makes the leg's own weight matter more in leg extensions, leg curls and hip abduction.
 - **The calf raise had a geometry error, now fixed.** The ankle-to-ball lever slopes down from the ankle, so its reach shrinks faster as you rise onto the toes.
 - **Sources disagree on shoulder abduction near the start.** Haidar et al. find 0° the weakest position; Clarke et al. find it the strongest. The curve follows Haidar (the only numbers at these angles) and says so.
-- **Test postures differ from the exercises.** Plantarflexion was measured with the knee bent (gastrocnemius slack), so standing calf raises high on the toes look harder than they are. Elbow curves were measured with the arm raised 90°. These are the two-joint-muscle effects on the roadmap.
+- **Test postures differ from the exercises.** Plantarflexion was measured with the knee bent (gastrocnemius slack), so standing calf raises high on the toes look harder than they are. Elbow curves were measured with the arm raised 90°. The leg curl and the elbow exercises now correct for this (next section); the calf raise doesn't yet.
 - **Default loads were lowered** where the measured curves made the old defaults fail mid-range. Several defaults still pass 100% right at an end of the range (lockouts, hip hyperextension, the deepest squat). That's where the measured strength really is lowest.
 
 ### Checking the bench press against measurements
@@ -304,9 +304,37 @@ What this means:
 
 The arm angles in the paper are given as means over the rep (forearm) and at the bottom (upper arm), so they check the model only loosely.
 
+### Two-joint muscles and grip
+
+Variants can carry a `strengthScale`: a factor on the strength curve, constant or varying with the joint angle, with its own note and source. It covers posture effects the base curve can't, because its test posture differs from the exercise:
+
+| Exercise | Variant | Factor | From |
+|---|---|---|---|
+| Leg curl | Lying, standing (hip straight) | 0.61 | Guex et al. 2012: isometric knee flexion at 45° of knee bend was 62 Nm with the hip straight vs 110 Nm at 90° of hip flexion. The base curve's test had the hip at about 70° (101 Nm by interpolation). |
+| Leg curl | Seated (hip 90°) | 1.09 | Same study. |
+| Biceps curl | Preacher (upper arm 45° forward) | 0.87–0.96 by elbow angle | Guenzkofer et al. 2012, Table A1: supinated elbow flexion at 0° vs 60° of shoulder flexion, interpolated to 45°. |
+| Biceps curl | Hammer (neutral grip) | 0.95–1.10 | Guenzkofer et al.: neutral vs supinated. Kohn et al. 2018 found no significant difference either. |
+| Biceps curl | Reverse (palms down) | 0.83–0.99 | Guenzkofer et al. (torque). Kohn et al. measured 53% of supinated force at 70° of elbow flexion, so this may be optimistic. |
+| Triceps extension | Overhead | 0.85–0.90 | Guenzkofer et al.: extension torque at 135° vs 0° of shoulder flexion (held at 135° for the 180° posture). |
+| Triceps extension | Skullcrusher (shoulder 90°) | 0.89–0.95 | Interpolated between their 60° and 135°. |
+
+What it shows:
+
+- **Hamstrings:** a lying leg curl works the hamstrings at a much shorter length than a seated one. The same load is about 1.8× harder relative to strength (0.61 vs 1.09).
+- **Hammer grip:**
+  - Kleiber et al. 2015 found the biceps and brachioradialis working at the same levels with a neutral or palms-up grip; only palms down shifted work to the brachioradialis. Guenzkofer et al. found neutral and palms-up equally strong. So the data don't support the hammer curl as a brachioradialis exercise.
+  - The reverse curl gets a 1.2× brachioradialis modifier. Kleiber et al. give the direction of the shift but not a number in the text, so the size is an estimate.
+- **Overhead triceps:** measured elbow-extension torque was *lower* with the arm overhead, despite the long head being stretched there. Whether that position builds more muscle is a different question, about training rather than strength.
+
+Limits:
+
+- **Single test angles:** Guex et al. tested one knee angle (45°), so the factor is applied across the whole range.
+- **Reference postures:** Guenzkofer et al.'s reference (shoulder at 0°) isn't the base curve's posture (Pinter et al., arm raised to the side). The corrections are relative to the arm at the side (standing curl, pushdown), and those variants are taken as the base curve.
+- **A suspect table value:** their arm-at-side extension value at 120° with a neutral forearm (7.2 Nm) looks like a misprint; the mean of the other two forearm positions is used instead.
+
 ### Still without a source
 
 - Muscle activation weights (62 values; the bench grip-width effects are now backed by Mausehund et al. qualitatively).
 - Machine cam profiles.
 - Hip rotation strength in the 3D lifts, and the peak horizontal-adduction torque.
-- How much the two-joint muscles change strength with the other joint's angle.
+- Two-joint muscles in the multi-joint lifts, the calf (knee straight vs bent) and the rectus femoris (see `docs/reading-list.md`).

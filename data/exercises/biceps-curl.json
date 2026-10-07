@@ -59,8 +59,9 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "weight": [[0, 0.35], [45, 0.55], [90, 0.75], [120, 0.8], [145, 0.7]],
-      "note": "Contributes more in mid-to-high flexion and with a neutral (hammer) grip.",
-      "draw": {"seg": "distal", "along": [0.0066, 0.1815], "offset": 0.03, "w": 0.04, "layer": 2}
+      "note": "Contributes more in mid-to-high flexion. Measured: its activity is about the same with a neutral (hammer) or palms-up grip and higher with palms down (Kleiber et al.).",
+      "draw": {"seg": "distal", "along": [0.0066, 0.1815], "offset": 0.03, "w": 0.04, "layer": 2},
+      "source": "Weights: TODO. Grip effect: Kleiber T, Kunz L, Disselhorst-Klug C (2015). Muscular coordination of biceps brachii and brachioradialis in elbow flexion with respect to hand position. Front Physiol 6:215. doi:10.3389/fphys.2015.00215"
     },
     {
       "id": "anterior-deltoid",
@@ -108,6 +109,33 @@
       "notes": "Per arm the torque curve is identical to dumbbells — equipment alone does not change the curve. Differences are the fixed supinated grip, bilateral loading and wrist position."
     },
     {
+      "id": "hammer",
+      "name": "Hammer curl (neutral grip)",
+      "equipment": "Dumbbell",
+      "proximalAngle": 0,
+      "load": {"type": "gravity"},
+      "notes": "Thumbs up. The torque curve is the dumbbell curl's; only the strength and the muscles' shares can change. Measured: neutral and palms-up grips are about equally strong (Guenzkofer et al.; Kohn et al. found no significant difference either), and the biceps and brachioradialis work at the same levels in both (Kleiber et al.). So the data don't support the hammer curl as a brachioradialis exercise; that shift appears with a palms-down grip.",
+      "strengthScale": {
+        "points": [[0, 1.04], [45, 0.95], [90, 1.03], [120, 1.1]],
+        "note": "neutral vs palms-up, shoulder at 0°: 95–110% depending on the elbow angle (Guenzkofer et al., Table A1).",
+        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric); Kohn S, Smart RR, Jakobi JM (2018). Voluntary activation and twitch potentiation of the elbow flexors across supinated, neutral, and pronated forearm orientations. Physiol Rep 6(1):e13560. doi:10.14814/phy2.13560"
+      }
+    },
+    {
+      "id": "reverse",
+      "name": "Reverse curl (palms down)",
+      "equipment": "Barbell or EZ bar",
+      "proximalAngle": 0,
+      "load": {"type": "gravity"},
+      "notes": "Palms down. The biceps' tendon wraps around the radius, so it pulls less effectively; the brachioradialis takes a bigger share (Kleiber et al.: its activity rose with the palms down while the biceps' stayed the same). How much bigger isn't given as a number in their text; the 1.2× modifier is an estimate.",
+      "strengthScale": {
+        "points": [[0, 0.94], [45, 0.83], [90, 0.89], [120, 0.99]],
+        "note": "palms down vs palms up, shoulder at 0°: 83–99% depending on the elbow angle (Guenzkofer et al., Table A1, torque). Kohn et al. measured a bigger drop in force (53%) at 70° of elbow flexion, so this may be optimistic.",
+        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric); Kohn S, Smart RR, Jakobi JM (2018). Voluntary activation and twitch potentiation of the elbow flexors across supinated, neutral, and pronated forearm orientations. Physiol Rep 6(1):e13560. doi:10.14814/phy2.13560"
+      },
+      "muscleModifiers": {"brachioradialis": 1.2}
+    },
+    {
       "id": "preacher",
       "name": "Preacher curl",
       "equipment": "Barbell / EZ-bar on pad",
@@ -115,7 +143,12 @@
       "proximalSupported": true,
       "load": {"type": "gravity"},
       "muscleModifiers": {"biceps": 0.95, "brachialis": 1.05},
-      "notes": "Tilting the upper arm 45° forward shifts peak torque to ~45° of elbow flexion: hardest in the stretched position, almost unloaded at the top. The pad removes the shoulder stabilising demand."
+      "notes": "Tilting the upper arm 45° forward shifts peak torque to ~45° of elbow flexion: hardest in the stretched position, almost unloaded at the top. The pad removes the shoulder stabilising demand.",
+      "strengthScale": {
+        "points": [[0, 0.94], [45, 0.96], [90, 0.87], [120, 0.88]],
+        "note": "upper arm 45° forward, which shortens the biceps over the shoulder: elbow-flexion strength drops to about 87% around 90° of elbow flexion. Guenzkofer et al. measured supinated elbow flexion with the shoulder at 0° and 60°; 45° is interpolated between them.",
+        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric)"
+      }
     },
     {
       "id": "cable-low",
@@ -134,7 +167,12 @@
       "load": {"type": "cable", "pulley": {"x": -0.9, "y": -0.45}},
       "adjustablePulley": true,
       "muscleModifiers": {"biceps": 1.05},
-      "notes": "Facing away from the cable with the arm behind the body. The cable keeps a large moment arm in the stretched (bottom) position, which free weights cannot."
+      "notes": "Facing away from the cable with the arm behind the body. The cable keeps a large moment arm in the stretched (bottom) position, which free weights cannot.",
+      "strengthScale": {
+        "factor": 1.0,
+        "note": "arm 25° behind the body. Guenzkofer et al. report only marginal differences between −30° and 0° of shoulder flexion, so no correction.",
+        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric)"
+      }
     },
     {
       "id": "band",

@@ -154,10 +154,20 @@ export function analyze(exercise, variant, angleDeg, opts) {
     momentArm = loadTorque / f.mag;
   }
 
-  const capacity = interp(exercise.strengthCurve.points, angleDeg) * peakTorqueNm;
+  // Posture correction for this variant (e.g. a two-joint muscle at a different length, or the
+  // grip): a factor on the strength curve, constant or varying with the joint angle.
+  const strengthScale = strengthScaleAt(variant, angleDeg);
+  const capacity = interp(exercise.strengthCurve.points, angleDeg) * peakTorqueNm * strengthScale;
   const effort = Math.max(0, jointTorque) / capacity;
 
-  return { pose: p, force: f, limbs, jointTorque, loadTorque, limbTorque, stabiliserDemand, momentArm, momentArmFoot, capacity, effort };
+  return { pose: p, force: f, limbs, jointTorque, loadTorque, limbTorque, stabiliserDemand, momentArm, momentArmFoot, capacity, effort, strengthScale };
+}
+
+/** The variant's strength factor at this angle: `strengthScale.points` (by joint angle) or `.factor`; 1 if none. */
+export function strengthScaleAt(variant, angleDeg) {
+  const sc = variant.strengthScale;
+  if (!sc) return 1;
+  return sc.points ? interp(sc.points, angleDeg) : sc.factor;
 }
 
 /** Sample analyze() across the exercise's range of motion. */

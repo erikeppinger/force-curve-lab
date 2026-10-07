@@ -66,7 +66,8 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] Lateral raise (dumbbell, cable, machine)
 - [x] Triceps extension, front raise, chest fly, straight-arm pulldown, leg extension, leg curl, calf raise, hip abduction, glute kickback
 - [x] Postures (lying, seated, kneeling, horizontal plane), limb weight, body weight for closed-chain lifts
-- [ ] Two-joint muscles: strength and muscle weights that depend on the other joint's angle (overhead triceps, seated vs lying leg curl)
+- [x] Two-joint muscles and grip in the single-joint exercises: lying vs seated leg curl, preacher, hammer and reverse curls, overhead and lying triceps (Guex 2012, Guenzkofer 2012, Kohn 2018, Kleiber 2015)
+- [ ] Two-joint muscles: calf raise (knee straight vs bent) and the multi-joint lifts; papers in `docs/reading-list.md`
 - [ ] Hammer/neutral grip as a variant parameter (brachioradialis emphasis)
 - [x] Machines with cam profiles (resistance curve as a data table): `load.type: "machine"`. The lateral-raise cam is illustrative; measured profiles still needed
 - [x] Resistance bands (`load.type: "band"`): band curl, band lateral raise

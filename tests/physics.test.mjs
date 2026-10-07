@@ -77,3 +77,24 @@ test("band curl keeps rising towards the top, where the dumbbell fades", () => {
   assert.ok(at("band", 130) > at("band", 60));
   assert.ok(at("dumbbell", 130) < at("dumbbell", 60));
 });
+
+test("strength scale: a variant's posture factor multiplies the capacity (constant or by angle)", () => {
+  const ex = JSON.parse(readFileSync(new URL("../data/exercises/leg-curl.json", import.meta.url)));
+  const o = { loadKg: ex.defaults.loadKg, peakTorqueNm: 100, bodyMassKg: 75 };
+  const lying = ex.variants.find((v) => v.id === "lying"), seated = ex.variants.find((v) => v.id === "seated");
+  const base = (a) => interp(ex.strengthCurve.points, a) * 100;
+  for (const a of [10, 45, 90]) {
+    assert.ok(Math.abs(analyze(ex, lying, a, o).capacity - base(a) * lying.strengthScale.factor) < 1e-9);
+    assert.ok(Math.abs(analyze(ex, seated, a, o).capacity - base(a) * seated.strengthScale.factor) < 1e-9);
+  }
+  // Guex et al.: hip straight 62.0 Nm, hip at 90° 110.1 Nm (knee 45°) → the ratio survives the rounding.
+  assert.ok(Math.abs(lying.strengthScale.factor / seated.strengthScale.factor - 62.0 / 110.1) < 0.01);
+  // By angle: the reverse curl's factor is interpolated between the measured elbow angles.
+  const bc = JSON.parse(readFileSync(new URL("../data/exercises/biceps-curl.json", import.meta.url)));
+  const rev = bc.variants.find((v) => v.id === "reverse");
+  const ob = { loadKg: 10, peakTorqueNm: 65, bodyMassKg: 75 };
+  const r = analyze(bc, rev, 67.5, ob);
+  assert.ok(Math.abs(r.strengthScale - (0.83 + 0.89) / 2) < 1e-9);
+  assert.ok(Math.abs(r.capacity - interp(bc.strengthCurve.points, 67.5) * 65 * r.strengthScale) < 1e-9);
+  assert.equal(analyze(bc, bc.variants.find((v) => v.id === "dumbbell"), 67.5, ob).strengthScale, 1);
+});

@@ -91,7 +91,7 @@ function setVariant(id, pulley, load) {
     $("pulley-y").value = state.pulley.y;
   }
   setPlacement(v);
-  $("variant-notes").textContent = v.notes;
+  $("variant-notes").textContent = v.strengthScale ? `${v.notes} Strength in this posture: ${v.strengthScale.note}` : v.notes;
   $("variant-equipment").textContent = v.equipment;
   $("figure-title").textContent = viewTitle(state.exercise, v);
   $("load-label").textContent = v.load?.type === "reaction" ? "Added load" : "Load";

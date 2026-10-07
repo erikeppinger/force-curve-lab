@@ -34,7 +34,7 @@
       [105, 0.72],
       [116, 0.71]
     ],
-    "note": "Relative isometric elbow-extension torque vs elbow flexion (0° = straight), peak about 55°: the paper's mean cubic fit, normalised, inside the measured 20–116° (held flat beyond). Measured with the upper arm raised 90° to the side, so the long head's length differs from overhead or arm-at-side positions. Peak torque default: the paper's mean over all participants (58 Nm; men 77 Nm, women 36 Nm).",
+    "note": "Relative isometric elbow-extension torque vs elbow flexion (0° = straight), peak about 55°: the paper's mean cubic fit, normalised, inside the measured 20–116° (held flat beyond). Measured with the upper arm raised 90° to the side, so the long head's length differs from overhead or arm-at-side positions. Peak torque default: the paper's mean over all participants (58 Nm; men 77 Nm, women 36 Nm). Variants correct for the shoulder angle with Guenzkofer et al.'s measurements, relative to the arm at the side.",
     "source": "Pinter IJ, Bobbert MF, van Soest AJ, Smeets JBJ (2010). Isometric torque–angle relationships of the elbow flexors and extensors in the transverse plane. J Electromyogr Kinesiol 20:923–931. doi:10.1016/j.jelekin.2010.05.001"
   },
   "postures": {
@@ -115,7 +115,12 @@
       "load": {"type": "cable", "pulley": {"x": 0.35, "y": 0.55}},
       "adjustablePulley": true,
       "defaultLoadKg": 12,
-      "notes": "Upper arm by your side, cable from a high pulley. The pull is almost straight up, so the torque peaks with the forearm horizontal and fades at the bottom. The forearm's own weight helps you here."
+      "notes": "Upper arm by your side, cable from a high pulley. The pull is almost straight up, so the torque peaks with the forearm horizontal and fades at the bottom. The forearm's own weight helps you here.",
+      "strengthScale": {
+        "factor": 1.0,
+        "note": "arm at the side: the reference posture for the other variants' corrections (Guenzkofer et al., shoulder at 0°).",
+        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric)"
+      }
     },
     {
       "id": "overhead",
@@ -125,7 +130,12 @@
       "posture": "standing",
       "load": {"type": "gravity"},
       "defaultLoadKg": 10,
-      "notes": "Upper arm pointing up. Torque = m·g·L·sin(elbow angle), largest with the forearm horizontal behind the head. The long head is stretched in this position, which this model can't credit."
+      "notes": "Upper arm pointing up. Torque = m·g·L·sin(elbow angle), largest with the forearm horizontal behind the head. The long head is stretched in this position, which this model can't credit.",
+      "strengthScale": {
+        "points": [[45, 0.85], [90, 0.9], [120, 0.86]],
+        "note": "arm overhead: elbow-extension strength 85–90% of arm-at-side. Guenzkofer et al. measured it at 135° of shoulder flexion (the highest they tested; held there for 180°). Despite the long head being stretched overhead, the measured torque was lower, not higher.",
+        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric)"
+      }
     },
     {
       "id": "skullcrusher",
@@ -137,7 +147,12 @@
       "viewLabel": "Side view (lying)",
       "load": {"type": "gravity"},
       "defaultLoadKg": 10,
-      "notes": "Lying on your back with the upper arm vertical. Relative to gravity this is the overhead extension turned through 90°, so the torque curve is identical. Load is per arm (half the bar)."
+      "notes": "Lying on your back with the upper arm vertical. Relative to gravity this is the overhead extension turned through 90°, so the torque curve is identical. Load is per arm (half the bar).",
+      "strengthScale": {
+        "points": [[45, 0.94], [90, 0.95], [120, 0.89]],
+        "note": "upper arm at 90° of shoulder flexion: 89–95% of arm-at-side, interpolated between Guenzkofer et al.'s 60° and 135°.",
+        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric)"
+      }
     }
   ],
   "wger": {"exerciseId": null, "name": "Triceps Pushdown", "note": "TODO: look up the wger exercise id"}
