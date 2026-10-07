@@ -483,6 +483,13 @@ async function init() {
   setExercise(EXERCISES.includes(h.ex) ? h.ex : EXERCISES[0], h);
   bind();
   addEventListener("resize", () => { if (!state.playing) render(); });
+  // A pasted or clicked link with a new #… (no reload): apply it. Our own writeHash uses
+  // history.replaceState, which doesn't fire this event.
+  addEventListener("hashchange", () => {
+    const next = readHash();
+    setExercise(EXERCISES.includes(next.ex) ? next.ex : EXERCISES[0], next);
+    render();
+  });
   render();
 }
 
