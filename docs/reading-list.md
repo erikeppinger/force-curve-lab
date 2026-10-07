@@ -37,7 +37,18 @@ The largest group of `TODO`s (every `muscles` entry). No single source covers th
 ## Read
 
 - **Chen & Franklin 2025, joint moments** (preprint, CC BY 4.0) and **Chen & Franklin 2025, moment arms** (Ann Biomed Eng 53:1757–1776, open access): read; used as a cross-check (`docs/model-limits.md`). Their raw data are still to get: moment arms at <https://doi.org/10.6084/m9.figshare.26018563>; the joint-moment data link is in the published J Biomech version (the preprint says "link-to-add"). Both are MATLAB `.mat` files.
-- **Rajagopal et al. 2016** (OpenSim full-body model): read. Muscle forces and moment arms need the model files from <https://simtk.org/home/full_body> and an offline run.
+- **Rajagopal et al. 2016** (OpenSim full-body model): read. Muscle forces and moment arms need the model files and an offline run.
+
+## To grab: Rajagopal model files
+
+From <https://simtk.org/home/full_body> (free account needed for downloads):
+- The model file, `.osim` (XML: muscles, path points, wrap surfaces, joint definitions). The bone geometry (`.vtp`) isn't needed.
+- The licence text on the project page: check that results derived from the model may be published under CC BY 4.0 (the model file itself stays out of the repo unless its licence allows it, like the papers).
+
+What it is for: moment arms of each leg muscle across hip, knee and ankle angles, plus each muscle's force capacity (Table II of the paper). Together they would give muscle weights that change with the joint angles, replacing the flat `TODO` guesses for the leg muscles. Two ways to run it:
+1. With OpenSim installed locally (free; conda package `opensim`): a short Python script exports moment arms and forces on an angle grid as JSON, and only that JSON is committed. The script can be written here before the files arrive.
+2. Without OpenSim: read the `.osim` XML here and compute moment arms from the path points. This ignores the wrap surfaces, so muscles that bend around bone (gluteus maximus, quadriceps over the knee, hamstrings) would come out wrong; only usable as a rough check.
+
 
 ## Open data worth a look
 
