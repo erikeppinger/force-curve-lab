@@ -297,7 +297,7 @@
   "wger": {
     "exerciseId": 294,
     "name": "Hip Thrust",
-    "note": "Id taken from the exercise's media URL in the wger starter library CSV (wger.de/media/exercise-video/294/…); not checked against the API from here. Check at https://wger.de/en/exercise/294/view/"
+    "note": "Checked against wger's public exercise list (id = the number in the page address)."
   },
   "momentArmNote": "Moment arm = the joint's 3D distance from the floor's push line under that foot; it feeds every component of that joint's torque.",
   "placement": [

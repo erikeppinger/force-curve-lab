@@ -125,5 +125,9 @@
       "notes": "Pad behind the thigh above the knee. Illustrative cam that keeps the load on through hip extension."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Glute Kickback (Machine)", "note": "TODO: look up the wger exercise id"}
+  "wger": {
+    "exerciseId": 1723,
+    "name": "Glute Kickback (Machine)",
+    "note": "Checked against wger's public exercise list (id = the number in the page address)."
+  }
 }

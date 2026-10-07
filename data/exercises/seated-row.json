@@ -300,7 +300,11 @@
       "text": "Hands at the trunk, elbows behind it: the lats do most of the work, and the shoulder blades squeeze together."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Seated Cable Rows", "note": "TODO: look up the wger exercise id"},
+  "wger": {
+    "exerciseId": 1117,
+    "name": "Seated Cable Row",
+    "note": "Checked against wger's public exercise list (id = the number in the page address). Closest entry: no exact \"Seated Cable Rows\"; alternative 1725 \"Seated Row (Machine)\"."
+  },
   "momentArmNote": "Moment arm = the joint's 3D distance from the load's line of action through that hand (the cable, or straight down); it feeds every component of that joint's torque.",
   "placement": [
     {

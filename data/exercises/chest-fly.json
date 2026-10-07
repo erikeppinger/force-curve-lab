@@ -135,5 +135,9 @@
       "notes": "Seated, arms moving in a horizontal plane against pads at the elbows. The illustrative cam keeps the resistance fairly even across the range."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Fly With Dumbbells", "note": "TODO: look up the wger exercise id"}
+  "wger": {
+    "exerciseId": 238,
+    "name": "Fly With Dumbbells",
+    "note": "Checked against wger's public exercise list (id = the number in the page address)."
+  }
 }

@@ -155,5 +155,9 @@
       }
     }
   ],
-  "wger": {"exerciseId": null, "name": "Triceps Pushdown", "note": "TODO: look up the wger exercise id"}
+  "wger": {
+    "exerciseId": 1185,
+    "name": "Triceps Pushdown",
+    "note": "Checked against wger's public exercise list (id = the number in the page address)."
+  }
 }

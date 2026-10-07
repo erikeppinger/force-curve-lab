@@ -90,7 +90,7 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] Hip rotation strength by hip flexion (Uritani 2012); hammer and reverse curl muscle factors at matched effort (Coratella 2023)
 - [ ] Literature for muscle activation weights, machine cam profiles and hip-extension strength vs knee angle; rear-delt and bench horizontal strength now from Lategan 2002; optionally precomputed OpenSim results as JSON
 - [x] Back-view body map
-- [ ] Vendor the wger SVGs locally for offline use; wger exercise ids: 8 set (7 from the starter CSV's media URLs, still to confirm), the rest still missing
+- [ ] Vendor the wger SVGs locally for offline use (wger exercise ids: all 23 set and checked against wger's public exercise list)
 - [ ] Translations (DE)
 
 ## Licences and credits

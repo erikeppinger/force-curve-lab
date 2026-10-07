@@ -104,5 +104,9 @@
       "notes": "Gravity: torque = (m·L + lower-leg weight)·g·cos(knee angle). Zero with the lower leg hanging, largest at lockout."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Leg Extension", "note": "TODO: look up the wger exercise id"}
+  "wger": {
+    "exerciseId": 369,
+    "name": "Leg Extension",
+    "note": "Checked against wger's public exercise list (id = the number in the page address)."
+  }
 }

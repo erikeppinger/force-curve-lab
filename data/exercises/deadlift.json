@@ -176,5 +176,9 @@
       "text": "Break the bar off the floor. A trap bar lets the knees take a bigger share here."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Deadlifts", "note": "TODO: look up the wger exercise id"}
+  "wger": {
+    "exerciseId": 184,
+    "name": "Deadlifts",
+    "note": "Checked against wger's public exercise list (id = the number in the page address)."
+  }
 }
