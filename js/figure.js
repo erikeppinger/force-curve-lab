@@ -221,6 +221,9 @@ export function renderMultiFigure(svg, { exercise, result, activation, bounds })
   for (const p of result.props) seg(svg, p.a, p.b, p.cls, p.w);
   if (result.balance) seg(svg, { x: result.balance.x, y: 0 }, { x: result.balance.x, y: V.y1 }, "balance", 0.006);
 
+  // Plates sit beside the body: draw them first, see-through, so the legs stay visible.
+  for (const l of result.loads.filter((x) => x.kind === "plate")) circle(l.at, 0.225, "weight plate");
+
   for (const d of result.draw) {
     if (d.circle) circle(d.circle, d.r, d.cls);
     else seg(svg, d.a, d.b, d.cls, d.w);
@@ -252,7 +255,7 @@ export function renderMultiFigure(svg, { exercise, result, activation, bounds })
     }
   }
 
-  for (const l of result.loads) circle(l.at, l.kind === "dumbbell" ? 0.06 : 0.08, "weight");
+  for (const l of result.loads) circle(l.at, l.kind === "dumbbell" ? 0.06 : l.kind === "plate" ? 0.025 : 0.08, "weight");
 
   // Per joint: moment arm to the line of action of everything on its free side.
   for (const j of result.joints) {

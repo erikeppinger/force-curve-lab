@@ -36,7 +36,7 @@ test("ik2 keeps both segment lengths", () => {
 });
 
 // ---------- squat and hinge ----------
-for (const [id, vids, xs] of [["romanian-deadlift", ["barbell", "stiff-leg"], [20, 50, 90]]]) {
+for (const [id, vids, xs] of [["romanian-deadlift", ["barbell", "stiff-leg"], [20, 50, 90]], ["deadlift", ["conventional", "trap-bar"], [0, 60, 90, 135]]]) {
   for (const vid of vids) {
     test(`${id}/${vid}: centre of mass over the mid-foot, and torques match the hand formulas`, () => {
       for (const x of xs) {
@@ -73,6 +73,45 @@ test("Romanian deadlift: hip torque grows with the hinge; the knee needs its fle
   const curve = sampleMulti(ex, ex.variants[0], opts, 10).map((s) => J(s, "hip").torque);
   curve.forEach((t, i) => i && assert.ok(t > curve[i - 1]));
   assert.ok(J(run("romanian-deadlift", "barbell", 80), "knee").torque < 0);
+});
+
+// Shin front at height y: the line A→K (or K→H) plus the drawn half-width and the bar radius.
+const legFrontAt = (r, y) => {
+  const [A, K, H] = ["ankle", "knee", "hip"].map((id) => J(r, id).at);
+  const [p, q, half] = y <= K.y ? [A, K, 0.05] : [K, H, 0.07];
+  return p.x + ((q.x - p.x) * (y - p.y)) / (q.y - p.y) + half + 0.015;
+};
+
+test("deadlift: the conventional bar never passes through the legs, and the arms stay straight", () => {
+  const arm = body.lengths.upperArm + body.lengths.forearm;
+  for (let x = 0; x <= 135; x += 5) {
+    const r = run("deadlift", "conventional", x);
+    const bar = r.loads[0].at, S = r.arms[0].from;
+    close(Math.hypot(bar.x - S.x, bar.y - S.y), arm, 1e-9);
+    assert.ok(bar.x >= legFrontAt(r, bar.y) - 1e-4, `@${x}: bar ${bar.x} inside the legs`);
+    assert.ok(bar.x >= S.x - 1e-9, `@${x}: arms only swing forward`);
+  }
+  // Somewhere around the knees the rule is active: the bar sits in front of the shoulders.
+  assert.ok([60, 90, 110].some((x) => { const r = run("deadlift", "conventional", x); return r.loads[0].at.x > r.arms[0].from.x + 0.02; }));
+});
+
+test("deadlift: the trap bar hangs straight down and moves work from the hip to the knee", () => {
+  for (const x of [0, 60, 120]) {
+    const r = run("deadlift", "trap-bar", x);
+    close(r.loads[0].at.x, r.arms[0].from.x, 1e-12);
+  }
+  for (const x of [90, 120, 135]) {
+    const c = run("deadlift", "conventional", x), t = run("deadlift", "trap-bar", x);
+    assert.ok(J(t, "hip").torque < J(c, "hip").torque, `@${x}: hip`);
+    assert.ok(J(t, "knee").torque > J(c, "knee").torque, `@${x}: knee`);
+  }
+});
+
+test("deadlift: the bottom of the range is about where the bar sits on the floor", () => {
+  for (const vid of ["conventional", "trap-bar"]) {
+    const y = run("deadlift", vid, 135).loads[0].at.y;
+    assert.ok(y > 0.17 && y < 0.27, `${vid}: bar at ${y} m (plates hold it about 0.225 m up)`);
+  }
 });
 
 // ---------- split squat ----------

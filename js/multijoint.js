@@ -101,6 +101,34 @@ const onTrunk = (H, S, along, out) => {
   return add(add(H, u, along * len(sub(S, H))), { x: u.y, y: -u.x }, out);
 };
 
+const BAR_R = 0.015; // bar radius
+
+/** Front edge of the legs at height y (shin below the knee, thigh above), bar radius included. */
+function legFront(b, y) {
+  const at = (p, q, half) => p.x + ((q.x - p.x) * (y - p.y)) / (q.y - p.y || 1e-9) + half;
+  if (y <= b.A.y) return -Infinity;
+  if (y <= b.K.y) return at(b.A, b.K, 0.05 + BAR_R);
+  if (y <= b.H.y) return at(b.K, b.H, 0.07 + BAR_R);
+  return -Infinity;
+}
+
+/**
+ * Where hands holding a load sit: straight down from the shoulders, unless `clearShins` and that
+ * would put the bar inside the legs. Then the straight arms swing forward (a circle around the
+ * shoulder) just far enough for the bar to touch the front of the shins or thighs.
+ */
+function hang(b, arm, clearShins) {
+  let bar = { x: b.S.x, y: b.S.y - arm };
+  if (!clearShins) return bar;
+  for (let i = 0; i < 30; i++) {
+    const fx = legFront(b, bar.y);
+    if (bar.x >= fx - 1e-6) break;
+    const dx = Math.min(arm, fx - b.S.x);
+    bar = { x: b.S.x + dx, y: b.S.y - Math.sqrt(arm * arm - dx * dx) };
+  }
+  return bar;
+}
+
 function feet(body, A) {
   const L = body.lengths;
   return [{ a: { x: A.x - L.heel, y: 0.01 }, b: { x: A.x + L.footFront, y: 0.01 }, w: 0.05, cls: "body" }];
@@ -129,7 +157,7 @@ function standing(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
     }
     const b = standingBody(body, kg, A, ts, tt, tk);
     const bar = P.load === "hang"
-      ? { x: b.S.x, y: b.S.y - (L.upperArm + L.forearm) }
+      ? hang(b, L.upperArm + L.forearm, P.clearShins)
       : onTrunk(b.H, b.S, P.barAlong, P.barOut);
     const armCom = lerp(b.S, bar, 0.45);
     const items = [b.shank, b.shank, b.thigh, b.thigh, b.trunk, b.foot, b.foot,

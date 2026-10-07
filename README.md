@@ -6,7 +6,7 @@ Exercises (2–5 equipment variants each):
 
 - **Arms and shoulders:** biceps curl, triceps extension, lateral raise, front raise, chest fly, straight-arm pulldown / pullover
 - **Legs:** leg extension, leg curl, calf raise, hip abduction, glute kickback
-- **Multi-joint:** squat, Romanian deadlift, split squat / lunge, leg press, hip thrust, bench press. These show hip, knee and ankle torques and effort together.
+- **Multi-joint:** squat, Romanian deadlift, deadlift (conventional and trap bar), split squat / lunge, leg press, hip thrust, bench press. These show hip, knee and ankle torques and effort together.
 - **3D:** the leg press, squat and bench press have placement controls (foot height, stance width, toe angle, knee tracking; grip width and elbow position), sideways and rotation components at the hip, knee, shoulder and elbow, and a drag-to-turn 3D view.
 
 [`docs/model-limits.md`](docs/model-limits.md) explains how both models work and what they still approximate.
@@ -71,7 +71,8 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] Machines with cam profiles (resistance curve as a data table): `load.type: "machine"`. The lateral-raise cam is illustrative; measured profiles still needed
 - [x] Resistance bands (`load.type: "band"`): band curl, band lateral raise
 - [x] Multi-joint model: squat, Romanian deadlift, split squat, leg press, hip thrust, bench press
-- [ ] Multi-joint: conventional deadlift, overhead press, rows; measured posture rules instead of assumed ones
+- [x] Deadlift: conventional (bar has to clear the shins) and trap bar
+- [ ] Multi-joint: overhead press, rows; measured posture rules instead of assumed ones
 - [x] 3D leg press: stance width, toe angle, knee tracking
 - [x] 3D squat (stance, toe angle, knee tracking, least-effort sideways floor push)
 - [x] 3D bench press (grip width, elbows vs hands, shoulder and elbow components)
