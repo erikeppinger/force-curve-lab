@@ -109,7 +109,7 @@ function setPlacement(v) {
     const isAuto = () => state.placement[s.key] === "auto";
     const input = Object.assign(document.createElement("input"), { type: "range", min: s.min, max: s.max, step: s.step, value: isAuto() ? 0 : state.placement[s.key] });
     const show = () => { out.textContent = isAuto() ? "auto" : `${Math.round(state.placement[s.key] * s.scale)} ${s.unit}`; input.disabled = isAuto(); };
-    input.addEventListener("input", () => { state.placement[s.key] = +input.value; show(); render(); });
+    input.addEventListener("input", () => { state.placement[s.key] = +input.value; show(); renderSoon(); });
     label.append(`${s.label} `, out, input);
     if (s.auto) {
       // A value the model can pick itself (e.g. the least-effort sideways floor push).
@@ -230,18 +230,33 @@ let curveCache = null;
 function curves() {
   const key = JSON.stringify([state.exercise.id, state.variantId, state.compareId, state.loadKg, state.peakTorqueNm, state.bodyMassKg, state.strengthPct, state.pulley, state.placement]);
   if (curveCache?.key === key) return curveCache;
+  // While a slider is being dragged, keep the previous curves if they were slow to compute
+  // (the figure and readouts still update live); renderSoon() redraws them once it pauses.
+  const same = `${state.exercise.id}|${state.variantId}|${state.compareId}`;
+  if (state.deferCurves && curveCache?.same === same && curveCache.ms > 50) return curveCache;
+  const t0 = performance.now();
   const ex = state.exercise;
   if (ex.model === "multi") {
     const main = sampleMulti(ex, variant(), opts(variant()));
     const cmp = state.compareId ? sampleMulti(ex, variant(state.compareId), opts(variant(state.compareId))) : null;
-    curveCache = { key, main, cmp, bounds: ex.view === "3d" ? null : multiBounds(main) };
+    curveCache = { key, same, main, cmp, bounds: ex.view === "3d" ? null : multiBounds(main), ms: performance.now() - t0 };
     return curveCache;
   }
   const main = sampleCurve(ex, variant(), opts(variant()));
   const cmp = state.compareId ? sampleCurve(ex, variant(state.compareId), opts(variant(state.compareId))) : null;
   const bounds = figureBounds(ex, variant(), main.map((s) => s.pose), state.pulley);
-  curveCache = { key, main, cmp, bounds };
+  curveCache = { key, same, main, cmp, bounds, ms: performance.now() - t0 };
   return curveCache;
+}
+
+/** Render now with the curves possibly held, then once more 150 ms after the slider stops. */
+let soonTimer = null;
+function renderSoon() {
+  state.deferCurves = true;
+  render();
+  state.deferCurves = false;
+  clearTimeout(soonTimer);
+  soonTimer = setTimeout(render, 150);
 }
 
 function phaseAt(angle) {
@@ -440,17 +455,17 @@ function bind() {
   $("exercise").addEventListener("change", (e) => { setExercise(e.target.value); writeHash(); render(); });
   $("variant").addEventListener("change", (e) => { setVariant(e.target.value); writeHash(); render(); });
   $("compare").addEventListener("change", (e) => { state.compareId = e.target.value; writeHash(); render(); });
-  $("load").addEventListener("input", (e) => { state.loadKg = +e.target.value; $("load-out").textContent = `${state.loadKg} kg`; writeHash(); render(); });
-  $("bodymass").addEventListener("input", (e) => { state.bodyMassKg = +e.target.value; $("bodymass-out").textContent = `${state.bodyMassKg} kg`; render(); });
+  $("load").addEventListener("input", (e) => { state.loadKg = +e.target.value; $("load-out").textContent = `${state.loadKg} kg`; writeHash(); renderSoon(); });
+  $("bodymass").addEventListener("input", (e) => { state.bodyMassKg = +e.target.value; $("bodymass-out").textContent = `${state.bodyMassKg} kg`; renderSoon(); });
   $("strength").addEventListener("input", (e) => {
     if (isMulti()) { state.strengthPct = +e.target.value; $("strength-out").textContent = `${state.strengthPct}%`; }
     else { state.peakTorqueNm = +e.target.value; $("strength-out").textContent = `${state.peakTorqueNm} Nm`; }
-    render();
+    renderSoon();
   });
   $("angle").addEventListener("input", (e) => { setPlaying(false); state.angle = +e.target.value; render(); });
   $("play").addEventListener("click", () => setPlaying(!state.playing));
   for (const axis of ["x", "y"]) {
-    $(`pulley-${axis}`).addEventListener("input", (e) => { state.pulley[axis] = +e.target.value; writeHash(); render(); });
+    $(`pulley-${axis}`).addEventListener("input", (e) => { state.pulley[axis] = +e.target.value; writeHash(); renderSoon(); });
   }
   $("pulley-reset").addEventListener("click", () => { setVariant(state.variantId); writeHash(); render(); });
   $("placement-reset").addEventListener("click", () => { setPlacement(variant()); render(); });

@@ -105,13 +105,16 @@ export function leastEffort(exercise, jointsAt, lo = -0.6, hi = 0.6) {
   };
   // Coarse scan first (the cost can have more than one dip, e.g. when the elbow follows the push),
   // then a ternary search around the best grid point.
-  const N = 40, step = (hi - lo) / N;
+  const N = 24, step = (hi - lo) / N;
   let best = 0;
   for (let i = 1; i <= N; i++) if (cost(lo + i * step) < cost(lo + best * step)) best = i;
+  // Golden-section search: one new cost evaluation per step.
   let a = Math.max(lo, lo + (best - 1) * step), b = Math.min(hi, lo + (best + 1) * step);
-  for (let i = 0; i < 50; i++) {
-    const m1 = a + (b - a) / 3, m2 = b - (b - a) / 3;
-    if (cost(m1) < cost(m2)) b = m2; else a = m1;
+  const r = (Math.sqrt(5) - 1) / 2;
+  let c = b - r * (b - a), d = a + r * (b - a), fc = cost(c), fd = cost(d);
+  for (let i = 0; i < 30; i++) {
+    if (fc < fd) { b = d; d = c; fd = fc; c = b - r * (b - a); fc = cost(c); }
+    else { a = c; c = d; fc = fd; d = a + r * (b - a); fd = cost(d); }
   }
   return (a + b) / 2;
 }
@@ -681,6 +684,7 @@ export function split3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const tk = rad(P.trunkLean), back = v3(Math.sin(tk), Math.cos(tk), 0);
   const cop1 = add3(v3(A.x, 0, A.z), f, L.midfoot), cop2 = v3(Rr.x, 0, Rr.z);
   const armsKg = 2 * (m.upperArm + m.forearmHand) * kg;
+  let lastPsi = null;
   const pose = (s) => {
     const hz = s + L.hipHalfWidth;
     const R = Math.sqrt(Math.max(1e-9, D * D - (hz - A.z) ** 2));
@@ -690,7 +694,12 @@ export function split3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       const sh = sub3(K, A);
       return { H, K, tilt: Math.atan2(sh.x * f.x + sh.z * f.z, sh.y) };
     };
-    const { H, K } = legAt(bisect((psi) => legAt(psi).tilt - rad(P.shinPerKnee * x), rad(-85), rad(45)).t);
+    // Warm start: the hip's position barely moves with the pelvis shift, so search near the last answer first.
+    const gPsi = (psi) => legAt(psi).tilt - rad(P.shinPerKnee * x);
+    let near = lastPsi != null ? bisect(gPsi, lastPsi - 0.03, lastPsi + 0.03, 30) : { ok: false };
+    if (!near.ok) near = bisect(gPsi, rad(-85), rad(45), 42);
+    lastPsi = near.t;
+    const { H, K } = legAt(near.t);
     const pelvis = v3(H.x, H.y, s);
     const Hr = add3(pelvis, Z, -L.hipHalfWidth);
     const Kr = placeMid(Hr, Rr, L.thigh, L.shank, DOWN);
@@ -712,12 +721,17 @@ export function split3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const rearY = Rr.y > 0.2 ? Rr.y - 0.04 : 0; // rear foot on a bench: its top; on the floor: the toes
   const tipping = (Q, rho) => -cop1.z * Q.F1 - cop2.z * Q.F2 + Q.com.z * Q.W + rearY * rho * Q.F1;
   const poses = new Map();
-  const poseAt = (sv) => { const k = sv.toFixed(12); if (!poses.has(k)) poses.set(k, pose(sv)); return poses.get(k); };
+  const poseAt = (sv) => { let q = poses.get(sv); if (!q) poses.set(sv, (q = pose(sv))); return q; };
   // Secant search for the pelvis shift (the tipping moment is nearly linear in it); bisection
   // as the fallback when it doesn't converge inside ±0.3 m.
+  // Start from the linear estimate: tipping = T0(s) + ρ·T1(s), both nearly straight lines in s.
+  const P0 = poseAt(0), P1 = poseAt(0.1);
+  const t0 = tipping(P0, 0), t1 = tipping(P1, 0), b0 = tipping(P0, 1) - t0, b1 = tipping(P1, 1) - t1;
   const shiftFor = (rho) => {
     const g = (sv) => tipping(poseAt(sv), rho);
-    let a = 0, b = 0.05, ga = g(a), gb = g(b);
+    const ga0 = t0 + rho * b0, gb0 = t1 + rho * b1;
+    const guess = Math.abs(gb0 - ga0) > 1e-12 ? (-ga0 * 0.1) / (gb0 - ga0) : 0.05;
+    let a = Math.max(-0.3, Math.min(0.3, guess)), b = a + 0.002, ga = g(a), gb = g(b);
     for (let i = 0; i < 12 && Math.abs(gb) > 1e-7 * poseAt(b).W; i++) {
       const next = b - (gb * (b - a)) / (gb - ga);
       if (!Number.isFinite(next) || Math.abs(next) > 0.3) return bisect(g, -0.3, 0.3, 40);
