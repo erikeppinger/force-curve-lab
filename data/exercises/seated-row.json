@@ -1,0 +1,218 @@
+{
+  "id": "seated-row",
+  "name": "Seated cable row and chest-supported row",
+  "joint": "Shoulder, elbow and hip",
+  "model": "multi",
+  "solver": "seatedRow",
+  "view": "side",
+  "angleLabel": "Pull",
+  "angleUnit": "%",
+  "concentric": "increase",
+  "angleRange": [0, 100],
+  "angleNote": "Pull: 0% = arms straight (reaching to the pulley, or hanging), 100% = hands at the trunk. The trunk angle is held by the variant. Shoulder and elbow torques per arm, hip per side.",
+  "defaults": {"loadKg": 40, "variant": "upright", "bodyMassKg": 75},
+  "ui": {"load": [0, 150, 2.5]},
+  "joints": [
+    {
+      "id": "shoulder",
+      "name": "Shoulder",
+      "action": "Shoulder extension",
+      "angleLabel": "shoulder flexion (vs the trunk)",
+      "peakTorqueNm": 93,
+      "negative": {"action": "Shoulder flexion", "peakTorqueNm": 68},
+      "strength": {
+        "points": [[-90, 1.0], [180, 1.0]],
+        "note": "Shoulder extension (positive) and flexion (negative) peak torque per arm, taken as constant across the range: Mayer's isometric means for men (93 and 68 Nm), measured standing.",
+        "source": "Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25, Table 2 (men, dominant side, isometric)"
+      }
+    },
+    {
+      "id": "elbow",
+      "name": "Elbow",
+      "action": "Elbow flexion",
+      "angleLabel": "elbow flexion",
+      "peakTorqueNm": 85,
+      "negative": {"action": "Elbow extension", "peakTorqueNm": 77},
+      "strength": {
+        "points": [[32, 0.52], [45, 0.61], [60, 0.76], [75, 0.9], [90, 0.99], [95, 1.0], [105, 0.97], [120, 0.78]],
+        "note": "Relative isometric elbow-flexion torque vs elbow flexion (0° = straight), peak about 95°: the paper's mean cubic fit, normalised, inside the measured 32–120° (held flat beyond). Measured with the upper arm raised 90° and horizontally adducted 20°, not hanging as in a standing curl. Peak per arm: the paper's male means (flexion 85 Nm, extension 77 Nm).",
+        "source": "Pinter IJ, Bobbert MF, van Soest AJ, Smeets JBJ (2010). Isometric torque–angle relationships of the elbow flexors and extensors in the transverse plane. J Electromyogr Kinesiol 20:923–931. doi:10.1016/j.jelekin.2010.05.001"
+      }
+    },
+    {
+      "id": "hip",
+      "name": "Hip",
+      "action": "Hip extension",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 200,
+      "strength": {
+        "points": [[-25, 0.26], [0, 0.63], [25, 0.89], [50, 1.0], [74, 0.94]],
+        "note": "Relative isometric hip-extension torque vs hip flexion, peak about 53°, measured standing with the knee slightly bent (tested −29° to 74°; deeper hip flexion is held flat at the 74° value, which is extrapolation). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m).",
+        "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
+      }
+    }
+  ],
+  "muscles": [
+    {
+      "id": "latissimus-dorsi",
+      "name": "Latissimus dorsi",
+      "wgerId": 12,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "shoulder",
+      "weight": [[-90, 1.0], [90, 1.0]],
+      "sign": 1,
+      "note": "Main shoulder extensor: pulls the upper arm back towards the hips.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "trunk", "along": [0.32, 0.5], "offset": 0.03, "w": 0.06}
+    },
+    {
+      "id": "posterior-deltoid",
+      "name": "Posterior deltoid",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "joint": "shoulder",
+      "weight": [[-90, 0.8], [90, 0.6]],
+      "sign": 1,
+      "note": "Extends the shoulder with the lats; also pulls the arm out to the side when the elbows flare (not in this side-view model).",
+      "source": "TODO: check against EMG literature"
+    },
+    {
+      "id": "biceps",
+      "name": "Biceps, brachialis, brachioradialis",
+      "wgerId": 1,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "elbow",
+      "weight": [[0, 1.0], [150, 1.0]],
+      "sign": 1,
+      "note": "Elbow flexors: work while the forearm is tilted away from the line of the load.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "upperArm", "along": [0.06, 0.24], "offset": 0.035, "w": 0.05}
+    },
+    {
+      "id": "mid-back",
+      "name": "Rhomboids, middle trapezius",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "none",
+      "weight": [[-90, 1.0], [90, 1.0]],
+      "note": "Pull the shoulder blades together at the top. Not estimated: the model has no shoulder blade.",
+      "source": "Not modelled"
+    },
+    {
+      "id": "erector-spinae",
+      "name": "Erector spinae",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.6], [90, 0.9]],
+      "note": "Hold the trunk still against the cable's pull (and its own weight when leaning). Approximation: driven by the hip's effort; zero when a pad carries the chest.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "trunk", "along": [0.1, 0.45], "offset": 0.08, "w": 0.05}
+    },
+    {
+      "id": "hamstrings",
+      "name": "Hamstrings",
+      "wgerId": 11,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.8], [120, 1.0]],
+      "note": "With the glutes, hold the hip angle against the cable pulling the trunk forward.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "thigh", "along": [0.06, 0.34], "offset": 0.045, "w": 0.055}
+    },
+    {
+      "id": "gluteus-maximus",
+      "name": "Gluteus maximus",
+      "wgerId": 8,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.8], [90, 1.0], [130, 1.0]],
+      "note": "Main hip extensor.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "thigh", "along": [0.33, 0.47], "offset": 0.06, "w": 0.09}
+    }
+  ],
+  "variants": [
+    {
+      "id": "upright",
+      "name": "Seated cable row, trunk upright",
+      "equipment": "Cable, seat and foot plate",
+      "params": {
+        "load": "cable",
+        "hipHeight": 0.5,
+        "trunkLean": 0,
+        "pulley": {"x": 1.4, "y": 0.55},
+        "touchAlong": 0.3,
+        "touchOut": 0.12
+      },
+      "notes": "Trunk held upright, handle pulled to the belly. The cable pulls the trunk forward, so the hips and lower back hold it, most at the start, when the hands are far out in front and high above the hips. The hands move in a straight line; elbows tucked in the side view's plane. Stack weight only: the machine's pulley friction is ignored."
+    },
+    {
+      "id": "lean-back",
+      "name": "Leaning back 15°",
+      "equipment": "Cable, seat and foot plate",
+      "params": {
+        "load": "cable",
+        "hipHeight": 0.5,
+        "trunkLean": -15,
+        "pulley": {"x": 1.4, "y": 0.55},
+        "touchAlong": 0.3,
+        "touchOut": 0.12
+      },
+      "notes": "Trunk leaning back: the body's weight behind the hips now counters the cable, so the hips and lower back do less. Leaning back during the pull (body English) uses this to shift work away from the arms. The hands move in a straight line; elbows tucked in the side view's plane. Stack weight only: the machine's pulley friction is ignored."
+    },
+    {
+      "id": "lean-forward",
+      "name": "Leaning forward 20°",
+      "equipment": "Cable, seat and foot plate",
+      "params": {
+        "load": "cable",
+        "hipHeight": 0.5,
+        "trunkLean": 20,
+        "pulley": {"x": 1.4, "y": 0.55},
+        "touchAlong": 0.3,
+        "touchOut": 0.12
+      },
+      "notes": "Trunk leaning towards the stack: both the trunk's weight and the cable now pull forward, so the hips and lower back work hardest. The lats pull through a longer arc. The hands move in a straight line; elbows tucked in the side view's plane. Stack weight only: the machine's pulley friction is ignored."
+    },
+    {
+      "id": "chest-supported",
+      "name": "Chest-supported dumbbell row",
+      "equipment": "Dumbbells, incline bench",
+      "loadShape": "dumbbell",
+      "params": {
+        "load": "hang",
+        "chestPad": true,
+        "hipHeight": 0.85,
+        "trunkLean": 50,
+        "touchAlong": 0.45,
+        "touchOut": 0.12
+      },
+      "notes": "Chest on an incline pad, trunk 50° from vertical, dumbbells hanging. The pad carries the trunk, so the lower back is out of it: the arms and upper back do all the work. Load = both dumbbells together. The hands move in a straight line; elbows tucked in the side view's plane."
+    }
+  ],
+  "phases": [
+    {
+      "name": "Reach",
+      "range": [0, 25],
+      "text": "Arms long: the cable (or the dumbbells) pulls on straight arms; the trunk holds the load."
+    },
+    {
+      "name": "Pull",
+      "range": [25, 75],
+      "text": "Elbows bend and travel back: the elbow flexors and lats share the work."
+    },
+    {
+      "name": "Squeeze",
+      "range": [75, 100],
+      "text": "Hands at the trunk, elbows behind it: the lats do most of the work, and the shoulder blades squeeze together."
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Seated Cable Rows", "note": "TODO: look up the wger exercise id"}
+}

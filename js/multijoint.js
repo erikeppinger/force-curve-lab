@@ -135,9 +135,11 @@ function hang(b, arm, clearShins) {
  * `touchOut` in front of the trunk line (belly side). The elbow bends away from the belly.
  * Returns the hand, elbow, both arm segments (one arm) and the combined centre of mass of both arms.
  */
-function rowArm(b, body, P, x) {
+function rowArm(b, body, P, x, reachTo) {
   const L = body.lengths, m = body.mass, c = body.com, kg = b.arm.kg / (m.upperArm + m.forearmHand);
-  const start = { x: b.S.x, y: b.S.y - (L.upperArm + L.forearm) * 0.995 };
+  // Start: arms straight, hanging (or reaching towards `reachTo`, e.g. a cable's pulley).
+  const toward = reachTo ? unit(sub(reachTo, b.S)) : { x: 0, y: -1 };
+  const start = add(b.S, toward, (L.upperArm + L.forearm) * 0.995);
   const end = onTrunk(b.H, b.S, P.touchAlong, P.touchOut);
   const hand = lerp(start, end, x / 100);
   const u = unit(sub(b.S, b.H));
@@ -339,7 +341,71 @@ function hipThrust(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
   };
 }
 
-const SOLVERS = { standing, split, hipThrust, legPress3d, squat3d, bench3d, press3d };
+/**
+ * Seated cable row and chest-supported row (driver: pull, 0 = arms straight, 100 = hands at the
+ * trunk). The trunk is held at `trunkLean` (degrees from vertical, + = forward). Load either on a
+ * cable to `pulley` (stack weight, the cable pulls the hands towards the pulley) or hanging
+ * (`load: "hang"`, dumbbells). Seated: the hips are fixed on a seat and the hip extensors hold the
+ * trunk against the cable. `chestPad`: a pad under the chest carries the trunk, so the hip
+ * torque isn't needed (shown as zero). Torques per arm; hip per side.
+ */
+function seatedRow(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
+  const P = v.params;
+  const L = body.lengths, m = body.mass, c = body.com;
+  const H = { x: 0, y: P.hipHeight };
+  const lean = rad(P.trunkLean);
+  const S = up(H, lean, L.trunk);
+  const b = { H, S, arm: { kg: (m.upperArm + m.forearmHand) * kg } };
+  const cable = P.load === "cable";
+  const arm = rowArm(b, body, P, x, cable ? P.pulley : null);
+  const hand = arm.hand;
+  const pull = cable ? unit(sub(P.pulley, hand)) : { x: 0, y: -1 };
+  const F = (loadKg * G) / 2; // per hand
+  const onHand = { at: hand, f: { x: pull.x * F, y: pull.y * F } };
+  const upperW = weight(arm.upper.at, arm.upper.kg), foreW = weight(arm.fore.at, arm.fore.kg);
+  const trunk = { at: lerp(H, S, c.headTrunk), kg: m.headTrunk * kg };
+  // Per side: half the trunk, one arm, one hand's load.
+  const aboveHip = [weight(trunk.at, trunk.kg / 2), upperW, foreW, onHand];
+  const hip = P.chestPad
+    ? { torque: 0, momentArm: 0, foot: H, resultant: { x: 0, y: 0 } }
+    : jointTorque(H, aboveHip, "hip-extension", "proximal");
+  const K = add(H, { x: Math.cos(rad(-8)), y: Math.sin(rad(-8)) }, L.thigh);
+  const seated = !P.chestPad;
+  const knee = seated ? K : { x: H.x + 0.02, y: H.y - L.thigh };
+  const A = seated ? add(K, unit({ x: 0.55, y: -0.83 }), L.shank) : { x: H.x + 0.06, y: L.ankleHeight };
+  const n = { x: Math.cos(lean), y: -Math.sin(lean) }; // the trunk's front (belly side)
+  const props = [];
+  if (cable) {
+    props.push({ a: hand, b: P.pulley, w: 0.008, cls: "cable" });
+    props.push({ a: { x: A.x + 0.08, y: 0 }, b: { x: A.x + 0.08, y: 0.4 }, w: 0.04, cls: "equipment" }); // foot plate
+    props.push({ a: { x: -0.25, y: H.y - 0.07 }, b: { x: 0.25, y: H.y - 0.07 }, w: 0.06, cls: "equipment" }, { a: { x: 0, y: H.y - 0.07 }, b: { x: 0, y: 0 }, w: 0.04, cls: "equipment" });
+  }
+  if (P.chestPad) {
+    const padC = add(lerp(H, S, 0.55), n, 0.16);
+    const u = unit(sub(S, H));
+    props.push({ a: add(padC, u, -0.3), b: add(padC, u, 0.25), w: 0.06, cls: "equipment" }, { a: add(padC, u, -0.25), b: { x: add(padC, u, -0.25).x, y: 0 }, w: 0.04, cls: "equipment" });
+  }
+  props.push({ a: arm.start, b: arm.end, cls: "line-of-action", w: 0.006 });
+  return {
+    joints: {
+      shoulder: { at: S, angle: arm.shoulderFlex, ...jointTorque(S, [upperW, foreW, onHand], "shoulder-extension", "distal") },
+      elbow: { at: arm.E, angle: arm.elbowFlex, ...jointTorque(arm.E, [foreW, onHand], "elbow-flexion", "distal") },
+      hip: { at: H, angle: 180 - angleBetween(sub(S, H), sub(knee, H)), ...hip },
+    },
+    segs: { trunk: [H, S], upperArm: [S, arm.E], forearm: [arm.E, hand], thigh: [knee, H] },
+    draw: [...feet(body, A), { a: A, b: knee, w: 0.1, cls: "body" }, { a: knee, b: H, w: 0.14, cls: "body" }, { a: H, b: S, w: 0.2, cls: "body" },
+      { circle: up(S, lean, 0.22), r: 0.11, cls: "body" }],
+    arms: [{ from: S, to: hand, elbow: arm.E }],
+    loads: [{ at: hand, kind: cable ? "handle" : v.loadShape ?? "dumbbell" }],
+    props: cable ? [...props, { a: { x: P.pulley.x, y: 0 }, b: { x: P.pulley.x, y: P.pulley.y + 0.05 }, w: 0.06, cls: "equipment" }] : props,
+    balance: null,
+    parts: { trunk, onHand, upperW, foreW },
+    info: [...(cable ? [{ text: `The cable pulls ${Math.round(Math.abs(deg(Math.atan2(pull.y, pull.x))))}° ${pull.y < 0 ? "below" : "above"} horizontal here.` }] : []),
+      ...(P.chestPad ? [{ text: "The pad carries the trunk, so the hips and lower back don't have to hold it (hip torque shown as zero)." }] : [])],
+  };
+}
+
+const SOLVERS = { standing, split, hipThrust, seatedRow, legPress3d, squat3d, bench3d, press3d };
 
 /** Full analysis at one driver value: posture, forces and per-joint torque, capacity and effort. */
 export function analyzeMulti(exercise, variant, x, opts) {

@@ -255,7 +255,7 @@ export function renderMultiFigure(svg, { exercise, result, activation, bounds })
     }
   }
 
-  for (const l of result.loads) circle(l.at, l.kind === "dumbbell" ? 0.06 : l.kind === "plate" ? 0.025 : 0.08, "weight");
+  for (const l of result.loads) circle(l.at, l.kind === "dumbbell" ? 0.06 : l.kind === "plate" || l.kind === "handle" ? 0.025 : 0.08, "weight");
 
   // Per joint: moment arm to the line of action of everything on its free side.
   for (const j of result.joints) {

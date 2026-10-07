@@ -143,6 +143,34 @@ test("bent-over row: the flatter the trunk, the more hip torque; the pull brings
   assert.ok(J(top, "elbow").torque > J(flat, "elbow").torque);
 });
 
+test("seated cable row: torques match the hand formulas for the cable's pull", () => {
+  const F = 20 * G; // per hand
+  for (const vid of ["upright", "lean-back", "lean-forward"]) {
+    for (const x of [0, 50, 100]) {
+      const r = run("seated-row", vid, x, { ...opts, loadKg: 40, bodyMassKg: 1e-9 });
+      const ex = load("seated-row"), P = ex.variants.find((v) => v.id === vid).params;
+      const hand = r.loads[0].at, S = J(r, "shoulder").at, E = J(r, "elbow").at, H = J(r, "hip").at;
+      const d = { x: P.pulley.x - hand.x, y: P.pulley.y - hand.y }, l = Math.hypot(d.x, d.y);
+      const f = { x: (F * d.x) / l, y: (F * d.y) / l };
+      const M = (o) => (hand.x - o.x) * f.y - (hand.y - o.y) * f.x; // moment of the cable about a point
+      close(J(r, "shoulder").torque, M(S), 1e-6); // shoulder extension: counter-clockwise from the right
+      close(J(r, "elbow").torque, -M(E), 1e-6); // elbow flexion: clockwise moment of the load
+      close(J(r, "hip").torque, -M(H), 1e-6); // hip extension holds the trunk against the cable
+    }
+  }
+});
+
+test("seated cable row: leaning back lets body weight counter the cable; a chest pad takes the hip out", () => {
+  for (const x of [0, 50, 100]) {
+    const [b, u, f] = ["lean-back", "upright", "lean-forward"].map((vid) => J(run("seated-row", vid, x), "hip").torque);
+    assert.ok(b < u && u < f, `@${x}: ${b} < ${u} < ${f}`);
+    assert.equal(J(run("seated-row", "chest-supported", x), "hip").torque, 0);
+  }
+  // Chest-supported: dumbbells hang, so the shoulder torque is m·g × horizontal hand–shoulder distance.
+  const r = run("seated-row", "chest-supported", 100, { ...opts, loadKg: 40, bodyMassKg: 1e-9 });
+  close(J(r, "shoulder").torque, 20 * G * (J(r, "shoulder").at.x - r.loads[0].at.x), 1e-6);
+});
+
 // ---------- split squat ----------
 test("split squat: floor and bench share the weight; leaning forward shifts work from knee to hip", () => {
   for (const x of [40, 70, 100]) {
