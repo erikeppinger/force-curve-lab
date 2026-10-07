@@ -19,8 +19,8 @@ We tried 5 standard upper-body and 10 standard leg exercises from the wger start
 | Lunge / split squat | ✅ 3D | Bulgarian, Bulgarian with forward lean, split squat, feet in line, front knee caving in |
 | Romanian deadlift | ✅ 3D | barbell, stiff-legged, wide stance toes out |
 | Deadlift | ✅ multi-joint | conventional, trap (hex) bar |
-| Bent-over row | ✅ multi-joint | barbell (trunk ~45°), trunk horizontal, more upright |
-| Seated cable row, chest-supported row | ✅ multi-joint | trunk upright, leaning back, leaning forward; dumbbells on an incline pad |
+| Bent-over row | ✅ 3D | barbell (trunk ~45°), trunk horizontal, more upright, wide grip elbows out |
+| Seated cable row, chest-supported row | ✅ 3D | trunk upright, leaning back, leaning forward, wide bar elbows out; dumbbells on an incline pad |
 | Overhead press | ✅ 3D | standing, wide grip, behind the neck, seated dumbbells |
 | Hip thrust | ✅ 3D | barbell, feet further away, glute bridge, knees caving in, wide stance toes out |
 
@@ -93,7 +93,7 @@ The tests check the classic hand formulas (e.g. squat hip torque = Σ m·g·hori
 - **Spine as one rigid trunk.** Erector-spinae load is approximated by the hip's effort.
 - **Strength per joint ignores the other joints.** Two-joint muscles (hamstrings, rectus femoris, gastrocnemius) aren't credited for their length at the other joint in the multi-joint lifts. The single-joint leg curl, biceps curl and triceps extension now are (see "Two-joint muscles and grip").
 - **Deadlift at the floor is past the measured hip strength.** Anderson's hip-extension curve was tested up to 74° of hip flexion; the deadlift starts near 135°, where the app holds the 74° value flat. The effort near the floor is an extrapolation, so its near-limit readings at a modest 50 kg say more about the strength curve than about real lifters. The bar path, the lats pulling the bar back and the shoulders sitting in front of the bar are not modelled; arms are straight lines from shoulder to bar.
-- **Rows in the side view only.** The elbows stay in the side-view plane (tucked). Flared elbows turn the pull into horizontal abduction (rear delts), which needs the 3D arm model. The shoulder blades (rhomboids, middle trapezius) aren't modelled. The hand path is a straight line, and the trunk is held perfectly still, with no hip drive or body English. The cable row ignores pulley friction and the stack's inertia. The chest pad's contact isn't solved; the model just assumes it holds the trunk.
+- **Rows:** the shoulder blades (rhomboids, middle trapezius) aren't modelled; see the 3D rows section for elbow flare. The hand path is a straight line, and the trunk is held perfectly still, with no hip drive or body English. The cable row ignores pulley friction and the stack's inertia. The chest pad's contact isn't solved; the model just assumes it holds the trunk.
 - **One driver range per exercise.** The glute bridge only reaches about 0–35° of hip flexion before the hips hit the floor (the UI flags it), but shares the hip thrust's 0–80° range. The split squat starts at 40° of front-knee bend because a rear foot on the floor can't be reached with a straighter front leg.
 - **Leg press:** sled weight and friction are ignored; only the plates count.
 - **Strength numbers are estimates**, per leg, for a typical trained adult, marked `TODO` with no source checked. Use the strength slider to scale them.
@@ -237,9 +237,37 @@ Limits:
 - **Pelvis shift instead of a hip drop.** Real lifters also let the pelvis tilt and the knee drift. The model keeps the pelvis level and moves it sideways as one piece.
 - **Hip-rotation and frontal-plane strength** are the squat's, still partly estimated (`TODO`).
 
+## 3D: rows
+
+The bent-over row, the seated cable row and the chest-supported row now run in 3D (`row3d`). The trunk and legs work as before (balance over the mid-foot standing, a fixed seat, or a chest pad). The arms are 3D:
+
+- **Hand path:** the hands move in a straight line from arms straight to the trunk, `gripHalf` from the midline.
+- **Elbow:** it bends away from the belly and can be turned outwards about the shoulder–hand line by `flare` (0 = tucked).
+- **Shoulder components:** in the trunk's frame, split into:
+  - extension (about the side-to-side axis: lats)
+  - horizontal abduction (about the trunk's long axis: rear delts)
+  - rotation (rotator cuff)
+- **Elbow:** flexion, plus its sideways moment.
+- **Placement controls:** grip width and elbow flare.
+- **Tests:**
+  - With the elbows tucked and the hands at shoulder width, every torque matches the side view exactly.
+  - The rear-delt torque matches F × the hand's sideways offset × the trunk's tilt.
+  - Flaring the elbows moves work from the lats to the rear delts.
+
+What it shows:
+
+- **Elbow flare:** tucked elbows give a pure lat pull, with no horizontal-abduction torque. Flared elbows with a wide grip move part of the work to the rear delts and load the rotator cuff. Bent-over, at 40 kg, 70° flare: 20 Nm of horizontal abduction per arm and less shoulder extension. The hips' job barely changes.
+- **Close-grip (V) handle on the cable row:** the hands sit inside the shoulders and the cable pulls them forward, so the shoulder also needs a little horizontal *adduction* (pecs).
+
+Limits:
+
+- **Rear-delt strength has no source yet.** Mayer's shoulder-abduction peak (47 Nm) stands in, marked `TODO`.
+- **Fixed shoulders:** the shoulder blades don't move, so the squeeze at the top isn't modelled.
+- **Straight hand path:** real rows arc.
+
 ## 3D: what's left
 
-- **Rows (elbow flare) and pull-ups** would follow the bench and overhead press arm model with different contacts. The overhead press is done (see above); rows are side view only.
+- **Pull-ups and lat pulldowns** would follow the same arm model, pulling from overhead.
 
 ## Sources for the curated numbers
 

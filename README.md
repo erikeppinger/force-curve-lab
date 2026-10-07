@@ -7,7 +7,7 @@ Exercises (2–5 equipment variants each):
 - **Arms and shoulders:** biceps curl, triceps extension, lateral raise, front raise, chest fly, straight-arm pulldown / pullover
 - **Legs:** leg extension, leg curl, calf raise, hip abduction, glute kickback
 - **Multi-joint:** squat, Romanian deadlift, deadlift (conventional and trap bar), split squat / lunge, leg press, hip thrust, bench press, overhead press, bent-over row, seated cable row and chest-supported row. These show hip, knee and ankle torques and effort together.
-- **3D:** the leg press, squat, Romanian deadlift, split squat, hip thrust, bench press and overhead press have placement controls (foot height, stance width, toe angle, knee tracking; grip width and elbow position), sideways and rotation components at the hip, knee, shoulder and elbow, and a drag-to-turn 3D view.
+- **3D:** the leg press, squat, Romanian deadlift, split squat, hip thrust, bench press, overhead press and the rows have placement controls (foot height, stance width, toe angle, knee tracking; grip width and elbow position), sideways and rotation components at the hip, knee, shoulder and elbow, and a drag-to-turn 3D view.
 
 [`docs/model-limits.md`](docs/model-limits.md) explains how both models work and what they still approximate.
 
@@ -58,7 +58,7 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
    - Angle: `angleRange`, `angleLabel`, `angleNote`, `angleSense` (−1 if a growing angle turns the limb clockwise, e.g. the knee), `angleOffset` (degrees added for the pose, e.g. 90 at the ankle), `concentric` (`decrease` if lifting makes the angle smaller, e.g. extensions).
    - Content: `strengthCurve`, `muscles` (`driver`: `jointEffort` | `stabiliserDemand`; optional `draw`), `postures` (body shapes for the figure), `phases`, `defaults`, `ui` (slider ranges).
 3. Variant fields: `posture`, `gravity` (`{x, y}` in the exercise's frame; default straight down, `{x: 0, y: 0}` for a horizontal plane), `viewLabel`, `proximalAngle` (fixed angle of the proximal segment, or its offset when it moves), `distalBend`, `proximalSupported`, `load` (`gravity` | `cable` with `pulley` | `machine` with `padDistance` and `camProfile` `[[angle, effective radius in m]]` | `reaction` with `bodyWeight` share), `defaultLoadKg`, `muscleModifiers`, `notes`.
-4. Multi-joint lifts (`"model": "multi"`) instead pick a `solver` (`standing`, `split`, `hipThrust`, `seatedRow`, and the 3D `legPress3d`, `squat3d`, `bench3d`, `press3d`, `hinge3d`, `split3d`, `hipThrust3d`) with per-variant `params`, and list `joints` with their strength curves; each muscle names its `joint`. Copy the closest existing file.
+4. Multi-joint lifts (`"model": "multi"`) instead pick a `solver` (`standing`, `split`, `hipThrust`, `seatedRow`, and the 3D `legPress3d`, `squat3d`, `bench3d`, `press3d`, `hinge3d`, `split3d`, `hipThrust3d`, `row3d`) with per-variant `params`, and list `joints` with their strength curves; each muscle names its `joint`. Copy the closest existing file.
 5. Add a test in `tests/` that pins down the variant's key teaching point with a hand-computable case. `tests/exercises.test.mjs` checks every listed exercise file's structure and model-wide invariants automatically.
 
 ## Roadmap
@@ -68,7 +68,6 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] Postures (lying, seated, kneeling, horizontal plane), limb weight, body weight for closed-chain lifts
 - [x] Two-joint muscles and grip in the single-joint exercises: lying vs seated leg curl, preacher, hammer and reverse curls, overhead and lying triceps (Guex 2012, Guenzkofer 2012, Kohn 2018, Kleiber 2015)
 - [ ] Two-joint muscles: calf raise (knee straight vs bent) and the multi-joint lifts; papers in `docs/reading-list.md`
-- [ ] Hammer/neutral grip as a variant parameter (brachioradialis emphasis)
 - [x] Machines with cam profiles (resistance curve as a data table): `load.type: "machine"`. The lateral-raise cam is illustrative; measured profiles still needed
 - [x] Resistance bands (`load.type: "band"`): band curl, band lateral raise
 - [x] Multi-joint model: squat, Romanian deadlift, split squat, leg press, hip thrust, bench press
@@ -82,10 +81,11 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] 3D bench press (grip width, elbows vs hands, shoulder and elbow components)
 - [x] Bench elbows "under the bar", grips and touch points from Mausehund et al.: elbow moment arms near the measured ones
 - [x] 3D Romanian deadlift, split squat (sideways balance) and hip thrust
-- [ ] 3D rows; moving shoulder blades in the bench and press
+- [x] 3D rows: grip width and elbow flare (lats vs rear delts)
+- [ ] Pull-ups and lat pulldowns
+- [ ] Moving shoulder blades in the bench, press and rows
 - [x] Literature sources for the strength curves, peak strengths and limb masses (see `docs/model-limits.md`)
 - [ ] Literature for muscle activation weights, machine cam profiles and hip rotation strength; optionally precomputed OpenSim results as JSON
-- [ ] Bench press arm model checked against Mausehund et al. 2022: elbow placement and shoulder-blade movement
 - [x] Back-view body map
 - [ ] Vendor the wger SVGs locally for offline use; look up wger exercise ids for the new exercises
 - [ ] Translations (DE)

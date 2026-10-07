@@ -11,8 +11,9 @@ const load = (id) => JSON.parse(readFileSync(new URL(`../data/exercises/${id}.js
 const close = (a, b, eps = 1e-6) => assert.ok(Math.abs(a - b) < eps, `${a} ≉ ${b}`);
 const opts = { loadKg: 60, bodyMassKg: 75, body };
 // These lifts run in 3D in the app; the side-view tests below check their 2D solvers.
-const TWO_D = { "romanian-deadlift": "standing", "split-squat": "split", "hip-thrust": "hipThrust" };
-const load2d = (id) => { const ex = load(id); return TWO_D[id] ? { ...ex, solver: TWO_D[id], joints: ex.joints.slice(0, 3) } : ex; };
+const TWO_D = { "romanian-deadlift": "standing", "split-squat": "split", "hip-thrust": "hipThrust", "bent-over-row": "standing", "seated-row": "seatedRow" };
+const ONLY_3D = ["hip-frontal", "hip-rotation", "knee-frontal", "shoulder-h", "shoulder-rotation", "elbow-side"];
+const load2d = (id) => { const ex = load(id); return TWO_D[id] ? { ...ex, solver: TWO_D[id], joints: ex.joints.filter((j) => !ONLY_3D.includes(j.id)) } : ex; };
 const run = (id, vid, x, o = opts) => {
   const ex = load2d(id);
   return analyzeMulti(ex, ex.variants.find((v) => v.id === vid), x, o);
@@ -521,5 +522,50 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
     assert.ok(J(z, "hip-frontal").torque > 3 * Math.abs(J(a, "hip-frontal").torque));
     assert.ok(a.balance.ok);
     close(a.balance.com, a.balance.x, 1e-6);
+  });
+}
+
+// ---------- rows in 3D ----------
+{
+  const run3d = (id, vid, x, placement, o = opts, edit = (v) => v) => { const ex = load(id); return analyzeMulti(ex, edit(ex.variants.find((v) => v.id === vid)), x, { ...o, placement }); };
+  const shw = body.lengths.shoulderHalfWidth;
+  const sideView = { gripHalf: shw, flare: 0 };
+  const pulleyAtShoulder = (v) => (v.params.pulley ? { ...v, params: { ...v.params, pulley: { ...v.params.pulley, z: shw } } } : v);
+
+  test("3D rows reduce exactly to the side view with the elbows tucked and the hands at shoulder width", () => {
+    for (const [id, vids] of [["bent-over-row", ["barbell", "pendlay", "upright"]], ["seated-row", ["upright", "lean-back", "lean-forward", "chest-supported"]]]) {
+      for (const vid of vids) {
+        for (const x of [20, 50, 100]) {
+          const a = run(id, vid, x), b = run3d(id, vid, x, sideView, opts, pulleyAtShoulder);
+          for (const j of a.joints) close(J(b, j.id).torque, j.torque, 1e-6);
+          for (const j of ["shoulder-h", "shoulder-rotation", "elbow-side"]) close(J(b, j).torque, 0, 1e-6);
+        }
+      }
+    }
+  });
+
+  test("3D bent-over row: rear-delt torque = F × the hand's sideways offset × the trunk's forward tilt", () => {
+    const F = 20 * G;
+    for (const pl of [{ flare: 0, gripHalf: 0.3 }, { flare: 60, gripHalf: 0.3 }, { flare: 80, gripHalf: 0.35 }]) {
+      for (const x of [30, 80]) {
+        const r = run3d("bent-over-row", "pendlay", x, pl, { ...opts, loadKg: 40, bodyMassKg: 1e-9 });
+        const { hand, S } = r.parts;
+        const t = r.frames.trunk, backX = (t.to.x - t.from.x) / Math.hypot(t.to.x - t.from.x, t.to.y - t.from.y);
+        close(J(r, "shoulder-h").torque, F * (hand.z - S.z) * backX, 1e-6);
+      }
+    }
+  });
+
+  test("3D rows: flaring the elbows moves work from the lats to the rear delts", () => {
+    for (const [id, vid] of [["bent-over-row", "barbell"], ["seated-row", "upright"]]) {
+      for (const x of [50, 100]) {
+        const tucked = run3d(id, vid, x, { flare: 0 }), out = run3d(id, vid, x, { flare: 70, gripHalf: 0.32 });
+        assert.ok(J(out, "shoulder-h").torque > J(tucked, "shoulder-h").torque + 10, `${id}@${x}: rear delts`);
+        assert.ok(J(out, "shoulder").torque < J(tucked, "shoulder").torque, `${id}@${x}: lats`);
+      }
+    }
+    // The elbows-out variants do what their notes say.
+    assert.ok(J(run3d("bent-over-row", "elbows-out", 70), "shoulder-h").torque > 10);
+    assert.ok(J(run3d("seated-row", "wide-bar", 70), "shoulder-h").torque > 20);
   });
 }
