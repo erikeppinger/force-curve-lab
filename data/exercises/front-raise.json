@@ -1,0 +1,136 @@
+{
+  "id": "front-raise",
+  "name": "Front raise",
+  "joint": "Shoulder flexion",
+  "movingJoint": "proximal",
+  "view": "side",
+  "angleLabel": "Shoulder angle",
+  "angleRange": [0, 90],
+  "angleNote": "Shoulder flexion: 0° = arm by your side, 90° = arm pointing forward at shoulder height.",
+  "segments": {
+    "proximal": 0.3,
+    "distal": 0.33,
+    "names": ["Upper arm", "Forearm"],
+    "massFractions": [0.0271, 0.0223],
+    "comFractions": [0.577, 0.534],
+    "massLabel": "arm",
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end, from de Leva's adjusted Zatsiorsky-Seluyanov table (young adult males). The forearm segment includes the hand (combined centre of mass along elbow → grip).",
+    "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
+    "note": "Shoulder→elbow and elbow→grip centre in metres, typical adult. The arm is modelled straight."
+  },
+  "defaults": {"loadKg": 4, "peakTorqueNm": 68, "variant": "dumbbell", "bodyMassKg": 75},
+  "ui": {"load": [0.5, 25, 0.5], "strength": [20, 110]},
+  "strengthCurve": {
+    "label": "Shoulder flexor strength",
+    "points": [[0, 1.0], [45, 0.96], [90, 0.92]],
+    "note": "Relative shoulder-flexion strength vs flexion: \"descending\" in all three studies Kulig et al. reviewed, strongest low, with a plateau around 45–90° and a clear drop only beyond about 110°. The size of the drop across 0–90° isn't given numerically, so these values are an estimate of that shape; Mayer et al. found the isometric peak at 35–72° (men). Peak torque default: Mayer's isometric shoulder flexion, men, 68 ± 18 Nm.",
+    "source": "Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (shape); Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25. doi:10.1055/s-2007-1021105 (peak torque)"
+  },
+  "postures": {
+    "standing": [
+      {"shape": "seg", "from": [0, -0.55], "to": [0.02, -1.45], "w": 0.14},
+      {"shape": "seg", "from": [0, 0.05], "to": [0, -0.55], "w": 0.2},
+      {"shape": "circle", "at": [0.02, 0.24], "r": 0.11}
+    ],
+    "incline": [
+      {"shape": "seg", "from": [0.15, 0.25], "to": [0.15, -0.6], "w": 0.07, "class": "equipment"},
+      {"shape": "seg", "from": [0.17, -0.5], "to": [0.8, -1.13], "w": 0.03, "class": "equipment"},
+      {"shape": "seg", "from": [0, 0.05], "to": [0, -0.55], "w": 0.2},
+      {"shape": "seg", "from": [0, -0.55], "to": [0.12, -1.47], "w": 0.14},
+      {"shape": "circle", "at": [0.04, 0.24], "r": 0.11}
+    ]
+  },
+  "muscles": [
+    {
+      "id": "anterior-deltoid",
+      "name": "Anterior deltoid",
+      "wgerId": 2,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[0, 0.8], [45, 1.0], [90, 1.0]],
+      "note": "Main shoulder flexor.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [-0.03, 0.15], "offset": 0.035, "w": 0.055, "layer": 2}
+    },
+    {
+      "id": "pec-clavicular",
+      "name": "Pectoralis major (clavicular head)",
+      "wgerId": 4,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.5], [60, 0.6], [90, 0.5]],
+      "note": "Upper chest; assists flexion in the lower and middle range.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"points": [[0.1, -0.08], [0.05, -0.02]], "w": 0.05, "layer": 1}
+    },
+    {
+      "id": "lateral-deltoid",
+      "name": "Lateral deltoid",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.3], [90, 0.45]],
+      "note": "Helps more if the arm drifts out to the side.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [-0.03, 0.12], "offset": 0, "w": 0.05, "layer": 0}
+    },
+    {
+      "id": "upper-trapezius",
+      "name": "Upper trapezius",
+      "wgerId": 9,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.15], [45, 0.3], [90, 0.6]],
+      "note": "Rotates the shoulder blade upwards as the arm rises.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"points": [[-0.04, 0.15], [-0.05, 0.03]], "w": 0.04, "layer": 0}
+    }
+  ],
+  "phases": [
+    {
+      "name": "Start",
+      "range": [0, 30],
+      "text": "Arm by your side. A dumbbell's line of action passes close to the shoulder; a cable from behind already loads the arm."
+    },
+    {
+      "name": "Mid-range",
+      "range": [30, 70],
+      "text": "The free-weight moment arm grows with the sine of the angle."
+    },
+    {
+      "name": "Top",
+      "range": [70, 90],
+      "text": "Arm near horizontal: the dumbbell's moment arm is the full arm length."
+    }
+  ],
+  "variants": [
+    {
+      "id": "dumbbell",
+      "name": "Standing dumbbell front raise",
+      "equipment": "Dumbbell",
+      "posture": "standing",
+      "load": {"type": "gravity"},
+      "notes": "Torque = m·g·L·sin(angle): zero at the bottom, maximum at shoulder height. Same curve as the lateral raise, in a different plane."
+    },
+    {
+      "id": "cable",
+      "name": "Cable front raise (low pulley behind)",
+      "equipment": "Cable",
+      "posture": "standing",
+      "load": {"type": "cable", "pulley": {"x": -0.3, "y": -1.35}},
+      "adjustablePulley": true,
+      "notes": "Facing away from a low pulley, the cable running between your legs. It already pulls the arm back at the bottom, so the curve is flatter than with a dumbbell."
+    },
+    {
+      "id": "incline",
+      "name": "Chest-supported incline front raise (45°)",
+      "equipment": "Dumbbell on an incline bench",
+      "posture": "incline",
+      "gravity": {"x": 0.7071068, "y": -0.7071068},
+      "viewLabel": "Side view (leaning on a 45° bench)",
+      "load": {"type": "gravity"},
+      "notes": "Leaning face-down on a 45° bench tilts gravity relative to the body. Below 45° gravity helps raise the arm, and the torque keeps rising past shoulder height (outside this range)."
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Front Raises", "note": "TODO: look up the wger exercise id"}
+}

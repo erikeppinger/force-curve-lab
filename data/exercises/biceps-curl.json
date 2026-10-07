@@ -2,97 +2,162 @@
   "id": "biceps-curl",
   "name": "Biceps curl",
   "joint": "Elbow flexion",
+  "movingJoint": "distal",
+  "view": "side",
+  "angleLabel": "Elbow angle",
   "angleRange": [0, 145],
   "angleNote": "0° = arm straight, 145° = fully flexed",
   "segments": {
-    "upperArm": 0.30,
-    "forearm": 0.33,
-    "note": "Shoulder→elbow and elbow→grip centre in metres, typical adult"
+    "proximal": 0.3,
+    "distal": 0.33,
+    "names": ["Upper arm", "Forearm"],
+    "massFractions": [0.0271, 0.0223],
+    "comFractions": [0.577, 0.534],
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end, from de Leva's adjusted Zatsiorsky-Seluyanov table (young adult males). The forearm segment includes the hand (combined centre of mass along elbow → grip).",
+    "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
+    "note": "Shoulder→elbow and elbow→grip centre in metres, typical adult."
   },
-  "defaults": { "loadKg": 10, "peakTorqueNm": 60, "variant": "dumbbell" },
+  "defaults": {"loadKg": 10, "peakTorqueNm": 65, "variant": "dumbbell", "bodyMassKg": 75},
   "strengthCurve": {
     "label": "Elbow flexor strength",
-    "points": [[0, 0.62], [20, 0.72], [45, 0.88], [70, 0.98], [90, 1.0], [110, 0.92], [130, 0.72], [145, 0.55]],
-    "note": "Relative isometric elbow-flexion torque vs angle (peak ≈ 90°). Approximate textbook shape.",
-    "source": "TODO: verify against published isokinetic/isometric elbow-flexion torque–angle data"
+    "points": [[32, 0.52], [45, 0.61], [60, 0.76], [75, 0.9], [90, 0.99], [95, 1.0], [105, 0.97], [120, 0.78]],
+    "note": "Relative isometric elbow-flexion torque vs elbow flexion (0° = straight), peak about 95°: the paper's mean cubic fit, normalised, inside the measured 32–120° (held flat beyond). Measured with the upper arm raised 90° and horizontally adducted 20°, not hanging as in a standing curl. Peak torque default: the paper's mean over all participants (65 Nm; men 85 Nm, women 48 Nm).",
+    "source": "Pinter IJ, Bobbert MF, van Soest AJ, Smeets JBJ (2010). Isometric torque–angle relationships of the elbow flexors and extensors in the transverse plane. J Electromyogr Kinesiol 20:923–931. doi:10.1016/j.jelekin.2010.05.001"
   },
-  "shoulderFlexorCapacityNm": 70,
+  "postures": {
+    "standing": [
+      {"shape": "seg", "from": [0, -0.55], "to": [0.02, -1.45], "w": 0.14},
+      {"shape": "seg", "from": [0, 0.05], "to": [0, -0.55], "w": 0.2},
+      {"shape": "circle", "at": [0.02, 0.24], "r": 0.11}
+    ]
+  },
   "muscles": [
     {
       "id": "biceps",
       "name": "Biceps brachii",
       "wgerId": 1,
       "role": "Prime mover",
-      "driver": "elbowEffort",
+      "driver": "jointEffort",
       "weight": [[0, 0.8], [45, 0.95], [90, 1.0], [120, 0.9], [145, 0.75]],
-      "note": "Largest flexion moment arm around 90°; also supinates the forearm."
+      "note": "Largest flexion moment arm around 90°; also supinates the forearm.",
+      "draw": {"seg": "proximal", "along": [0.045, 0.255], "offset": 0.04, "w": 0.055, "layer": 1},
+      "source": "Weights: TODO. Grip effect: Coratella G, Tornatore G, Longo S, Toninelli N, Padovan R, Esposito F, Cè E (2023). Biceps brachii and brachioradialis excitation in biceps curl exercise: different handgrips, different synergy. Sports 11(3):64. doi:10.3390/sports11030064 (10 trained men, each grip at its own 8RM, surface EMG, lifting phase)"
     },
     {
       "id": "brachialis",
       "name": "Brachialis",
       "wgerId": 13,
       "role": "Prime mover",
-      "driver": "elbowEffort",
+      "driver": "jointEffort",
       "weight": [[0, 0.85], [90, 0.9], [145, 0.9]],
-      "note": "Pure elbow flexor, works in every grip; contribution fairly constant."
+      "note": "Pure elbow flexor, works in every grip; contribution fairly constant.",
+      "draw": {"seg": "proximal", "along": [0.15, 0.294], "offset": 0.025, "w": 0.04, "layer": 0}
     },
     {
       "id": "brachioradialis",
       "name": "Brachioradialis",
       "wgerId": null,
       "role": "Synergist",
-      "driver": "elbowEffort",
+      "driver": "jointEffort",
       "weight": [[0, 0.35], [45, 0.55], [90, 0.75], [120, 0.8], [145, 0.7]],
-      "note": "Contributes more in mid-to-high flexion and with a neutral (hammer) grip."
+      "note": "Contributes more in mid-to-high flexion. Grip: at the same relative effort it is slightly more active with the palms up than neutral or down (Coratella et al.); other studies, at unmatched loads, found no change (Boland et al.) or more with the palms turned down (Kleiber et al., Marcolin et al.).",
+      "draw": {"seg": "distal", "along": [0.0066, 0.1815], "offset": 0.03, "w": 0.04, "layer": 2},
+      "source": "Weights: TODO. Grip effect: Kleiber T, Kunz L, Disselhorst-Klug C (2015). Muscular coordination of biceps brachii and brachioradialis in elbow flexion with respect to hand position. Front Physiol 6:215. doi:10.3389/fphys.2015.00215; Boland MR, Spigelman T, Uhl TL (2008). The function of brachioradialis. J Hand Surg Am 33(10):1853–1859; Marcolin G, Panizzolo FA, Petrone N, Moro T, Grigoletto D, Piccolo D, Paoli A (2018). Differences in electromyographic activity of biceps brachii and brachioradialis while performing three variants of curl. PeerJ 6:e5165. doi:10.7717/peerj.5165; Coratella G, Tornatore G, Longo S, Toninelli N, Padovan R, Esposito F, Cè E (2023). Biceps brachii and brachioradialis excitation in biceps curl exercise: different handgrips, different synergy. Sports 11(3):64. doi:10.3390/sports11030064 (10 trained men, each grip at its own 8RM, surface EMG, lifting phase)"
     },
     {
       "id": "anterior-deltoid",
       "name": "Anterior deltoid",
       "wgerId": 2,
       "role": "Stabiliser",
-      "driver": "shoulderFlexorDemand",
+      "driver": "stabiliserDemand",
       "weight": [[0, 1], [145, 1]],
-      "note": "Holds the upper arm still against the load's pull on the shoulder."
+      "note": "Holds the upper arm still against the load's pull on the shoulder.",
+      "draw": {"seg": "proximal", "along": [-0.02, 0.1], "offset": 0.05, "w": 0.06, "layer": 3}
     }
   ],
   "phases": [
-    { "name": "Bottom", "range": [0, 40], "text": "Forearm nearly vertical. With free weights the load's line of action passes close to the elbow, so the moment arm (and torque) is small." },
-    { "name": "Mid-range", "range": [40, 110], "text": "Forearm near horizontal. Free-weight moment arm is at its maximum here — the classic sticking point." },
-    { "name": "Top", "range": [110, 145], "text": "The weight moves back over the elbow. Free-weight torque drops off; cables can keep tension here depending on pulley position." }
+    {
+      "name": "Bottom",
+      "range": [0, 40],
+      "text": "Forearm nearly vertical. With free weights the load's line of action passes close to the elbow, so the moment arm (and torque) is small."
+    },
+    {
+      "name": "Mid-range",
+      "range": [40, 110],
+      "text": "Forearm near horizontal. Free-weight moment arm is at its maximum here — the classic sticking point."
+    },
+    {
+      "name": "Top",
+      "range": [110, 145],
+      "text": "The weight moves back over the elbow. Free-weight torque drops off; cables can keep tension here depending on pulley position."
+    }
   ],
   "variants": [
     {
       "id": "dumbbell",
       "name": "Standing dumbbell curl",
       "equipment": "Dumbbell",
-      "upperArmAngle": 0,
-      "load": { "type": "gravity" },
+      "proximalAngle": 0,
+      "load": {"type": "gravity"},
       "notes": "Gravity always pulls straight down, so torque ∝ sin(elbow angle): near zero at the bottom and top, maximum at 90°."
     },
     {
       "id": "barbell",
       "name": "Standing barbell curl",
       "equipment": "Barbell",
-      "upperArmAngle": 0,
-      "load": { "type": "gravity" },
+      "proximalAngle": 0,
+      "load": {"type": "gravity"},
       "notes": "Per arm the torque curve is identical to dumbbells — equipment alone does not change the curve. Differences are the fixed supinated grip, bilateral loading and wrist position."
+    },
+    {
+      "id": "hammer",
+      "name": "Hammer curl (neutral grip)",
+      "equipment": "Dumbbell",
+      "proximalAngle": 0,
+      "load": {"type": "gravity"},
+      "notes": "Thumbs up. The torque curve is the dumbbell curl's; only the strength and the muscles' shares can change. Measured: neutral and palms-up grips are about equally strong (within about 5%: Guenzkofer et al., Kohn et al., Mandalidis & O'Brien), and the biceps and brachioradialis work at the same levels in both (Kleiber et al.; Boland et al. with fine-wire EMG found no grip effect on the brachioradialis at all). So the data don't support the hammer curl as a brachioradialis exercise. At the same relative effort (each grip at its own 8RM), Coratella et al. even measured less: biceps −11% and brachioradialis −6% compared with palms up, hence the 0.89 and 0.94 factors.",
+      "strengthScale": {
+        "points": [[0, 1.04], [45, 0.95], [90, 1.03], [120, 1.1]],
+        "note": "neutral vs palms-up, shoulder at 0°: 95–110% depending on the elbow angle (Guenzkofer et al., Table A1). Mandalidis & O'Brien measured neutral 2–5% weaker than palms up (isokinetic, 30 men, arm raised 90°); Kohn et al. found no significant difference. So the two grips are about equally strong.",
+        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric); Kohn S, Smart RR, Jakobi JM (2018). Voluntary activation and twitch potentiation of the elbow flexors across supinated, neutral, and pronated forearm orientations. Physiol Rep 6(1):e13560. doi:10.14814/phy2.13560; Mandalidis DG, O'Brien M (2001). Isokinetic strength of the elbow flexors with the forearm in supination and in the neutral position. Isokinetics and Exercise Science 9:111–117 (Table 2: 30 men)"
+      },
+      "muscleModifiers": {"biceps": 0.89, "brachioradialis": 0.94}
+    },
+    {
+      "id": "reverse",
+      "name": "Reverse curl (palms down)",
+      "equipment": "Barbell or EZ bar",
+      "proximalAngle": 0,
+      "load": {"type": "gravity"},
+      "notes": "Palms down. The biceps' tendon wraps around the radius, so it pulls less effectively and the grip is weaker. Does the brachioradialis take over? At the same relative effort (each grip at its own 8RM, trained men), Coratella et al. measured biceps −16% and brachioradialis −5% compared with palms up, hence the 0.84 and 0.95 factors: the reverse curl is harder, but not a brachioradialis exercise. Kleiber et al. (no load) and Marcolin et al. (EZ bar) found more brachioradialis activity, Boland et al. no change; Coratella et al. is the only one that matched the effort.",
+      "strengthScale": {
+        "points": [[0, 0.94], [45, 0.83], [90, 0.89], [120, 0.99]],
+        "note": "palms down vs palms up, shoulder at 0°: 83–99% depending on the elbow angle (Guenzkofer et al., Table A1, torque). Kohn et al. measured a bigger drop in force (53%) at 70° of elbow flexion, so this may be optimistic.",
+        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric); Kohn S, Smart RR, Jakobi JM (2018). Voluntary activation and twitch potentiation of the elbow flexors across supinated, neutral, and pronated forearm orientations. Physiol Rep 6(1):e13560. doi:10.14814/phy2.13560"
+      },
+      "muscleModifiers": {"biceps": 0.84, "brachioradialis": 0.95}
     },
     {
       "id": "preacher",
       "name": "Preacher curl",
       "equipment": "Barbell / EZ-bar on pad",
-      "upperArmAngle": 45,
-      "upperArmSupported": true,
-      "load": { "type": "gravity" },
-      "muscleModifiers": { "biceps": 0.95, "brachialis": 1.05 },
-      "notes": "Tilting the upper arm 45° forward shifts peak torque to ~45° of elbow flexion: hardest in the stretched position, almost unloaded at the top. The pad removes the shoulder stabilising demand."
+      "proximalAngle": 45,
+      "proximalSupported": true,
+      "load": {"type": "gravity"},
+      "muscleModifiers": {"biceps": 0.95, "brachialis": 1.05},
+      "notes": "Tilting the upper arm 45° forward shifts peak torque to ~45° of elbow flexion: hardest in the stretched position, almost unloaded at the top. The pad removes the shoulder stabilising demand.",
+      "strengthScale": {
+        "points": [[0, 0.94], [45, 0.96], [90, 0.87], [120, 0.88]],
+        "note": "upper arm 45° forward, which shortens the biceps over the shoulder: elbow-flexion strength drops to about 87% around 90° of elbow flexion. Guenzkofer et al. measured supinated elbow flexion with the shoulder at 0° and 60°; 45° is interpolated between them.",
+        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric)"
+      }
     },
     {
       "id": "cable-low",
       "name": "Cable curl (low pulley, in front)",
       "equipment": "Cable",
-      "upperArmAngle": 0,
-      "load": { "type": "cable", "pulley": { "x": 0.2, "y": -1.35 } },
+      "proximalAngle": 0,
+      "load": {"type": "cable", "pulley": {"x": 0.2, "y": -1.35}},
       "adjustablePulley": true,
       "notes": "The cable pulls towards the pulley instead of straight down. Move the pulley to see how the torque curve's peak shifts and the bottom of the movement gains tension."
     },
@@ -100,12 +165,28 @@
       "id": "cable-bayesian",
       "name": "Bayesian cable curl (pulley behind)",
       "equipment": "Cable",
-      "upperArmAngle": -25,
-      "load": { "type": "cable", "pulley": { "x": -0.9, "y": -0.45 } },
+      "proximalAngle": -25,
+      "load": {"type": "cable", "pulley": {"x": -0.9, "y": -0.45}},
       "adjustablePulley": true,
-      "muscleModifiers": { "biceps": 1.05 },
-      "notes": "Facing away from the cable with the arm behind the body. The cable keeps a large moment arm in the stretched (bottom) position, which free weights cannot."
+      "muscleModifiers": {"biceps": 1.05},
+      "notes": "Facing away from the cable with the arm behind the body. The cable keeps a large moment arm in the stretched (bottom) position, which free weights cannot.",
+      "strengthScale": {
+        "factor": 1.0,
+        "note": "arm 25° behind the body. Guenzkofer et al. report only marginal differences between −30° and 0° of shoulder flexion, so no correction.",
+        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric)"
+      }
+    },
+    {
+      "id": "band",
+      "name": "Band curl (standing on the band)",
+      "equipment": "Resistance band",
+      "proximalAngle": 0,
+      "load": {"type": "band", "pulley": {"x": 0.05, "y": -1.45}, "restLength": 0.75, "refLength": 1.4},
+      "adjustablePulley": true,
+      "defaultLoadKg": 12,
+      "notes": "An elastic band anchored under the feet. Its tension grows as it stretches, so unlike a dumbbell the resistance keeps rising towards the top of the curl. The load slider is the band's tension at 1.4 m stretched length (about its length at the top); slack below 0.75 m. Bands are linear here; real bands stiffen somewhat as they stretch."
     }
   ],
-  "wger": { "exerciseId": 91 }
+  "wger": {"exerciseId": 91},
+  "stabiliserCapacityNm": 70
 }

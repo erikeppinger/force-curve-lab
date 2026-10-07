@@ -15,6 +15,13 @@
   --cable: #3a3f48;
   --band: rgba(0, 0, 0, 0.035);
   --warning: #b3261e;
+  --j-hip: #8e44ad;
+  --j-knee: #2f6fdb;
+  --j-ankle: #1e8a5a;
+  --j-shoulder: #2f6fdb;
+  --j-hip-frontal: #c0661a;
+  --j-hip-rotation: #0f8b8d;
+  --j-knee-frontal: #b3261e;
   --radius: 14px;
   color-scheme: light;
 }
@@ -37,6 +44,13 @@
     --cable: #c8ccd2;
     --band: rgba(255, 255, 255, 0.04);
     --warning: #ff8a80;
+    --j-hip: #c39bd3;
+    --j-knee: #6b9cf0;
+    --j-ankle: #5fd39a;
+    --j-shoulder: #6b9cf0;
+    --j-hip-frontal: #f0a35a;
+    --j-hip-rotation: #4fd1d3;
+    --j-knee-frontal: #ff8a80;
     color-scheme: dark;
   }
 }
@@ -117,10 +131,15 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .muscle-base { stroke: var(--muscle-base); stroke-linecap: round; }
 #figure .muscle-on { stroke: var(--muscle-on); stroke-linecap: round; }
 #figure .weight { fill: var(--equipment); }
+#figure .plate { fill-opacity: 0.3; }
 #figure .handle { fill: var(--cable); }
+#figure .cam { fill: var(--card); stroke: var(--equipment); stroke-width: 3; opacity: 0.7; }
 #figure .pad { stroke: var(--compare); stroke-linecap: round; opacity: 0.6; }
 #figure .equipment, #figure .cable-column { stroke: var(--equipment); opacity: 0.5; }
 #figure .cable { stroke: var(--cable); }
+#figure .band { stroke: var(--compare); stroke-linecap: round; }
+#figure .band.slack { stroke-dasharray: 4 6; opacity: 0.6; }
+#figure .anchor { fill: var(--card); stroke: var(--compare); stroke-width: 3; }
 #figure .pulley { fill: var(--card); stroke: var(--cable); stroke-width: 3; }
 #figure .line-of-action { stroke: var(--accent); stroke-dasharray: 4 5; opacity: 0.6; }
 #figure .moment-arm { stroke: var(--compare); stroke-dasharray: 6 4; }
@@ -128,6 +147,41 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .arrowhead { fill: var(--accent); }
 #figure .fig-label { fill: var(--text); font-size: 15px; font-weight: 600; paint-order: stroke; stroke: var(--card); stroke-width: 4px; }
 #figure .force-label { fill: var(--accent); }
+#figure .body.back { opacity: 0.55; }
+#figure .balance { stroke: var(--muted); stroke-dasharray: 3 5; }
+#figure .ma-label { font-size: 12px; }
+#figure .ma-hip { stroke: var(--j-hip); fill: var(--j-hip); }
+#figure .ma-knee { stroke: var(--j-knee); fill: var(--j-knee); }
+#figure .ma-ankle { stroke: var(--j-ankle); fill: var(--j-ankle); }
+#figure .ma-shoulder { stroke: var(--j-shoulder); fill: var(--j-shoulder); }
+#figure .plate3d { fill: var(--compare); fill-opacity: 0.07; stroke: var(--compare); stroke-width: 2; }
+#figure .plate3d.bench3d { fill: var(--equipment); fill-opacity: 0.25; stroke: var(--equipment); }
+#figure .floor3d { fill: var(--border); fill-opacity: 0.5; stroke: var(--border); }
+#figure.draggable { cursor: grab; touch-action: pan-y; user-select: none; }
+.view-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 6px; }
+.view-buttons button { min-height: 36px; padding: 4px 12px; }
+.auto-toggle { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; min-height: 32px; }
+.auto-toggle input { width: 20px; height: 20px; }
+input[type="range"]:disabled { opacity: 0.4; }
+.placement-sliders { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); grid-column: 1 / -1; }
+#figure text.ma-label { stroke: var(--card); }
+
+.joint-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-variant-numeric: tabular-nums; }
+.joint-table th, .joint-table td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.joint-table th:first-child { text-align: left; }
+.joint-table thead th { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
+.joint-table tbody th { font-weight: 700; border-left: 4px solid; }
+.joint-table .jt-hip { border-left-color: var(--j-hip); }
+.joint-table .jt-knee { border-left-color: var(--j-knee); }
+.joint-table .jt-ankle { border-left-color: var(--j-ankle); }
+.joint-table .jt-shoulder { border-left-color: var(--j-shoulder); }
+.joint-table .jt-hip-frontal { border-left-color: var(--j-hip-frontal); }
+.joint-table .jt-hip-rotation { border-left-color: var(--j-hip-rotation); }
+.joint-table .jt-knee-frontal { border-left-color: var(--j-knee-frontal); }
+.joint-table tbody td small { display: block; font-size: 0.72rem; color: var(--muted); }
+.joint-table tbody th small { display: block; font-size: 0.75rem; font-weight: 400; color: var(--muted); }
+.joint-table td.over { color: var(--warning); font-weight: 700; }
+#ro-limb .warn { color: var(--warning); font-weight: 600; }
 
 .readouts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 0; }
 .readouts div { background: var(--bg); border-radius: 10px; padding: 8px 10px; }
@@ -151,15 +205,36 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 .charts .line.compare { stroke: var(--compare); stroke-dasharray: 7 5; }
 .charts .line.strength { stroke: var(--strength); stroke-width: 2; stroke-dasharray: 2 4; }
 .charts .marker { stroke: var(--text); stroke-width: 1.5; opacity: 0.5; }
+.charts .zero { stroke: var(--muted); stroke-width: 1; }
+.charts .line.joint-hip { stroke: var(--j-hip); }
+.charts .line.joint-knee { stroke: var(--j-knee); }
+.charts .line.joint-ankle { stroke: var(--j-ankle); }
+.charts .line.joint-shoulder { stroke: var(--j-shoulder); }
+.charts .line.joint-hip-frontal { stroke: var(--j-hip-frontal); }
+.charts .line.joint-hip-rotation { stroke: var(--j-hip-rotation); }
+.charts .line.joint-knee-frontal { stroke: var(--j-knee-frontal); stroke-width: 2; }
+.charts .line.cap { stroke-width: 1.5; stroke-dasharray: 2 4; opacity: 0.8; }
+.charts .line.dash { stroke-dasharray: 7 5; opacity: 0.8; }
 .legend { list-style: none; padding: 0; margin: 0 0 6px; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.85rem; color: var(--muted); }
 .legend .sw { display: inline-block; width: 20px; height: 0; border-top: 3px solid; vertical-align: middle; margin-right: 6px; }
 .legend .sw.primary { border-color: var(--accent); }
 .legend .sw.compare { border-color: var(--compare); border-top-style: dashed; }
 .legend .sw.strength { border-color: var(--strength); border-top-style: dotted; }
+.legend .sw.joint-hip { border-color: var(--j-hip); }
+.legend .sw.joint-knee { border-color: var(--j-knee); }
+.legend .sw.joint-ankle { border-color: var(--j-ankle); }
+.legend .sw.joint-shoulder { border-color: var(--j-shoulder); }
+.legend .sw.joint-hip-frontal { border-color: var(--j-hip-frontal); }
+.legend .sw.joint-hip-rotation { border-color: var(--j-hip-rotation); }
+.legend .sw.joint-knee-frontal { border-color: var(--j-knee-frontal); }
+.legend .sw.cap { border-color: var(--muted); border-top-style: dotted; }
+.legend .sw.dash { border-color: var(--muted); border-top-style: dashed; }
 
 /* Muscles */
-.muscle-layout { display: grid; grid-template-columns: minmax(110px, 160px) 1fr; gap: 16px; align-items: start; }
-.bodymap { position: relative; width: 100%; aspect-ratio: 200 / 369; }
+.muscle-layout { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start; }
+.bodymaps { display: flex; gap: 6px; width: 150px; }
+.bodymaps.both { width: 210px; }
+.bodymap { position: relative; flex: 1; min-width: 0; aspect-ratio: 200 / 369; }
 .bodymap img { position: absolute; inset: 0 auto auto 0; width: 100%; height: auto; }
 .bodymap img.overlay { transition: opacity 0.15s linear; }
 @media (prefers-color-scheme: dark) {
@@ -183,7 +258,14 @@ footer { color: var(--muted); font-size: 0.8rem; padding-bottom: 24px; }
 
 @media (max-width: 520px) {
   .muscle-layout { grid-template-columns: 1fr; }
-  .bodymap { max-width: 150px; margin: 0 auto; }
+  .bodymaps { margin: 0 auto; }
   .wger-row { flex-direction: column; }
   .readouts dd { font-size: 1rem; }
 }
+
+/* References */
+.ref-list { padding-left: 1.2em; margin: 6px 0 10px; }
+.ref-list li { margin: 0 0 8px; overflow-wrap: anywhere; }
+.ref-list small { display: block; color: var(--muted, inherit); opacity: 0.8; }
+.references details summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+.references h4 { margin: 12px 0 4px; font-size: 0.95rem; }

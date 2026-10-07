@@ -1,0 +1,28 @@
+{
+  "lengths": {
+    "ankleHeight": 0.08,
+    "footFront": 0.14,
+    "heel": 0.06,
+    "midfoot": 0.04,
+    "shank": 0.43,
+    "thigh": 0.43,
+    "trunk": 0.52,
+    "upperArm": 0.3,
+    "forearm": 0.33,
+    "hipHalfWidth": 0.09,
+    "shoulderHalfWidth": 0.19,
+    "chestDepth": 0.16
+  },
+  "lengthsNote": "Metres, typical adult. ankleHeight: floor→ankle joint. footFront / heel: ball of the foot in front of / heel behind the ankle. midfoot: balance point in front of the ankle. trunk: hip→shoulder joint. hipHalfWidth / shoulderHalfWidth: midline→hip / shoulder joint. chestDepth: height of the bar on the chest above the shoulder joints, lying on a bench.",
+  "mass": {
+    "foot": 0.0137,
+    "shank": 0.0433,
+    "thigh": 0.1416,
+    "headTrunk": 0.504,
+    "upperArm": 0.0271,
+    "forearmHand": 0.0223
+  },
+  "com": {"shank": 0.554, "thigh": 0.591, "headTrunk": 0.66, "upperArm": 0.577, "forearmHand": 0.534},
+  "massNote": "mass: fraction of body mass per segment (one leg or arm; the masses sum to 1 for the whole body). com: centre of mass as a fraction of segment length, measured from the ankle (shank), knee (thigh), hip (head + trunk), shoulder (upper arm) or elbow (forearm + hand, along elbow → grip). From de Leva's table for young adult males; head + trunk is the mass-weighted combination (head centre of mass placed about 0.13 m above the trunk's top), which lands at 66% of hip → shoulder.",
+  "source": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)"
+}

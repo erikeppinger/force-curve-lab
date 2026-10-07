@@ -17,48 +17,69 @@
     <section class="card controls" aria-label="Controls">
       <h2 id="exercise-name">…</h2>
       <div class="control-grid">
+        <label>Exercise
+          <select id="exercise"></select>
+        </label>
         <label>Variant
           <select id="variant"></select>
         </label>
         <label>Compare with
           <select id="compare"></select>
         </label>
-        <label>Load <output id="load-out"></output>
+        <label><span id="load-label">Load</span> <output id="load-out"></output>
           <input id="load" type="range" min="1" max="30" step="0.5">
         </label>
-        <label>Strength (peak elbow torque) <output id="strength-out"></output>
+        <label><span id="strength-label">Strength (peak torque)</span> <output id="strength-out"></output>
           <input id="strength" type="range" min="25" max="110" step="1">
+        </label>
+        <label id="bodymass-control">Body mass <output id="bodymass-out"></output>
+          <input id="bodymass" type="range" min="40" max="140" step="1">
         </label>
       </div>
       <div id="pulley-controls" class="control-grid pulley" hidden>
-        <label>Pulley forward / back
+        <label><span id="pulley-x-label">Pulley forward / back</span>
           <input id="pulley-x" type="range" min="-1.0" max="1.0" step="0.01">
         </label>
-        <label>Pulley height
+        <label><span id="pulley-y-label">Pulley height</span>
           <input id="pulley-y" type="range" min="-1.42" max="0.4" step="0.01">
         </label>
         <button id="pulley-reset" type="button" class="secondary">Reset pulley</button>
       </div>
+      <div id="placement-controls" class="control-grid pulley" hidden>
+        <div id="placement-sliders" class="placement-sliders"></div>
+        <button id="placement-reset" type="button" class="secondary">Reset to preset</button>
+      </div>
       <div class="angle-row">
         <button id="play" type="button" aria-pressed="false">Play</button>
-        <label class="grow">Elbow angle <output id="angle-out"></output>
+        <label class="grow"><span id="angle-label">Joint angle</span> <output id="angle-out"></output>
           <input id="angle" type="range" step="0.5">
         </label>
       </div>
       <p class="hint" id="angle-note"></p>
     </section>
 
-    <section class="card figure-card" aria-label="Side view">
+    <section class="card figure-card" aria-label="Figure">
       <div class="card-head">
-        <h3>Side view</h3>
+        <h3 id="figure-title">Side view</h3>
         <span class="pill" id="variant-equipment"></span>
       </div>
-      <svg id="figure" role="img" aria-label="Side view of the arm, load, force direction and moment arm"></svg>
-      <dl class="readouts">
-        <div><dt>Load torque</dt><dd id="ro-torque"></dd></div>
+      <div id="view-buttons" class="view-buttons" role="group" aria-label="Camera" hidden>
+        <button type="button" class="secondary" data-cam="3d">3D</button>
+        <button type="button" class="secondary" data-cam="side">Side</button>
+        <button type="button" class="secondary" data-cam="front">Front</button>
+        <button type="button" class="secondary" data-cam="top">Top</button>
+      </div>
+      <svg id="figure" role="img" aria-label="The arm, load, force direction and moment arm"></svg>
+      <dl class="readouts" id="readouts">
+        <div><dt>Joint torque</dt><dd id="ro-torque"></dd></div>
         <div><dt>Moment arm</dt><dd id="ro-arm"></dd></div>
         <div><dt>Effort</dt><dd id="ro-effort"></dd></div>
       </dl>
+      <table id="joint-table" class="joint-table" hidden>
+        <thead><tr><th scope="col">Joint</th><th scope="col">Torque</th><th scope="col">Moment arm</th><th scope="col">Effort</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p id="ro-limb" class="hint" hidden></p>
       <p id="ro-warning" class="warning" hidden>Load exceeds strength at this angle — this is where the lift would fail.</p>
       <div class="phase">
         <strong id="phase-name"></strong>
@@ -68,21 +89,20 @@
 
     <section class="card charts" aria-label="Curves">
       <h3>Resistance vs strength</h3>
-      <ul class="legend">
-        <li><i class="sw primary"></i>Selected variant</li>
-        <li><i class="sw compare"></i>Comparison</li>
-        <li><i class="sw strength"></i>Muscle strength (capacity)</li>
-      </ul>
-      <svg id="torque-chart" role="img" aria-label="Load torque and strength over elbow angle"></svg>
+      <ul class="legend" id="torque-legend"></ul>
+      <svg id="torque-chart" role="img" aria-label="Load torque and strength over the range of motion"></svg>
       <h3>Effort across the range</h3>
-      <p class="hint">Load torque ÷ strength at each angle. The peak is the sticking point.</p>
-      <svg id="effort-chart" role="img" aria-label="Effort as percent of maximum over elbow angle"></svg>
+      <p class="hint">Joint torque ÷ strength at each angle. The peak is the sticking point.</p>
+      <svg id="effort-chart" role="img" aria-label="Effort as percent of maximum over the range of motion"></svg>
     </section>
 
-    <section class="card muscles" aria-label="Muscles">
+    <section class="card muscles" id="muscles-card" aria-label="Muscles">
       <h3>Muscles involved</h3>
       <div class="muscle-layout">
-        <div id="bodymap" class="bodymap"></div>
+        <div class="bodymaps">
+          <div id="bodymap-front" class="bodymap"></div>
+          <div id="bodymap-back" class="bodymap"></div>
+        </div>
         <ul id="muscle-list" class="muscle-list"></ul>
       </div>
       <p class="hint">Estimated relative activation at the current angle (illustrative model, not EMG). Muscle map © wger.de, CC-BY-SA.</p>
@@ -100,10 +120,20 @@
         <p class="hint"><span id="wger-img-credit"></span> · Text CC-BY-SA 3.0 · <a id="wger-link" target="_blank" rel="noopener">View on wger.de</a></p>
       </div>
     </section>
+
+    <section class="card references" id="references-card" aria-label="References">
+      <h3>References</h3>
+      <p class="hint">Papers behind this exercise's strength curves, body data and corrections. Every curated number also carries its own note and source in the exercise file; numbers without one are marked as estimates.</p>
+      <ul id="ref-current" class="ref-list"></ul>
+      <details>
+        <summary>All references (<span id="ref-count"></span>)</summary>
+        <div id="ref-all"></div>
+      </details>
+    </section>
   </main>
 
   <footer>
-    <p>Educational model: idealised 2D statics (no acceleration, friction or pulley ratios). Strength curves are approximate shapes; muscle activation values are illustrative estimates. Exercise data and muscle images from <a href="https://wger.de" target="_blank" rel="noopener">wger.de</a> (CC-BY-SA).</p>
+    <p>Educational model: idealised 2D statics (no acceleration, friction or pulley ratios). Strength curves are approximate shapes; muscle activation values are illustrative estimates. Exercise descriptions and muscle images from <a href="https://wger.de" target="_blank" rel="noopener">wger.de</a> (CC-BY-SA). Code: MIT. Content: CC BY 4.0.</p>
   </footer>
 
   <script type="module" src="js/main.js"></script>

@@ -1,0 +1,136 @@
+{
+  "id": "straight-arm-pulldown",
+  "name": "Straight-arm pulldown / pullover",
+  "joint": "Shoulder extension",
+  "movingJoint": "proximal",
+  "view": "side",
+  "angleLabel": "Shoulder angle",
+  "concentric": "decrease",
+  "angleRange": [0, 170],
+  "angleNote": "Shoulder flexion: 170° = arm overhead (start), 0° = arm by your side (end). Lifting makes the angle smaller.",
+  "segments": {
+    "proximal": 0.3,
+    "distal": 0.33,
+    "names": ["Upper arm", "Forearm"],
+    "massFractions": [0.0271, 0.0223],
+    "comFractions": [0.577, 0.534],
+    "massLabel": "arm",
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end, from de Leva's adjusted Zatsiorsky-Seluyanov table (young adult males). The forearm segment includes the hand (combined centre of mass along elbow → grip).",
+    "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
+    "note": "Shoulder→elbow and elbow→grip centre in metres. The arm is modelled straight."
+  },
+  "defaults": {"loadKg": 10, "peakTorqueNm": 93, "variant": "cable", "bodyMassKg": 75},
+  "ui": {"load": [1, 50, 0.5], "strength": [30, 150]},
+  "strengthCurve": {
+    "label": "Shoulder extensor strength",
+    "points": [[0, 0.85], [45, 0.97], [65, 1.0], [90, 0.98], [135, 0.94], [180, 0.76]],
+    "note": "Relative shoulder-extension strength vs shoulder flexion: nearly flat, peaking around 65–100°. Clarke et al. (64 men, via Kulig et al.) measured 347 N at 65° and 262 N at 180°, varying by only 25.5 N between 45° and 135°; two other studies agree. The 0° value is an estimate (the curves rise from there). Mayer et al. place the isometric peak at 53–91°. Peak torque default: Mayer's isometric shoulder extension, men, 93 ± 24 Nm.",
+    "source": "Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (Clarke et al. data); Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25. doi:10.1055/s-2007-1021105"
+  },
+  "postures": {
+    "standing": [
+      {"shape": "seg", "from": [0, -0.55], "to": [0.02, -1.45], "w": 0.14},
+      {"shape": "seg", "from": [0, 0.05], "to": [0, -0.55], "w": 0.2},
+      {"shape": "circle", "at": [0.02, 0.24], "r": 0.11}
+    ],
+    "supine": [
+      {"shape": "seg", "from": [-0.14, 0.32], "to": [-0.14, -0.62], "w": 0.07, "class": "equipment"},
+      {"shape": "seg", "from": [-0.16, 0.2], "to": [-0.6, 0.2], "w": 0.03, "class": "equipment"},
+      {"shape": "seg", "from": [-0.16, -0.5], "to": [-0.6, -0.5], "w": 0.03, "class": "equipment"},
+      {"shape": "seg", "from": [0, 0.05], "to": [0, -0.55], "w": 0.2},
+      {"shape": "seg", "from": [0, -0.55], "to": [0.22, -0.95], "w": 0.14},
+      {"shape": "seg", "from": [0.22, -0.95], "to": [-0.6, -1.0], "w": 0.12},
+      {"shape": "circle", "at": [0, 0.24], "r": 0.11}
+    ]
+  },
+  "muscles": [
+    {
+      "id": "latissimus",
+      "name": "Latissimus dorsi",
+      "wgerId": 12,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[0, 0.7], [90, 1.0], [170, 1.0]],
+      "note": "Main shoulder extensor; strongest pull with the arm high.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [-0.28, 0.05], "offset": -0.04, "w": 0.07, "layer": 0}
+    },
+    {
+      "id": "teres-major",
+      "name": "Teres major",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.6], [170, 0.8]],
+      "note": "Works alongside the lats.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [-0.08, 0.08], "offset": -0.025, "w": 0.04, "layer": 1}
+    },
+    {
+      "id": "triceps-long",
+      "name": "Triceps (long head)",
+      "wgerId": 5,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.5], [170, 0.6]],
+      "note": "Crosses the shoulder and helps extend it; also keeps the elbow straight.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [0.06, 0.26], "offset": -0.04, "w": 0.045, "layer": 2}
+    },
+    {
+      "id": "pec-sternal",
+      "name": "Pectoralis major (sternal head)",
+      "wgerId": 4,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.1], [90, 0.4], [170, 0.6]],
+      "note": "Helps pull the arm down from overhead, mainly in the upper range.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"points": [[0.1, -0.1], [0.05, -0.03]], "w": 0.05, "layer": 1}
+    }
+  ],
+  "phases": [
+    {
+      "name": "Finish",
+      "range": [0, 50],
+      "text": "Arm by your side. A high cable still pulls forward here; a lying dumbbell does not load this part at all."
+    },
+    {
+      "name": "Mid-range",
+      "range": [50, 110],
+      "text": "Arm in front. Cable torque is near its peak; a lying dumbbell only starts to load the arm once it passes vertical (90°)."
+    },
+    {
+      "name": "Overhead",
+      "range": [110, 170],
+      "text": "Arm overhead and lats stretched. The pullover is hardest here; a cable from in front loses its moment arm once your hand passes the pulley line."
+    }
+  ],
+  "variants": [
+    {
+      "id": "cable",
+      "name": "Cable straight-arm pulldown",
+      "equipment": "Cable",
+      "posture": "standing",
+      "load": {"type": "cable", "pulley": {"x": 0.7, "y": 0.4}},
+      "adjustablePulley": true,
+      "notes": "Standing upright facing a high pulley (the usual slight forward lean isn't modelled). Tension is high through the middle and bottom of the pull; above the pulley line the cable stops resisting."
+    },
+    {
+      "id": "pullover",
+      "name": "Lying dumbbell pullover",
+      "equipment": "Dumbbell on a bench",
+      "posture": "supine",
+      "gravity": {"x": -1, "y": 0},
+      "viewLabel": "Side view (lying)",
+      "load": {"type": "gravity"},
+      "defaultLoadKg": 8,
+      "notes": "Lying on your back, gravity points to your back: torque = −m·g·L·cos(angle). Zero with the arm vertical, largest overhead; below vertical the weight falls forward on its own."
+    }
+  ],
+  "wger": {
+    "exerciseId": null,
+    "name": "Straight-arm Pull Down (bar Attachment)",
+    "note": "TODO: look up the wger exercise id"
+  }
+}

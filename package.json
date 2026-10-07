@@ -1,6 +1,7 @@
 {
   "name": "force-curve-lab",
   "private": true,
+  "license": "MIT",
   "type": "module",
   "description": "Teaching tool: exercise resistance curves, strength curves and muscle involvement across equipment variants.",
   "scripts": {

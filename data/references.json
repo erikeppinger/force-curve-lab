@@ -1,0 +1,229 @@
+{
+  "note": "Every paper cited in the exercise files, with what it's used for. Each entry's `match` text must appear in at least one `source` field (tests/exercises.test.mjs checks both ways).",
+  "references": [
+    {
+      "key": "Anderson 2007",
+      "match": "Anderson DE",
+      "group": "Strength curves",
+      "citation": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113.",
+      "url": "https://doi.org/10.1016/j.jbiomech.2007.03.022",
+      "usedFor": "Hip, knee and ankle strength curves and peak torques (hip extension and flexion, knee extension and flexion, plantarflexion)."
+    },
+    {
+      "key": "Lindahl 1972",
+      "match": "Lindahl O",
+      "group": "Strength curves",
+      "citation": "Lindahl O, Movin A, Ringqvist I (1969/1972). Isometric knee extension strength as a function of joint angle, muscle length and motor unit activity. Acta Orthop Scand 43:138–147.",
+      "url": null,
+      "usedFor": "Cross-check of the knee-extension curve's shape."
+    },
+    {
+      "key": "Pinter 2010",
+      "match": "Pinter IJ",
+      "group": "Strength curves",
+      "citation": "Pinter IJ, Bobbert MF, van Soest AJ, Smeets JBJ (2010). Isometric torque–angle relationships of the elbow flexors and extensors in the transverse plane. J Electromyogr Kinesiol 20:923–931.",
+      "url": "https://doi.org/10.1016/j.jelekin.2010.05.001",
+      "usedFor": "Elbow flexion and extension strength curves and peak torques."
+    },
+    {
+      "key": "Mayer 1994",
+      "match": "Mayer F",
+      "group": "Strength curves",
+      "citation": "Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Normal values of isokinetic maximum strength, the strength/velocity curve, and the angle at peak torque of all degrees of freedom in the shoulder. Int J Sports Med 15:S19–S25.",
+      "url": "https://doi.org/10.1055/s-2007-1021105",
+      "usedFor": "Shoulder peak torques: flexion, extension, abduction, adduction, rotation."
+    },
+    {
+      "key": "Kulig 1984",
+      "match": "Kulig K",
+      "group": "Strength curves",
+      "citation": "Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466.",
+      "url": null,
+      "usedFor": "Shapes of the shoulder strength curves (flexion, abduction, horizontal adduction, rotation)."
+    },
+    {
+      "key": "Haidar 2009",
+      "match": "Haidar SG",
+      "group": "Strength curves",
+      "citation": "Haidar SG, Lloyd J, Cox D, Deshmukh S (2009). Shoulder abduction strength: is it affected by the degree of abduction? J Bone Joint Surg Br 91-B Suppl I:160 (conference abstract).",
+      "url": "https://doi.org/10.1302/0301-620X.91BSUPP_I.0910160c",
+      "usedFor": "Shoulder-abduction strength curve (lateral raise)."
+    },
+    {
+      "key": "Neumann 1988",
+      "match": "Neumann DA",
+      "group": "Strength curves",
+      "citation": "Neumann DA, Soderberg GL, Cook TM (1988). Comparison of maximal isometric hip abductor muscle torques between hip sides. Phys Ther 68(4):496–502.",
+      "url": null,
+      "usedFor": "Hip-abduction strength curve."
+    },
+    {
+      "key": "Welsh 2020",
+      "match": "Welsh P",
+      "group": "Strength curves",
+      "citation": "Welsh P, Howitt S, Howarth SJ (2020). The influence of hip joint angle on the ratio between adduction and abduction torque in experienced, recreational male ice hockey players. Int J Sports Phys Ther 15(1):22–33.",
+      "url": "https://doi.org/10.26603/ijspt20200022",
+      "usedFor": "Hip abduction and adduction strength vs hip angle."
+    },
+    {
+      "key": "Uritani 2012",
+      "match": "Uritani D",
+      "group": "Strength curves",
+      "citation": "Uritani D, Fukumoto T (2012). Differences of isometric internal and external hip rotation torques among three different hip flexion positions. J Phys Ther Sci 24(9):863–865.",
+      "url": "https://www.jstage.jst.go.jp/article/jpts/24/9/24_863/_article",
+      "usedFor": "Hip internal and external rotation strength by hip flexion (3D leg lifts)."
+    },
+    {
+      "key": "Lategan 2002",
+      "match": "Lategan L",
+      "group": "Strength curves",
+      "citation": "Lategan L (2002). Normative isokinetic torque values for rehabilitation in South Africa. DPhil thesis, University of Pretoria.",
+      "url": "https://repository.up.ac.za/handle/2263/27346",
+      "usedFor": "Shoulder horizontal abduction (rear delts, rows) and horizontal adduction (pecs, bench) peak torques."
+    },
+    {
+      "key": "de Leva 1996",
+      "match": "de Leva P",
+      "group": "Body data",
+      "citation": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230.",
+      "url": "https://doi.org/10.1016/0021-9290(95)00178-6",
+      "usedFor": "Segment masses and centres of mass."
+    },
+    {
+      "key": "Guex 2012",
+      "match": "Guex K",
+      "group": "Two-joint muscles and grip",
+      "citation": "Guex K, Gojanovic B, Millet GP (2012). Influence of hip-flexion angle on hamstrings isokinetic activity in sprinters. J Athl Train 47(4):390–395.",
+      "url": "https://doi.org/10.4085/1062-6050-47.4.04",
+      "usedFor": "Hamstring strength vs hip angle (lying vs seated leg curl)."
+    },
+    {
+      "key": "Black 1993",
+      "match": "Black SJ",
+      "group": "Two-joint muscles and grip",
+      "citation": "Black SJ, Woodhouse ML, Suttmiller S, Shall L (1993). Influence of hip position on electromyographic and torque productions in the knee flexors and extensors. J Sport Rehabil 2:26–34.",
+      "url": null,
+      "usedFor": "Hamstrings weaker supine; knee extension unchanged by hip angle."
+    },
+    {
+      "key": "Worrell 1989",
+      "match": "Worrell TW",
+      "group": "Two-joint muscles and grip",
+      "citation": "Worrell TW, Perrin DH, Denegar CR (1989). The influence of hip position on quadriceps and hamstring peak torque and reciprocal muscle group ratio values. J Orthop Sports Phys Ther 11(3):104–107.",
+      "url": null,
+      "usedFor": "Hip angle and thigh-muscle strength (cross-check)."
+    },
+    {
+      "key": "Bampouras 2017",
+      "match": "Bampouras TM",
+      "group": "Two-joint muscles and grip",
+      "citation": "Bampouras TM, Reeves ND, Baltzopoulos V, Maganaris CN (2017). The role of agonist and antagonist muscles in explaining isometric knee extension torque variation with hip joint angle. Eur J Appl Physiol 117:2039–2045.",
+      "url": "https://doi.org/10.1007/s00421-017-3693-y",
+      "usedFor": "Knee extension unchanged by hip angle (rectus femoris check)."
+    },
+    {
+      "key": "Cresswell 1995",
+      "match": "Cresswell AG",
+      "group": "Two-joint muscles and grip",
+      "citation": "Cresswell AG, Löscher WN, Thorstensson A (1995). Influence of gastrocnemius muscle length on triceps surae torque development and electromyographic activity in man. Exp Brain Res 105:283–290.",
+      "url": "https://doi.org/10.1007/BF00240964",
+      "usedFor": "Calf strength vs knee angle (standing vs seated calf raise)."
+    },
+    {
+      "key": "Baptista 2014",
+      "match": "Baptista MT",
+      "group": "Two-joint muscles and grip",
+      "citation": "Baptista MT, Nascimento FXM, Nardes LK, Matta TT, Oliveira LF (2014). Influência de posições do joelho no torque e atividade mioelétrica do tríceps sural na flexão plantar isométrica máxima. Rev Bras Educ Fís Esporte 28(2):197–202.",
+      "url": "https://doi.org/10.1590/1807-55092014000200197",
+      "usedFor": "Calf strength and gastrocnemius EMG, knee straight vs bent."
+    },
+    {
+      "key": "Kovács 2024",
+      "match": "Kovács B",
+      "group": "Two-joint muscles and grip",
+      "citation": "Kovács B, Csala D, Yang S, Tihanyi J, Gu Y, Hortobágyi T (2024). Knee position affects medial gastrocnemius and soleus activation during dynamic plantarflexion: no evidence for an inter-muscle compensation in healthy young adults. Biol Open 13:bio061810.",
+      "url": "https://doi.org/10.1242/bio.061810",
+      "usedFor": "Calf torque and gastrocnemius EMG with the knee bent."
+    },
+    {
+      "key": "Guenzkofer 2012",
+      "match": "Guenzkofer F",
+      "group": "Two-joint muscles and grip",
+      "citation": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132.",
+      "url": "https://doi.org/10.1504/IJHFMS.2012.051092",
+      "usedFor": "Elbow strength by shoulder angle, elbow angle and grip (curls, triceps, pull-ups, pulldowns)."
+    },
+    {
+      "key": "Kohn 2018",
+      "match": "Kohn S",
+      "group": "Two-joint muscles and grip",
+      "citation": "Kohn S, Smart RR, Jakobi JM (2018). Voluntary activation and twitch potentiation of the elbow flexors across supinated, neutral, and pronated forearm orientations. Physiol Rep 6(1):e13560.",
+      "url": "https://doi.org/10.14814/phy2.13560",
+      "usedFor": "Elbow-flexion strength by grip."
+    },
+    {
+      "key": "Mandalidis 2001",
+      "match": "Mandalidis DG",
+      "group": "Two-joint muscles and grip",
+      "citation": "Mandalidis DG, O'Brien M (2001). Isokinetic strength of the elbow flexors with the forearm in supination and in the neutral position. Isokinetics and Exercise Science 9:111–117.",
+      "url": null,
+      "usedFor": "Neutral vs palms-up elbow-flexion strength."
+    },
+    {
+      "key": "Kleiber 2015",
+      "match": "Kleiber T",
+      "group": "Muscle activity",
+      "citation": "Kleiber T, Kunz L, Disselhorst-Klug C (2015). Muscular coordination of biceps brachii and brachioradialis in elbow flexion with respect to hand position. Front Physiol 6:215.",
+      "url": "https://doi.org/10.3389/fphys.2015.00215",
+      "usedFor": "Biceps and brachioradialis activity by grip."
+    },
+    {
+      "key": "Boland 2008",
+      "match": "Boland MR",
+      "group": "Muscle activity",
+      "citation": "Boland MR, Spigelman T, Uhl TL (2008). The function of brachioradialis. J Hand Surg Am 33(10):1853–1859.",
+      "url": "https://doi.org/10.1016/j.jhsa.2008.07.019",
+      "usedFor": "Brachioradialis activity by grip (fine-wire EMG)."
+    },
+    {
+      "key": "Marcolin 2018",
+      "match": "Marcolin G",
+      "group": "Muscle activity",
+      "citation": "Marcolin G, Panizzolo FA, Petrone N, Moro T, Grigoletto D, Piccolo D, Paoli A (2018). Differences in electromyographic activity of biceps brachii and brachioradialis while performing three variants of curl. PeerJ 6:e5165.",
+      "url": "https://doi.org/10.7717/peerj.5165",
+      "usedFor": "Biceps and brachioradialis activity: dumbbell, straight-bar and EZ-bar curls."
+    },
+    {
+      "key": "Coratella 2023",
+      "match": "Coratella G",
+      "group": "Muscle activity",
+      "citation": "Coratella G, Tornatore G, Longo S, Toninelli N, Padovan R, Esposito F, Cè E (2023). Biceps brachii and brachioradialis excitation in biceps curl exercise: different handgrips, different synergy. Sports 11(3):64.",
+      "url": "https://doi.org/10.3390/sports11030064",
+      "usedFor": "Biceps and brachioradialis activity by grip at matched effort (hammer and reverse curl factors)."
+    },
+    {
+      "key": "Mausehund 2022",
+      "match": "Mausehund L",
+      "group": "Exercise biomechanics",
+      "citation": "Mausehund L, Werkhausen A, Bartsch J, Krosshaug T (2022). Understanding bench press biomechanics — the necessity of measuring lateral barbell forces. J Strength Cond Res 36(10):2685–2695.",
+      "url": null,
+      "usedFor": "Bench press: grip widths, touch points, sideways bar forces and moment arms the model is checked against."
+    },
+    {
+      "key": "Maeo 2023",
+      "match": "Maeo S",
+      "group": "Training context",
+      "citation": "Maeo S, Wu Y, Huang M, Sakurai H, Kusagawa Y, Sugiyama T, Kanehisa H, Isaka T (2023). Triceps brachii hypertrophy is substantially greater after elbow extension training performed in the overhead versus neutral arm position. Eur J Sport Sci 23(7):1240–1250.",
+      "url": "https://doi.org/10.1080/17461391.2022.2100279",
+      "usedFor": "Overhead triceps: more growth despite lower strength."
+    }
+  ],
+  "resources": [
+    {
+      "name": "wger.de",
+      "url": "https://wger.de",
+      "licence": "CC-BY-SA 3.0",
+      "usedFor": "Exercise descriptions, images and the muscle-map SVGs, loaded at runtime with attribution; the exercise list this project started from (wger starter library)."
+    }
+  ]
+}

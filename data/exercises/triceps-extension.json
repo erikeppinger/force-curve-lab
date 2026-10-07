@@ -1,0 +1,159 @@
+{
+  "id": "triceps-extension",
+  "name": "Triceps extension",
+  "joint": "Elbow extension",
+  "movingJoint": "distal",
+  "view": "side",
+  "angleLabel": "Elbow angle",
+  "concentric": "decrease",
+  "angleRange": [0, 140],
+  "angleNote": "Elbow flexion: 0° = arm straight (end of the lift), 140° = fully bent (start). Lifting makes the angle smaller.",
+  "segments": {
+    "proximal": 0.3,
+    "distal": 0.33,
+    "names": ["Upper arm", "Forearm"],
+    "massFractions": [0.0271, 0.0223],
+    "comFractions": [0.577, 0.534],
+    "massLabel": "forearm",
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end, from de Leva's adjusted Zatsiorsky-Seluyanov table (young adult males). The forearm segment includes the hand (combined centre of mass along elbow → grip).",
+    "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
+    "note": "Shoulder→elbow and elbow→grip centre in metres, typical adult."
+  },
+  "defaults": {"loadKg": 10, "peakTorqueNm": 58, "variant": "pushdown", "bodyMassKg": 75},
+  "ui": {"load": [1, 40, 0.5], "strength": [20, 110]},
+  "strengthCurve": {
+    "label": "Elbow extensor strength",
+    "points": [
+      [20, 0.55],
+      [30, 0.79],
+      [45, 0.97],
+      [54, 1.0],
+      [60, 0.99],
+      [75, 0.91],
+      [90, 0.8],
+      [105, 0.72],
+      [116, 0.71]
+    ],
+    "note": "Relative isometric elbow-extension torque vs elbow flexion (0° = straight), peak about 55°: the paper's mean cubic fit, normalised, inside the measured 20–116° (held flat beyond). Measured with the upper arm raised 90° to the side, so the long head's length differs from overhead or arm-at-side positions. Peak torque default: the paper's mean over all participants (58 Nm; men 77 Nm, women 36 Nm). Variants correct for the shoulder angle with Guenzkofer et al.'s measurements, relative to the arm at the side.",
+    "source": "Pinter IJ, Bobbert MF, van Soest AJ, Smeets JBJ (2010). Isometric torque–angle relationships of the elbow flexors and extensors in the transverse plane. J Electromyogr Kinesiol 20:923–931. doi:10.1016/j.jelekin.2010.05.001"
+  },
+  "postures": {
+    "standing": [
+      {"shape": "seg", "from": [0, -0.55], "to": [0.02, -1.45], "w": 0.14},
+      {"shape": "seg", "from": [0, 0.05], "to": [0, -0.55], "w": 0.2},
+      {"shape": "circle", "at": [0.02, 0.24], "r": 0.11}
+    ],
+    "supine": [
+      {"shape": "seg", "from": [-0.14, 0.32], "to": [-0.14, -0.62], "w": 0.07, "class": "equipment"},
+      {"shape": "seg", "from": [-0.16, 0.2], "to": [-0.6, 0.2], "w": 0.03, "class": "equipment"},
+      {"shape": "seg", "from": [-0.16, -0.5], "to": [-0.6, -0.5], "w": 0.03, "class": "equipment"},
+      {"shape": "seg", "from": [0, 0.05], "to": [0, -0.55], "w": 0.2},
+      {"shape": "seg", "from": [0, -0.55], "to": [0.22, -0.95], "w": 0.14},
+      {"shape": "seg", "from": [0.22, -0.95], "to": [-0.6, -1.0], "w": 0.12},
+      {"shape": "circle", "at": [0, 0.24], "r": 0.11}
+    ]
+  },
+  "muscles": [
+    {
+      "id": "triceps-long",
+      "name": "Triceps (long head)",
+      "wgerId": 5,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[0, 0.85], [90, 1.0], [140, 1.0]],
+      "note": "Crosses the shoulder too, so it is stretched (and in reality stronger) with the arm overhead. The model can't show that: weights depend on the elbow angle only.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [0.03, 0.22], "offset": -0.045, "w": 0.05, "layer": 1}
+    },
+    {
+      "id": "triceps-lateral-medial",
+      "name": "Triceps (lateral and medial heads)",
+      "wgerId": 5,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[0, 1.0], [90, 1.0], [140, 0.9]],
+      "note": "Cross the elbow only, so they work much the same in every variant.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [0.12, 0.29], "offset": -0.03, "w": 0.045, "layer": 0}
+    },
+    {
+      "id": "anconeus",
+      "name": "Anconeus",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.4], [140, 0.3]],
+      "note": "Small muscle behind the elbow that assists extension near lockout.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "distal", "along": [-0.01, 0.05], "offset": -0.02, "w": 0.03, "layer": 2}
+    }
+  ],
+  "phases": [
+    {
+      "name": "Lockout",
+      "range": [0, 40],
+      "text": "Arm nearly straight. Triceps are weakest here; what the load does depends entirely on its direction."
+    },
+    {
+      "name": "Mid-range",
+      "range": [40, 100],
+      "text": "Forearm across the line of pull: free weights have their largest moment arm here."
+    },
+    {
+      "name": "Stretched",
+      "range": [100, 140],
+      "text": "Elbow fully bent. Overhead and lying versions still load this position; a pushdown mostly does not."
+    }
+  ],
+  "variants": [
+    {
+      "id": "pushdown",
+      "name": "Cable pushdown",
+      "equipment": "Cable",
+      "proximalAngle": 0,
+      "posture": "standing",
+      "load": {"type": "cable", "pulley": {"x": 0.35, "y": 0.55}},
+      "adjustablePulley": true,
+      "defaultLoadKg": 12,
+      "notes": "Upper arm by your side, cable from a high pulley. The pull is almost straight up, so the torque peaks with the forearm horizontal and fades at the bottom. The forearm's own weight helps you here.",
+      "strengthScale": {
+        "factor": 1.0,
+        "note": "arm at the side: the reference posture for the other variants' corrections (Guenzkofer et al., shoulder at 0°).",
+        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric)"
+      }
+    },
+    {
+      "id": "overhead",
+      "name": "Overhead dumbbell extension",
+      "equipment": "Dumbbell",
+      "proximalAngle": 180,
+      "posture": "standing",
+      "load": {"type": "gravity"},
+      "defaultLoadKg": 10,
+      "notes": "Upper arm pointing up. Torque = m·g·L·sin(elbow angle), largest with the forearm horizontal behind the head. The long head is stretched in this position, which this model can't credit.",
+      "strengthScale": {
+        "points": [[45, 0.85], [90, 0.9], [120, 0.86]],
+        "note": "arm overhead: elbow-extension strength 85–90% of arm-at-side. Guenzkofer et al. measured it at 135° of shoulder flexion (the highest they tested; held there for 180°). Despite the long head being stretched overhead, the measured torque was lower, not higher. For training, a separate question: Maeo et al. found 1.5× more long-head growth (1.4× for the whole triceps) after 12 weeks of overhead vs arm-at-side extensions, even though the loads used overhead were 34–39% lower.",
+        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric); training context: Maeo S, Wu Y, Huang M, Sakurai H, Kusagawa Y, Sugiyama T, Kanehisa H, Isaka T (2023). Triceps brachii hypertrophy is substantially greater after elbow extension training performed in the overhead versus neutral arm position. Eur J Sport Sci 23(7):1240–1250. doi:10.1080/17461391.2022.2100279"
+      }
+    },
+    {
+      "id": "skullcrusher",
+      "name": "Lying EZ-bar extension (skullcrusher)",
+      "equipment": "EZ-bar on a bench",
+      "proximalAngle": 90,
+      "posture": "supine",
+      "gravity": {"x": -1, "y": 0},
+      "viewLabel": "Side view (lying)",
+      "load": {"type": "gravity"},
+      "defaultLoadKg": 10,
+      "notes": "Lying on your back with the upper arm vertical. Relative to gravity this is the overhead extension turned through 90°, so the torque curve is identical. Load is per arm (half the bar).",
+      "strengthScale": {
+        "points": [[45, 0.94], [90, 0.95], [120, 0.89]],
+        "note": "upper arm at 90° of shoulder flexion: 89–95% of arm-at-side, interpolated between Guenzkofer et al.'s 60° and 135°.",
+        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric)"
+      }
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Triceps Pushdown", "note": "TODO: look up the wger exercise id"}
+}

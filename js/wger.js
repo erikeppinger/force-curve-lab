@@ -26,3 +26,9 @@ export function descriptionParagraphs(info) {
 
 export const bodyBackground = (front = true) => `${STATIC}/muscular_system_${front ? "front" : "back"}.svg`;
 export const muscleOverlay = (wgerId) => `${STATIC}/main/muscle-${wgerId}.svg`;
+
+// wger muscles drawn on the back view (is_front = false in /api/v2/muscle/):
+// triceps, gastrocnemius, gluteus maximus, trapezius, biceps femoris, latissimus, soleus.
+// TODO: re-check against the live API when network access is available.
+const BACK = new Set([5, 7, 8, 9, 11, 12, 15]);
+export const isBackMuscle = (wgerId) => BACK.has(wgerId);
