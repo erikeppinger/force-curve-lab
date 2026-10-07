@@ -19,11 +19,11 @@
       "name": "Shoulder (across)",
       "action": "Horizontal adduction",
       "angleLabel": "upper-arm angle (0° = out to the side, 90° = up)",
-      "peakTorqueNm": 90,
+      "peakTorqueNm": 92,
       "strength": {
         "points": [[-30, 1.0], [60, 1.0], [90, 0.75], [120, 0.45]],
-        "note": "Relative horizontal-adduction strength vs arm angle (0° = arms out in line with the shoulders): constant from 30° behind that line to 60° in front, then a sharp drop (Williams & Stutzman, 10 men; Whitley, 31 men, found no change over 60°; both via Kulig et al.). How far it drops by 90–120° isn't given numerically, so those values are estimates. Peak per arm is still an estimate (TODO).",
-        "source": "Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (shape; drop beyond 60° and peak torque estimated)"
+        "note": "Relative horizontal-adduction strength vs arm angle (0° = arms out in line with the shoulders): constant from 30° behind that line to 60° in front, then a sharp drop (Williams & Stutzman, 10 men; Whitley, 31 men, found no change over 60°; both via Kulig et al.). How far it drops by 90–120° isn't given numerically, so those values are estimates. Peak per arm: Lategan's mean horizontal-adduction torque for men, 92 ± 23 Nm (isokinetic, 60°/s, not gravity-corrected).",
+        "source": "Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (shape; drop beyond 60° estimated); peak: Lategan L (2002). Normative isokinetic torque values for rehabilitation in South Africa. DPhil thesis, University of Pretoria, Table 6.17 (103 men aged 16–29, isokinetic 60°/s, concentric, lying on the back with the arm out at 90°, not gravity-corrected). https://repository.up.ac.za/handle/2263/27346"
       }
     },
     {

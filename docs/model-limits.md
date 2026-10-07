@@ -263,7 +263,7 @@ What it shows:
 
 Limits:
 
-- **Rear-delt strength has no source yet.** Mayer's shoulder-abduction peak (47 Nm) stands in, marked `TODO`.
+- **Rear-delt strength:** Lategan 2002 (103 men, isokinetic 60°/s): horizontal abduction 93 Nm, adduction 92 Nm. These are taken as constant over the range, because no angle curve is available.
 - **Fixed shoulders:** the shoulder blades don't move, so the squeeze at the top isn't modelled.
 - **Straight hand path:** real rows arc.
 
@@ -402,5 +402,4 @@ Limits:
 
 - Muscle activation weights (62 values; the bench grip-width effects are now backed by Mausehund et al. qualitatively).
 - Machine cam profiles.
-- The peak horizontal-adduction torque (bench) and horizontal-abduction torque (rows: rear delts).
 - Hip-extension strength vs knee angle (the hamstrings' share at the hip).

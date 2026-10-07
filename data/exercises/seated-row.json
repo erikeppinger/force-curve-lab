@@ -31,12 +31,12 @@
       "name": "Shoulder (across)",
       "action": "Horizontal abduction",
       "angleLabel": "shoulder flexion (vs the trunk)",
-      "peakTorqueNm": 47,
-      "negative": {"action": "Horizontal adduction", "peakTorqueNm": 90},
+      "peakTorqueNm": 93,
+      "negative": {"action": "Horizontal adduction", "peakTorqueNm": 92},
       "strength": {
         "points": [[-90, 1.0], [180, 1.0]],
-        "note": "Horizontal abduction (positive: rear delts, with the elbows flared) and adduction (negative) per arm, taken as constant. No horizontal-abduction strength curve has been checked: Mayer's isometric shoulder abduction peak for men (47 Nm) is used as a stand-in, and the adduction peak is the bench's estimate.",
-        "source": "TODO: no horizontal-abduction source checked; stand-in from Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25, Table 2 (men, dominant side, isometric)"
+        "note": "Horizontal abduction (positive: rear delts, with the elbows flared) and adduction (negative) per arm, taken as constant over the range: Lategan's means for men, 93 ± 27 and 92 ± 23 Nm (isokinetic, 60°/s). Lying on the back, gravity helps abduction and resists adduction in that test and wasn't corrected for, so abduction may read slightly high and adduction slightly low. Weir et al. (via Lategan) found 68 and 74 Nm in 16–18-year-old wrestlers at 30°/s.",
+        "source": "Lategan L (2002). Normative isokinetic torque values for rehabilitation in South Africa. DPhil thesis, University of Pretoria, Table 6.17 (103 men aged 16–29, isokinetic 60°/s, concentric, lying on the back with the arm out at 90°, not gravity-corrected). https://repository.up.ac.za/handle/2263/27346"
       }
     },
     {

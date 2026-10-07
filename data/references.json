@@ -74,6 +74,14 @@
       "usedFor": "Hip internal and external rotation strength by hip flexion (3D leg lifts)."
     },
     {
+      "key": "Lategan 2002",
+      "match": "Lategan L",
+      "group": "Strength curves",
+      "citation": "Lategan L (2002). Normative isokinetic torque values for rehabilitation in South Africa. DPhil thesis, University of Pretoria.",
+      "url": "https://repository.up.ac.za/handle/2263/27346",
+      "usedFor": "Shoulder horizontal abduction (rear delts, rows) and horizontal adduction (pecs, bench) peak torques."
+    },
+    {
       "key": "de Leva 1996",
       "match": "de Leva P",
       "group": "Body data",

@@ -88,7 +88,7 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] Literature sources for the strength curves, peak strengths and limb masses (see `docs/model-limits.md`)
 - [x] References section in the app: the current exercise's papers, plus all 24 papers and resources with links and what each is used for (`data/references.json`)
 - [x] Hip rotation strength by hip flexion (Uritani 2012); hammer and reverse curl muscle factors at matched effort (Coratella 2023)
-- [ ] Literature for muscle activation weights, machine cam profiles and rear-delt (horizontal abduction) strength; optionally precomputed OpenSim results as JSON
+- [ ] Literature for muscle activation weights, machine cam profiles and hip-extension strength vs knee angle; rear-delt and bench horizontal strength now from Lategan 2002; optionally precomputed OpenSim results as JSON
 - [x] Back-view body map
 - [ ] Vendor the wger SVGs locally for offline use; wger exercise ids: 8 set (7 from the starter CSV's media URLs, still to confirm), the rest still missing
 - [ ] Translations (DE)
