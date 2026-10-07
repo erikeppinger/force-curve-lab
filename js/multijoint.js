@@ -14,7 +14,7 @@
 // Pure functions only — imported by the browser UI and by node tests.
 
 import { G, interp } from "./physics.js";
-import { legPress3d, squat3d, bench3d, press3d, hinge3d, split3d, hipThrust3d, row3d } from "./multijoint3d.js";
+import { legPress3d, squat3d, bench3d, press3d, hinge3d, split3d, hipThrust3d, row3d, pull3d } from "./multijoint3d.js";
 
 const rad = (d) => (d * Math.PI) / 180;
 const deg = (r) => (r * 180) / Math.PI;
@@ -405,9 +405,30 @@ function seatedRow(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
   };
 }
 
-const SOLVERS = { standing, split, hipThrust, seatedRow, legPress3d, squat3d, bench3d, press3d, hinge3d, split3d, hipThrust3d, row3d };
+const SOLVERS = { standing, split, hipThrust, seatedRow, legPress3d, squat3d, bench3d, press3d, hinge3d, split3d, hipThrust3d, row3d, pull3d };
 
 /** Full analysis at one driver value: posture, forces and per-joint torque, capacity and effort. */
+/**
+ * A variant's posture correction for one joint's strength (e.g. elbow flexion with the arm
+ * overhead and the palms down): `factor`, `points` by the joint's angle, or `grid` by the
+ * shoulder's angle (s.shoulderAngle) × the joint's angle, bilinear, held flat outside the grid.
+ */
+export function jointScaleAt(spec, s) {
+  if (!spec) return 1;
+  if (spec.factor != null) return spec.factor;
+  if (spec.points) return interp(spec.points, s.angle);
+  const { shoulder: sa, elbow: ea, values } = spec.grid;
+  const at = (axis, v) => {
+    const t = Math.min(Math.max(v, axis[0]), axis.at(-1));
+    let i = 0;
+    while (i < axis.length - 2 && t > axis[i + 1]) i++;
+    return [i, (t - axis[i]) / (axis[i + 1] - axis[i])];
+  };
+  const [i, u] = at(sa, s.shoulderAngle), [k, w] = at(ea, s.angle);
+  const v = (a, b) => values[a][b];
+  return (1 - u) * ((1 - w) * v(i, k) + w * v(i, k + 1)) + u * ((1 - w) * v(i + 1, k) + w * v(i + 1, k + 1));
+}
+
 export function analyzeMulti(exercise, variant, x, opts) {
   const r = SOLVERS[exercise.solver](exercise, variant, x, opts);
   const scale = (opts.strengthPct ?? 100) / 100;
@@ -417,8 +438,10 @@ export function analyzeMulti(exercise, variant, x, opts) {
     const s = r.joints[j.id];
     if (j.passive) return { ...j, ...s, capacity: null, effort: null };
     const neg = s.torque < 0 && j.negative;
-    const capacity = interp(j.strength.points, s.angle) * (neg ? j.negative.peakTorqueNm : j.peakTorqueNm) * scale;
-    return { ...j, ...s, capacity, effort: (neg ? -s.torque : Math.max(0, s.torque)) / capacity };
+    const posture = jointScaleAt(variant.jointScale?.[j.id], s);
+    const curve = neg && j.negative.points ? j.negative.points : j.strength.points; // the other direction may have its own curve
+    const capacity = interp(curve, s.angle) * (neg ? j.negative.peakTorqueNm : j.peakTorqueNm) * scale * posture;
+    return { ...j, ...s, capacity, effort: (neg ? -s.torque : Math.max(0, s.torque)) / capacity, strengthScale: posture };
   });
   return r;
 }

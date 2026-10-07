@@ -9,7 +9,7 @@ import { fetchExercise, descriptionParagraphs, bodyBackground, muscleOverlay, is
 const EXERCISES = [
   "biceps-curl", "triceps-extension", "lateral-raise", "front-raise", "chest-fly", "straight-arm-pulldown",
   "leg-extension", "leg-curl", "calf-raise", "hip-abduction", "glute-kickback",
-  "squat", "romanian-deadlift", "deadlift", "split-squat", "leg-press", "hip-thrust", "bench-press", "overhead-press", "bent-over-row", "seated-row",
+  "squat", "romanian-deadlift", "deadlift", "split-squat", "leg-press", "hip-thrust", "bench-press", "overhead-press", "bent-over-row", "seated-row", "lat-pulldown", "pull-up",
 ];
 const $ = (id) => document.getElementById(id);
 

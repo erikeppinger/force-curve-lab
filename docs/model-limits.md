@@ -20,6 +20,8 @@ We tried 5 standard upper-body and 10 standard leg exercises from the wger start
 | Romanian deadlift | ✅ 3D | barbell, stiff-legged, wide stance toes out |
 | Deadlift | ✅ multi-joint | conventional, trap (hex) bar |
 | Bent-over row | ✅ 3D | barbell (trunk ~45°), trunk horizontal, more upright, wide grip elbows out |
+| Lat pulldown | ✅ 3D | wide grip, close neutral grip, close palms up, behind the neck |
+| Pull-up, chin-up | ✅ 3D | wide pull-up, chin-up, neutral grip |
 | Seated cable row, chest-supported row | ✅ 3D | trunk upright, leaning back, leaning forward, wide bar elbows out; dumbbells on an incline pad |
 | Overhead press | ✅ 3D | standing, wide grip, behind the neck, seated dumbbells |
 | Hip thrust | ✅ 3D | barbell, feet further away, glute bridge, knees caving in, wide stance toes out |
@@ -265,9 +267,34 @@ Limits:
 - **Fixed shoulders:** the shoulder blades don't move, so the squeeze at the top isn't modelled.
 - **Straight hand path:** real rows arc.
 
+## 3D: pull-ups and lat pulldowns
+
+The `pull3d` solver uses the same arm model as the press, pulling instead of pushing.
+
+- **Pulldown:** seated, trunk leaning back at the variant's angle. The cable pulls the bar's middle towards the pulley, and the bar passes that direction to each hand. The hip holds the trunk.
+- **Pull-up:** the bar holds each hand up with half of body + belt weight. The body leans back until its centre of mass hangs under the bar, so the lean grows through the pull.
+- **Hands:** they move in a straight line in the trunk's frame, from overhead to the upper chest (or behind the neck).
+- **Elbows:** "under the bar" (closest to the pull's line), or at a set offset from the hands.
+- **Shoulder components:** extension (about the side-to-side axis), adduction (about the front-to-back axis) and rotation. The lats take the larger of extension and adduction; a muscle can now follow more than one joint component.
+- **Elbow strength by grip and arm angle:** a new grid correction (`jointScale` with a `grid`). From Guenzkofer et al.'s measured table: shoulder flexion 0/60/135° × elbow 0–120° × palms up, neutral or down, relative to palms up with the arm at the side. Overhead the elbow flexors are much weaker (palms up 70%, palms down about 60% at 135° and 90°).
+- **Hip flexion strength (pulldown):** from Anderson et al. (142 Nm, peak at 12° of extension). A joint's negative direction can now carry its own curve.
+
+What it shows:
+
+- **Wide grip vs close grip:** a wide grip with the elbows under the bar is mostly shoulder adduction (lats, teres major), and the elbows do little. A close or palms-up grip turns it into shoulder extension, and the elbow flexors take a large share.
+- **Pull-ups are hard:** a wide pull-up at 75 kg needs about 71 Nm of shoulder adduction per arm, against men's measured maximum of 72 Nm.
+- **Chin-ups:** palms up, the elbow flexors are stronger than palms down, one reason chin-ups feel easier. Even so, with these untrained strength values (Pinter et al.'s men × the overhead factor), a chin-up at 75 kg reaches about 100% elbow effort mid-pull. The strength slider scales this for trained lifters.
+
+Limits:
+
+- **No shoulder-blade movement:** depression and retraction at the bottom, upward rotation at the top.
+- **Straight hand path, and legs that hang straight.**
+- **Rough shoulder angle for the elbow correction:** Guenzkofer et al.'s shoulder angle is flexion. The arm's elevation stands in for it, also when the arm comes down at the side.
+- **Shoulder strength:** extension and adduction are taken as constant over the range. Kulig et al. describe their shapes but give no numbers.
+
 ## 3D: what's left
 
-- **Pull-ups and lat pulldowns** would follow the same arm model, pulling from overhead.
+- **Shoulder-blade movement** for the bench, press, rows and pulls.
 
 ## Sources for the curated numbers
 

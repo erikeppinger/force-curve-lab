@@ -1,0 +1,307 @@
+{
+  "model": "multi",
+  "solver": "pull3d",
+  "view": "3d",
+  "angleLabel": "Pull",
+  "angleUnit": "%",
+  "concentric": "increase",
+  "angleRange": [0, 100],
+  "id": "lat-pulldown",
+  "name": "Lat pulldown",
+  "joint": "Shoulder, elbow and hip",
+  "angleNote": "Pull: 0% = arms straight overhead, 100% = bar at the upper chest. Torques per arm (hip per side); drag the figure to turn it.",
+  "momentArmNote": "Moment arm = the joint's 3D distance from the cable's line of action through that hand; it feeds every component of that joint's torque.",
+  "defaults": {"loadKg": 40, "variant": "wide", "bodyMassKg": 75},
+  "ui": {"load": [0, 150, 2.5]},
+  "joints": [
+    {
+      "id": "shoulder-ext",
+      "name": "Shoulder (front–back)",
+      "action": "Shoulder extension",
+      "angleLabel": "arm elevation",
+      "peakTorqueNm": 93,
+      "negative": {"action": "Shoulder flexion", "peakTorqueNm": 68},
+      "strength": {
+        "points": [[0, 1.0], [180, 1.0]],
+        "note": "Shoulder extension (positive) and flexion (negative) peak torque per arm, taken as constant: Mayer's isometric means for men (93 and 68 Nm). Kulig et al. describe extension strength as rising then falling with the arm's angle, but give no numbers to scale it.",
+        "source": "Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25, Table 2 (men, dominant side, isometric); Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (shapes)"
+      }
+    },
+    {
+      "id": "shoulder-add",
+      "name": "Shoulder (sideways)",
+      "action": "Shoulder adduction",
+      "angleLabel": "arm elevation",
+      "peakTorqueNm": 72,
+      "negative": {"action": "Shoulder abduction", "peakTorqueNm": 47},
+      "strength": {
+        "points": [[0, 1.0], [180, 1.0]],
+        "note": "Shoulder adduction (positive: lats, with the hands wide) and abduction (negative) peak torque per arm, taken as constant: Mayer's isometric means for men (72 and 47 Nm). Clarke et al. (64 men, via Kulig et al.) found adduction strongest with the arm out at 90–110° and nearly symmetric from 25° to 180°; the size of the change isn't given as numbers here.",
+        "source": "Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25, Table 2 (men, dominant side, isometric); Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (shapes)"
+      }
+    },
+    {
+      "id": "shoulder-rotation",
+      "name": "Shoulder (rotation)",
+      "action": "External rotation",
+      "angleLabel": "upper-arm angle",
+      "peakTorqueNm": 30,
+      "negative": {"action": "Internal rotation", "peakTorqueNm": 43},
+      "strength": {
+        "points": [[-60, 1.0], [180, 1.0]],
+        "note": "Shoulder external (positive) and internal (negative) rotation peak torque per arm, taken as constant: Mayer's isometric means for men (30 and 43 Nm).",
+        "source": "Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25, Table 2 (men, dominant side, isometric)"
+      }
+    },
+    {
+      "id": "elbow",
+      "name": "Elbow",
+      "action": "Elbow flexion",
+      "angleLabel": "elbow flexion",
+      "peakTorqueNm": 85,
+      "negative": {"action": "Elbow extension", "peakTorqueNm": 77},
+      "strength": {
+        "points": [[32, 0.52], [45, 0.61], [60, 0.76], [75, 0.9], [90, 0.99], [95, 1.0], [105, 0.97], [120, 0.78]],
+        "note": "Relative isometric elbow-flexion torque vs elbow flexion (0° = straight), peak about 95°: the paper's mean cubic fit, normalised, inside the measured 32–120° (held flat beyond). Measured with the upper arm raised 90° and horizontally adducted 20°, not hanging as in a standing curl. Peak per arm: the paper's male means (flexion 85 Nm, extension 77 Nm). Variants correct it for the arm being overhead and the grip (Guenzkofer et al., see each variant).",
+        "source": "Pinter IJ, Bobbert MF, van Soest AJ, Smeets JBJ (2010). Isometric torque–angle relationships of the elbow flexors and extensors in the transverse plane. J Electromyogr Kinesiol 20:923–931. doi:10.1016/j.jelekin.2010.05.001"
+      }
+    },
+    {
+      "id": "elbow-side",
+      "name": "Elbow (sideways)",
+      "action": "Hand pushed inwards",
+      "angleLabel": "elbow flexion",
+      "passive": true,
+      "negative": {"action": "Hand pushed outwards"},
+      "strength": {
+        "points": [[-60, 1.0], [180, 1.0]],
+        "note": "No muscle capacity: the elbow's sideways moment is carried mostly by ligaments and the joint surfaces, so it is shown as torque only.",
+        "source": "Not applicable: carried by ligaments and joint surfaces, so no muscle strength is used"
+      }
+    },
+    {
+      "id": "hip",
+      "name": "Hip",
+      "action": "Hip extension",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 200,
+      "strength": {
+        "points": [[-25, 0.26], [0, 0.63], [25, 0.89], [50, 1.0], [74, 0.94]],
+        "note": "Relative isometric hip-extension torque vs hip flexion, peak about 53°, measured standing with the knee slightly bent (tested −29° to 74°; deeper hip flexion is held flat at the 74° value, which is extrapolation). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m).",
+        "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
+      },
+      "negative": {
+        "action": "Hip flexion",
+        "peakTorqueNm": 142,
+        "points": [[-25, 0.99], [0, 0.99], [25, 0.89], [50, 0.7], [74, 0.44]],
+        "note": "Hip flexion (negative torque: the hip flexors hold the leaned-back trunk). Relative curve = cos(C2·(θ − C3)) with Anderson et al.'s 18–25-year-old male means (C2 0.738, C3 −0.214 rad: peak at 12° of hip extension), inside the tested range and held flat beyond it; peak 142 Nm from C1 = 0.113 × body weight × height (73 kg, 1.75 m).",
+        "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
+      }
+    }
+  ],
+  "muscles": [
+    {
+      "id": "latissimus-dorsi",
+      "name": "Latissimus dorsi",
+      "wgerId": 12,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joints": ["shoulder-ext", "shoulder-add"],
+      "weight": [[0, 1.0], [180, 1.0]],
+      "sign": 1,
+      "note": "Pulls the arm down: adduction with a wide grip, extension with a close grip. It takes the larger of the two demands.",
+      "source": "TODO: check against EMG literature",
+      "draw3d": {"seg": "trunk", "side": "posterior", "along": [0.3, 0.48], "offset": 0.12, "w": 0.07}
+    },
+    {
+      "id": "teres-major",
+      "name": "Teres major",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "joints": ["shoulder-ext", "shoulder-add"],
+      "weight": [[0, 0.7], [180, 0.7]],
+      "sign": 1,
+      "note": "Works with the lats on both actions.",
+      "source": "TODO: check against EMG literature"
+    },
+    {
+      "id": "biceps",
+      "name": "Biceps, brachialis, brachioradialis",
+      "wgerId": 1,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "elbow",
+      "weight": [[0, 1.0], [150, 1.0]],
+      "sign": 1,
+      "note": "Elbow flexors: work while the forearm is tilted away from the line of the pull. With the elbows under the bar (wide grip) they do little; with a close grip they do much more.",
+      "source": "TODO: check against EMG literature",
+      "draw3d": {"seg": "upperArm", "side": "anterior", "along": [0.08, 0.24], "offset": 0.035, "w": 0.05}
+    },
+    {
+      "id": "posterior-deltoid",
+      "name": "Posterior deltoid",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "joint": "shoulder-ext",
+      "weight": [[0, 0.6], [180, 0.6]],
+      "sign": 1,
+      "note": "Helps extend the arm, most near the bottom.",
+      "source": "TODO: check against EMG literature",
+      "draw3d": {"seg": "upperArm", "side": "posterior", "along": [-0.02, 0.08], "offset": 0.04, "w": 0.05}
+    },
+    {
+      "id": "rotator-cuff-ext",
+      "name": "Infraspinatus, teres minor",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "shoulder-rotation",
+      "weight": [[-60, 1.0], [180, 1.0]],
+      "note": "External rotators of the rotator cuff: hold the upper arm from turning inwards.",
+      "source": "TODO: check against EMG literature",
+      "sign": 1
+    },
+    {
+      "id": "subscapularis",
+      "name": "Subscapularis",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "shoulder-rotation",
+      "weight": [[-60, 1.0], [180, 1.0]],
+      "note": "Internal rotator of the rotator cuff: holds the upper arm from turning outwards.",
+      "source": "TODO: check against EMG literature",
+      "sign": -1
+    },
+    {
+      "id": "lower-traps",
+      "name": "Lower trapezius, rhomboids",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "none",
+      "weight": [[0, 1.0], [180, 1.0]],
+      "note": "Pull the shoulder blades down and together. Not estimated: the model has no shoulder blade.",
+      "source": "Not modelled"
+    },
+    {
+      "id": "hip-flexors",
+      "name": "Hip flexors and abdominals",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 1], [180, 1]],
+      "sign": -1,
+      "note": "Hold the leaned-back trunk against falling backwards (the thigh pad holds the legs).",
+      "source": "TODO: check against EMG literature"
+    }
+  ],
+  "variants": [
+    {
+      "id": "wide",
+      "name": "Wide grip, palms down",
+      "equipment": "Cable, long bar, thigh pad",
+      "params": {"gripHalf": 0.4, "touchFront": 0.1, "touchUp": 0.05, "lean": 15, "elbowOut": "auto"},
+      "jointScale": {
+        "elbow": {
+          "grid": {
+            "shoulder": [0, 60, 135],
+            "elbow": [0, 45, 90, 120],
+            "values": [[0.94, 0.83, 0.89, 0.99], [0.97, 0.82, 0.75, 0.78], [0.78, 0.6, 0.62, 0.67]]
+          },
+          "note": "palms down (pull-up grip). Elbow-flexion strength relative to palms up with the arm at the side, by the shoulder's angle (0°, 60°, 135°) and the elbow's (0–120°), from Guenzkofer et al.'s measured table; held at the 135° values above that. Their shoulder angle is flexion (arm forwards); the arm's elevation is used for it here, also when the arm is out to the side. Palms down and overhead is the weakest combination: about 60% at 135° of shoulder flexion and 45–90° of elbow flexion. The 60°/90° value assumes a sign was lost in their table (listed as +90°, but the row is the third forearm position).",
+          "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric)"
+        }
+      },
+      "notes": "Hands wide, trunk leaning back 15°, bar to the upper chest, elbows under the bar. The arms come down to the sides, so the shoulder works mostly in adduction (lats, teres major); with the forearms in line with the cable the elbow flexors do little. The hands move in a straight line in the trunk's frame; the shoulder joints stay put (no shoulder-blade movement)."
+    },
+    {
+      "id": "close-neutral",
+      "name": "Close neutral grip (V handle)",
+      "equipment": "Cable, V handle, thigh pad",
+      "params": {"gripHalf": 0.12, "touchFront": 0.12, "touchUp": 0.05, "lean": 15, "elbowOut": 0},
+      "jointScale": {
+        "elbow": {
+          "grid": {
+            "shoulder": [0, 60, 135],
+            "elbow": [0, 45, 90, 120],
+            "values": [[1.04, 0.95, 1.03, 1.1], [1.1, 0.88, 0.85, 0.86], [0.88, 0.74, 0.75, 0.77]]
+          },
+          "note": "neutral (parallel) grip. Elbow-flexion strength relative to palms up with the arm at the side, by the shoulder's angle (0°, 60°, 135°) and the elbow's (0–120°), from Guenzkofer et al.'s measured table; held at the 135° values above that. Their shoulder angle is flexion (arm forwards); the arm's elevation is used for it here, also when the arm is out to the side.",
+          "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric)"
+        }
+      },
+      "notes": "Hands close, palms facing each other: the arms come down in front, so the shoulder works in extension instead of adduction, and the elbow flexors work much more. The hands move in a straight line in the trunk's frame; the shoulder joints stay put (no shoulder-blade movement)."
+    },
+    {
+      "id": "underhand",
+      "name": "Close grip, palms up",
+      "equipment": "Cable, short bar, thigh pad",
+      "params": {"gripHalf": 0.2, "touchFront": 0.12, "touchUp": 0.05, "lean": 15, "elbowOut": 0},
+      "jointScale": {
+        "elbow": {
+          "grid": {
+            "shoulder": [0, 60, 135],
+            "elbow": [0, 45, 90, 120],
+            "values": [[1, 1, 1, 1], [0.92, 0.94, 0.82, 0.84], [0.83, 0.86, 0.7, 0.75]]
+          },
+          "note": "palms up (chin-up grip). Elbow-flexion strength relative to palms up with the arm at the side, by the shoulder's angle (0°, 60°, 135°) and the elbow's (0–120°), from Guenzkofer et al.'s measured table; held at the 135° values above that. Their shoulder angle is flexion (arm forwards); the arm's elevation is used for it here, also when the arm is out to the side. Overhead the elbow flexors are much weaker: 70% at 135° of shoulder flexion and 90° of elbow flexion.",
+          "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric)"
+        }
+      },
+      "notes": "Hands about shoulder width, palms up: like the chin-up. Shoulder extension and the elbow flexors, which are stronger palms up than palms down. The hands move in a straight line in the trunk's frame; the shoulder joints stay put (no shoulder-blade movement)."
+    },
+    {
+      "id": "behind-neck",
+      "name": "Behind the neck",
+      "equipment": "Cable, long bar, thigh pad",
+      "params": {"gripHalf": 0.4, "touchFront": -0.06, "touchUp": 0.1, "lean": 0, "elbowOut": "auto"},
+      "jointScale": {
+        "elbow": {
+          "grid": {
+            "shoulder": [0, 60, 135],
+            "elbow": [0, 45, 90, 120],
+            "values": [[0.94, 0.83, 0.89, 0.99], [0.97, 0.82, 0.75, 0.78], [0.78, 0.6, 0.62, 0.67]]
+          },
+          "note": "palms down (pull-up grip). Elbow-flexion strength relative to palms up with the arm at the side, by the shoulder's angle (0°, 60°, 135°) and the elbow's (0–120°), from Guenzkofer et al.'s measured table; held at the 135° values above that. Their shoulder angle is flexion (arm forwards); the arm's elevation is used for it here, also when the arm is out to the side. Palms down and overhead is the weakest combination: about 60% at 135° of shoulder flexion and 45–90° of elbow flexion. The 60°/90° value assumes a sign was lost in their table (listed as +90°, but the row is the third forearm position).",
+          "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric)"
+        }
+      },
+      "notes": "Trunk upright, bar pulled behind the head. Compare the shoulder's rotation row: the arm ends turned out with the load pulling it, the position the variation is criticised for. The hands move in a straight line in the trunk's frame; the shoulder joints stay put (no shoulder-blade movement)."
+    }
+  ],
+  "phases": [
+    {"name": "Top", "range": [0, 25], "text": "Arms long overhead: the cable pulls on nearly straight arms."},
+    {
+      "name": "Pull",
+      "range": [25, 75],
+      "text": "Elbows travel down and back; the lats and the elbow flexors share the work."
+    },
+    {"name": "Bottom", "range": [75, 100], "text": "Bar at the chest: the arms are back at the sides."}
+  ],
+  "placement": [
+    {
+      "key": "gripHalf",
+      "label": "Grip: each hand from the middle",
+      "min": 0.08,
+      "max": 0.45,
+      "step": 0.01,
+      "unit": "cm",
+      "scale": 100
+    },
+    {"key": "lean", "label": "Trunk leaning back", "min": 0, "max": 35, "step": 1, "unit": "°", "scale": 1},
+    {
+      "key": "elbowOut",
+      "label": "Elbows outside (+) / inside (−) the hands, front view",
+      "min": -0.06,
+      "max": 0.15,
+      "step": 0.01,
+      "unit": "cm",
+      "scale": 100,
+      "auto": "Under the bar (auto)"
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Lat Pull Down", "note": "TODO: look up the wger exercise id"}
+}

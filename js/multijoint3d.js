@@ -939,3 +939,121 @@ export function row3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       ...info],
   };
 }
+
+// ---------- pulling from overhead ----------
+
+/**
+ * Lat pulldown and pull-up (driver: pull, 0 = arms straight overhead, 100 = bar at the chest).
+ * In the trunk's frame the hands move in a straight line from overhead (along the trunk, `gripHalf`
+ * from the midline) to `touchFront` in front of and `touchUp` above the shoulder line.
+ * - Pulldown (`hang` not set): seated, trunk leaning back `lean` degrees; each hand is pulled
+ *   towards the pulley above with half the stack. The hip holds the trunk (per side).
+ * - Pull-up (`hang: true`): the bar holds the body up; each hand gets half of body + added load,
+ *   straight up. The body hangs still, so it leans until its centre of mass is under the bar.
+ * Elbows "under the bar" (`elbowOut: "auto"`, closest to the pull's line) or at a set sideways
+ * offset from the hands. Shoulder components in the trunk's frame: extension (about the
+ * side-to-side axis), adduction (about the front-to-back axis) and rotation. Per arm.
+ */
+export function pull3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
+  const L = body.lengths, m = body.mass, c = body.com;
+  const P = { elbowOut: "auto", lean: 0, touchUp: 0.05, ...v.params, ...placement };
+  const reach = (L.upperArm + L.forearm) * 0.985;
+  const hipY = 0.5; // pulldown seat height
+  const armKg = (m.upperArm + m.forearmHand) * kg;
+  const build = (lean, origin) => {
+    const up = v3(-Math.sin(lean), Math.cos(lean), 0), front = v3(Math.cos(lean), Math.sin(lean), 0);
+    const pelvis = origin;
+    const mid = add3(pelvis, up, L.trunk);
+    const S = add3(mid, Z, L.shoulderHalfWidth);
+    const dz = P.gripHalf - L.shoulderHalfWidth;
+    const start = add3(add3(mid, Z, P.gripHalf), up, Math.sqrt(Math.max(0, reach * reach - dz * dz)));
+    const end = add3(add3(add3(mid, Z, P.gripHalf), front, P.touchFront), up, P.touchUp);
+    const hand = lerp3(start, end, x / 100);
+    return { up, front, pelvis, mid, S, start, end, hand };
+  };
+  let B, lean = rad(P.lean), F, pullDir, ok = true;
+  if (P.hang) {
+    // Lean (about the hands) so that the centre of mass is under the bar. Legs hang straight.
+    F = ((kg + loadKg) * G) / 2;
+    pullDir = UP;
+    const comX = (bb) => {
+      const legsAt = add3(bb.pelvis, bb.up, -0.45 * (L.thigh + L.shank));
+      const items = [[add3(bb.pelvis, bb.up, c.headTrunk * L.trunk), m.headTrunk * kg], [legsAt, 2 * (m.thigh + m.shank + m.foot) * kg],
+        [lerp3(bb.S, bb.hand, 0.45), 2 * armKg], [bb.pelvis, loadKg]];
+      return items.reduce((t, [p, k]) => t + p.x * k, 0) / items.reduce((t, [, k]) => t + k, 0) - bb.hand.x;
+    };
+    const sol = bisect((l) => comX(build(l, v3(0, 0, 0))), rad(-40), rad(60));
+    lean = sol.t; ok = sol.ok;
+    const b0 = build(lean, v3(0, 0, 0));
+    B = build(lean, v3(-b0.hand.x, 2.25 - b0.hand.y, 0)); // hands on the bar: 2.25 m up, over the origin
+  } else {
+    F = (loadKg * G) / 2;
+    B = build(lean, v3(0, hipY, 0));
+    const pulley = v3(B.start.x, B.start.y + 0.6, 0);
+    // The cable pulls the bar's middle; the rigid bar passes that direction to each hand.
+    pullDir = unit3(sub3(pulley, v3(B.hand.x, B.hand.y, 0)));
+    B.pulley = pulley;
+  }
+  const { S, hand, up, front, pelvis } = B;
+  const onHand = { at: hand, f: v3(pullDir.x * F, pullDir.y * F, pullDir.z * F) };
+  const { E } = P.elbowOut === "auto"
+    ? elbowNearestUnder(S, hand, L.upperArm, L.forearm, pullDir)
+    : elbowUnderHand(S, hand, L.upperArm, L.forearm, P.elbowOut, UP);
+  const upperW = weight(lerp3(S, E, c.upperArm), m.upperArm * kg);
+  const foreW = weight(lerp3(E, hand, c.forearmHand), m.forearmHand * kg);
+  const Msh = moment3(S, [upperW, foreW, onHand]);
+  const Mel = moment3(E, [foreW, onHand]);
+  const dU = unit3(sub3(E, S)), dF = unit3(sub3(hand, E));
+  const eFlex = unit3(cross3(dU, dF)), eSide = unit3(cross3(eFlex, dF));
+  const elev = angleBetween3(dU, neg3(up));
+  const line = { at: hand, dir: unit3(onHand.f) };
+  const joints = {
+    "shoulder-ext": { at: S, angle: elev, torque: dot3(Msh, Z), ...toLine(S, line.at, line.dir) },
+    "shoulder-add": { at: S, angle: elev, torque: -dot3(Msh, front) },
+    "shoulder-rotation": { at: S, angle: elev, torque: -dot3(Msh, dU) },
+    elbow: { at: E, angle: angleBetween3(dU, dF), shoulderAngle: elev, torque: -dot3(Mel, eFlex), ...toLine(E, line.at, line.dir) },
+    "elbow-side": { at: E, angle: angleBetween3(dU, dF), torque: dot3(Mel, eSide) },
+  };
+  const H = add3(pelvis, Z, L.hipHalfWidth);
+  if (!P.hang) {
+    const trunkW = weight(add3(pelvis, up, c.headTrunk * L.trunk), (m.headTrunk * kg) / 2);
+    const above = [trunkW, upperW, foreW, onHand];
+    const Mh = moment3(v3(pelvis.x, pelvis.y, 0), above);
+    const R = above.reduce((t, { f }) => add3(t, f), v3(0, 0, 0)), R2 = R.x * R.x + R.y * R.y;
+    joints.hip = { at: H, angle: 90 + deg(Math.asin(-up.x)), torque: -Mh.z, momentArm: Math.abs(Mh.z) / Math.sqrt(R2), foot: v3(H.x + (Mh.z / R2) * R.y, H.y - (Mh.z / R2) * R.x, H.z) };
+  }
+
+  const scene = [];
+  const head = add3(add3(pelvis, up, L.trunk), up, 0.22);
+  if (P.hang) {
+    const K = add3(H, up, -L.thigh), A = add3(K, up, -L.shank);
+    scene.push(...legPrims(H, K, A, add3(A, front, -L.heel), add3(A, front, L.footFront)),
+      L3(v3(hand.x, hand.y + 0.02, -0.7), v3(hand.x, hand.y + 0.02, 0.7), 0.035, "equipment"),
+      L3(v3(hand.x, hand.y + 0.02, -0.7), v3(hand.x, 0, -0.7), 0.04, "equipment"), L3(v3(hand.x, hand.y + 0.02, 0.7), v3(hand.x, 0, 0.7), 0.04, "equipment"));
+  } else {
+    const K = add3(H, v3(1, 0, 0), L.thigh), A = add3(K, DOWN, L.shank - L.ankleHeight);
+    scene.push({ kind: "poly", pts: [[-0.6, -0.6], [0.9, -0.6], [0.9, 0.6], [-0.6, 0.6]].map(([px, pz]) => v3(px, 0, pz)), cls: "floor3d" },
+      ...legPrims(H, K, A, add3(v3(A.x, 0.01, A.z), v3(1, 0, 0), -L.heel), add3(v3(A.x, 0.01, A.z), v3(1, 0, 0), L.footFront)),
+      { kind: "poly", pts: [[-0.2, -0.2], [0.25, -0.2], [0.25, 0.2], [-0.2, 0.2]].map(([px, pz]) => v3(px, hipY - 0.07, pz)), cls: "plate3d bench3d" },
+      L3(v3(0, hipY - 0.07, 0), v3(0, 0, 0), 0.04, "equipment"), L3(v3(K.x - 0.05, K.y + 0.1, -0.25), v3(K.x - 0.05, K.y + 0.1, 0.25), 0.06, "equipment"),
+      L3(v3(hand.x, hand.y, -P.gripHalf - 0.12), v3(hand.x, hand.y, P.gripHalf + 0.12), 0.03, "equipment"), L3(v3(hand.x, hand.y, 0), B.pulley, 0.008, "cable"),
+      L3(B.pulley, v3(0.95, B.pulley.y, 0), 0.05, "equipment"), L3(v3(0.95, B.pulley.y, 0), v3(0.95, 0, 0), 0.06, "equipment"));
+  }
+  scene.push(L3(pelvis, add3(pelvis, up, L.trunk), 0.3, "body"), dot(head, 0.11, "body"), L3(mirror(S), S, 0.12, "body"),
+    L3(S, E, 0.07, "body"), L3(E, hand, 0.06, "body"), L3(mirror(S), mirror(E), 0.07, "body back"), L3(mirror(E), mirror(hand), 0.06, "body back"),
+    { kind: "line", a: B.start, b: B.end, w: 0.006, cls: "line-of-action" });
+  return {
+    joints,
+    frames: {
+      upperArm: { from: S, to: E, anterior: unit3(cross3(dU, eFlex)), lateral: unit3(cross3(dU, cross3(Z, dU))) },
+      forearm: { from: E, to: hand, anterior: unit3(cross3(dF, eFlex)), lateral: unit3(cross3(dF, cross3(Z, dF))) },
+      trunk: { from: pelvis, to: add3(pelvis, up, L.trunk), anterior: front, lateral: Z },
+    },
+    moments: { shoulder: Msh, elbow: Mel },
+    scene,
+    forces: [{ at: hand, dir: unit3(onHand.f) }, { at: mirror(hand), dir: mirror(unit3(onHand.f)) }],
+    parts: { hand, S, E, lean: deg(lean), F },
+    info: [{ text: `Trunk leaning back ${Math.round(-deg(Math.asin(up.x)))}°${P.hang ? " (so the centre of mass hangs under the bar)" : ""}; upper arm raised ${Math.round(elev)}° from the side.` },
+      ...(ok ? [] : [{ warn: true, text: "No lean puts the centre of mass under the bar here." }])],
+  };
+}

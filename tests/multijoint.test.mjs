@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { analyzeMulti, sampleMulti, jointTorque, ik2 } from "../js/multijoint.js";
+import { analyzeMulti, sampleMulti, jointTorque, ik2, jointScaleAt } from "../js/multijoint.js";
 import { G } from "../js/physics.js";
 import { muscleActivation } from "../js/muscles.js";
 
@@ -567,5 +567,51 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
     // The elbows-out variants do what their notes say.
     assert.ok(J(run3d("bent-over-row", "elbows-out", 70), "shoulder-h").torque > 10);
     assert.ok(J(run3d("seated-row", "wide-bar", 70), "shoulder-h").torque > 20);
+  });
+}
+
+// ---------- pulling from overhead ----------
+{
+  const run3d = (id, vid, x, placement, o = opts) => { const ex = load(id); return analyzeMulti(ex, ex.variants.find((v) => v.id === vid), x, { ...o, placement }); };
+  const cross = (a, b) => ({ x: a.y * b.z - a.z * b.y, y: a.z * b.x - a.x * b.z, z: a.x * b.y - a.y * b.x });
+  const dot = (a, b) => a.x * b.x + a.y * b.y + a.z * b.z;
+
+  test("pulldown: shoulder components are the cable's moment split along the trunk's axes", () => {
+    for (const vid of ["wide", "close-neutral", "behind-neck"]) {
+      for (const x of [20, 60, 100]) {
+        const r = run3d("lat-pulldown", vid, x, undefined, { ...opts, loadKg: 40, bodyMassKg: 1e-9 });
+        const { hand, S } = r.parts, f = r.forces[0].dir, F = 20 * G;
+        const M = cross({ x: hand.x - S.x, y: hand.y - S.y, z: hand.z - S.z }, { x: f.x * F, y: f.y * F, z: f.z * F });
+        close(J(r, "shoulder-ext").torque, M.z, 1e-6);
+        close(J(r, "shoulder-add").torque, -dot(M, r.frames.trunk.anterior), 1e-6);
+      }
+    }
+  });
+
+  test("pull-up: each hand holds half the body; the body leans back as it rises; wide = adduction, chin-up = extension and elbows", () => {
+    const r = run3d("pull-up", "pull-up", 50, undefined, { ...opts, loadKg: 10 });
+    close(r.parts.F, ((75 + 10) * G) / 2, 1e-9);
+    const leans = [0, 50, 100].map((x) => run3d("pull-up", "pull-up", x).parts.lean);
+    assert.ok(leans[0] < leans[1] && leans[1] < leans[2], `lean ${leans}`);
+    const w = run3d("pull-up", "pull-up", 50), c = run3d("pull-up", "chin-up", 50);
+    assert.ok(J(w, "shoulder-add").torque > 3 * Math.abs(J(c, "shoulder-add").torque));
+    assert.ok(J(c, "elbow").torque > 2 * Math.abs(J(w, "elbow").torque));
+  });
+
+  test("elbow strength grid: measured values at the grid points, bilinear in between, flat outside", () => {
+    const ex = load("pull-up"), spec = ex.variants.find((v) => v.id === "chin-up").jointScale.elbow;
+    close(jointScaleAt(spec, { shoulderAngle: 135, angle: 90 }), 0.7, 1e-12);
+    close(jointScaleAt(spec, { shoulderAngle: 0, angle: 45 }), 1, 1e-12);
+    close(jointScaleAt(spec, { shoulderAngle: 30, angle: 90 }), (1 + 0.82) / 2, 1e-12);
+    close(jointScaleAt(spec, { shoulderAngle: 170, angle: 150 }), 0.75, 1e-12);
+    // Chin-up grip is stronger than the pull-up grip at every grid point overhead.
+    const pro = ex.variants.find((v) => v.id === "pull-up").jointScale.elbow;
+    for (const e of [0, 45, 90, 120]) assert.ok(jointScaleAt(spec, { shoulderAngle: 135, angle: e }) > jointScaleAt(pro, { shoulderAngle: 135, angle: e }));
+  });
+
+  test("a muscle serving two joint components takes the larger demand (the lats)", () => {
+    const ex = load("pull-up"), v = ex.variants[0], r = analyzeMulti(ex, v, 60, opts);
+    const lats = muscleActivation(ex, v, r, 60).find((m) => m.id === "latissimus-dorsi");
+    close(lats.value, Math.min(1, Math.max(J(r, "shoulder-ext").effort, J(r, "shoulder-add").effort)), 1e-12);
   });
 }

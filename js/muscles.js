@@ -12,11 +12,16 @@ export function muscleActivation(exercise, variant, result, angleDeg) {
   if (exercise.model === "multi") {
     return exercise.muscles.map((m) => {
       if (m.driver === "none") return { ...m, value: null };
-      const j = result.joints.find((x) => x.id === m.joint);
-      // Two-sided joints: a muscle with `sign` only works when the torque has that sign.
-      if (m.sign && Math.sign(j.torque) !== m.sign) return { ...m, value: 0 };
+      // A muscle can serve several joint components (`joints`, e.g. the lats: shoulder extension
+      // and adduction); it takes the largest demand among them.
       const mod = variant.muscleModifiers?.[m.id] ?? 1;
-      return { ...m, value: Math.min(1, Math.max(0, j.effort * interp(m.weight, j.angle) * mod)) };
+      const value = Math.max(...(m.joints ?? [m.joint]).map((id) => {
+        const j = result.joints.find((x) => x.id === id);
+        // Two-sided joints: a muscle with `sign` only works when the torque has that sign.
+        if (m.sign && Math.sign(j.torque) !== m.sign) return 0;
+        return j.effort * interp(m.weight, j.angle);
+      }));
+      return { ...m, value: Math.min(1, Math.max(0, value * mod)) };
     });
   }
   return exercise.muscles.map((m) => {

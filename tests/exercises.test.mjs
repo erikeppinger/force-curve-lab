@@ -23,15 +23,16 @@ for (const id of multi) {
   const ex = load(id);
   test(`${id}: multi-joint shape`, () => {
     assert.equal(ex.id, id);
-    assert.ok(["standing", "split", "legPress3d", "hipThrust", "squat3d", "bench3d", "press3d", "seatedRow", "hinge3d", "split3d", "hipThrust3d", "row3d"].includes(ex.solver));
+    assert.ok(["standing", "split", "legPress3d", "hipThrust", "squat3d", "bench3d", "press3d", "seatedRow", "hinge3d", "split3d", "hipThrust3d", "row3d", "pull3d"].includes(ex.solver));
     assert.ok(ex.joints.length >= 1);
     for (const j of ex.joints) {
       assert.ok(sorted(j.strength.points) && j.strength.note && j.strength.source, j.id);
       if (!j.passive) assert.ok(j.peakTorqueNm > 0 && (!j.negative || j.negative.peakTorqueNm > 0), j.id);
+      if (j.negative?.points) assert.ok(sorted(j.negative.points) && j.negative.note && j.negative.source, `${j.id}: negative curve`);
     }
     for (const m of ex.muscles) {
       assert.ok(m.note && sorted(m.weight), m.id);
-      if (m.driver !== "none") assert.ok(ex.joints.some((j) => j.id === m.joint), `${m.id}: joint ${m.joint}`);
+      if (m.driver !== "none") for (const id of m.joints ?? [m.joint]) assert.ok(ex.joints.some((j) => j.id === id), `${m.id}: joint ${id}`);
     }
     assert.ok(ex.variants.some((v) => v.id === ex.defaults.variant));
     const [lo, hi] = ex.angleRange;
