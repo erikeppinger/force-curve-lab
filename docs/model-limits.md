@@ -86,7 +86,7 @@ The tests check the classic hand formulas (e.g. squat hip torque = Σ m·g·hori
 
 - **Posture rules are assumptions.** "Shin angle = a fixed fraction of knee angle" (squat), the knee-bend rate in the hinge, the fixed trunk lean in the split squat and the straight bar path in the bench are reasonable shapes, not measurements. Real lifters vary. The balance constraint is solid; the rest isn't.
 - **Contacts push straight up** (no friction) in the split squat and hip thrust, and the foot's push is taken at the mid-foot. That's what makes those lifts solvable. Real feet also push sideways and move their centre of pressure.
-- **Bench press shoulders don't move.** The shoulder joints are fixed on the bench; real shoulder blades retract and move, which changes the arm geometry, so the mid-press elbow torques are probably on the high side.
+- **Bench press shoulders don't move.** The shoulder joints are fixed on the bench; real shoulder blades retract and move. The default elbow placement (as close under the bar as the arm allows) brings the elbow moment arms near the measured ones, but not for every grip; see the 3D bench section.
 - **Spine as one rigid trunk.** Erector-spinae load is approximated by the hip's effort.
 - **Strength per joint ignores the other joints.** As with the single-joint model, two-joint muscles (hamstrings, rectus femoris, gastrocnemius) aren't credited for their length at the other joint.
 - **Deadlift at the floor is past the measured hip strength.** Anderson's hip-extension curve was tested up to 74° of hip flexion; the deadlift starts near 135°, where the app holds the 74° value flat. The effort near the floor is an extrapolation, so its near-limit readings at a modest 50 kg say more about the strength curve than about real lifters. The bar path, the lats pulling the bar back and the shoulders sitting in front of the bar are not modelled; arms are straight lines from shoulder to bar.
@@ -150,8 +150,11 @@ What it shows, and what it depends on:
 
 Shoulder **and** elbow (`bench3d`), with both hands on a rigid bar.
 
-- **Placement controls:** grip width, elbows outside or inside the hands (front view), and where the bar touches the chest. The flare angle (upper arm from the body, seen from above) is an output, shown under the table.
-- **Posture:** shoulders fixed on the bench, the bar moving in a straight line from the chest to lockout over the shoulders. The elbow sits where both arm segments fit, at the chosen offset from the hand in the front view, below the hand.
+- **Placement controls:** grip width, elbow placement ("under the bar", or a set distance outside or inside the hands in the front view), where the bar touches the chest, and the bar spread. The flare angle, the upper arm's angle from the trunk and the forearm's tilt are outputs, shown under the table.
+- **Posture:**
+  - Shoulders are fixed on the bench, and the bar moves in a straight line from the chest to lockout over the shoulders.
+  - The elbow sits on the circle of positions where both arm segments fit, at the point closest to under the bar. That is the smallest elbow moment arm for a vertical push, the coaching cue "elbows under the bar". The manual option instead places it at a set offset from the hand in the front view.
+  - Grip widths and touch points are derived from Mausehund et al. (see below). The chest is raised 20 cm above the shoulder joints for the arch; that height is an estimate.
 - **Forces:** each hand pushes straight up with half the bar (the bar isn't pulled apart or squeezed).
 - **Components:**
   - **Shoulder:** horizontal adduction (pecs), flexion (front delts), rotation (rotator cuff).
@@ -160,12 +163,12 @@ Shoulder **and** elbow (`bench3d`), with both hands on a rigid bar.
 
 What it shows:
 
-- **Grip width:** close grip loads the triceps and nearly removes the pecs' across-the-body work; wide grip does the opposite (about 1.6× the medium grip's horizontal-adduction torque at 80 kg, 88 vs 54 Nm per arm on the chest).
-- **Elbows outside the hands** change the rotation torques at the shoulder and the flare angle.
+- **Grip width:** close grip loads the triceps and nearly removes the pecs' across-the-body work; wide grip does the opposite (about 1.6× the medium grip's horizontal-adduction torque at 80 kg, 109 vs 68 Nm per arm on the chest). Elbow torque runs close > medium > wide, as measured.
+- **Elbows outside the hands** (manual placement) bring in shoulder rotation torques and a larger elbow moment arm. With the elbows under the bar, the push lies in the arm's plane, so the rotation and sideways elbow torques vanish.
 
 Limits:
 
-- **Fixed shoulder joints and a straight-line bar path.** Real shoulder blades retract and move, and real bar paths curve. Mid-press, the arm's geometry forces the elbows well away from the bar line, so those elbow torques are probably overstated.
+- **Fixed shoulder joints and a straight-line bar path.** Real shoulder blades retract and move, and real bar paths curve. With fixed shoulders the close grip can't get its elbows under the bar mid-press (moment arm too large), and the wide grip gets them closer than lifters do (too small). Holding the forearm vertical instead would need the shoulder joint to move 14–19 cm mid-press, which isn't plausible, so the real answer lies in shoulder-blade movement that this model doesn't have.
 - **Pulling the bar apart.** Like the squat's floor push, how hard the hands pull the bar apart (or squeeze it) isn't fixed by statics. A slider sets it, defaulting to zero; its "least effort" option lets the model choose. In wider grips that choice pulls hard (up to about 40% of the vertical force) and shifts work from the pecs to the triceps, likely more than lifters really do, so it isn't the default. Unlike the squat, where pushing straight up gave unrealistic numbers, zero here gives results that match coaching experience.
 
 ## 3D: overhead press
@@ -245,15 +248,36 @@ Every strength curve, peak strength and limb mass now carries its source in the 
 
 ### Checking the bench press against measurements
 
-Mausehund et al. measured what the 3D bench model predicts:
+Mausehund et al. measured 35 trained lifters with an instrumented bar and force plates. They report net joint moments, moment arms, the sideways bar force and arm angles. The 3D bench now takes its geometry from that study:
 
-| | Measured (medium grip) | Model |
+- **Grip widths** come from their arm–bar angle at lockout (75° medium, 65° wide, 85° narrow), using this model's arm length and shoulder width. That gives hands 35, 45 and 24.5 cm from the middle.
+- **Touch points:**
+  - Medium and close are back-calculated from their peak shoulder moment arm (at the bottom). This puts the bar 16 and 20 cm towards the feet from the shoulder joints.
+  - Wide is an estimate (13 cm). There the measured sideways force tilts the force line too much to back-calculate.
+- **Elbows** go "under the bar" as far as the arm allows.
+
+| Medium grip | Measured | Model |
 |---|---|---|
-| Lateral / vertical bar force | 0.17 (wide 0.38, narrow ≈ 0) | Least effort predicts 0.26 (wide 0.41, narrow 0.02) |
-| Elbow moment arm | 7 cm mean, 9 cm peak | 15–20 cm |
-| Grip-width trend | Narrower: more elbow moment; wider: more shoulder moment | Same trend with no sideways force; the elbow trend reverses with the measured forces |
+| Elbow moment arm, mean / peak | 7.2 / 9.2 cm | 8.2 / 11.2 cm (no sideways force); 13.0 / 15.8 cm with their 17% sideways force |
+| Shoulder moment arm, mean / peak | 15.6 / 22.1 cm | 20.2 / 24.5 cm (no sideways force); 14.4 / 22.0 cm with their sideways force |
+| Upper arm from the trunk at the bottom | 59° | 50° |
+| Sideways / vertical bar force | 0.17 (wide 0.38, narrow ≈ 0) | Least effort: 0.05 (wide 0.25, narrow −0.03) over the rep |
 
-The least-effort estimate of the sideways bar force is close to the measurement. The elbow is not: the model's elbow sits too far from the bar, roughly doubling the elbow torque, because its elbow placement rule and fixed shoulders don't match real pressing. The sideways force therefore defaults to zero, and the measured values are shown on the slider. Fixing the arm model, using the measured forearm angles and shoulder-blade movement, is the next step for the bench.
+| Elbow moment arm, mean (no sideways force) | Measured | Model | Before this change |
+|---|---|---|---|
+| Wide | 6.4 cm | 2.1 cm | 15–20 cm for every grip |
+| Medium | 7.2 cm | 8.2 cm | |
+| Narrow | 8.2 cm | 13.1 cm | |
+
+What this means:
+
+- **Elbow moment arms:** for the medium grip they are now close to the measured ones; before, they were about twice as large. The grip-width trend in elbow torque (narrow > medium > wide) now matches the measurements, with or without the measured sideways forces. Before, the trend reversed with those forces.
+- **Wide and narrow grips:** both are still off in opposite directions. Fixed shoulders let the wide grip stack its elbows almost perfectly under the bar but stop the narrow grip from doing so mid-press.
+- **Shoulder moment arms** match the measurements once the measured sideways force is applied. The least-effort estimate of that force has the right trend but is smaller than measured.
+- **Sideways force default:** it stays at zero; the measured values are shown on the slider.
+- **Still to model:** shoulder-blade movement.
+
+The arm angles in the paper are given as means over the rep (forearm) and at the bottom (upper arm), so they check the model only loosely.
 
 ### Still without a source
 

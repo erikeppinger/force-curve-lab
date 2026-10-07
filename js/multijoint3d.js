@@ -75,11 +75,17 @@ export function leastEffort(exercise, jointsAt, lo = -0.6, hi = 0.6) {
       return sum + (t < 0 && !j.negative ? 0 : (t / cap) ** 2);
     }, 0);
   };
-  for (let i = 0; i < 60; i++) {
-    const m1 = lo + (hi - lo) / 3, m2 = hi - (hi - lo) / 3;
-    if (cost(m1) < cost(m2)) hi = m2; else lo = m1;
+  // Coarse scan first (the cost can have more than one dip, e.g. when the elbow follows the push),
+  // then a ternary search around the best grid point.
+  const N = 40, step = (hi - lo) / N;
+  let best = 0;
+  for (let i = 1; i <= N; i++) if (cost(lo + i * step) < cost(lo + best * step)) best = i;
+  let a = Math.max(lo, lo + (best - 1) * step), b = Math.min(hi, lo + (best + 1) * step);
+  for (let i = 0; i < 50; i++) {
+    const m1 = a + (b - a) / 3, m2 = b - (b - a) / 3;
+    if (cost(m1) < cost(m2)) b = m2; else a = m1;
   }
-  return (lo + hi) / 2;
+  return (a + b) / 2;
 }
 
 /**
@@ -312,10 +318,38 @@ export function elbowUnderHand(S, hand, l1, l2, offsetZ, front) {
 }
 
 /**
+ * Elbow as close to the push line as the arm allows: on the circle of positions that fit both arm
+ * segments, the point (below the hand) closest to the line through the hand along `dir` (default
+ * vertical), i.e. the smallest elbow moment arm. "Elbows under the bar" as a coaching cue.
+ */
+export function elbowNearestUnder(S, hand, l1, l2, dir = UP) {
+  const e = unit3(sub3(hand, S));
+  const d = Math.min(len3(sub3(hand, S)), l1 + l2 - 1e-9);
+  const along = (l1 * l1 - l2 * l2 + d * d) / (2 * d);
+  const h = Math.sqrt(Math.max(0, l1 * l1 - along * along));
+  const p0 = unit3(cross3(e, Z)), q0 = unit3(cross3(e, p0));
+  const C = add3(S, e, along);
+  const at = (th) => add3(add3(C, p0, h * Math.cos(th)), q0, h * Math.sin(th));
+  const u = unit3(dir);
+  const cost = (E) => { const r = sub3(E, hand); return (E.y > hand.y ? 1e9 : 0) + len3(sub3(r, add3(v3(0, 0, 0), u, dot3(r, u)))); };
+  let best = 0;
+  const N = 720;
+  for (let i = 1; i < N; i++) if (cost(at((i * 2 * Math.PI) / N)) < cost(at((best * 2 * Math.PI) / N))) best = i;
+  let lo = ((best - 1) * 2 * Math.PI) / N, hi = ((best + 1) * 2 * Math.PI) / N;
+  for (let k = 0; k < 60; k++) { // golden-section refine
+    const m1 = lo + (hi - lo) / 3, m2 = hi - (hi - lo) / 3;
+    if (cost(at(m1)) < cost(at(m2))) hi = m2; else lo = m1;
+  }
+  return { E: at((lo + hi) / 2), ok: true };
+}
+
+/**
  * Bench press (driver: bar height, 0 = on the chest, 100 = arms locked out). Shoulders fixed on
  * the bench; both hands on a rigid bar at the grip width; the bar moves in a straight line from
  * the touch point to lockout over the shoulders. The elbow is placed relative to the hand in
- * the front view (elbowOut: + outside, − inside; see elbowUnderHand); the flare angle follows.
+ * the front view (elbowOut: + outside, − inside; see elbowUnderHand), or with elbowOut "auto" as
+ * close under the hand as the arm allows (elbowNearestUnder); the flare angle follows.
+ * chestDepth (optional): bar on the chest above the shoulder joints, e.g. raised by an arch.
  * Each hand pushes up with half the bar. Whether the hands also pull the bar apart or squeeze
  * it isn't fixed by statics: barSpread = the bar's sideways push on each hand as a fraction of
  * the vertical one (+ = hands pull the bar apart, so it pushes them inwards); "auto" = least
@@ -331,22 +365,32 @@ export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const toFeet = rot(v3(1, 0, 0)), front = rot(UP);
   const dz = P.gripHalf - L.shoulderHalfWidth;
   const reach = Math.sqrt(Math.max(0, (L.upperArm + L.forearm) ** 2 - dz * dz)) * 0.985;
-  const touch = add3(mid, rot(v3(P.touch, L.chestDepth, 0)));
+  const touch = add3(mid, rot(v3(P.touch, P.chestDepth ?? L.chestDepth, 0)));
   const lockout = add3(mid, UP, reach);
   const k = x / 100;
   const hand = v3(touch.x + (lockout.x - touch.x) * k, touch.y + (lockout.y - touch.y) * k, P.gripHalf);
-  const { E, ok } = elbowUnderHand(S, hand, L.upperArm, L.forearm, P.elbowOut, front);
-
   const Fv = (loadKg * G) / 2;
-  const foreW = weight(lerp3(E, hand, c.forearmHand), m.forearmHand * kg);
-  const upperW = weight(lerp3(S, E, c.upperArm), m.upperArm * kg);
-  const dU = unit3(sub3(E, S)), dF = unit3(sub3(hand, E));
-  const eFlex = unit3(cross3(dU, dF)); // elbow flexion axis
-  const eSide = unit3(cross3(eFlex, dF)); // turning about it moves the hand inwards
-  const horizAdd = deg(Math.atan2(dot3(dU, front), dot3(dU, Z))); // 0 = out to the side, 90 = up
-  const elbowFlex = angleBetween3(dU, dF);
-  const flare = deg(Math.atan2(dot3(dU, Z), dot3(dU, toFeet))); // top view: 0 = along the body
+  // The arm's posture. "auto" puts the elbow under the bar for a vertical push (the coaching cue);
+  // it deliberately doesn't follow the sideways push, which would let the least-effort search
+  // pick extreme spreads by refolding the arm.
+  const armAt = () => {
+    const { E, ok } = P.elbowOut === "auto"
+      ? elbowNearestUnder(S, hand, L.upperArm, L.forearm)
+      : elbowUnderHand(S, hand, L.upperArm, L.forearm, P.elbowOut, front);
+    const dU = unit3(sub3(E, S)), dF = unit3(sub3(hand, E));
+    return {
+      E, ok, dU, dF,
+      foreW: weight(lerp3(E, hand, c.forearmHand), m.forearmHand * kg),
+      upperW: weight(lerp3(S, E, c.upperArm), m.upperArm * kg),
+      eFlex: unit3(cross3(dU, dF)), // elbow flexion axis
+      eSide: unit3(cross3(unit3(cross3(dU, dF)), dF)), // turning about it moves the hand inwards
+      horizAdd: deg(Math.atan2(dot3(dU, front), dot3(dU, Z))), // 0 = out to the side, 90 = up
+      elbowFlex: angleBetween3(dU, dF),
+    };
+  };
+  const arm = armAt();
   const solveAt = (spread) => {
+    const { E, foreW, upperW, dU, eFlex, eSide, horizAdd, elbowFlex } = arm;
     const bar = { at: hand, f: v3(0, -Fv, -spread * Fv) };
     const Mel = moment3(E, [bar, foreW]);
     const Msh = moment3(S, [bar, foreW, upperW]);
@@ -364,6 +408,10 @@ export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const auto = P.barSpread === "auto";
   const spread = auto ? leastEffort(ex, (r) => solveAt(r).joints) : P.barSpread ?? 0;
   const { bar, Mel, Msh, joints } = solveAt(spread);
+  const { E, ok, dU, dF, eFlex } = arm;
+  const abduction = angleBetween3(dU, toFeet); // upper arm from the trunk's long axis
+  const forearmTilt = deg(Math.atan2(hand.z - E.z, dot3(sub3(hand, E), front))); // front view, + = hand outside the elbow
+  const flare = deg(Math.atan2(dot3(dU, Z), dot3(dU, toFeet))); // top view: 0 = along the body
 
   const hips = add3(mid, toFeet, L.trunk);
   const head = add3(mid, toFeet, -0.22);
@@ -394,7 +442,8 @@ export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     forces: [{ at: hand, dir: unit3(bar.f) }, { at: mirror(hand), dir: mirror(unit3(bar.f)) }],
     flare,
     barSpread: spread,
-    info: [{ text: `Elbow flare (upper arm from the body, seen from above): ${Math.round(flare)}°.` },
+    abduction, forearmTilt,
+    info: [{ text: `Elbow flare (upper arm from the body, seen from above): ${Math.round(flare)}°. Upper arm ${Math.round(abduction)}° from the trunk; forearm tilted ${Math.abs(Math.round(forearmTilt))}° ${forearmTilt >= 0 ? "with the hand outside" : "with the elbow outside"} (front view).` },
       ...(Math.abs(spread) > 0.005 ? [{ text: `Hands ${spread > 0 ? "pull the bar apart" : "squeeze the bar inwards"} with ${Math.round(Math.abs(spread) * 100)}% of the vertical force${auto ? " (least-effort estimate)" : ""}.` }] : []),
       ...(ok ? [] : [{ warn: true, text: "The elbows can't sit that far from the hands at this bar height; shown as close as the arm allows." }])],
   };

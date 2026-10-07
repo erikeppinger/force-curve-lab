@@ -312,7 +312,7 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
   test("3D bench: the elbow's moment is F × the horizontal elbow–hand distance; elbows stacked under the hands", () => {
     const F = 40 * G;
     for (const vid of ["flat", "close"]) {
-      const r = at(vid, 0, { barSpread: 0 }, noBody);
+      const r = at(vid, 0, { barSpread: 0, elbowOut: 0 }, noBody);
       const E = J(r, "elbow").at, hand = r.forces[0].at;
       const horiz = Math.hypot(hand.x - E.x, hand.z - E.z);
       const M = r.moments.elbow;
@@ -335,7 +335,32 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
   test("3D bench: close grip loads the triceps, wide grip the pecs", () => {
     const [w, c] = [at("wide", 30, undefined, { ...opts, loadKg: 80 }), at("close", 30, undefined, { ...opts, loadKg: 80 })];
     assert.ok(J(c, "elbow").torque > 1.5 * J(w, "elbow").torque);
-    assert.ok(J(w, "shoulder-h").torque > 5 * J(c, "shoulder-h").torque);
+    assert.ok(J(w, "shoulder-h").torque > 4 * J(c, "shoulder-h").torque);
+  });
+
+  test("3D bench: elbows under the bar (auto) give the smallest elbow moment arm the arm allows for a vertical push", () => {
+    const ma = (r) => { const M = r.moments.elbow; return Math.hypot(M.x, M.y, M.z) / (40 * G); };
+    for (const vid of ["flat", "wide", "close"]) {
+      for (const x of [0, 40, 80]) {
+        const best = ma(at(vid, x, { barSpread: 0, elbowOut: "auto" }, noBody));
+        for (const off of [-0.06, -0.02, 0, 0.03, 0.06, 0.1]) {
+          assert.ok(best <= ma(at(vid, x, { barSpread: 0, elbowOut: off }, noBody)) + 1e-6, `${vid}@${x} vs ${off}`);
+        }
+        // At that point the push line lies in the arm's plane: no sideways moment at the elbow.
+        close(J(at(vid, x, { barSpread: 0, elbowOut: "auto" }, noBody), "elbow-side").torque, 0, 1e-3);
+      }
+    }
+  });
+
+  test("3D bench: elbow moment arms near the measured ones (Mausehund et al.: 7.2 cm mean, 9.2 cm peak, medium grip)", () => {
+    const mas = [];
+    for (let x = 0; x <= 95; x += 5) { const M = at("flat", x, undefined, noBody).moments.elbow; mas.push(Math.hypot(M.x, M.y, M.z) / (40 * G)); }
+    const mean = mas.reduce((a, b) => a + b) / mas.length, peak = Math.max(...mas);
+    assert.ok(mean > 0.05 && mean < 0.1, `mean ${mean}`);
+    assert.ok(peak > 0.07 && peak < 0.13, `peak ${peak}`);
+    // Elbow torque: narrow > medium > wide, as measured.
+    const T = (vid) => J(at(vid, 40, undefined, { ...opts, loadKg: 80 }), "elbow").torque;
+    assert.ok(T("close") > T("flat") && T("flat") > T("wide"));
   });
 }
 

@@ -171,36 +171,36 @@
       "id": "flat",
       "name": "Flat bench, medium grip",
       "equipment": "Barbell, flat bench",
-      "params": {"gripHalf": 0.32, "elbowOut": 0, "touch": 0.08, "incline": 0, "barSpread": 0},
-      "notes": "Hands about 1.7× shoulder width, elbows stacked under the hands in the front view. The flare angle follows from the arm's geometry (shown under the table). Each hand pushes up with half the bar; how hard the hands pull the bar apart (or squeeze it) can't be found from statics, so by default they don't. Lifters do pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow, and the least-effort option predicts similar values (26%, 41%, 2%). With those forces this model's elbow torques move the wrong way, because its elbow placement and fixed shoulders don't match real pressing, so the default stays at zero. The shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
+      "params": {"gripHalf": 0.35, "elbowOut": "auto", "touch": 0.16, "chestDepth": 0.2, "incline": 0, "barSpread": 0},
+      "notes": "Medium grip. Grip width from Mausehund et al.'s arm–bar angle at lockout (75°), converted with this model's arm length and shoulder width; touch point from their measured shoulder moment arm at the bottom; chest raised 20 cm above the shoulder joints for the arch (their arch angle was about 30°; the height is an estimate). Elbows as close under the bar as the arm allows (the shoulder joints stay put): this placement gives elbow moment arms close to the ones Mausehund et al. measured for the medium grip, too small for the wide grip and too large for the narrow one (see docs/model-limits.md). Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     },
     {
       "id": "wide",
       "name": "Wide grip",
       "equipment": "Barbell, flat bench",
-      "params": {"gripHalf": 0.4, "elbowOut": 0, "touch": 0.06, "incline": 0, "barSpread": 0},
-      "notes": "Hands far out: the upper arms flare, the pecs (horizontal adduction) work much harder and the triceps much less. The bar also travels less. Each hand pushes up with half the bar; how hard the hands pull the bar apart (or squeeze it) can't be found from statics, so by default they don't. Lifters do pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow, and the least-effort option predicts similar values (26%, 41%, 2%). With those forces this model's elbow torques move the wrong way, because its elbow placement and fixed shoulders don't match real pressing, so the default stays at zero. The shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
+      "params": {"gripHalf": 0.45, "elbowOut": "auto", "touch": 0.13, "chestDepth": 0.2, "incline": 0, "barSpread": 0},
+      "notes": "Hands far out: the upper arms flare, the pecs (horizontal adduction) work much harder and the triceps less. The bar also travels less. Grip width from Mausehund et al.'s arm–bar angle at lockout (65°), converted with this model's arm length and shoulder width, touch point an estimate; chest raised 20 cm above the shoulder joints for the arch (their arch angle was about 30°; the height is an estimate). Elbows as close under the bar as the arm allows (the shoulder joints stay put): this placement gives elbow moment arms close to the ones Mausehund et al. measured for the medium grip, too small for the wide grip and too large for the narrow one (see docs/model-limits.md). Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     },
     {
       "id": "close",
       "name": "Close grip",
       "equipment": "Barbell, flat bench",
-      "params": {"gripHalf": 0.2, "elbowOut": 0, "touch": 0.1, "incline": 0, "barSpread": 0},
-      "notes": "Hands at shoulder width, elbows tucked: the triceps take over and the pecs' across-the-body work nearly vanishes. Each hand pushes up with half the bar; how hard the hands pull the bar apart (or squeeze it) can't be found from statics, so by default they don't. Lifters do pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow, and the least-effort option predicts similar values (26%, 41%, 2%). With those forces this model's elbow torques move the wrong way, because its elbow placement and fixed shoulders don't match real pressing, so the default stays at zero. The shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
+      "params": {"gripHalf": 0.245, "elbowOut": "auto", "touch": 0.2, "chestDepth": 0.2, "incline": 0, "barSpread": 0},
+      "notes": "Hands about shoulder width, elbows tucked, bar lower on the chest: the triceps take over and the pecs' across-the-body work nearly vanishes. Grip width from Mausehund et al.'s arm–bar angle at lockout (85°), converted with this model's arm length and shoulder width; touch point from their measured shoulder moment arm at the bottom; chest raised 20 cm above the shoulder joints for the arch (their arch angle was about 30°; the height is an estimate). Elbows as close under the bar as the arm allows (the shoulder joints stay put): this placement gives elbow moment arms close to the ones Mausehund et al. measured for the medium grip, too small for the wide grip and too large for the narrow one (see docs/model-limits.md). Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     },
     {
       "id": "elbows-out",
       "name": "Medium grip, elbows flared past the hands",
       "equipment": "Barbell, flat bench",
-      "params": {"gripHalf": 0.32, "elbowOut": 0.06, "touch": 0.04, "incline": 0, "barSpread": 0},
-      "notes": "Elbows pushed 6 cm outside the hands and the bar lowered higher on the chest: see how the rotation torque and flare angle change. Each hand pushes up with half the bar; how hard the hands pull the bar apart (or squeeze it) can't be found from statics, so by default they don't. Lifters do pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow, and the least-effort option predicts similar values (26%, 41%, 2%). With those forces this model's elbow torques move the wrong way, because its elbow placement and fixed shoulders don't match real pressing, so the default stays at zero. The shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
+      "params": {"gripHalf": 0.35, "elbowOut": 0.06, "touch": 0.04, "chestDepth": 0.16, "incline": 0, "barSpread": 0},
+      "notes": "Elbows pushed 6 cm outside the hands, no arch and the bar lowered high on the chest, near the neck: compare the rotation torque, the flare angle and the elbow's moment arm with the medium grip. Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     },
     {
       "id": "incline",
       "name": "Incline bench (30°), medium grip",
       "equipment": "Barbell, incline bench",
-      "params": {"gripHalf": 0.32, "elbowOut": 0, "touch": 0.03, "incline": 30, "barSpread": 0},
-      "notes": "Bench tilted 30°: the bar touches the upper chest and presses vertically over the shoulders. Each hand pushes up with half the bar; how hard the hands pull the bar apart (or squeeze it) can't be found from statics, so by default they don't. Lifters do pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow, and the least-effort option predicts similar values (26%, 41%, 2%). With those forces this model's elbow torques move the wrong way, because its elbow placement and fixed shoulders don't match real pressing, so the default stays at zero. The shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
+      "params": {"gripHalf": 0.35, "elbowOut": "auto", "touch": 0.03, "incline": 30, "barSpread": 0},
+      "notes": "Bench tilted 30°: the bar touches the upper chest and presses vertically over the shoulders. Elbows as close under the bar as the arm allows. Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     }
   ],
   "wger": {"exerciseId": null, "name": "Bench Press", "note": "TODO: look up the wger exercise id"},
@@ -209,7 +209,7 @@
       "key": "gripHalf",
       "label": "Grip: each hand from the middle",
       "min": 0.17,
-      "max": 0.45,
+      "max": 0.5,
       "step": 0.01,
       "unit": "cm",
       "scale": 100
@@ -221,13 +221,14 @@
       "max": 0.1,
       "step": 0.01,
       "unit": "cm",
-      "scale": 100
+      "scale": 100,
+      "auto": "Under the bar (auto)"
     },
     {
       "key": "touch",
       "label": "Bar touches the chest, cm below the shoulders",
       "min": 0,
-      "max": 0.15,
+      "max": 0.24,
       "step": 0.01,
       "unit": "cm",
       "scale": 100
