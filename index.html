@@ -17,6 +17,9 @@
     <section class="card controls" aria-label="Controls">
       <h2 id="exercise-name">…</h2>
       <div class="control-grid">
+        <label>Exercise
+          <select id="exercise"></select>
+        </label>
         <label>Variant
           <select id="variant"></select>
         </label>
@@ -26,12 +29,12 @@
         <label>Load <output id="load-out"></output>
           <input id="load" type="range" min="1" max="30" step="0.5">
         </label>
-        <label>Strength (peak elbow torque) <output id="strength-out"></output>
+        <label><span id="strength-label">Strength (peak torque)</span> <output id="strength-out"></output>
           <input id="strength" type="range" min="25" max="110" step="1">
         </label>
       </div>
       <div id="pulley-controls" class="control-grid pulley" hidden>
-        <label>Pulley forward / back
+        <label><span id="pulley-x-label">Pulley forward / back</span>
           <input id="pulley-x" type="range" min="-1.0" max="1.0" step="0.01">
         </label>
         <label>Pulley height
@@ -41,19 +44,19 @@
       </div>
       <div class="angle-row">
         <button id="play" type="button" aria-pressed="false">Play</button>
-        <label class="grow">Elbow angle <output id="angle-out"></output>
+        <label class="grow"><span id="angle-label">Joint angle</span> <output id="angle-out"></output>
           <input id="angle" type="range" step="0.5">
         </label>
       </div>
       <p class="hint" id="angle-note"></p>
     </section>
 
-    <section class="card figure-card" aria-label="Side view">
+    <section class="card figure-card" aria-label="Figure">
       <div class="card-head">
-        <h3>Side view</h3>
+        <h3 id="figure-title">Side view</h3>
         <span class="pill" id="variant-equipment"></span>
       </div>
-      <svg id="figure" role="img" aria-label="Side view of the arm, load, force direction and moment arm"></svg>
+      <svg id="figure" role="img" aria-label="The arm, load, force direction and moment arm"></svg>
       <dl class="readouts">
         <div><dt>Load torque</dt><dd id="ro-torque"></dd></div>
         <div><dt>Moment arm</dt><dd id="ro-arm"></dd></div>
@@ -73,10 +76,10 @@
         <li><i class="sw compare"></i>Comparison</li>
         <li><i class="sw strength"></i>Muscle strength (capacity)</li>
       </ul>
-      <svg id="torque-chart" role="img" aria-label="Load torque and strength over elbow angle"></svg>
+      <svg id="torque-chart" role="img" aria-label="Load torque and strength over the range of motion"></svg>
       <h3>Effort across the range</h3>
       <p class="hint">Load torque ÷ strength at each angle. The peak is the sticking point.</p>
-      <svg id="effort-chart" role="img" aria-label="Effort as percent of maximum over elbow angle"></svg>
+      <svg id="effort-chart" role="img" aria-label="Effort as percent of maximum over the range of motion"></svg>
     </section>
 
     <section class="card muscles" aria-label="Muscles">

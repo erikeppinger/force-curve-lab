@@ -118,6 +118,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .muscle-on { stroke: var(--muscle-on); stroke-linecap: round; }
 #figure .weight { fill: var(--equipment); }
 #figure .handle { fill: var(--cable); }
+#figure .cam { fill: var(--card); stroke: var(--equipment); stroke-width: 3; opacity: 0.7; }
 #figure .pad { stroke: var(--compare); stroke-linecap: round; opacity: 0.6; }
 #figure .equipment, #figure .cable-column { stroke: var(--equipment); opacity: 0.5; }
 #figure .cable { stroke: var(--cable); }

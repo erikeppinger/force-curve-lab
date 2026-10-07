@@ -4,10 +4,11 @@ import { renderChart } from "./chart.js";
 import { renderFigure } from "./figure.js";
 import { fetchExercise, descriptionParagraphs, bodyBackground, muscleOverlay } from "./wger.js";
 
-const EXERCISES = ["biceps-curl"];
+const EXERCISES = ["biceps-curl", "lateral-raise"];
 const $ = (id) => document.getElementById(id);
 
 const state = {
+  catalog: {},
   exercise: null,
   variantId: null,
   compareId: "",
@@ -87,10 +88,15 @@ function buildBodyMap() {
 
 async function loadWger() {
   const box = $("wger-info");
+  const exId = state.exercise.id;
   const id = state.exercise.wger?.exerciseId;
-  if (!id) return void (box.hidden = true);
+  box.hidden = true;
+  $("wger-img").hidden = true;
+  $("wger-img-credit").textContent = "";
+  if (!id) return;
   try {
     const info = await fetchExercise(id);
+    if (state.exercise.id !== exId) return; // switched exercise while loading
     const { name, paragraphs } = descriptionParagraphs(info);
     $("wger-name").textContent = name;
     $("wger-desc").replaceChildren(...paragraphs.map((t) => Object.assign(document.createElement("p"), { textContent: t })));
@@ -107,10 +113,42 @@ async function loadWger() {
   }
 }
 
+/** Switch exercise: reset controls, labels, body map and wger info. `h` = values from the URL hash. */
+function setExercise(id, h = {}) {
+  const ex = (state.exercise = state.catalog[id]);
+  const front = ex.view === "front";
+  $("exercise").value = id;
+  $("exercise-name").textContent = ex.name;
+  $("angle-note").textContent = ex.angleNote;
+  $("angle-label").textContent = ex.angleLabel;
+  $("strength-label").textContent = `Strength (peak ${ex.joint.toLowerCase()} torque)`;
+  $("figure-title").textContent = front ? "Front view" : "Side view";
+  $("pulley-x-label").textContent = front ? "Pulley side to side" : "Pulley forward / back";
+  fillSelect($("variant"), ex.variants);
+  fillSelect($("compare"), ex.variants, true);
+
+  state.loadKg = h.load ?? ex.defaults.loadKg;
+  state.peakTorqueNm = ex.defaults.peakTorqueNm;
+  $("load").value = state.loadKg; $("load-out").textContent = `${state.loadKg} kg`;
+  $("strength").value = state.peakTorqueNm; $("strength-out").textContent = `${state.peakTorqueNm} Nm`;
+  const [lo, hi] = ex.angleRange;
+  state.angle = Math.min(hi, Math.max(lo, state.angle));
+  $("angle").min = lo; $("angle").max = hi; $("angle").value = state.angle;
+
+  const vId = ex.variants.some((v) => v.id === h.variant) ? h.variant : ex.defaults.variant;
+  setVariant(vId, h.px != null && h.py != null ? { x: h.px, y: h.py } : undefined);
+  state.compareId = ex.variants.some((v) => v.id === h.compare) ? h.compare : "";
+  $("compare").value = state.compareId;
+
+  $("muscle-list").replaceChildren();
+  buildBodyMap();
+  loadWger();
+}
+
 // ---------- render ----------
 let curveCache = null;
 function curves() {
-  const key = JSON.stringify([state.variantId, state.compareId, state.loadKg, state.peakTorqueNm, state.pulley]);
+  const key = JSON.stringify([state.exercise.id, state.variantId, state.compareId, state.loadKg, state.peakTorqueNm, state.pulley]);
   if (curveCache?.key === key) return curveCache;
   const ex = state.exercise;
   const main = sampleCurve(ex, variant(), opts(variant()));
@@ -130,18 +168,18 @@ function render() {
   const act = muscleActivation(ex, v, r, state.angle);
   const { main, cmp } = curves();
 
-  renderFigure($("figure"), { variant: v, result: r, activation: act, pulley: state.pulley });
+  renderFigure($("figure"), { exercise: ex, variant: v, result: r, activation: act, pulley: state.pulley });
 
   const bands = ex.phases.map((p) => ({ from: p.range[0], to: p.range[1], label: p.name }));
   const strength = main.map((s) => [s.angle, s.capacity]);
   const torqueSeries = [
     { points: strength, className: "strength" },
-    ...(cmp ? [{ points: cmp.map((s) => [s.angle, Math.max(0, s.elbowTorque)]), className: "compare" }] : []),
-    { points: main.map((s) => [s.angle, Math.max(0, s.elbowTorque)]), className: "primary" },
+    ...(cmp ? [{ points: cmp.map((s) => [s.angle, Math.max(0, s.jointTorque)]), className: "compare" }] : []),
+    { points: main.map((s) => [s.angle, Math.max(0, s.jointTorque)]), className: "primary" },
   ];
   renderChart($("torque-chart"), {
     xRange: ex.angleRange, series: torqueSeries, bands, marker: state.angle,
-    xLabel: "Elbow angle", yLabel: "Torque (Nm)", yFormat: (v) => v.toFixed(0),
+    xLabel: ex.angleLabel, yLabel: "Torque (Nm)", yFormat: (v) => v.toFixed(0),
   });
   const effortSeries = [
     ...(cmp ? [{ points: cmp.map((s) => [s.angle, s.effort * 100]), className: "compare" }] : []),
@@ -150,12 +188,12 @@ function render() {
   renderChart($("effort-chart"), {
     xRange: ex.angleRange, yMax: Math.max(100, ...effortSeries.flatMap((s) => s.points.map((p) => p[1]))),
     series: effortSeries, bands, marker: state.angle,
-    xLabel: "Elbow angle", yLabel: "Effort (% of max)", yFormat: (v) => `${v.toFixed(0)}%`,
+    xLabel: ex.angleLabel, yLabel: "Effort (% of max)", yFormat: (v) => `${v.toFixed(0)}%`,
   });
 
   // Readouts
   $("angle-out").textContent = `${state.angle.toFixed(0)}°`;
-  $("ro-torque").textContent = `${Math.max(0, r.elbowTorque).toFixed(1)} Nm`;
+  $("ro-torque").textContent = `${Math.max(0, r.jointTorque).toFixed(1)} Nm`;
   $("ro-arm").textContent = `${Math.abs(r.momentArm * 100).toFixed(1)} cm`;
   $("ro-effort").textContent = `${(r.effort * 100).toFixed(0)}%`;
   $("ro-effort").classList.toggle("over", r.effort > 1);
@@ -213,6 +251,7 @@ function setPlaying(on) {
 
 // ---------- wiring ----------
 function bind() {
+  $("exercise").addEventListener("change", (e) => { setExercise(e.target.value); writeHash(); render(); });
   $("variant").addEventListener("change", (e) => { setVariant(e.target.value); writeHash(); render(); });
   $("compare").addEventListener("change", (e) => { state.compareId = e.target.value; writeHash(); render(); });
   $("load").addEventListener("input", (e) => { state.loadKg = +e.target.value; $("load-out").textContent = `${state.loadKg} kg`; writeHash(); render(); });
@@ -227,29 +266,13 @@ function bind() {
 
 async function init() {
   const h = readHash();
-  state.exercise = await loadExercise(EXERCISES.includes(h.ex) ? h.ex : EXERCISES[0]);
-  const ex = state.exercise;
-  $("exercise-name").textContent = ex.name;
-  $("angle-note").textContent = ex.angleNote;
-  fillSelect($("variant"), ex.variants);
-  fillSelect($("compare"), ex.variants, true);
-
-  state.loadKg = h.load ?? ex.defaults.loadKg;
-  state.peakTorqueNm = ex.defaults.peakTorqueNm;
-  $("load").value = state.loadKg; $("load-out").textContent = `${state.loadKg} kg`;
-  $("strength").value = state.peakTorqueNm; $("strength-out").textContent = `${state.peakTorqueNm} Nm`;
-  $("angle").min = ex.angleRange[0]; $("angle").max = ex.angleRange[1]; $("angle").value = state.angle;
-
-  const vId = ex.variants.some((v) => v.id === h.variant) ? h.variant : ex.defaults.variant;
-  setVariant(vId, h.px != null && h.py != null ? { x: h.px, y: h.py } : undefined);
-  state.compareId = ex.variants.some((v) => v.id === h.compare) ? h.compare : "";
-  $("compare").value = state.compareId;
-
-  buildBodyMap();
+  const all = await Promise.all(EXERCISES.map(loadExercise));
+  for (const ex of all) state.catalog[ex.id] = ex;
+  fillSelect($("exercise"), all);
+  setExercise(EXERCISES.includes(h.ex) ? h.ex : EXERCISES[0], h);
   bind();
   addEventListener("resize", () => { if (!state.playing) render(); });
   render();
-  loadWger();
 }
 
 init();

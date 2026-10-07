@@ -19,20 +19,20 @@ test("interp clamps and interpolates", () => {
 test("dumbbell curl torque = m·g·L·sin(angle)", () => {
   for (const a of [0, 30, 90, 120]) {
     const r = analyze(ex, v("dumbbell"), a, opts);
-    close(r.elbowTorque, 10 * G * L * Math.sin((a * Math.PI) / 180));
+    close(r.jointTorque, 10 * G * L * Math.sin((a * Math.PI) / 180));
   }
   close(analyze(ex, v("dumbbell"), 90, opts).momentArm, L);
 });
 
 test("barbell and dumbbell give identical elbow torque curves", () => {
-  const a = sampleCurve(ex, v("dumbbell"), opts).map((s) => s.elbowTorque);
-  const b = sampleCurve(ex, v("barbell"), opts).map((s) => s.elbowTorque);
+  const a = sampleCurve(ex, v("dumbbell"), opts).map((s) => s.jointTorque);
+  const b = sampleCurve(ex, v("barbell"), opts).map((s) => s.jointTorque);
   assert.deepEqual(a, b);
 });
 
 test("preacher curl peaks at 90° minus the upper-arm tilt", () => {
   const curve = sampleCurve(ex, v("preacher"), opts, 0.5);
-  const peak = curve.reduce((m, s) => (s.elbowTorque > m.elbowTorque ? s : m));
+  const peak = curve.reduce((m, s) => (s.jointTorque > m.jointTorque ? s : m));
   close(peak.angle, 90 - v("preacher").upperArmAngle, 0.6);
   assert.equal(curve[0].shoulderFlexorDemand, 0, "pad supports the upper arm");
 });
@@ -41,16 +41,16 @@ test("a cable from a far-away pulley straight below behaves like gravity", () =>
   const cable = { ...v("cable-low"), upperArmAngle: 0 };
   const r = analyze(ex, cable, 60, { ...opts, pulley: { x: 0, y: -1e6 } });
   const d = analyze(ex, v("dumbbell"), 60, opts);
-  close(r.elbowTorque, d.elbowTorque, 1e-3);
+  close(r.jointTorque, d.jointTorque, 1e-3);
 });
 
 test("Bayesian cable curl keeps tension in the stretched position", () => {
-  const bottomCable = analyze(ex, v("cable-bayesian"), 5, opts).elbowTorque;
-  const bottomDb = analyze(ex, v("dumbbell"), 5, opts).elbowTorque;
+  const bottomCable = analyze(ex, v("cable-bayesian"), 5, opts).jointTorque;
+  const bottomDb = analyze(ex, v("dumbbell"), 5, opts).jointTorque;
   assert.ok(bottomCable > 3 * bottomDb, `${bottomCable} vs ${bottomDb}`);
 });
 
 test("effort is torque divided by angle-specific capacity", () => {
   const r = analyze(ex, v("dumbbell"), 90, opts);
-  close(r.effort, r.elbowTorque / 60);
+  close(r.effort, r.jointTorque / 60);
 });

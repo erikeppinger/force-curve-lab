@@ -1,6 +1,8 @@
-// 2D sagittal-plane statics for single-joint exercises.
-// Coordinate system: origin at the shoulder, x points forward, y points up, metres.
-// Joint angles in degrees; positive torque about z (counter-clockwise) = flexion.
+// 2D planar statics for single-joint exercises.
+// Coordinate system: origin at the shoulder, y points up, metres. x points forward in
+// side-view exercises (sagittal plane) and out to the side in front-view exercises
+// (frontal plane, exercise.view === "front").
+// Joint angles in degrees; positive torque about z (counter-clockwise) = flexion / abduction.
 // Pure functions only — imported by the browser UI and by node tests.
 
 export const G = 9.81;
@@ -22,61 +24,86 @@ export function interp(points, x) {
   return points[points.length - 1][1];
 }
 
-/** Segment end points for a given elbow flexion angle (0 = arm straight). */
+/**
+ * Segment end points at a given joint angle.
+ * movingJoint "elbow" (default): the upper arm is fixed at variant.upperArmAngle and
+ *   the angle is elbow flexion (0 = arm straight).
+ * movingJoint "shoulder": the arm is held straight and the angle is how far it has
+ *   swung up from hanging by the side (0 = arm down).
+ * `joint` is the point the exercise rotates about.
+ */
 export function pose(exercise, variant, angleDeg) {
   const { upperArm, forearm } = exercise.segments;
-  const a = rad(variant.upperArmAngle ?? 0);
-  const phi = a + rad(angleDeg);
+  const shoulderMoves = exercise.movingJoint === "shoulder";
+  const a = rad(shoulderMoves ? angleDeg : variant.upperArmAngle ?? 0);
+  const phi = shoulderMoves ? a : a + rad(angleDeg);
   const shoulder = { x: 0, y: 0 };
   const elbow = { x: upperArm * Math.sin(a), y: -upperArm * Math.cos(a) };
   const hand = {
     x: elbow.x + forearm * Math.sin(phi),
     y: elbow.y - forearm * Math.cos(phi),
   };
-  return { shoulder, elbow, hand, upperArmAngle: a, forearmAngle: phi };
+  return { shoulder, elbow, hand, joint: shoulderMoves ? shoulder : elbow, upperArmAngle: a, forearmAngle: phi };
 }
 
-/** Force the load applies to the hand (N). Cables pull towards the pulley. */
-export function loadForce(variant, hand, loadKg, pulley) {
+/**
+ * Force the load applies to the body (N) and the point it acts at (`at`).
+ * gravity: straight down at the hand. cable: towards the pulley, at the hand.
+ * machine: a pad on the moving segment, `load.padDistance` from the joint, pushing
+ *   perpendicular to the segment against the movement. The cam profile gives the
+ *   effective radius r(angle) in metres, so joint torque = m·g·r. Assumes the machine's
+ *   axis is aligned with the joint.
+ */
+export function loadForce(variant, p, loadKg, pulley, angleDeg) {
   const mag = loadKg * G;
-  if (variant.load.type === "cable") {
-    const p = pulley ?? variant.load.pulley;
-    const d = sub(p, hand);
+  const { load } = variant;
+  if (load.type === "machine") {
+    const d = sub(p.hand, p.joint);
     const len = Math.hypot(d.x, d.y);
-    if (len < 1e-6) return { x: 0, y: 0, mag: 0 };
-    return { x: (mag * d.x) / len, y: (mag * d.y) / len, mag };
+    const u = { x: d.x / len, y: d.y / len };
+    const at = { x: p.joint.x + u.x * load.padDistance, y: p.joint.y + u.y * load.padDistance };
+    const F = (mag * interp(load.camProfile.points, angleDeg)) / load.padDistance;
+    return { x: F * u.y, y: -F * u.x, mag: F, at };
   }
-  return { x: 0, y: -mag, mag };
+  if (load.type === "cable") {
+    const d = sub(pulley ?? load.pulley, p.hand);
+    const len = Math.hypot(d.x, d.y);
+    if (len < 1e-6) return { x: 0, y: 0, mag: 0, at: p.hand };
+    return { x: (mag * d.x) / len, y: (mag * d.y) / len, mag, at: p.hand };
+  }
+  return { x: 0, y: -mag, mag, at: p.hand };
 }
 
 /**
  * Full analysis at one angle.
- * elbowTorque > 0  : load resists flexion (elbow flexors work).
- * shoulderFlexorDemand: torque the shoulder flexors must supply to keep the
- *   upper arm still (0 when a pad supports the arm).
+ * jointTorque > 0 : load resists flexion / abduction (the prime movers work).
+ * shoulderFlexorDemand: for elbow exercises, the torque the shoulder flexors must
+ *   supply to keep the upper arm still (0 when a pad supports the arm, and 0 when the
+ *   shoulder is itself the moving joint).
  */
 export function analyze(exercise, variant, angleDeg, { loadKg, pulley, peakTorqueNm }) {
   const p = pose(exercise, variant, angleDeg);
-  const f = loadForce(variant, p.hand, loadKg, pulley);
-  const elbowTorque = -cross(sub(p.hand, p.elbow), f);
-  const shoulderTorque = cross(sub(p.hand, p.shoulder), f);
-  const shoulderFlexorDemand = variant.upperArmSupported ? 0 : Math.max(0, -shoulderTorque);
+  const f = loadForce(variant, p, loadKg, pulley, angleDeg);
+  const jointTorque = -cross(sub(f.at, p.joint), f);
+  const shoulderTorque = cross(sub(f.at, p.shoulder), f);
+  const stabilised = variant.upperArmSupported || exercise.movingJoint === "shoulder";
+  const shoulderFlexorDemand = stabilised ? 0 : Math.max(0, -shoulderTorque);
 
-  // Perpendicular from the elbow onto the line of action = the moment arm.
+  // Perpendicular from the joint onto the line of action = the moment arm.
   let momentArm = 0;
-  let momentArmFoot = p.elbow;
+  let momentArmFoot = p.joint;
   if (f.mag > 0) {
     const u = { x: f.x / f.mag, y: f.y / f.mag };
-    const eh = sub(p.elbow, p.hand);
-    const t = eh.x * u.x + eh.y * u.y;
-    momentArmFoot = { x: p.hand.x + u.x * t, y: p.hand.y + u.y * t };
-    momentArm = elbowTorque / f.mag;
+    const ja = sub(p.joint, f.at);
+    const t = ja.x * u.x + ja.y * u.y;
+    momentArmFoot = { x: f.at.x + u.x * t, y: f.at.y + u.y * t };
+    momentArm = jointTorque / f.mag;
   }
 
   const capacity = interp(exercise.strengthCurve.points, angleDeg) * peakTorqueNm;
-  const effort = Math.max(0, elbowTorque) / capacity;
+  const effort = Math.max(0, jointTorque) / capacity;
 
-  return { pose: p, force: f, elbowTorque, shoulderFlexorDemand, momentArm, momentArmFoot, capacity, effort };
+  return { pose: p, force: f, jointTorque, shoulderFlexorDemand, momentArm, momentArmFoot, capacity, effort };
 }
 
 /** Sample analyze() across the exercise's range of motion. */

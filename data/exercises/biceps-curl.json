@@ -2,6 +2,9 @@
   "id": "biceps-curl",
   "name": "Biceps curl",
   "joint": "Elbow flexion",
+  "movingJoint": "elbow",
+  "view": "side",
+  "angleLabel": "Elbow angle",
   "angleRange": [0, 145],
   "angleNote": "0° = arm straight, 145° = fully flexed",
   "segments": {
@@ -23,7 +26,7 @@
       "name": "Biceps brachii",
       "wgerId": 1,
       "role": "Prime mover",
-      "driver": "elbowEffort",
+      "driver": "jointEffort",
       "weight": [[0, 0.8], [45, 0.95], [90, 1.0], [120, 0.9], [145, 0.75]],
       "note": "Largest flexion moment arm around 90°; also supinates the forearm."
     },
@@ -32,7 +35,7 @@
       "name": "Brachialis",
       "wgerId": 13,
       "role": "Prime mover",
-      "driver": "elbowEffort",
+      "driver": "jointEffort",
       "weight": [[0, 0.85], [90, 0.9], [145, 0.9]],
       "note": "Pure elbow flexor, works in every grip; contribution fairly constant."
     },
@@ -41,7 +44,7 @@
       "name": "Brachioradialis",
       "wgerId": null,
       "role": "Synergist",
-      "driver": "elbowEffort",
+      "driver": "jointEffort",
       "weight": [[0, 0.35], [45, 0.55], [90, 0.75], [120, 0.8], [145, 0.7]],
       "note": "Contributes more in mid-to-high flexion and with a neutral (hammer) grip."
     },

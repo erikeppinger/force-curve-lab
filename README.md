@@ -1,10 +1,12 @@
 # Force Curve Lab
 
-An interactive teaching tool that shows **where an exercise is hard and which muscles do the work**, and how both change with equipment (dumbbell, barbell, cable) and positioning (pulley height, arm angle).
+An interactive teaching tool that shows **where an exercise is hard and which muscles do the work**, and how both change with equipment (dumbbell, barbell, cable, machine) and positioning (pulley height, arm angle).
+
+Exercises: **biceps curl** (dumbbell, barbell, preacher, two cable set-ups) and **lateral raise** (dumbbell, cable, machine).
 
 For each exercise variant it shows:
 
-- **Side view.** Animated arm, load, force direction, line of action and the **moment arm**.
+- **Side or front view.** Animated arm, load, force direction, line of action and the **moment arm**.
 - **Resistance vs. strength.** The load's torque at the joint compared with the muscles' strength at each angle.
 - **Effort curve.** Torque ÷ strength across the range of motion. Its peak is the sticking point.
 - **Muscles involved.** Estimated relative activation per muscle, shown as bars and on the wger muscle map.
@@ -29,12 +31,12 @@ Push to GitHub, then go to **Settings → Pages → Deploy from a branch → `ma
 
 | Layer | Approach | Where |
 |---|---|---|
-| Load torque | Live 2D statics in the browser: torque = r × F about the joint. Gravity points down; cables pull towards the pulley. | `js/physics.js` |
+| Load torque | Live 2D statics in the browser: torque = r × F about the joint. Gravity points down; cables pull towards the pulley; machines push through a pad with torque = m·g·r(angle) from a cam table. | `js/physics.js` |
 | Strength curve | Relative torque–angle table × the user's peak torque | `strengthCurve` in exercise JSON |
 | Muscle activation | Demand (effort, or shoulder-stabilising torque) × the muscle's angle-dependent weight × variant modifier | `js/muscles.js`, `muscles` in JSON |
 | Exercise text and images | Fetched live from the [wger API](https://wger.de/api/v2/) and optional (the tool still works offline) | `js/wger.js` |
 
-Coordinate system: origin at the shoulder, x forward, y up, metres. Joint angles are in degrees, and positive torque means flexion.
+Coordinate system: origin at the shoulder, y up, metres. x points forward in side-view exercises and out to the side in front-view ones (lateral raise). Joint angles are in degrees, and positive torque means flexion (or abduction).
 
 ### Data honesty
 
@@ -42,21 +44,23 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 
 ## Adding an exercise or variant
 
-1. Add a variant to `data/exercises/<id>.json`, or copy the file for a new single-joint exercise and add its id to `EXERCISES` in `js/main.js`.
-2. Variant fields: `upperArmAngle` (degrees from vertical, + = forward), `load.type` (`gravity` | `cable`), `load.pulley` (`{x, y}` in metres from the shoulder), `upperArmSupported`, `muscleModifiers`, `notes`.
-3. Add a test in `tests/` that pins down the variant's key teaching point (e.g. where the peak is).
+1. Add a variant to `data/exercises/<id>.json`, or copy a file for a new single-joint exercise and add its id to `EXERCISES` in `js/main.js` (it then appears in the Exercise menu).
+2. Exercise fields: `movingJoint` (`elbow`: upper arm fixed, angle = elbow flexion | `shoulder`: straight arm swings from the side), `view` (`side` | `front`), `angleLabel`, `angleRange`, `strengthCurve`, `muscles` (`driver`: `jointEffort` | `shoulderFlexorDemand`), `phases`.
+3. Variant fields: `upperArmAngle` (degrees from vertical, + = forward; elbow exercises only), `load.type` (`gravity` | `cable` | `machine`), `load.pulley` (`{x, y}` in metres from the shoulder), `load.padDistance` and `load.camProfile` (machines: pad position in metres from the joint, and `[[angle, effective radius in m]]` so that torque = m·g·r), `upperArmSupported`, `muscleModifiers`, `notes`.
+4. Add a test in `tests/` that pins down the variant's key teaching point (e.g. where the peak is). `tests/exercises.test.mjs` checks every listed exercise file's structure automatically.
 
 Multi-joint lifts (squat, bench press) need a multi-segment model. See the roadmap.
 
 ## Roadmap
 
-- [ ] More single-joint exercises: lateral raise, triceps extension, chest fly, leg extension, leg curl
+- [x] Lateral raise (dumbbell, cable, machine)
+- [ ] More single-joint exercises: triceps extension, chest fly, leg extension, leg curl
 - [ ] Hammer/neutral grip as a variant parameter (brachioradialis emphasis)
-- [ ] Machines with cam profiles (resistance curve as a data table)
+- [x] Machines with cam profiles (resistance curve as a data table): `load.type: "machine"`. The lateral-raise cam is illustrative; measured profiles still needed
 - [ ] Bands (load grows with stretch)
 - [ ] Multi-joint model for squat, deadlift and bench (hip/knee/shoulder torques)
-- [ ] Literature sources for strength curves and muscle weights; optionally precomputed OpenSim results as JSON
-- [ ] Back-view body map; vendor the wger SVGs locally for offline use
+- [ ] Literature sources for strength curves, muscle weights and cam profiles; optionally precomputed OpenSim results as JSON
+- [ ] Back-view body map (upper trapezius in the lateral raise); vendor the wger SVGs locally for offline use
 - [ ] Translations (DE)
 
 ## Licences and credits

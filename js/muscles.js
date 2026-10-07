@@ -1,6 +1,8 @@
 // Estimated relative muscle activation (0–1) from the statics result.
 // Illustrative model: activation = demand on the joint × the muscle's angle-dependent
 // weight × variant modifier. Not EMG — see "weight" tables in the exercise JSON.
+// Drivers: "jointEffort" (prime movers and synergists of the moving joint) and
+// "shoulderFlexorDemand" (holding the upper arm still in elbow exercises).
 
 import { interp } from "./physics.js";
 
