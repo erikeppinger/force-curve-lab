@@ -467,7 +467,14 @@ function bind() {
   for (const axis of ["x", "y"]) {
     $(`pulley-${axis}`).addEventListener("input", (e) => { state.pulley[axis] = +e.target.value; writeHash(); renderSoon(); });
   }
-  $("pulley-reset").addEventListener("click", () => { setVariant(state.variantId); writeHash(); render(); });
+  $("pulley-reset").addEventListener("click", () => {
+    // Only the pulley (or band anchor): keep the load and any placement the user set.
+    state.pulley = { ...variant().load.pulley };
+    $("pulley-x").value = state.pulley.x;
+    $("pulley-y").value = state.pulley.y;
+    writeHash();
+    render();
+  });
   $("placement-reset").addEventListener("click", () => { setPlacement(variant()); render(); });
   for (const b of $("view-buttons").querySelectorAll("button")) {
     b.addEventListener("click", () => { state.cam = { ...CAMERAS[b.dataset.cam] }; render(); });

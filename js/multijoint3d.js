@@ -92,22 +92,22 @@ export function jointScaleAt(spec, s, joints = {}) {
  * the value in [lo, hi] (a friction limit) that minimises the sum of squared efforts of the
  * exercise's muscle groups. `jointsAt(value)` returns the solver's joint components.
  */
-export function leastEffort(exercise, jointsAt, lo = -0.6, hi = 0.6) {
+export function leastEffort(exercise, jointsAt, lo = -0.6, hi = 0.6, variant = {}) {
   const cost = (value) => {
     const js = jointsAt(value);
     return exercise.joints.filter((j) => !j.passive).reduce((sum, j) => {
       const t = js[j.id].torque;
       const neg = t < 0 && j.negative;
       const curve = neg && j.negative.points ? j.negative.points : j.strength.points;
-      const cap = interp(curve, js[j.id].angle) * (neg ? j.negative.peakTorqueNm : j.peakTorqueNm) * jointScaleAt(exercise.jointScale?.[j.id], js[j.id], js);
+      const cap = interp(curve, js[j.id].angle) * (neg ? j.negative.peakTorqueNm : j.peakTorqueNm) * jointScaleAt(exercise.jointScale?.[j.id], js[j.id], js) * jointScaleAt(variant.jointScale?.[j.id], js[j.id], js);
       return sum + (t < 0 && !j.negative ? 0 : (t / cap) ** 2);
     }, 0);
   };
   // Coarse scan first (the cost can have more than one dip, e.g. when the elbow follows the push),
   // then a ternary search around the best grid point.
   const N = 24, step = (hi - lo) / N;
-  let best = 0;
-  for (let i = 1; i <= N; i++) if (cost(lo + i * step) < cost(lo + best * step)) best = i;
+  let best = 0, bestCost = cost(lo);
+  for (let i = 1; i <= N; i++) { const ci = cost(lo + i * step); if (ci < bestCost) { best = i; bestCost = ci; } }
   // Golden-section search: one new cost evaluation per step.
   let a = Math.max(lo, lo + (best - 1) * step), b = Math.min(hi, lo + (best + 1) * step);
   const r = (Math.sqrt(5) - 1) / 2;
@@ -264,9 +264,7 @@ export function squat3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     const armCom = lerp3(S, bar, 0.45);
     const total = legsKg + m.headTrunk * kg + armsKg + loadKg;
     const comX = (legsKg * legsX + m.headTrunk * kg * trunkCom.x + armsKg * armCom.x + loadKg * bar.x) / total;
-    const legsY = (2 * kg * (m.thigh * lerp3(K, H, c.thigh).y + m.shank * lerp3(A, K, c.shank).y + m.foot * L.ankleHeight / 2)) / legsKg;
-    const comY = (legsKg * legsY + m.headTrunk * kg * trunkCom.y + armsKg * armCom.y + loadKg * bar.y) / total;
-    return { back, S, bar, trunkCom, armCom, comX, comY, total };
+    return { back, S, bar, trunkCom, armCom, comX, total };
   };
   let tlo = rad(-20), thi = rad(89);
   const ok = (upper(tlo).comX - balanceX) * (upper(thi).comX - balanceX) <= 0;
@@ -275,7 +273,7 @@ export function squat3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
 
   // Per leg, from the foot up: floor push W/2 at the mid-foot, then segment weights.
   const cop = add3(v3(A.x, 0, A.z), f, L.midfoot);
-  const leg = legFromFloor(ex, P, { H, K, A, f, cop, Fy: (U.total * G) / 2, back: U.back, kneeAngle: x, kg, body });
+  const leg = legFromFloor(ex, P, { H, K, A, f, cop, Fy: (U.total * G) / 2, back: U.back, kneeAngle: x, kg, body, variant: v });
   const { grf, dir, Mhip, Mknee, Mankle, joints, frames, ratio } = leg;
 
   const shoulder = add3(U.S, Z, 0.19);
@@ -304,8 +302,10 @@ export function squat3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
 
 /**
  * Elbow on the circle of positions that fit both arm segments, chosen so that in the front view
- * it sits `offsetZ` outside (+) or inside (−) the hand ("elbows stacked under the bar" = 0), and
- * below the hand. Returns the closest point if the offset can't be reached.
+ * it sits `offsetZ` outside (+) or inside (−) the hand ("elbows stacked under the bar" = 0). Of
+ * the two such points it takes the one with the smaller component along `front` (the bench
+ * passes "up": elbows below the bar), or with `front` = "under" the one that puts the forearm
+ * closest to vertical under the hand (press); the pulls pass "backwards" for elbows in front. Returns the closest point if the offset can't be reached.
  */
 export function elbowUnderHand(S, hand, l1, l2, offsetZ, front) {
   const e = unit3(sub3(hand, S));
@@ -331,7 +331,10 @@ export function elbowUnderHand(S, hand, l1, l2, offsetZ, front) {
     for (let i = 1; i < N; i++) if (Math.abs(at(th(i)).z - target) < Math.abs(at(th(best)).z - target)) best = i;
     return { E: at(th(best)), ok: Math.abs(at(th(best)).z - target) < 0.02 };
   }
-  cands.sort((a, b) => dot3(a, front) - dot3(b, front)); // the lowest (towards the floor) first
+  if (front === "under") { // forearm closest to vertical under the hand
+    const off = (a) => Math.hypot(a.x - hand.x, a.z - hand.z) - 1e-3 * (hand.y - a.y);
+    cands.sort((a, b) => off(a) - off(b));
+  } else cands.sort((a, b) => dot3(a, front) - dot3(b, front)); // the smaller component along `front` first
   return { E: cands[0], ok: true };
 }
 
@@ -424,7 +427,7 @@ export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     };
   };
   const auto = P.barSpread === "auto";
-  const spread = auto ? leastEffort(ex, (r) => solveAt(r).joints) : P.barSpread ?? 0;
+  const spread = auto ? leastEffort(ex, (r) => solveAt(r).joints, -0.6, 0.6, v) : P.barSpread ?? 0;
   const { bar, Mel, Msh, joints } = solveAt(spread);
   const { E, ok, dU, dF, eFlex } = arm;
   const abduction = angleBetween3(dU, toFeet); // upper arm from the trunk's long axis
@@ -492,7 +495,9 @@ export function press3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const lockout = add3(mid, UP, reach);
   const k = x / 100;
   const hand = v3(start.x + (lockout.x - start.x) * k, start.y + (lockout.y - start.y) * k, P.gripHalf);
-  const { E, ok } = elbowUnderHand(S, hand, L.upperArm, L.forearm, P.elbowOut, UP);
+  // Of the two elbow positions that fit, take the one that puts the forearm closest to vertical
+  // under the hand. Choosing the lower one instead flips sides where both are about level.
+  const { E, ok } = elbowUnderHand(S, hand, L.upperArm, L.forearm, P.elbowOut, "under");
 
   const Fv = (loadKg * G) / 2;
   const foreW = weight(lerp3(E, hand, c.forearmHand), m.forearmHand * kg);
@@ -519,7 +524,7 @@ export function press3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     };
   };
   const auto = !dumbbells && P.barSpread === "auto";
-  const spread = dumbbells ? 0 : auto ? leastEffort(ex, (r) => solveAt(r).joints) : P.barSpread ?? 0;
+  const spread = dumbbells ? 0 : auto ? leastEffort(ex, (r) => solveAt(r).joints, -0.6, 0.6, v) : P.barSpread ?? 0;
   const { push, Mel, Msh, joints } = solveAt(spread);
 
   const hips = v3(0, hipY, 0);
@@ -574,7 +579,7 @@ export function press3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
  * (+ = the right foot pushed inwards, i.e. the foot pushes outwards), plus the leg's own weights.
  * The ratio is P.sidePush, or the least-effort one when that is "auto" (the default).
  */
-function legFromFloor(ex, P, { H, K, A, f, cop, Fy, back, kneeAngle, kg, body }) {
+function legFromFloor(ex, P, { H, K, A, f, cop, Fy, back, kneeAngle, kg, body, variant }) {
   const m = body.mass, c = body.com, L = body.lengths;
   const footW = weight(add3(A, f, L.midfoot), m.foot * kg);
   const shankW = weight(lerp3(A, K, c.shank), m.shank * kg);
@@ -588,7 +593,7 @@ function legFromFloor(ex, P, { H, K, A, f, cop, Fy, back, kneeAngle, kg, body })
     return { grf, dir, Mhip, Mknee, Mankle, ...legComponents({ H, K, A, f, back, Mhip, Mknee, Mankle, knee: kneeAngle, line: { at: cop, dir } }) };
   };
   const auto = P.sidePush === "auto" || P.sidePush == null;
-  const ratio = auto ? leastEffort(ex, (r) => solveAt(r).joints) : P.sidePush;
+  const ratio = auto ? leastEffort(ex, (r) => solveAt(r).joints, -0.6, 0.6, variant) : P.sidePush;
   return { ...solveAt(ratio), ratio, auto };
 }
 
@@ -598,8 +603,9 @@ const DOWN = v3(0, -1, 0);
 
 /** Bisection for g(t) = 0 on [lo, hi]; ok = false if g doesn't change sign. */
 function bisect(g, lo, hi, n = 60) {
-  const ok = g(lo) * g(hi) <= 0;
-  const up = g(lo) < g(hi);
+  const glo = g(lo), ghi = g(hi);
+  const ok = glo * ghi <= 0;
+  const up = glo < ghi;
   for (let i = 0; i < n; i++) { const mid = (lo + hi) / 2; if ((g(mid) < 0) === up) lo = mid; else hi = mid; }
   return { t: (lo + hi) / 2, ok };
 }
@@ -645,7 +651,7 @@ export function hinge3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const bal = bisect((psi) => pose(psi).comX - balanceX, rad(-60), rad(40));
   const Q = pose(bal.t);
   const cop = add3(v3(A.x, 0, A.z), f, L.midfoot);
-  const leg = legFromFloor(ex, P, { H: Q.H, K: Q.K, A, f, cop, Fy: (Q.total * G) / 2, back: Q.back, kneeAngle: angleBetween3(sub3(Q.K, Q.H), sub3(A, Q.K)), kg, body });
+  const leg = legFromFloor(ex, P, { H: Q.H, K: Q.K, A, f, cop, Fy: (Q.total * G) / 2, back: Q.back, kneeAngle: angleBetween3(sub3(Q.K, Q.H), sub3(A, Q.K)), kg, body, variant: v });
   const shoulder = add3(Q.S, Z, L.shoulderHalfWidth);
   const hand = add3(Q.bar, Z, L.shoulderHalfWidth + 0.03);
   return {
@@ -743,11 +749,11 @@ export function split3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const solveFor = (rho) => {
     const sol = shiftFor(rho);
     const Q = poseAt(sol.t);
-    const leg = legFromFloor(ex, { sidePush: rho }, { H: Q.H, K: Q.K, A, f, cop: cop1, Fy: Q.F1, back, kneeAngle: x, kg, body });
+    const leg = legFromFloor(ex, { sidePush: rho }, { H: Q.H, K: Q.K, A, f, cop: cop1, Fy: Q.F1, back, kneeAngle: x, kg, body, variant: v });
     return { sol, Q, leg };
   };
   const auto = P.sidePush === "auto" || P.sidePush == null;
-  const rho = auto ? leastEffort(ex, (r) => solveFor(r).leg.joints) : P.sidePush;
+  const rho = auto ? leastEffort(ex, (r) => solveFor(r).leg.joints, -0.6, 0.6, v) : P.sidePush;
   const { sol, Q, leg: leg0 } = solveFor(rho);
   const leg = { ...leg0, ratio: rho, auto };
   const W = Q.W, frontR = Q.F1;
@@ -820,7 +826,7 @@ export function hipThrust3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement 
   const feetR = W - shoulderR;
   const aboveFloor = H.y - 0.1 >= 0;
   const ok = shoulderR >= 0 && feetR >= 0 && sol.ok && reach && aboveFloor;
-  const leg = legFromFloor(ex, P, { H, K, A, f, cop: midfoot, Fy: feetR / 2, back: unit3(neg3(e)), kneeAngle: angleBetween3(sub3(K, H), sub3(A, K)), kg, body });
+  const leg = legFromFloor(ex, P, { H, K, A, f, cop: midfoot, Fy: feetR / 2, back: unit3(neg3(e)), kneeAngle: angleBetween3(sub3(K, H), sub3(A, K)), kg, body, variant: v });
   const shoulder = add3(Sm, Z, L.shoulderHalfWidth);
   const hand = add3(bar, Z, 0.3);
   return {
@@ -913,7 +919,7 @@ export function row3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     const Q = pose(bal.t);
     T = Q.t; pelvis = Q.pv;
     const cop = add3(v3(A.x, 0, A.z), f, L.midfoot);
-    const leg = legFromFloor(ex, { sidePush: 0 }, { H: Q.H, K: Q.K, A, f, cop, Fy: (Q.total * G) / 2, back: T.back, kneeAngle: kneeFlex, kg, body });
+    const leg = legFromFloor(ex, { sidePush: 0 }, { H: Q.H, K: Q.K, A, f, cop, Fy: (Q.total * G) / 2, back: T.back, kneeAngle: kneeFlex, kg, body, variant: v });
     legs = { H: Q.H, K: Q.K, A, f, joints: leg.joints, cop, dir: leg.dir };
     balance = { x: balanceX, com: Q.comX, ok: bal.ok };
     if (!bal.ok) info.push({ warn: true, text: "Can't balance: no shin angle keeps the centre of mass over the mid-foot here." });
@@ -1056,7 +1062,7 @@ export function pull3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const onHand = { at: hand, f: v3(pullDir.x * F, pullDir.y * F, pullDir.z * F) };
   const { E } = P.elbowOut === "auto"
     ? elbowNearestUnder(S, hand, L.upperArm, L.forearm, pullDir)
-    : elbowUnderHand(S, hand, L.upperArm, L.forearm, P.elbowOut, UP);
+    : elbowUnderHand(S, hand, L.upperArm, L.forearm, P.elbowOut, neg3(front)); // elbows in front of the shoulder–hand line: no side flips
   const upperW = weight(lerp3(S, E, c.upperArm), m.upperArm * kg);
   const foreW = weight(lerp3(E, hand, c.forearmHand), m.forearmHand * kg);
   const Msh = moment3(S, [upperW, foreW, onHand]);

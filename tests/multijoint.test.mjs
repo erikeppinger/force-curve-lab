@@ -660,3 +660,17 @@ test("two-joint muscles: calf strength follows the knee angle, hamstring (knee-f
   const sq = (x) => J(analyzeMulti(ex, ex.variants[0], x, opts), "ankle");
   assert.ok(sq(10).strengthScale > sq(110).strengthScale);
 });
+
+test("arm lifts: the elbow moves smoothly through the range (no jumps between the two positions that fit)", () => {
+  for (const id of ["bench-press", "overhead-press", "lat-pulldown", "pull-up"]) {
+    const ex = load(id);
+    for (const v of ex.variants) {
+      let prev = null;
+      for (let x = 0; x <= 100; x += 0.5) {
+        const E = analyzeMulti(ex, v, x, { ...opts, loadKg: ex.defaults.loadKg }).frames.upperArm.to;
+        if (prev) assert.ok(Math.hypot(E.x - prev.x, E.y - prev.y, E.z - prev.z) < 0.03, `${id}/${v.id} @${x}`);
+        prev = E;
+      }
+    }
+  }
+});
