@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { analyzeMulti, sampleMulti, jointTorque, ik2 } from "../js/multijoint.js";
 import { G } from "../js/physics.js";
+import { muscleActivation } from "../js/muscles.js";
 
 const body = JSON.parse(readFileSync(new URL("../data/body.json", import.meta.url)));
 const load = (id) => JSON.parse(readFileSync(new URL(`../data/exercises/${id}.json`, import.meta.url)));
@@ -99,7 +100,8 @@ test("split squat: floor and bench share the weight; leaning forward shifts work
 // ---------- leg press ----------
 test("leg press: with the push line through the hip, the hip has no torque from the sled", () => {
   const ex = load("leg-press");
-  const v = { ...ex.variants[0], params: { ...ex.variants[0].params, footOffset: -body.lengths.midfoot } };
+  // Feet straight under the hips, toes forward: the 3D model reduces to the side view.
+  const v = { ...ex.variants[0], params: { ...ex.variants[0].params, footHeight: -body.lengths.midfoot, halfWidth: body.lengths.hipHalfWidth, toeOut: 0, kneeTrack: 0 } };
   const r = analyzeMulti(ex, v, 70, { ...opts, loadKg: 100, bodyMassKg: 1e-9 });
   close(J(r, "hip").torque, 0, 1e-6);
   // Knee: sled force per leg × perpendicular distance from the knee to the push line.
@@ -140,3 +142,51 @@ test("bench press: shoulder torque = half the bar × g × horizontal distance; n
   close(J(analyzeMulti(ex, flat, 0, o), "shoulder").torque, 30 * G * flat.params.touch.x, 1e-6);
   close(J(analyzeMulti(ex, flat, 100, o), "shoulder").torque, 30 * G * flat.params.lockout.x, 1e-6);
 });
+
+// ---------- leg press in 3D: stance width, toe angle, knee tracking ----------
+{
+  const ex = load("leg-press");
+  const preset = (vid) => ex.variants.find((v) => v.id === vid);
+  const at = (vid, x = 90, placement) => analyzeMulti(ex, preset(vid), x, { ...opts, loadKg: 150, placement });
+  const sagittal = { halfWidth: body.lengths.hipHalfWidth, toeOut: 0, kneeTrack: 0 };
+
+  test("leg press 3D: with the feet under the hips and toes forward, nothing leaves the side-view plane", () => {
+    for (const x of [20, 60, 100]) {
+      const r = at("middle", x, sagittal);
+      for (const id of ["hip-frontal", "hip-rotation", "knee-frontal"]) close(J(r, id).torque, 0, 1e-9);
+    }
+  });
+
+  test("leg press 3D: hip moment vector = F·(a·z − dz·v) for a straight foot set out to the side", () => {
+    // Plate push F along −u at the mid-foot; a = how far up the plate, dz = how far out from the hip.
+    const placement = { footHeight: 0.1, halfWidth: 0.3, toeOut: 0, kneeTrack: 0 };
+    const r = analyzeMulti(ex, preset("middle"), 70, { ...opts, loadKg: 150, bodyMassKg: 1e-9, placement });
+    const F = (150 * G * Math.sin(Math.PI / 4)) / 2;
+    const a = placement.footHeight + body.lengths.midfoot;
+    const dz = placement.halfWidth - body.lengths.hipHalfWidth;
+    const vp = { x: -Math.SQRT1_2, y: Math.SQRT1_2 }; // up the plate
+    close(r.moments.hip.x, -F * dz * vp.x, 1e-6);
+    close(r.moments.hip.y, -F * dz * vp.y, 1e-6);
+    close(r.moments.hip.z, F * a, 1e-6);
+  });
+
+  test("leg press 3D: at 90° knee bend, hip rotation and knee valgus are the same moment; not at 60°", () => {
+    const r90 = at("wide", 90), r60 = at("wide", 60);
+    close(J(r90, "hip-rotation").torque, J(r90, "knee-frontal").torque, 1e-6);
+    assert.ok(Math.abs(J(r60, "hip-rotation").torque - J(r60, "knee-frontal").torque) > 1);
+  });
+
+  test("leg press 3D: a wide, toes-out stance loads the adductors and hip external rotators", () => {
+    const [wide, mid, narrow] = ["wide", "middle", "narrow"].map((vid) => at(vid));
+    assert.ok(J(wide, "hip-frontal").torque > J(mid, "hip-frontal").torque && J(mid, "hip-frontal").torque > Math.abs(J(narrow, "hip-frontal").torque));
+    assert.ok(J(wide, "hip-rotation").torque > J(mid, "hip-rotation").torque);
+    const act = (r, v) => Object.fromEntries(muscleActivation(ex, preset(v), r, 90).map((m) => [m.id, m.value]));
+    assert.ok(act(wide, "wide").adductors > act(mid, "middle").adductors);
+    assert.equal(act(wide, "wide")["gluteus-medius"], 0, "abductors idle while the adductors work");
+  });
+
+  test("leg press 3D: knees caving in raises the knee's valgus moment; knees out lowers it", () => {
+    const valgus = (k) => J(at("middle", 90, { kneeTrack: k }), "knee-frontal").torque;
+    assert.ok(valgus(-10) > valgus(0) && valgus(0) > valgus(10));
+  });
+}

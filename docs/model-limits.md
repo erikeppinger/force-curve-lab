@@ -56,7 +56,7 @@ For each position in the lift (the *driver*, e.g. knee angle):
 1. **A solver finds the posture** from the lift's constraint:
    - **Squat, Romanian deadlift:** both feet flat, and the centre of mass of body + load stays over the mid-foot. The squat sets the shin angle from the knee angle and solves the trunk lean. The hinge sets a slight knee bend and solves the shin angle (which is what pushes the hips back). If no angle balances, the UI says so.
    - **Split squat / lunge:** front foot flat, rear foot on a bench or the floor. The floor and bench push straight up, and how the weight splits between them follows from where the centre of mass is. The UI shows the front leg's share.
-   - **Leg press:** hips fixed in the seat, feet moving along the sled rail. The plate pushes along the rail with m·g·sin(rail angle).
+   - **Leg press:** hips fixed in the seat, feet moving along the sled rail. The plate pushes along the rail with m·g·sin(rail angle). This one runs in 3D; see below.
    - **Hip thrust / glute bridge:** shoulders on the bench (or floor), feet flat, bar on the hips. Both contacts push straight up, and the reactions come from moment balance.
    - **Bench press:** shoulder fixed, the bar moving in a straight line from the touch point to lockout, forearms vertical.
 2. **Statics:** each joint's torque is the moment of every force on one side of it, choosing the side whose forces are all known (everything above the hip in a squat; the leg and sled in a leg press). Torques are per leg (or arm), positive when the joint's working muscles resist.
@@ -71,7 +71,7 @@ The tests check the classic hand formulas (e.g. squat hip torque = Σ m·g·hori
 - **Squat:** low-bar moves torque from the knees to the hips; the front and goblet squats keep the trunk upright and load the knees more. The ankle torque stays small and constant: it's the weight above the ankle times the 4 cm from the ankle to the mid-foot.
 - **Romanian deadlift:** hip torque grows steadily through the hinge, and the knee has a small *flexor* demand (hamstrings and calves pulling the knee back).
 - **Split squat:** leaning forward with a more vertical shin moves torque from the knee to the hip.
-- **Leg press:** feet high = more hip, less knee; feet low = the opposite.
+- **Leg press:** feet high = more hip, less knee; feet low = the opposite. Stance width, toe angle and knee tracking: see the 3D section.
 - **Hip thrust:** effort is highest at lockout, where hip-extensor strength is lowest. Moving the feet further away turns the knee demand from quads to hamstrings.
 - **Bench press:** the shoulder's moment arm is largest with the bar on the chest and close to zero at lockout.
 
@@ -85,3 +85,43 @@ The tests check the classic hand formulas (e.g. squat hip torque = Σ m·g·hori
 - **One driver range per exercise.** The glute bridge only reaches about 0–35° of hip flexion before the hips hit the floor (the UI flags it), but shares the hip thrust's 0–80° range. The split squat starts at 40° of front-knee bend because a rear foot on the floor can't be reached with a straighter front leg.
 - **Leg press:** sled weight and friction are ignored; only the plates count.
 - **Strength numbers are estimates**, per leg, for a typical trained adult, marked `TODO` with no source checked. Use the strength slider to scale them.
+
+## 3D: leg press foot placement
+
+Stance width, toes in or out and knees caving in all happen outside the side-view plane, so the leg press now runs on a 3D model (`js/multijoint3d.js`) with a drag-to-turn view (`js/view3d.js`, hand-rolled SVG, no libraries).
+
+### How it works
+
+- **Placement controls:** feet up or down the plate, each foot's distance from the middle, toes out or in, knees out or in of the line over the toes. The variants are presets for these sliders.
+- **Posture:** the ankle slides along the rail until the hip–ankle distance matches the knee angle. The knee sits in the plane of the hip–ankle line and the foot ("knees over the toes"), then turns about that line by the knee-tracking angle.
+- **Forces:** the plate pushes along the rail at each mid-foot (half the sled force per leg), plus the leg's segment weights.
+- **Joint moments as vectors**, split into anatomical components:
+  - **Hip:** extension, adduction (+) / abduction (−), external (+) / internal (−) rotation. Muscles: glutes and adductor magnus, adductors vs gluteus medius and minimus, deep external rotators.
+  - **Knee:** extension (quadriceps), and valgus (+) / varus (−). The sideways knee moment is carried mostly by ligaments and the joint surfaces, so it's shown as torque without an effort figure.
+  - **Ankle:** plantarflexion.
+- **Tests:**
+  - With the feet under the hips and the toes forward, every sideways and rotation component is exactly zero (the 3D model reduces to the side view).
+  - A hand-derived hip moment vector F·(a·z − dz·v) for a foot set out to the side.
+  - Teaching points: a wide, toes-out stance loads the adductors and external rotators; knees caving in raises the valgus moment.
+
+### What it shows
+
+- **Feet high or low** still swaps hip and knee work, as in the side view.
+- **Wider stance and toes out:** the push tends to spread the thighs and turn them inwards, so the adductors and external rotators must hold. The knee extension torque drops a little, and the knee gets an external valgus moment (the push line passes outside the knee).
+- **Narrow stance, toes forward:** the sideways components nearly vanish.
+- **Knees caving in** (relative to the toes) raises the knee's valgus moment; pushing the knees out lowers it.
+- **At exactly 90° of knee bend** the knee's valgus axis lines up with the thigh, so hip rotation and knee valgus are the same moment. They separate at other angles. This is real geometry, not a bug.
+
+### What it can't show
+
+- **Which part of the quadriceps works.** All four heads extend the knee, so net joint torques can't say whether toes out shifts work towards the vastus medialis. That needs a muscle model (moment arms and lines of action per muscle, e.g. OpenSim) or EMG data; sources not checked yet (`TODO`).
+- **Sideways grip on the plate.** The plate is assumed to push straight along the rail. Real feet can also push outwards or inwards against each other through friction, which would change the hip's sideways and rotation moments.
+- **Rotator and adductor strengths** are rough constants (`TODO`), so their effort percentages are the least reliable numbers on the page.
+- **The ankle's side-to-side (inversion / eversion) moment** isn't reported.
+
+### Next: the 3D model for other lifts
+
+The 3D statics and the view are generic; each lift needs its own posture rule.
+
+- **Squat** (stance width, toe angle, knee tracking): the standing solver plus the same knee-over-toes rule. The closest next step.
+- **Bench press elbow:** needs grip width and elbow flare, both hands on a rigid bar (a closed chain), and an assumption for how the hands push sideways on the bar. With hands pushing straight down, the elbow's torque is the bar's force times the sideways distance from elbow to hand in the front view. That's the "bar inside or outside the elbows" effect the side view misses.

@@ -14,6 +14,7 @@
 // Pure functions only — imported by the browser UI and by node tests.
 
 import { G, interp } from "./physics.js";
+import { legPress3d } from "./multijoint3d.js";
 
 const rad = (d) => (d * Math.PI) / 180;
 const deg = (r) => (r * 180) / Math.PI;
@@ -215,60 +216,6 @@ function split(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
 }
 
 /**
- * Leg press (driver: knee flexion). Hips fixed in the seat; the feet move with the sled along
- * its rail. The plate pushes along the rail with the sled's weight component (m·g·sin rail
- * angle), shared by both legs, at the mid-foot. Torques from the leg side (free, distal).
- */
-function legPress(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
-  const P = v.params;
-  const L = body.lengths, m = body.mass, c = body.com;
-  const H = { x: 0, y: 0.45 };
-  const ang = rad(P.railAngle);
-  const u = { x: Math.cos(ang), y: Math.sin(ang) }; // rail direction, away from the seat
-  const vp = ccw(u); // up the plate
-  // Hip→ankle distance for this knee angle (law of cosines), then slide along the rail.
-  const D = Math.sqrt(L.thigh ** 2 + L.shank ** 2 + 2 * L.thigh * L.shank * Math.cos(rad(x)));
-  const s = Math.sqrt(Math.max(0, D * D - P.footOffset ** 2));
-  const A = add(add(H, vp, P.footOffset), u, s);
-  const K = ik2(H, A, L.thigh, L.shank, 1);
-  const plate = add(A, u, L.ankleHeight);
-  const cop = add(plate, vp, L.midfoot);
-  const F = (loadKg * G * Math.sin(ang)) / 2;
-  const push = { at: cop, f: { x: -F * u.x, y: -F * u.y } };
-  const footW = weight(add(A, vp, L.midfoot), m.foot * kg);
-  const shankW = weight(lerp(A, K, c.shank), m.shank * kg);
-  const thighW = weight(lerp(K, H, c.thigh), m.thigh * kg);
-  const back = { x: -Math.sin(rad(P.backRecline)), y: Math.cos(rad(P.backRecline)) };
-  const S = add(H, back, L.trunk);
-  const thighDir = unit(sub(K, H)), shankDir = unit(sub(A, K));
-  const hipFlex = 180 - angleBetween(back, thighDir);
-  const ankleDorsi = angleBetween(shankDir, vp) - 90;
-  return {
-    joints: {
-      hip: { at: H, angle: hipFlex, ...jointTorque(H, [push, footW, shankW, thighW], "hip-extension", "distal") },
-      knee: { at: K, angle: x, ...jointTorque(K, [push, footW, shankW], "knee-extension", "distal") },
-      ankle: { at: A, angle: -ankleDorsi, ...jointTorque(A, [push, footW], "plantarflexion", "distal") },
-    },
-    segs: { shank: [A, K], thigh: [K, H], trunk: [H, S] },
-    draw: [
-      { a: add(plate, vp, -L.heel), b: add(plate, vp, L.footFront), w: 0.05, cls: "body" },
-      { a: A, b: K, w: 0.1, cls: "body" }, { a: K, b: H, w: 0.14, cls: "body" }, { a: H, b: S, w: 0.2, cls: "body" },
-      { circle: add(S, back, 0.22), r: 0.11, cls: "body" }],
-    arms: [{ from: S, to: add(H, { x: 0.12, y: -0.05 }) }],
-    loads: [],
-    props: [
-      { a: add(H, ccw(back), 0.13), b: add(add(H, ccw(back), 0.13), back, 0.75), w: 0.05, cls: "equipment" },
-      { a: { x: -0.25, y: 0.36 }, b: { x: 0.15, y: 0.36 }, w: 0.05, cls: "equipment" },
-      { a: { x: 0, y: 0.34 }, b: { x: 0, y: 0 }, w: 0.04, cls: "equipment" },
-      { a: add(add(plate, u, 0.02), vp, -0.18), b: add(add(plate, u, 0.02), vp, 0.32), w: 0.04, cls: "pad" },
-      { a: add(H, vp, -0.25), b: add(add(H, vp, -0.25), u, 1.3), w: 0.015, cls: "equipment" },
-    ],
-    balance: null,
-    info: [],
-  };
-}
-
-/**
  * Hip thrust / glute bridge (driver: hip flexion). Upper back on the bench (or floor), feet
  * flat, bar on the hips. Both contacts push straight up (no friction) and the foot's push is
  * taken at the mid-foot, which makes the reactions solvable from moment balance.
@@ -373,16 +320,20 @@ function bench(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
   };
 }
 
-const SOLVERS = { standing, split, legPress, hipThrust, bench };
+const SOLVERS = { standing, split, hipThrust, bench, legPress3d };
 
 /** Full analysis at one driver value: posture, forces and per-joint torque, capacity and effort. */
 export function analyzeMulti(exercise, variant, x, opts) {
   const r = SOLVERS[exercise.solver](exercise, variant, x, opts);
   const scale = (opts.strengthPct ?? 100) / 100;
+  // Two-sided components (e.g. hip adductors / abductors) use the `negative` group's strength
+  // when the torque is negative; `passive` ones (knee valgus) have no muscle capacity.
   r.joints = exercise.joints.map((j) => {
     const s = r.joints[j.id];
-    const capacity = interp(j.strength.points, s.angle) * j.peakTorqueNm * scale;
-    return { ...j, ...s, capacity, effort: Math.max(0, s.torque) / capacity };
+    if (j.passive) return { ...j, ...s, capacity: null, effort: null };
+    const neg = s.torque < 0 && j.negative;
+    const capacity = interp(j.strength.points, s.angle) * (neg ? j.negative.peakTorqueNm : j.peakTorqueNm) * scale;
+    return { ...j, ...s, capacity, effort: (neg ? -s.torque : Math.max(0, s.torque)) / capacity };
   });
   return r;
 }

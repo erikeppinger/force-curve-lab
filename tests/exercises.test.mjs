@@ -23,10 +23,11 @@ for (const id of multi) {
   const ex = load(id);
   test(`${id}: multi-joint shape`, () => {
     assert.equal(ex.id, id);
-    assert.ok(["standing", "split", "legPress", "hipThrust", "bench"].includes(ex.solver));
+    assert.ok(["standing", "split", "legPress3d", "hipThrust", "bench"].includes(ex.solver));
     assert.ok(ex.joints.length >= 1);
     for (const j of ex.joints) {
-      assert.ok(j.peakTorqueNm > 0 && sorted(j.strength.points) && j.strength.note && j.strength.source, j.id);
+      assert.ok(sorted(j.strength.points) && j.strength.note && j.strength.source, j.id);
+      if (!j.passive) assert.ok(j.peakTorqueNm > 0 && (!j.negative || j.negative.peakTorqueNm > 0), j.id);
     }
     for (const m of ex.muscles) {
       assert.ok(m.note && sorted(m.weight), m.id);

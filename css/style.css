@@ -19,6 +19,9 @@
   --j-knee: #2f6fdb;
   --j-ankle: #1e8a5a;
   --j-shoulder: #2f6fdb;
+  --j-hip-frontal: #c0661a;
+  --j-hip-rotation: #0f8b8d;
+  --j-knee-frontal: #b3261e;
   --radius: 14px;
   color-scheme: light;
 }
@@ -45,6 +48,9 @@
     --j-knee: #6b9cf0;
     --j-ankle: #5fd39a;
     --j-shoulder: #6b9cf0;
+    --j-hip-frontal: #f0a35a;
+    --j-hip-rotation: #4fd1d3;
+    --j-knee-frontal: #ff8a80;
     color-scheme: dark;
   }
 }
@@ -144,6 +150,11 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .ma-knee { stroke: var(--j-knee); fill: var(--j-knee); }
 #figure .ma-ankle { stroke: var(--j-ankle); fill: var(--j-ankle); }
 #figure .ma-shoulder { stroke: var(--j-shoulder); fill: var(--j-shoulder); }
+#figure .plate3d { fill: var(--compare); fill-opacity: 0.07; stroke: var(--compare); stroke-width: 2; }
+#figure.draggable { cursor: grab; touch-action: pan-y; user-select: none; }
+.view-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 6px; }
+.view-buttons button { min-height: 36px; padding: 4px 12px; }
+.placement-sliders { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); grid-column: 1 / -1; }
 #figure text.ma-label { stroke: var(--card); }
 
 .joint-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-variant-numeric: tabular-nums; }
@@ -155,6 +166,11 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 .joint-table .jt-knee { border-left-color: var(--j-knee); }
 .joint-table .jt-ankle { border-left-color: var(--j-ankle); }
 .joint-table .jt-shoulder { border-left-color: var(--j-shoulder); }
+.joint-table .jt-hip-frontal { border-left-color: var(--j-hip-frontal); }
+.joint-table .jt-hip-rotation { border-left-color: var(--j-hip-rotation); }
+.joint-table .jt-knee-frontal { border-left-color: var(--j-knee-frontal); }
+.joint-table tbody td small { display: block; font-size: 0.72rem; color: var(--muted); }
+.joint-table tbody th small { display: block; font-size: 0.75rem; font-weight: 400; color: var(--muted); }
 .joint-table td.over { color: var(--warning); font-weight: 700; }
 #ro-limb .warn { color: var(--warning); font-weight: 600; }
 
@@ -185,6 +201,9 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 .charts .line.joint-knee { stroke: var(--j-knee); }
 .charts .line.joint-ankle { stroke: var(--j-ankle); }
 .charts .line.joint-shoulder { stroke: var(--j-shoulder); }
+.charts .line.joint-hip-frontal { stroke: var(--j-hip-frontal); }
+.charts .line.joint-hip-rotation { stroke: var(--j-hip-rotation); }
+.charts .line.joint-knee-frontal { stroke: var(--j-knee-frontal); stroke-width: 2; }
 .charts .line.cap { stroke-width: 1.5; stroke-dasharray: 2 4; opacity: 0.8; }
 .charts .line.dash { stroke-dasharray: 7 5; opacity: 0.8; }
 .legend { list-style: none; padding: 0; margin: 0 0 6px; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.85rem; color: var(--muted); }
@@ -196,6 +215,9 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 .legend .sw.joint-knee { border-color: var(--j-knee); }
 .legend .sw.joint-ankle { border-color: var(--j-ankle); }
 .legend .sw.joint-shoulder { border-color: var(--j-shoulder); }
+.legend .sw.joint-hip-frontal { border-color: var(--j-hip-frontal); }
+.legend .sw.joint-hip-rotation { border-color: var(--j-hip-rotation); }
+.legend .sw.joint-knee-frontal { border-color: var(--j-knee-frontal); }
 .legend .sw.cap { border-color: var(--muted); border-top-style: dotted; }
 .legend .sw.dash { border-color: var(--muted); border-top-style: dashed; }
 

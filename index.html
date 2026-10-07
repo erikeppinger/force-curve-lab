@@ -45,6 +45,10 @@
         </label>
         <button id="pulley-reset" type="button" class="secondary">Reset pulley</button>
       </div>
+      <div id="placement-controls" class="control-grid pulley" hidden>
+        <div id="placement-sliders" class="placement-sliders"></div>
+        <button id="placement-reset" type="button" class="secondary">Reset to preset</button>
+      </div>
       <div class="angle-row">
         <button id="play" type="button" aria-pressed="false">Play</button>
         <label class="grow"><span id="angle-label">Joint angle</span> <output id="angle-out"></output>
@@ -58,6 +62,12 @@
       <div class="card-head">
         <h3 id="figure-title">Side view</h3>
         <span class="pill" id="variant-equipment"></span>
+      </div>
+      <div id="view-buttons" class="view-buttons" role="group" aria-label="Camera" hidden>
+        <button type="button" class="secondary" data-cam="3d">3D</button>
+        <button type="button" class="secondary" data-cam="side">Side</button>
+        <button type="button" class="secondary" data-cam="front">Front</button>
+        <button type="button" class="secondary" data-cam="top">Top</button>
       </div>
       <svg id="figure" role="img" aria-label="The arm, load, force direction and moment arm"></svg>
       <dl class="readouts" id="readouts">

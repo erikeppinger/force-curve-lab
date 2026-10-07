@@ -6,6 +6,8 @@ Static teaching site (GitHub Pages). Vanilla ES modules. **No build step, no npm
 - `index.html`, `css/style.css`: one page; light and dark mode via CSS variables
 - `js/physics.js`: pure statics (`pose`, `loadForce`, `limbWeights`, `analyze`, `sampleCurve`). No DOM. Imported by the tests. Every exercise is a two-segment chain (base → mid → tip); `analyze` returns `jointTorque` (= `loadTorque` + `limbTorque`) about the moving joint, positive when it resists the lift.
 - `js/multijoint.js`: multi-joint lifts. A solver per lift family turns the driver value into a posture (balance, rail, bar path, contacts), then `jointTorque` sums the moments on one side of each joint. Shared anthropometry in `data/body.json`
+- `js/multijoint3d.js`: 3D statics (vectors, joint moments split into anatomical components) and the 3D leg press. Right leg analysed, left mirrored
+- `js/view3d.js`: hand-rolled orthographic 3D view in SVG with drag-to-turn and camera presets
 - `js/muscles.js`: activation estimate from the physics result
 - `js/figure.js`, `js/chart.js`: hand-rolled SVG rendering. The figure draws `postures` and muscle `draw` specs from the JSON, rotated so the variant's gravity points down
 - `js/wger.js`: optional wger.de API calls; must fail silently

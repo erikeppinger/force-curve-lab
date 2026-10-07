@@ -8,9 +8,10 @@
     "thigh": 0.43,
     "trunk": 0.52,
     "upperArm": 0.30,
-    "forearm": 0.33
+    "forearm": 0.33,
+    "hipHalfWidth": 0.09
   },
-  "lengthsNote": "Metres, typical adult. ankleHeight: floor→ankle joint. footFront / heel: ball of the foot in front of / heel behind the ankle. midfoot: balance point in front of the ankle. trunk: hip→shoulder joint.",
+  "lengthsNote": "Metres, typical adult. ankleHeight: floor→ankle joint. footFront / heel: ball of the foot in front of / heel behind the ankle. midfoot: balance point in front of the ankle. trunk: hip→shoulder joint. hipHalfWidth: midline→hip joint.",
   "mass": {
     "foot": 0.0145,
     "shank": 0.0465,

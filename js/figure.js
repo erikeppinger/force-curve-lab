@@ -32,7 +32,7 @@ export function screenRotation(variant) {
 /** Title for the figure card. */
 export function viewTitle(exercise, variant) {
   if (variant.viewLabel) return variant.viewLabel;
-  return { side: "Side view", front: "Front view", top: "Top view" }[exercise.view ?? "side"];
+  return { side: "Side view", front: "Front view", top: "Top view", "3d": "3D view (drag to turn)" }[exercise.view ?? "side"];
 }
 
 const postureOf = (exercise, variant) => {

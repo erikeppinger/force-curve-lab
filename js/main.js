@@ -3,6 +3,7 @@ import { muscleActivation } from "./muscles.js";
 import { renderChart } from "./chart.js";
 import { renderFigure, figureBounds, viewTitle, renderMultiFigure, multiBounds } from "./figure.js";
 import { analyzeMulti, sampleMulti } from "./multijoint.js";
+import { CAMERAS, scene3d, bounds3d, renderView3d } from "./view3d.js";
 import { fetchExercise, descriptionParagraphs, bodyBackground, muscleOverlay, isBackMuscle } from "./wger.js";
 
 const EXERCISES = [
@@ -22,6 +23,8 @@ const state = {
   bodyMassKg: 75,
   strengthPct: 100,
   body: null,
+  placement: null, // live foot placement for 3D lifts (main variant only)
+  cam: { ...CAMERAS["3d"] },
   angle: 90,
   pulley: null,
   playing: false,
@@ -35,6 +38,7 @@ const opts = (v) => ({
   bodyMassKg: state.bodyMassKg,
   strengthPct: state.strengthPct,
   body: state.body,
+  placement: v.id === state.variantId ? state.placement : undefined,
   pulley: v.id === state.variantId ? state.pulley : undefined,
 });
 
@@ -79,10 +83,29 @@ function setVariant(id, pulley, load) {
     $("pulley-x").value = state.pulley.x;
     $("pulley-y").value = state.pulley.y;
   }
+  setPlacement(v);
   $("variant-notes").textContent = v.notes;
   $("variant-equipment").textContent = v.equipment;
   $("figure-title").textContent = viewTitle(state.exercise, v);
   $("load-label").textContent = v.load?.type === "reaction" ? "Added load" : "Load";
+}
+
+/** Foot-placement sliders (3D lifts): start from the variant's preset. */
+function setPlacement(v) {
+  const spec = state.exercise.placement;
+  $("placement-controls").hidden = !spec;
+  if (!spec) { state.placement = null; return; }
+  state.placement = Object.fromEntries(spec.map((s) => [s.key, v.params[s.key]]));
+  $("placement-sliders").replaceChildren(...spec.map((s) => {
+    const label = document.createElement("label");
+    const out = document.createElement("output");
+    const input = Object.assign(document.createElement("input"), { type: "range", min: s.min, max: s.max, step: s.step, value: state.placement[s.key] });
+    const show = () => { out.textContent = `${Math.round(state.placement[s.key] * s.scale)} ${s.unit}`; };
+    input.addEventListener("input", () => { state.placement[s.key] = +input.value; show(); render(); });
+    show();
+    label.append(`${s.label} `, out, input);
+    return label;
+  }));
 }
 
 /** Does the body-mass setting change anything (limb weight, or body weight on the floor)? */
@@ -167,6 +190,8 @@ function setExercise(id, h = {}) {
   $("strength").value = multi ? 100 : state.peakTorqueNm;
   $("strength-out").textContent = multi ? "100%" : `${state.peakTorqueNm} Nm`;
   $("readouts").hidden = multi;
+  $("view-buttons").hidden = ex.view !== "3d";
+  $("figure").classList.toggle("draggable", ex.view === "3d");
   $("joint-table").hidden = !multi;
   buildLegend(ex);
   const [lo, hi] = ex.angleRange;
@@ -186,13 +211,13 @@ function setExercise(id, h = {}) {
 // ---------- render ----------
 let curveCache = null;
 function curves() {
-  const key = JSON.stringify([state.exercise.id, state.variantId, state.compareId, state.loadKg, state.peakTorqueNm, state.bodyMassKg, state.pulley]);
+  const key = JSON.stringify([state.exercise.id, state.variantId, state.compareId, state.loadKg, state.peakTorqueNm, state.bodyMassKg, state.strengthPct, state.pulley, state.placement]);
   if (curveCache?.key === key) return curveCache;
   const ex = state.exercise;
   if (ex.model === "multi") {
     const main = sampleMulti(ex, variant(), opts(variant()));
     const cmp = state.compareId ? sampleMulti(ex, variant(state.compareId), opts(variant(state.compareId))) : null;
-    curveCache = { key, main, cmp, bounds: multiBounds(main) };
+    curveCache = { key, main, cmp, bounds: ex.view === "3d" ? null : multiBounds(main) };
     return curveCache;
   }
   const main = sampleCurve(ex, variant(), opts(variant()));
@@ -209,7 +234,8 @@ function phaseAt(angle) {
 /** Legend for the torque chart: one entry per joint for multi-joint lifts. */
 function buildLegend(ex) {
   const items = ex.model === "multi"
-    ? [...ex.joints.map((j) => [`joint-${j.id}`, `${j.name} (${j.action.toLowerCase()})`]), ["cap", "Strength (dotted)"], ["dash", "Comparison (dashed)"]]
+    ? [...ex.joints.map((j) => [`joint-${j.id}`, j.negative ? `${j.action} (+) / ${j.negative.action.toLowerCase()} (−)` : `${j.name} (${j.action.toLowerCase()})`]),
+      ["cap", "Strength (dotted)"], ["dash", "Comparison (dashed)"]]
     : [["primary", "Selected variant"], ["compare", "Comparison"], ["strength", "Muscle strength (capacity)"]];
   $("torque-legend").replaceChildren(...items.map(([cls, text]) => {
     const li = document.createElement("li");
@@ -232,14 +258,25 @@ function renderMulti() {
   const r = analyzeMulti(ex, v, state.angle, opts(v));
   const act = muscleActivation(ex, v, r, state.angle);
   const { main, cmp, bounds } = curves();
-  renderMultiFigure($("figure"), { exercise: ex, variant: v, result: r, activation: act, bounds });
+  if (ex.view === "3d") {
+    // Bounds over the whole range for this camera, so the figure doesn't jump while animating.
+    const camKey = `${state.cam.yaw},${state.cam.pitch}`;
+    if (curves().camKey !== camKey) {
+      Object.assign(curves(), { camKey, bounds3: bounds3d(main.filter((_, i) => i % 8 === 0 || i === main.length - 1).map((s) => scene3d(ex, s, act)), state.cam) });
+    }
+    renderView3d($("figure"), scene3d(ex, r, act), state.cam, curves().bounds3);
+  } else {
+    renderMultiFigure($("figure"), { exercise: ex, variant: v, result: r, activation: act, bounds });
+  }
 
   const unit = ex.angleUnit ?? "°";
   const bands = ex.phases.map((p) => ({ from: p.range[0], to: p.range[1], label: p.name }));
-  const series = (samples, key, cls, scale = 1) => ex.joints.map((j, i) => ({
+  const series = (samples, key, cls, scale = 1) => ex.joints.flatMap((j, i) => (key !== "torque" && j.passive ? [] : [{
     points: samples.map((s) => [s.angle, s.joints[i][key] * scale]), className: `joint-${j.id} ${cls}`,
-  }));
-  const torque = [...series(main, "capacity", "cap"), ...(cmp ? series(cmp, "torque", "dash") : []), ...series(main, "torque", "")];
+  }]));
+  // Capacity lines only for the main (extensor) groups; two-sided ones would clutter.
+  const caps = series(main, "capacity", "cap").filter((s) => !ex.joints.find((j) => s.className.startsWith(`joint-${j.id} `))?.negative);
+  const torque = [...caps, ...(cmp ? series(cmp, "torque", "dash") : []), ...series(main, "torque", "")];
   const all = torque.flatMap((s) => s.points.map((p) => p[1]));
   renderChart($("torque-chart"), {
     xRange: ex.angleRange, series: torque, bands, marker: state.angle, yMin: Math.min(0, ...all), xUnit: unit,
@@ -256,27 +293,34 @@ function renderMulti() {
   body.replaceChildren(...r.joints.map((j) => {
     const tr = document.createElement("tr");
     const opposite = j.torque < -0.5;
+    const action = opposite && j.negative ? j.negative.action : j.action;
     const cells = [
-      `${j.name}`,
-      `${Math.abs(j.torque).toFixed(0)} Nm${opposite ? " (opposite)" : ""}`,
-      `${(j.momentArm * 100).toFixed(1)} cm`,
-      `${(j.effort * 100).toFixed(0)}%`,
+      j.name,
+      `${Math.abs(j.torque).toFixed(0)} Nm`,
+      j.momentArm == null ? "—" : `${(j.momentArm * 100).toFixed(1)} cm`,
+      j.effort == null ? "ligaments" : `${(j.effort * 100).toFixed(0)}%`,
     ];
     cells.forEach((t, i) => {
       const td = document.createElement(i ? "td" : "th");
       td.textContent = t;
-      if (i === 0) { td.scope = "row"; td.className = `jt-${j.id}`; }
+      if (i === 0) {
+        td.scope = "row";
+        td.className = `jt-${j.id}`;
+        if (j.negative) td.append(Object.assign(document.createElement("small"), { textContent: action }));
+      }
+      if (i === 1 && opposite && !j.negative) td.append(Object.assign(document.createElement("small"), { textContent: "opposite muscles" }));
       if (i === 3 && j.effort > 1) td.className = "over";
       tr.append(td);
     });
-    tr.title = opposite ? `${j.name}: the opposite muscles to ${j.action.toLowerCase()} have to work here.` : j.action;
+    tr.title = opposite && !j.negative ? `${j.name}: the opposite muscles to ${j.action.toLowerCase()} have to work here.` : action;
     return tr;
   }));
   const over = r.joints.filter((j) => j.effort > 1);
   $("ro-warning").hidden = !over.length;
   $("ro-warning").textContent = `Load exceeds ${over.map((j) => j.name.toLowerCase()).join(" and ")} strength here — this is where the lift would fail.`;
-  $("ro-limb").hidden = !r.info.length;
-  $("ro-limb").replaceChildren(...r.info.map((i) => Object.assign(document.createElement("span"), { textContent: `${i.text} `, className: i.warn ? "warn" : "" })));
+  const info = ex.view === "3d" ? [{ text: "Moment arm = the joint's 3D distance from the plate's push line; it feeds every component of that joint's torque." }, ...r.info] : r.info;
+  $("ro-limb").hidden = !info.length;
+  $("ro-limb").replaceChildren(...info.map((i) => Object.assign(document.createElement("span"), { textContent: `${i.text} `, className: i.warn ? "warn" : "" })));
   renderPhase(ex);
   renderMuscles(act);
 }
@@ -392,6 +436,26 @@ function bind() {
     $(`pulley-${axis}`).addEventListener("input", (e) => { state.pulley[axis] = +e.target.value; writeHash(); render(); });
   }
   $("pulley-reset").addEventListener("click", () => { setVariant(state.variantId); writeHash(); render(); });
+  $("placement-reset").addEventListener("click", () => { setPlacement(variant()); render(); });
+  for (const b of $("view-buttons").querySelectorAll("button")) {
+    b.addEventListener("click", () => { state.cam = { ...CAMERAS[b.dataset.cam] }; render(); });
+  }
+  // Drag to turn the 3D view (horizontal drags only on touch, so the page still scrolls).
+  let drag = null;
+  $("figure").addEventListener("pointerdown", (e) => {
+    if (state.exercise.view !== "3d") return;
+    drag = { x: e.clientX, y: e.clientY, cam: { ...state.cam } };
+    $("figure").setPointerCapture(e.pointerId);
+  });
+  $("figure").addEventListener("pointermove", (e) => {
+    if (!drag) return;
+    state.cam.yaw = drag.cam.yaw - (e.clientX - drag.x) * 0.5;
+    state.cam.pitch = Math.max(-10, Math.min(90, drag.cam.pitch + (e.clientY - drag.y) * 0.5));
+    if (!state.playing) render();
+  });
+  const end = () => { drag = null; };
+  $("figure").addEventListener("pointerup", end);
+  $("figure").addEventListener("pointercancel", end);
 }
 
 async function init() {

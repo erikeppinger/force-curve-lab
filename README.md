@@ -7,6 +7,7 @@ Exercises (2–5 equipment variants each):
 - **Arms and shoulders:** biceps curl, triceps extension, lateral raise, front raise, chest fly, straight-arm pulldown / pullover
 - **Legs:** leg extension, leg curl, calf raise, hip abduction, glute kickback
 - **Multi-joint:** squat, Romanian deadlift, split squat / lunge, leg press, hip thrust, bench press. These show hip, knee and ankle torques and effort together.
+- **3D:** the leg press has foot-placement controls (height, stance width, toe angle, knee tracking), sideways and rotation components at the hip and knee, and a drag-to-turn 3D view.
 
 [`docs/model-limits.md`](docs/model-limits.md) explains how both models work and what they still approximate.
 
@@ -71,6 +72,8 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [ ] Bands (load grows with stretch)
 - [x] Multi-joint model: squat, Romanian deadlift, split squat, leg press, hip thrust, bench press (shoulder only)
 - [ ] Multi-joint: conventional deadlift, overhead press, rows; measured posture rules instead of assumed ones
+- [x] 3D leg press: stance width, toe angle, knee tracking
+- [ ] 3D squat (same foot-placement controls)
 - [ ] 3D elbow model for presses (bar inside or outside the elbows)
 - [ ] Literature sources for strength curves, muscle weights and cam profiles; optionally precomputed OpenSim results as JSON
 - [x] Back-view body map
