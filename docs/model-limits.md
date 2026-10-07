@@ -151,7 +151,7 @@ Shoulder **and** elbow (`bench3d`), with both hands on a rigid bar.
 
 What it shows:
 
-- **Grip width:** close grip loads the triceps and nearly removes the pecs' across-the-body work; wide grip does the opposite (about 4× the horizontal-adduction torque of a medium grip at 80 kg).
+- **Grip width:** close grip loads the triceps and nearly removes the pecs' across-the-body work; wide grip does the opposite (about 1.6× the medium grip's horizontal-adduction torque at 80 kg, 88 vs 54 Nm per arm on the chest).
 - **Elbows outside the hands** change the rotation torques at the shoulder and the flare angle.
 
 Limits:
