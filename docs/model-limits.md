@@ -392,6 +392,15 @@ What it shows:
   - Boland et al. 2008 (fine-wire EMG) found no grip effect.
   - The reverse curl's 1.2× modifier stays an estimate.
 
+**In the multi-joint lifts** (squat, Romanian deadlift, deadlift, split squat, leg press, hip thrust, bent-over row), an exercise-wide `jointScale` makes one joint's strength depend on another joint's angle, for one torque direction only:
+
+- **Calves:** plantarflexion strength follows the knee angle (Cresswell et al.). That is 1.20 with the knee straight, 0.92 at 90° and 0.72 at 120° of knee bend, relative to the base curve's 50°. A squat's calves get weaker as it deepens; a stiff-legged RDL's are at their strongest.
+- **Hamstrings:** knee-flexion strength follows the hip angle (Guex et al.). That is 0.61 with the hip straight and 1.09 at 90°.
+  - The knees now have Anderson et al.'s knee-flexion curve as their negative direction. Knee-flexor demands (the RDL, the hip thrust with the feet far out, the deadlift's top) now show an effort instead of "opposite muscles".
+  - A hip thrust at the bottom puts the hamstrings short at both joints (knee bent past 100°), so their knee-flexion capacity is low there.
+- **Least-effort search:** it uses the same corrected strengths, so the sideways floor push it picks matches the effort the app shows.
+- **Not corrected:** knee extension needs no correction (rectus femoris: Black et al., Bampouras et al.). Hip extension vs knee angle (the hamstrings at the hip) has no source yet.
+
 Limits:
 
 - **Single test angles:** Guex et al. tested one knee angle (45°), so the factor is applied across the whole range.
@@ -403,4 +412,4 @@ Limits:
 - Muscle activation weights (62 values; the bench grip-width effects are now backed by Mausehund et al. qualitatively).
 - Machine cam profiles.
 - Hip rotation strength in the 3D lifts, and the peak horizontal-adduction torque.
-- Two-joint muscles in the multi-joint lifts (e.g. the hamstrings' length in the deadlift and the gastrocnemius in the squat).
+- Hip-extension strength vs knee angle (the hamstrings' share at the hip).

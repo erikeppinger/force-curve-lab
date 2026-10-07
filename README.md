@@ -68,7 +68,7 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] Postures (lying, seated, kneeling, horizontal plane), limb weight, body weight for closed-chain lifts
 - [x] Two-joint muscles and grip in the single-joint exercises: lying vs seated leg curl, preacher, hammer and reverse curls, overhead and lying triceps (Guex 2012, Guenzkofer 2012, Kohn 2018, Kleiber 2015)
 - [x] Calf raise knee angle (Cresswell 1995, Baptista 2014, Kovács 2024); rectus femoris checked, no correction (Black 1993, Bampouras 2017)
-- [ ] Two-joint muscles in the multi-joint lifts
+- [x] Two-joint muscles in the multi-joint lifts: calf strength by knee angle, hamstring knee-flexion strength by hip angle (Cresswell 1995, Guex 2012)
 - [x] Machines with cam profiles (resistance curve as a data table): `load.type: "machine"`. The lateral-raise cam is illustrative; measured profiles still needed
 - [x] Resistance bands (`load.type: "band"`): band curl, band lateral raise
 - [x] Multi-joint model: squat, Romanian deadlift, split squat, leg press, hip thrust, bench press

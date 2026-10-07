@@ -14,7 +14,7 @@ All of the earlier list has now been read and is cited in the exercise files:
 - **Brachioradialis share with palms down.** A study with loads near training intensity and fine-wire EMG would settle the reverse-curl modifier; the three studies so far disagree.
 - **Horizontal abduction (rear-delt) strength in adults.** Silva et al. 2006 (Br J Sports Med 40:513–517) give an abduction / adduction ratio of about 0.77 in junior tennis players; adult norms are still needed.
 - **Hip rotation strength** for the 3D leg lifts.
-- **Two-joint muscles in multi-joint lifts:** hamstring and gastrocnemius strength at the hip and knee angles of a squat or deadlift.
+- **Hip-extension strength vs knee angle** (the hamstrings at the hip): the knee-angle side of the two-joint hamstrings.
 
 ## Classic strength-curve sources (not found online)
 

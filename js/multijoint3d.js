@@ -62,6 +62,32 @@ const toLine = (j, at, dir) => {
 };
 
 /**
+ * A posture correction for one joint's strength (e.g. elbow flexion with the arm overhead and
+ * the palms down, or plantarflexion with the knee bent): `factor`, `points` by the joint's angle
+ * (or by the angle of the joint named in `by`), or `grid` by the shoulder's angle
+ * (s.shoulderAngle) × the joint's angle, bilinear, held flat outside the grid.
+ */
+export function jointScaleAt(spec, s, joints = {}) {
+  if (!spec) return 1;
+  // Two-joint muscles: `by` names the other joint whose angle sets the factor; `direction`
+  // limits it to one torque sign (e.g. only the knee flexors, which are the hamstrings).
+  if (spec.direction === "negative" && !(s.torque < 0)) return 1;
+  if (spec.direction === "positive" && !(s.torque >= 0)) return 1;
+  if (spec.factor != null) return spec.factor;
+  if (spec.points) return interp(spec.points, spec.by ? joints[spec.by].angle : s.angle);
+  const { shoulder: sa, elbow: ea, values } = spec.grid;
+  const at = (axis, v) => {
+    const t = Math.min(Math.max(v, axis[0]), axis.at(-1));
+    let i = 0;
+    while (i < axis.length - 2 && t > axis[i + 1]) i++;
+    return [i, (t - axis[i]) / (axis[i + 1] - axis[i])];
+  };
+  const [i, u] = at(sa, s.shoulderAngle), [k, w] = at(ea, s.angle);
+  const v = (a, b) => values[a][b];
+  return (1 - u) * ((1 - w) * v(i, k) + w * v(i, k + 1)) + u * ((1 - w) * v(i + 1, k) + w * v(i + 1, k + 1));
+}
+
+/**
  * Static optimisation for one force statics can't decide (e.g. how hard the feet push sideways):
  * the value in [lo, hi] (a friction limit) that minimises the sum of squared efforts of the
  * exercise's muscle groups. `jointsAt(value)` returns the solver's joint components.
@@ -71,7 +97,9 @@ export function leastEffort(exercise, jointsAt, lo = -0.6, hi = 0.6) {
     const js = jointsAt(value);
     return exercise.joints.filter((j) => !j.passive).reduce((sum, j) => {
       const t = js[j.id].torque;
-      const cap = interp(j.strength.points, js[j.id].angle) * (t < 0 && j.negative ? j.negative.peakTorqueNm : j.peakTorqueNm);
+      const neg = t < 0 && j.negative;
+      const curve = neg && j.negative.points ? j.negative.points : j.strength.points;
+      const cap = interp(curve, js[j.id].angle) * (neg ? j.negative.peakTorqueNm : j.peakTorqueNm) * jointScaleAt(exercise.jointScale?.[j.id], js[j.id], js);
       return sum + (t < 0 && !j.negative ? 0 : (t / cap) ** 2);
     }, 0);
   };

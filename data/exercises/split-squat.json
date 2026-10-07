@@ -34,6 +34,13 @@
         "points": [[0, 0.14], [15, 0.46], [30, 0.72], [45, 0.91], [60, 0.99], [75, 0.98], [90, 0.85], [103, 0.67]],
         "note": "Relative isometric knee-extension torque vs knee flexion: weakest near full extension, peak about 65° (Anderson, tested 0–103°). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Lindahl et al. found the same shape (peak near 50°, about 50% of peak at 10°). Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m).",
         "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022; Lindahl O, Movin A, Ringqvist I (1969/1972). Isometric knee extension strength as a function of joint angle, muscle length and motor unit activity. Acta Orthop Scand 43:138–147"
+      },
+      "negative": {
+        "action": "Knee flexion",
+        "peakTorqueNm": 110,
+        "points": [[0, 0.9], [15, 0.97], [30, 1.0], [45, 0.97], [60, 0.9], [75, 0.78], [90, 0.61], [103, 0.45]],
+        "note": "Knee flexion (negative torque: hamstrings and gastrocnemius pull the knee back). Anderson et al.'s knee-flexion curve and peak, as in the leg curl, measured seated with the hip at about 70°; corrected for the hip angle below.",
+        "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
       }
     },
     {
@@ -88,6 +95,22 @@
       }
     }
   ],
+  "jointScale": {
+    "ankle": {
+      "by": "knee",
+      "direction": "positive",
+      "points": [[0, 1.2], [30, 1.06], [60, 0.97], [90, 0.92], [120, 0.72]],
+      "note": "Two-joint gastrocnemius: plantarflexion strength by knee flexion, relative to the base curve's test at 50° (Cresswell et al., Table 1: 134.9 Nm straight, 103.7 Nm at 90°, 80.4 Nm at 120°). A straight knee makes the calves about 20% stronger, a deep knee bend about 28% weaker.",
+      "source": "Cresswell AG, Löscher WN, Thorstensson A (1995). Influence of gastrocnemius muscle length on triceps surae torque development and electromyographic activity in man. Exp Brain Res 105:283–290 (Table 1: 10 men, isometric, ankle 5° dorsiflexed)"
+    },
+    "knee": {
+      "by": "hip",
+      "direction": "negative",
+      "points": [[0, 0.61], [30, 0.88], [60, 0.95], [90, 1.09]],
+      "note": "Two-joint hamstrings: knee-flexion strength by hip flexion, relative to the base curve's test at about 70° (Guex et al.: 62 Nm with the hip straight, 110 Nm at 90°, knee at 45°). Measured at one knee angle only.",
+      "source": "Guex K, Gojanovic B, Millet GP (2012). Influence of hip-flexion angle on hamstrings isokinetic activity in sprinters. J Athl Train 47(4):390–395. doi:10.4085/1062-6050-47.4.04 (Table: isometric, knee at 45°, 10 sprinters)"
+    }
+  },
   "muscles": [
     {
       "id": "quadriceps",

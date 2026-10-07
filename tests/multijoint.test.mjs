@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { analyzeMulti, sampleMulti, jointTorque, ik2, jointScaleAt } from "../js/multijoint.js";
-import { G } from "../js/physics.js";
+import { G, interp } from "../js/physics.js";
 import { muscleActivation } from "../js/muscles.js";
 
 const body = JSON.parse(readFileSync(new URL("../data/body.json", import.meta.url)));
@@ -615,3 +615,26 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
     close(lats.value, Math.min(1, Math.max(J(r, "shoulder-ext").effort, J(r, "shoulder-add").effort)), 1e-12);
   });
 }
+
+// ---------- two-joint muscles in the multi-joint lifts ----------
+test("two-joint muscles: calf strength follows the knee angle, hamstring (knee-flexor) strength the hip angle", () => {
+  const ex = load("squat"), sc = ex.jointScale;
+  // Cresswell et al.: 134.9 Nm straight, 103.7 Nm at 90°, relative to ~112.4 Nm at the base curve's 50°.
+  close(jointScaleAt(sc.ankle, { torque: 10, angle: 0 }, { knee: { angle: 0 } }), 1.2, 1e-12);
+  close(jointScaleAt(sc.ankle, { torque: 10, angle: 0 }, { knee: { angle: 90 } }), 0.92, 1e-12);
+  close(jointScaleAt(sc.ankle, { torque: -10, angle: 0 }, { knee: { angle: 90 } }), 1, 1e-12); // dorsiflexors: no correction
+  // Guex et al.: hip straight 62 Nm, hip 90° 110.1 Nm, relative to ~101 Nm at 70°; knee extensors untouched.
+  close(jointScaleAt(sc.knee, { torque: -10, angle: 30 }, { hip: { angle: 0 } }), 0.61, 1e-12);
+  close(jointScaleAt(sc.knee, { torque: 10, angle: 30 }, { hip: { angle: 0 } }), 1, 1e-12);
+  // In the lifts: the RDL's knee-flexor demand now has a capacity, scaled by its hip angle.
+  const rdl = load("romanian-deadlift"), v = rdl.variants[0];
+  const r = analyzeMulti(rdl, v, 80, { ...opts, placement: { sidePush: 0 } });
+  const k = J(r, "knee"), hip = J(r, "hip");
+  assert.ok(k.torque < 0 && k.effort > 0);
+  const kneeJ = rdl.joints.find((j) => j.id === "knee");
+  const expect = interp(kneeJ.negative.points, k.angle) * kneeJ.negative.peakTorqueNm * interp(rdl.jointScale.knee.points, hip.angle);
+  close(k.capacity, expect, 1e-9);
+  // Squat: same ankle torque is easier on the calves near standing (knee straighter) than deep.
+  const sq = (x) => J(analyzeMulti(ex, ex.variants[0], x, opts), "ankle");
+  assert.ok(sq(10).strengthScale > sq(110).strengthScale);
+});
