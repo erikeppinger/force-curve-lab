@@ -96,4 +96,6 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 ## Licences and credits
 
 - Exercise descriptions, images and muscle-map SVGs: [wger.de](https://wger.de), **CC-BY-SA 3.0**, loaded at runtime with attribution. If you vendor these files into the repo, they stay CC-BY-SA.
-- Code licence: _not chosen yet_ (add a `LICENSE` file).
+- Code (HTML, CSS, JavaScript, tests, tools): **MIT**, see [`LICENSE`](LICENSE).
+- Content (exercise data, curated numbers, notes, docs): **CC BY 4.0**, see [`LICENSE-CONTENT.md`](LICENSE-CONTENT.md).
+- Cited papers are listed in the app's References section and in `data/references.json`; the papers themselves are not included.
