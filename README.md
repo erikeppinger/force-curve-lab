@@ -7,7 +7,7 @@ Exercises (2–5 equipment variants each):
 - **Arms and shoulders:** biceps curl, triceps extension, lateral raise, front raise, chest fly, straight-arm pulldown / pullover
 - **Legs:** leg extension, leg curl, calf raise, hip abduction, glute kickback
 - **Multi-joint:** squat, Romanian deadlift, split squat / lunge, leg press, hip thrust, bench press. These show hip, knee and ankle torques and effort together.
-- **3D:** the leg press has foot-placement controls (height, stance width, toe angle, knee tracking), sideways and rotation components at the hip and knee, and a drag-to-turn 3D view.
+- **3D:** the leg press, squat and bench press have placement controls (foot height, stance width, toe angle, knee tracking; grip width and elbow position), sideways and rotation components at the hip, knee, shoulder and elbow, and a drag-to-turn 3D view.
 
 [`docs/model-limits.md`](docs/model-limits.md) explains how both models work and what they still approximate.
 
@@ -58,7 +58,7 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
    - Angle: `angleRange`, `angleLabel`, `angleNote`, `angleSense` (−1 if a growing angle turns the limb clockwise, e.g. the knee), `angleOffset` (degrees added for the pose, e.g. 90 at the ankle), `concentric` (`decrease` if lifting makes the angle smaller, e.g. extensions).
    - Content: `strengthCurve`, `muscles` (`driver`: `jointEffort` | `stabiliserDemand`; optional `draw`), `postures` (body shapes for the figure), `phases`, `defaults`, `ui` (slider ranges).
 3. Variant fields: `posture`, `gravity` (`{x, y}` in the exercise's frame; default straight down, `{x: 0, y: 0}` for a horizontal plane), `viewLabel`, `proximalAngle` (fixed angle of the proximal segment, or its offset when it moves), `distalBend`, `proximalSupported`, `load` (`gravity` | `cable` with `pulley` | `machine` with `padDistance` and `camProfile` `[[angle, effective radius in m]]` | `reaction` with `bodyWeight` share), `defaultLoadKg`, `muscleModifiers`, `notes`.
-4. Multi-joint lifts (`"model": "multi"`) instead pick a `solver` (`standing`, `split`, `legPress`, `hipThrust`, `bench`) with per-variant `params`, and list `joints` with their strength curves; each muscle names its `joint`. Copy the closest existing file.
+4. Multi-joint lifts (`"model": "multi"`) instead pick a `solver` (`standing`, `split`, `hipThrust`, and the 3D `legPress3d`, `squat3d`, `bench3d`) with per-variant `params`, and list `joints` with their strength curves; each muscle names its `joint`. Copy the closest existing file.
 5. Add a test in `tests/` that pins down the variant's key teaching point with a hand-computable case. `tests/exercises.test.mjs` checks every listed exercise file's structure and model-wide invariants automatically.
 
 ## Roadmap
@@ -70,11 +70,12 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [ ] Hammer/neutral grip as a variant parameter (brachioradialis emphasis)
 - [x] Machines with cam profiles (resistance curve as a data table): `load.type: "machine"`. The lateral-raise cam is illustrative; measured profiles still needed
 - [ ] Bands (load grows with stretch)
-- [x] Multi-joint model: squat, Romanian deadlift, split squat, leg press, hip thrust, bench press (shoulder only)
+- [x] Multi-joint model: squat, Romanian deadlift, split squat, leg press, hip thrust, bench press
 - [ ] Multi-joint: conventional deadlift, overhead press, rows; measured posture rules instead of assumed ones
 - [x] 3D leg press: stance width, toe angle, knee tracking
-- [ ] 3D squat (same foot-placement controls)
-- [ ] 3D elbow model for presses (bar inside or outside the elbows)
+- [x] 3D squat (stance, toe angle, knee tracking, least-effort sideways floor push)
+- [x] 3D bench press (grip width, elbows vs hands, shoulder and elbow components)
+- [ ] 3D overhead press and rows; moving shoulder blades in the bench
 - [ ] Literature sources for strength curves, muscle weights and cam profiles; optionally precomputed OpenSim results as JSON
 - [x] Back-view body map
 - [ ] Vendor the wger SVGs locally for offline use; look up wger exercise ids for the new exercises

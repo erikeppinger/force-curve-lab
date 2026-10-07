@@ -8,14 +8,14 @@ We tried 5 standard upper-body and 10 standard leg exercises from the wger start
 | Front raise | ✅ added | dumbbell, cable from behind, chest-supported 45° incline |
 | Chest fly | ✅ added | lying dumbbell, standing cable, pec deck |
 | Straight-arm pulldown / pullover | ✅ added | cable pulldown, lying dumbbell pullover |
-| Bench press | ✅ multi-joint (shoulder only, see below) | flat, bar to upper chest, 30° incline |
+| Bench press | ✅ 3D (shoulder and elbow) | medium, wide and close grip, elbows flared, 30° incline |
 | Leg extension | ✅ added | machine, ankle weight |
 | Leg curl | ✅ added | lying machine, seated machine, standing with ankle weight |
 | Calf raise | ✅ added | single-leg with dumbbell, two-leg machine, seated machine |
 | Hip abduction | ✅ added | standing cable, side-lying, standing machine |
 | Glute kickback | ✅ added | standing cable, kneeling with ankle weight, machine |
-| Squat | ✅ multi-joint | high-bar, low-bar, front, goblet |
-| Leg press | ✅ multi-joint | feet middle, high, low |
+| Squat | ✅ 3D | high-bar, low-bar, front, goblet, wide (sumo), knees caving in |
+| Leg press | ✅ 3D | feet middle, high, low, wide toes-out, narrow, toes in, knees caving in |
 | Lunge / split squat | ✅ multi-joint | Bulgarian, Bulgarian with forward lean, split squat |
 | Romanian deadlift | ✅ multi-joint | barbell, stiff-legged |
 | Hip thrust | ✅ multi-joint | barbell, feet further away, glute bridge |
@@ -54,11 +54,11 @@ All six broke the same single-joint assumption: **one joint moves and everything
 For each position in the lift (the *driver*, e.g. knee angle):
 
 1. **A solver finds the posture** from the lift's constraint:
-   - **Squat, Romanian deadlift:** both feet flat, and the centre of mass of body + load stays over the mid-foot. The squat sets the shin angle from the knee angle and solves the trunk lean. The hinge sets a slight knee bend and solves the shin angle (which is what pushes the hips back). If no angle balances, the UI says so.
+   - **Squat, Romanian deadlift:** both feet flat, and the centre of mass of body + load stays over the mid-foot. The squat sets the shin angle from the knee angle and solves the trunk lean (in 3D, see below). The hinge sets a slight knee bend and solves the shin angle (which is what pushes the hips back). If no angle balances, the UI says so.
    - **Split squat / lunge:** front foot flat, rear foot on a bench or the floor. The floor and bench push straight up, and how the weight splits between them follows from where the centre of mass is. The UI shows the front leg's share.
    - **Leg press:** hips fixed in the seat, feet moving along the sled rail. The plate pushes along the rail with m·g·sin(rail angle). This one runs in 3D; see below.
    - **Hip thrust / glute bridge:** shoulders on the bench (or floor), feet flat, bar on the hips. Both contacts push straight up, and the reactions come from moment balance.
-   - **Bench press:** shoulder fixed, the bar moving in a straight line from the touch point to lockout, forearms vertical.
+   - **Bench press:** shoulders fixed, both hands on the bar, the bar moving in a straight line from the touch point to lockout. Runs in 3D; see below.
 2. **Statics:** each joint's torque is the moment of every force on one side of it, choosing the side whose forces are all known (everything above the hip in a squat; the leg and sled in a leg press). Torques are per leg (or arm), positive when the joint's working muscles resist.
 3. **Per joint:** a strength curve (hip extension, knee extension, plantarflexion) turns torque into effort. The joint whose effort peaks first is the sticking point. The figure draws each joint's moment arm to the line of action of the forces on its free side.
 
@@ -73,13 +73,13 @@ The tests check the classic hand formulas (e.g. squat hip torque = Σ m·g·hori
 - **Split squat:** leaning forward with a more vertical shin moves torque from the knee to the hip.
 - **Leg press:** feet high = more hip, less knee; feet low = the opposite. Stance width, toe angle and knee tracking: see the 3D section.
 - **Hip thrust:** effort is highest at lockout, where hip-extensor strength is lowest. Moving the feet further away turns the knee demand from quads to hamstrings.
-- **Bench press:** the shoulder's moment arm is largest with the bar on the chest and close to zero at lockout.
+- **Bench press:** see the 3D section: grip width decides whether the pecs or the triceps do more.
 
 ### Still limited
 
 - **Posture rules are assumptions.** "Shin angle = a fixed fraction of knee angle" (squat), the knee-bend rate in the hinge, the fixed trunk lean in the split squat and the straight bar path in the bench are reasonable shapes, not measurements. Real lifters vary. The balance constraint is solid; the rest isn't.
 - **Contacts push straight up** (no friction) in the split squat and hip thrust, and the foot's push is taken at the mid-foot. That's what makes those lifts solvable. Real feet also push sideways and move their centre of pressure.
-- **Bench press is shoulder-only.** With vertical forearms the elbow has no torque in a side view; the triceps' real demand comes from the frontal plane (bar inside or outside the elbows), which needs 3D. The triceps is listed as "not modelled".
+- **Bench press shoulders don't move.** The shoulder joints are fixed on the bench; real shoulder blades retract and move, which changes the arm geometry, so the mid-press elbow torques are probably on the high side.
 - **Spine as one rigid trunk.** Erector-spinae load is approximated by the hip's effort.
 - **Strength per joint ignores the other joints.** As with the single-joint model, two-joint muscles (hamstrings, rectus femoris, gastrocnemius) aren't credited for their length at the other joint.
 - **One driver range per exercise.** The glute bridge only reaches about 0–35° of hip flexion before the hips hit the floor (the UI flags it), but shares the hip thrust's 0–80° range. The split squat starts at 40° of front-knee bend because a rear foot on the floor can't be reached with a straighter front leg.
@@ -119,9 +119,47 @@ Stance width, toes in or out and knees caving in all happen outside the side-vie
 - **Rotator and adductor strengths** are rough constants (`TODO`), so their effort percentages are the least reliable numbers on the page.
 - **The ankle's side-to-side (inversion / eversion) moment** isn't reported.
 
-### Next: the 3D model for other lifts
+## 3D: squat
 
-The 3D statics and the view are generic; each lift needs its own posture rule.
+The squat runs on the same 3D machinery as the leg press (`squat3d`).
 
-- **Squat** (stance width, toe angle, knee tracking): the standing solver plus the same knee-over-toes rule. The closest next step.
-- **Bench press elbow:** needs grip width and elbow flare, both hands on a rigid bar (a closed chain), and an assumption for how the hands push sideways on the bar. With hands pushing straight down, the elbow's torque is the bar's force times the sideways distance from elbow to hand in the front view. That's the "bar inside or outside the elbows" effect the side view misses.
+- **Placement controls:** shin forward lean, stance width, toes out or in, knees out or in of the toes, and the sideways floor push.
+- **Posture:** feet flat; the knee tracks over the toes (turned by knee tracking); the hips sit at hip width, as far back as the shin-lean rule requires; the trunk leans until body + bar balance over the mid-foot.
+- **Forces:** each foot carries half the weight. **How hard the feet push sideways against the floor can't be found from statics:** the two feet can push apart or together through the body without changing the balance. By default the model uses *static optimisation*: it picks the sideways push (within friction, up to 60% of the vertical force) that gives the least total muscle effort. Untick "least effort" to set it by hand.
+- **Tests:**
+  - With the feet under the hips and the toes forward, the 3D squat reproduces the side-view squat exactly.
+  - The least-effort push really is lower-effort than fixed alternatives.
+  - The teaching points: low-bar vs front squat, knees caving in at a fixed push, and a wide stance with vertical shins.
+
+What it shows, and what it depends on:
+
+- **The sideways floor push matters a lot.** With the feet pushed straight up, a wide stance needs over 200 Nm of hip adductor torque at 40° of knee bend, which isn't realistic. With the least-effort push, the sideways hip and knee torques stay small in every stance.
+- **Wide (sumo) stance:** the hip/knee split depends mostly on the shin-lean rule. With fairly vertical shins (the usual sumo cue) the hips go back and the lift becomes hip-dominant; with the normal shin lean it doesn't. The shin-lean slider shows this.
+- **Knees caving in:** at a fixed sideways push the knee's valgus moment and the hip's rotation load rise sharply. Under least effort the feet can push to cancel most of it, which is one way to read the coaching cue "spread the floor".
+
+## 3D: bench press
+
+Shoulder **and** elbow (`bench3d`), with both hands on a rigid bar.
+
+- **Placement controls:** grip width, elbows outside or inside the hands (front view), and where the bar touches the chest. The flare angle (upper arm from the body, seen from above) is an output, shown under the table.
+- **Posture:** shoulders fixed on the bench, the bar moving in a straight line from the chest to lockout over the shoulders. The elbow sits where both arm segments fit, at the chosen offset from the hand in the front view, below the hand.
+- **Forces:** each hand pushes straight up with half the bar (the bar isn't pulled apart or squeezed).
+- **Components:**
+  - **Shoulder:** horizontal adduction (pecs), flexion (front delts), rotation (rotator cuff).
+  - **Elbow:** extension (triceps), plus its sideways moment (ligaments).
+- **Tests:** the shoulder components match their hand formulas (flexion = F × forward distance, horizontal adduction = F × grip offset from the shoulder). The elbow's moment equals F × the horizontal elbow–hand distance. Close grip loads the triceps, wide grip the pecs.
+
+What it shows:
+
+- **Grip width:** close grip loads the triceps and nearly removes the pecs' across-the-body work; wide grip does the opposite (about 4× the horizontal-adduction torque of a medium grip at 80 kg).
+- **Elbows outside the hands** change the rotation torques at the shoulder and the flare angle.
+
+Limits:
+
+- **Fixed shoulder joints and a straight-line bar path.** Real shoulder blades retract and move, and real bar paths curve. Mid-press, the arm's geometry forces the elbows well away from the bar line, so those elbow torques are probably overstated.
+- **The bar isn't pulled apart or squeezed.** Like the floor push in the squat, that sideways hand force is undetermined by statics; it could get the same least-effort treatment.
+
+## 3D: what's left
+
+- The **split squat, RDL and hip thrust** are still side-view only; stance width matters less there but could use the same tools.
+- **Overhead press, rows and pull-ups** would follow the bench's arm model with different contacts.

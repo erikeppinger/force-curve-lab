@@ -14,7 +14,7 @@
 // Pure functions only — imported by the browser UI and by node tests.
 
 import { G, interp } from "./physics.js";
-import { legPress3d } from "./multijoint3d.js";
+import { legPress3d, squat3d, bench3d } from "./multijoint3d.js";
 
 const rad = (d) => (d * Math.PI) / 180;
 const deg = (r) => (r * 180) / Math.PI;
@@ -277,50 +277,7 @@ function hipThrust(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
   };
 }
 
-/**
- * Bench press (driver: bar height, 0 = on the chest, 100 = arms locked out). Shoulder fixed on
- * the bench; the bar moves in a straight line from the touch point to lockout; forearms stay
- * vertical under the bar. Only the shoulder is analysed: with vertical forearms the elbow has
- * no torque in this side view — its real demand comes from the frontal plane (bar inside or
- * outside the elbows), which a 2D model can't see.
- */
-function bench(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
-  const P = v.params;
-  const L = body.lengths, m = body.mass, c = body.com;
-  const S = { x: 0, y: 0.6 };
-  const tilt = rad(P.incline ?? 0); // head end raised
-  const rot = (p) => ({ x: p.x * Math.cos(tilt) + p.y * Math.sin(tilt), y: -p.x * Math.sin(tilt) + p.y * Math.cos(tilt) });
-  const touch = add(S, rot(P.touch));
-  const lockout = add(S, P.lockout);
-  const bar = lerp(touch, lockout, x / 100);
-  const E = { x: bar.x, y: bar.y - L.forearm }; // vertical forearm; the elbow flares out of this plane
-  const toFeet = rot({ x: 1, y: 0 }); // along the trunk towards the hips
-  const H = add(S, toFeet, L.trunk);
-  const forces = [weight(bar, loadKg / 2), weight(lerp(S, E, c.upperArm), m.upperArm * kg), weight(lerp(E, bar, c.forearmHand), m.forearmHand * kg)];
-  const benchTop = add(S, rot({ x: 0, y: -0.12 }));
-  return {
-    joints: { shoulder: { at: S, angle: x, ...jointTorque(S, forces, "shoulder-flexion", "distal") } },
-    segs: { upperArm: [S, E], forearm: [E, bar], trunk: [H, S] },
-    draw: [
-      { a: H, b: add(H, { x: 0.38, y: -0.12 }), w: 0.14, cls: "body" },
-      { a: add(H, { x: 0.38, y: -0.12 }), b: { x: H.x + 0.42, y: 0.01 }, w: 0.1, cls: "body" },
-      { a: H, b: S, w: 0.22, cls: "body" },
-      { circle: add(S, toFeet, -0.2), r: 0.11, cls: "body" },
-      { a: S, b: E, w: 0.06, cls: "bone" }, { a: E, b: bar, w: 0.05, cls: "bone" }],
-    arms: [],
-    loads: [{ at: bar, kind: "bar" }],
-    props: [
-      { a: add(benchTop, toFeet, -0.35), b: add(benchTop, toFeet, 0.6), w: 0.06, cls: "equipment" },
-      { a: add(benchTop, toFeet, 0.4), b: { x: add(benchTop, toFeet, 0.4).x, y: 0 }, w: 0.04, cls: "equipment" },
-      { a: add(benchTop, toFeet, -0.2), b: { x: add(benchTop, toFeet, -0.2).x, y: 0 }, w: 0.04, cls: "equipment" },
-      { a: touch, b: lockout, w: 0.006, cls: "line-of-action" },
-    ],
-    balance: null,
-    info: [],
-  };
-}
-
-const SOLVERS = { standing, split, hipThrust, bench, legPress3d };
+const SOLVERS = { standing, split, hipThrust, legPress3d, squat3d, bench3d };
 
 /** Full analysis at one driver value: posture, forces and per-joint torque, capacity and effort. */
 export function analyzeMulti(exercise, variant, x, opts) {

@@ -36,7 +36,7 @@ test("ik2 keeps both segment lengths", () => {
 });
 
 // ---------- squat and hinge ----------
-for (const [id, vids, xs] of [["squat", ["high-bar", "low-bar", "front", "goblet"], [20, 60, 100, 120]], ["romanian-deadlift", ["barbell", "stiff-leg"], [20, 50, 90]]]) {
+for (const [id, vids, xs] of [["romanian-deadlift", ["barbell", "stiff-leg"], [20, 50, 90]]]) {
   for (const vid of vids) {
     test(`${id}/${vid}: centre of mass over the mid-foot, and torques match the hand formulas`, () => {
       for (const x of xs) {
@@ -56,9 +56,9 @@ for (const [id, vids, xs] of [["squat", ["high-bar", "low-bar", "front", "goblet
   }
 }
 
-test("squat: bottom-up from the floor gives the same ankle torque as top-down", () => {
-  for (const x of [30, 90]) {
-    const r = run("squat", "high-bar", x);
+test("RDL: bottom-up from the floor gives the same ankle torque as top-down", () => {
+  for (const x of [30, 80]) {
+    const r = run("romanian-deadlift", "barbell", x);
     const p = r.parts;
     const W = (p.trunk.kg + p.arms.kg + p.load.kg + 2 * (p.thigh.kg + p.shank.kg + p.foot.kg)) * G;
     const A = J(r, "ankle").at;
@@ -66,12 +66,6 @@ test("squat: bottom-up from the floor gives the same ankle torque as top-down", 
     const fromBelow = jointTorque(A, [{ at: { x: r.balance.com, y: 0 }, f: { x: 0, y: W / 2 } }, { at: p.foot.at, f: { x: 0, y: -p.foot.kg * G } }], "plantarflexion", "distal");
     close(fromBelow.torque, J(r, "ankle").torque, 1e-6);
   }
-});
-
-test("low-bar squat moves torque to the hips; front squat moves it to the knees", () => {
-  const ratio = (vid) => { const r = run("squat", vid, 100); return J(r, "hip").torque / J(r, "knee").torque; };
-  assert.ok(ratio("low-bar") > ratio("high-bar"), `${ratio("low-bar")} vs ${ratio("high-bar")}`);
-  assert.ok(ratio("front") < ratio("high-bar"), `${ratio("front")} vs ${ratio("high-bar")}`);
 });
 
 test("Romanian deadlift: hip torque grows with the hinge; the knee needs its flexors", () => {
@@ -134,15 +128,6 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
   assert.ok(run("hip-thrust", "bridge", 70).info.some((i) => i.warn));
 });
 
-// ---------- bench press ----------
-test("bench press: shoulder torque = half the bar × g × horizontal distance; none at lockout", () => {
-  const ex = load("bench-press");
-  const flat = ex.variants.find((v) => v.id === "flat");
-  const o = { ...opts, bodyMassKg: 1e-9 };
-  close(J(analyzeMulti(ex, flat, 0, o), "shoulder").torque, 30 * G * flat.params.touch.x, 1e-6);
-  close(J(analyzeMulti(ex, flat, 100, o), "shoulder").torque, 30 * G * flat.params.lockout.x, 1e-6);
-});
-
 // ---------- leg press in 3D: stance width, toe angle, knee tracking ----------
 {
   const ex = load("leg-press");
@@ -188,5 +173,90 @@ test("bench press: shoulder torque = half the bar × g × horizontal distance; n
   test("leg press 3D: knees caving in raises the knee's valgus moment; knees out lowers it", () => {
     const valgus = (k) => J(at("middle", 90, { kneeTrack: k }), "knee-frontal").torque;
     assert.ok(valgus(-10) > valgus(0) && valgus(0) > valgus(10));
+  });
+}
+
+// ---------- squat in 3D ----------
+{
+  const ex = load("squat");
+  const preset = (vid) => ex.variants.find((v) => v.id === vid);
+  const at = (vid, x, placement, o = opts) => analyzeMulti(ex, preset(vid), x, { ...o, placement });
+  const under = { halfWidth: body.lengths.hipHalfWidth, toeOut: 0, kneeTrack: 0, sidePush: 0 };
+
+  test("3D squat with the feet under the hips and toes forward = the side-view squat", () => {
+    const flat = { ...ex, solver: "standing", joints: ex.joints.slice(0, 3) };
+    for (const vid of ["high-bar", "low-bar", "front"]) {
+      const v2 = { ...preset(vid), params: { ...preset(vid).params, mode: "squat" } };
+      for (const x of [30, 90, 120]) {
+        const r3 = at(vid, x, under), r2 = analyzeMulti(flat, v2, x, opts);
+        for (const id of ["hip", "knee", "ankle"]) close(J(r3, id).torque, J(r2, id).torque, 1e-6);
+        for (const id of ["hip-frontal", "hip-rotation", "knee-frontal"]) close(J(r3, id).torque, 0, 1e-9);
+        close(r3.balance.com, r3.balance.x, 1e-6);
+      }
+    }
+  });
+
+  test("3D squat: the least-effort sideways push really is the least effort", () => {
+    const cost = (r) => r.joints.filter((j) => !j.passive).reduce((s, j) => s + (j.effort ?? 0) ** 2, 0);
+    for (const vid of ["high-bar", "wide"]) {
+      for (const x of [40, 100]) {
+        const best = cost(at(vid, x, { sidePush: "auto" }));
+        for (const fixed of [-0.2, 0, 0.1, 0.3, 0.6]) assert.ok(best <= cost(at(vid, x, { sidePush: fixed })) + 1e-9, `${vid}@${x} vs ${fixed}`);
+      }
+    }
+  });
+
+  test("3D squat: low-bar moves torque to the hips, front squat to the knees; balance holds", () => {
+    const ratio = (vid) => { const r = at(vid, 100); assert.ok(r.balance.ok); close(r.balance.com, r.balance.x, 1e-6); return J(r, "hip").torque / J(r, "knee").torque; };
+    assert.ok(ratio("low-bar") > ratio("high-bar") && ratio("front") < ratio("high-bar"));
+  });
+
+  test("3D squat: knees caving in raises the knee's valgus moment at the same sideways push", () => {
+    const valgus = (k) => J(at("high-bar", 100, { kneeTrack: k, sidePush: 0.1 }), "knee-frontal").torque;
+    assert.ok(valgus(-12) > valgus(0) + 10);
+  });
+
+  test("3D squat: wide stance with vertical shins is hip-dominant", () => {
+    const r = at("wide", 100);
+    assert.ok(J(r, "hip").torque > J(r, "knee").torque);
+  });
+}
+
+// ---------- bench press in 3D ----------
+{
+  const ex = load("bench-press");
+  const preset = (vid) => ex.variants.find((v) => v.id === vid);
+  const at = (vid, x, placement, o = opts) => analyzeMulti(ex, preset(vid), x, { ...o, placement });
+  const noBody = { ...opts, loadKg: 80, bodyMassKg: 1e-9 };
+
+  test("3D bench: shoulder components match the hand formulas (bar force F = half the bar per hand)", () => {
+    const F = 40 * G;
+    for (const vid of ["flat", "wide", "close"]) {
+      for (const x of [0, 50]) {
+        const r = at(vid, x, undefined, noBody);
+        const S = J(r, "shoulder-h").at, hand = r.forces[0].at;
+        close(J(r, "shoulder-flex").torque, F * (hand.x - S.x), 1e-6); // bar in front of (towards the feet from) the shoulder
+        close(J(r, "shoulder-h").torque, F * (hand.z - S.z), 1e-6); // hands outside the shoulders → pecs
+      }
+    }
+  });
+
+  test("3D bench: the elbow's moment is F × the horizontal elbow–hand distance; elbows stacked under the hands", () => {
+    const F = 40 * G;
+    for (const vid of ["flat", "close"]) {
+      const r = at(vid, 0, undefined, noBody);
+      const E = J(r, "elbow").at, hand = r.forces[0].at;
+      const horiz = Math.hypot(hand.x - E.x, hand.z - E.z);
+      const M = r.moments.elbow;
+      close(Math.hypot(M.x, M.y, M.z), F * horiz, 1e-6);
+      close(J(r, "elbow").momentArm, horiz, 1e-6);
+      close(E.z, hand.z, 1e-3);
+    }
+  });
+
+  test("3D bench: close grip loads the triceps, wide grip the pecs", () => {
+    const [w, c] = [at("wide", 30, undefined, { ...opts, loadKg: 80 }), at("close", 30, undefined, { ...opts, loadKg: 80 })];
+    assert.ok(J(c, "elbow").torque > 1.5 * J(w, "elbow").torque);
+    assert.ok(J(w, "shoulder-h").torque > 5 * J(c, "shoulder-h").torque);
   });
 }

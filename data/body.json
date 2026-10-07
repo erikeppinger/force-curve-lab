@@ -9,9 +9,11 @@
     "trunk": 0.52,
     "upperArm": 0.30,
     "forearm": 0.33,
-    "hipHalfWidth": 0.09
+    "hipHalfWidth": 0.09,
+    "shoulderHalfWidth": 0.19,
+    "chestDepth": 0.16
   },
-  "lengthsNote": "Metres, typical adult. ankleHeight: floor→ankle joint. footFront / heel: ball of the foot in front of / heel behind the ankle. midfoot: balance point in front of the ankle. trunk: hip→shoulder joint. hipHalfWidth: midline→hip joint.",
+  "lengthsNote": "Metres, typical adult. ankleHeight: floor→ankle joint. footFront / heel: ball of the foot in front of / heel behind the ankle. midfoot: balance point in front of the ankle. trunk: hip→shoulder joint. hipHalfWidth / shoulderHalfWidth: midline→hip / shoulder joint. chestDepth: height of the bar on the chest above the shoulder joints, lying on a bench.",
   "mass": {
     "foot": 0.0145,
     "shank": 0.0465,

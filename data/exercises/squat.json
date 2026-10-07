@@ -3,12 +3,13 @@
   "name": "Squat",
   "joint": "Hip, knee and ankle",
   "model": "multi",
-  "solver": "standing",
-  "view": "side",
+  "solver": "squat3d",
+  "view": "3d",
   "angleLabel": "Knee angle",
   "concentric": "decrease",
   "angleRange": [0, 120],
-  "angleNote": "Knee flexion: 0° = standing, about 100–110° = thighs parallel, 120° = deep. Lifting makes the angle smaller. Torques are per leg.",
+  "angleNote": "Knee flexion: 0° = standing, about 100–110° = thighs parallel, 120° = deep. Lifting makes the angle smaller. Torques are per leg; drag the figure to turn it.",
+  "momentArmNote": "Moment arm = the joint's 3D distance from the floor's push line under that foot; it feeds every component of that joint's torque.",
   "defaults": {"loadKg": 60, "variant": "high-bar", "bodyMassKg": 75},
   "ui": {"load": [0, 200, 2.5]},
   "joints": [
@@ -47,6 +48,45 @@
         "note": "Relative plantarflexion torque, strongest with the calf stretched. Peak is per leg. Approximate.",
         "source": "TODO: verify against published torque–angle data"
       }
+    },
+    {
+      "id": "hip-frontal",
+      "name": "Hip (sideways)",
+      "action": "Hip adduction",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 130,
+      "negative": {"action": "Hip abduction", "peakTorqueNm": 110},
+      "strength": {
+        "points": [[0, 1.0], [160, 1.0]],
+        "note": "Hip adductor (positive) and abductor (negative) peak torque per leg, taken as constant across the range. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "hip-rotation",
+      "name": "Hip (rotation)",
+      "action": "Hip external rotation",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 70,
+      "negative": {"action": "Hip internal rotation", "peakTorqueNm": 60},
+      "strength": {
+        "points": [[0, 1.0], [160, 1.0]],
+        "note": "Hip external (positive) and internal (negative) rotation peak torque per leg, taken as constant; the external side includes the gluteus maximus. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "knee-frontal",
+      "name": "Knee (sideways)",
+      "action": "Knee valgus (pushed inwards)",
+      "angleLabel": "knee flexion",
+      "passive": true,
+      "negative": {"action": "Knee varus (pushed outwards)"},
+      "strength": {
+        "points": [[0, 1.0], [160, 1.0]],
+        "note": "No muscle capacity: a sideways knee moment is carried mostly by ligaments and the joint surfaces, so it is shown as torque only.",
+        "source": "TODO: verify against published torque–angle data"
+      }
     }
   ],
   "muscles": [
@@ -58,9 +98,9 @@
       "driver": "jointEffort",
       "joint": "knee",
       "weight": [[0, 1.0], [130, 1.0]],
-      "note": "Knee extensors: their share follows the knee torque.",
+      "note": "Knee extensors: their share follows the knee torque. Net joint torques can't say how stance or toe angle shifts work between the four heads.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "thigh", "along": [0.08, 0.36], "offset": -0.05, "w": 0.065}
+      "draw3d": {"seg": "thigh", "side": "anterior", "along": [0.08, 0.36], "offset": 0.05, "w": 0.065}
     },
     {
       "id": "gluteus-maximus",
@@ -69,10 +109,10 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "joint": "hip",
-      "weight": [[0, 0.8], [90, 1.0], [130, 1.0]],
-      "note": "Main hip extensor.",
+      "weight": [[0, 0.8], [90, 1.0], [160, 1.0]],
+      "note": "Main hip extensor; deep hip bend (feet high) loads it more.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "thigh", "along": [0.33, 0.47], "offset": 0.06, "w": 0.09}
+      "draw3d": {"seg": "thigh", "side": "posterior", "along": [0.0, 0.12], "offset": 0.06, "w": 0.09}
     },
     {
       "id": "adductor-magnus",
@@ -81,9 +121,47 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "joint": "hip",
-      "weight": [[0, 0.3], [90, 0.8], [130, 0.9]],
+      "weight": [[0, 0.3], [90, 0.8], [160, 1.0]],
       "note": "Rear part extends the hip, more so when it is deeply bent.",
       "source": "TODO: check against EMG literature"
+    },
+    {
+      "id": "adductors",
+      "name": "Adductors (longus, brevis, gracilis)",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip-frontal",
+      "weight": [[0, 1.0], [160, 1.0]],
+      "note": "Work when the plate's push tends to spread the thighs apart: wide stances and toes out.",
+      "source": "TODO: check against EMG literature",
+      "sign": 1,
+      "draw3d": {"seg": "thigh", "side": "medial", "along": [0.03, 0.25], "offset": 0.05, "w": 0.05}
+    },
+    {
+      "id": "gluteus-medius",
+      "name": "Gluteus medius and minimus",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip-frontal",
+      "weight": [[0, 1.0], [160, 1.0]],
+      "note": "Work when the push tends to pull the thighs together: narrow stances, toes in.",
+      "source": "TODO: check against EMG literature",
+      "sign": -1,
+      "draw3d": {"seg": "thigh", "side": "lateral", "along": [-0.05, 0.08], "offset": 0.06, "w": 0.06}
+    },
+    {
+      "id": "external-rotators",
+      "name": "Deep hip external rotators",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip-rotation",
+      "weight": [[0, 1.0], [160, 1.0]],
+      "note": "Piriformis, obturators and gemelli (with the glutes) resist the thigh turning inwards.",
+      "source": "TODO: check against EMG literature",
+      "sign": 1
     },
     {
       "id": "erector-spinae",
@@ -94,8 +172,7 @@
       "joint": "hip",
       "weight": [[0, 0.6], [90, 0.6]],
       "note": "Holds the spine straight; their load grows with the hip torque from the upper body. Approximation: driven by the hip's effort.",
-      "source": "TODO: check against EMG literature",
-      "draw": {"seg": "trunk", "along": [0.1, 0.45], "offset": 0.08, "w": 0.05}
+      "source": "TODO: check against EMG literature"
     },
     {
       "id": "calves",
@@ -104,10 +181,10 @@
       "role": "Stabiliser",
       "driver": "jointEffort",
       "joint": "ankle",
-      "weight": [[-45, 1.0], [40, 1.0]],
-      "note": "Plantarflexors: keep the shin from tipping forward.",
+      "weight": [[-60, 1.0], [40, 1.0]],
+      "note": "Plantarflexors: push through the ball of the foot.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "shank", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055}
+      "draw3d": {"seg": "shank", "side": "posterior", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055}
     }
   ],
   "phases": [
@@ -128,22 +205,46 @@
       "id": "high-bar",
       "name": "High-bar back squat",
       "equipment": "Barbell on the upper back",
-      "params": {"mode": "squat", "shinPerKnee": 0.33, "barAlong": 1.0, "barOut": -0.05},
-      "notes": "Bar on the upper traps. The solver leans the trunk until the centre of mass of body + bar is over the mid-foot. The shin's forward angle is set to a third of the knee angle."
+      "params": {
+        "shinPerKnee": 0.33,
+        "barAlong": 1.0,
+        "barOut": -0.05,
+        "halfWidth": 0.2,
+        "toeOut": 15,
+        "kneeTrack": 0,
+        "sidePush": "auto"
+      },
+      "notes": "Bar on the upper traps. The solver leans the trunk until the centre of mass of body + bar is over the mid-foot. The shin's forward angle is set to a third of the knee angle. Each foot carries half the weight. How hard the feet push sideways against the floor can't be found from statics; by default it is set to whatever needs the least overall muscle effort. Untick \"least effort\" to see how much that assumption matters."
     },
     {
       "id": "low-bar",
       "name": "Low-bar back squat",
       "equipment": "Barbell across the rear shoulders",
-      "params": {"mode": "squat", "shinPerKnee": 0.27, "barAlong": 0.88, "barOut": -0.08},
-      "notes": "Bar about 6 cm lower and further back, knees a little less forward. The trunk has to lean more to balance, which moves torque from the knees to the hips."
+      "params": {
+        "shinPerKnee": 0.27,
+        "barAlong": 0.88,
+        "barOut": -0.08,
+        "halfWidth": 0.2,
+        "toeOut": 15,
+        "kneeTrack": 0,
+        "sidePush": "auto"
+      },
+      "notes": "Bar about 6 cm lower and further back, knees a little less forward. The trunk has to lean more to balance, which moves torque from the knees to the hips. Each foot carries half the weight. How hard the feet push sideways against the floor can't be found from statics; by default it is set to whatever needs the least overall muscle effort. Untick \"least effort\" to see how much that assumption matters."
     },
     {
       "id": "front",
       "name": "Front squat",
       "equipment": "Barbell on the front shoulders",
-      "params": {"mode": "squat", "shinPerKnee": 0.38, "barAlong": 0.97, "barOut": 0.1},
-      "notes": "Bar in front of the neck: the trunk must stay upright to keep it over the mid-foot, so the knees take more of the work. Needs more ankle range."
+      "params": {
+        "shinPerKnee": 0.38,
+        "barAlong": 0.97,
+        "barOut": 0.1,
+        "halfWidth": 0.2,
+        "toeOut": 15,
+        "kneeTrack": 0,
+        "sidePush": "auto"
+      },
+      "notes": "Bar in front of the neck: the trunk must stay upright to keep it over the mid-foot, so the knees take more of the work. Needs more ankle range. Each foot carries half the weight. How hard the feet push sideways against the floor can't be found from statics; by default it is set to whatever needs the least overall muscle effort. Untick \"least effort\" to see how much that assumption matters."
     },
     {
       "id": "goblet",
@@ -151,9 +252,95 @@
       "equipment": "Dumbbell at the chest",
       "loadShape": "dumbbell",
       "defaultLoadKg": 20,
-      "params": {"mode": "squat", "shinPerKnee": 0.38, "barAlong": 0.8, "barOut": 0.22},
-      "notes": "Weight held in front of the chest acts as a counterweight, so the trunk can stay upright even at depth."
+      "params": {
+        "shinPerKnee": 0.38,
+        "barAlong": 0.8,
+        "barOut": 0.22,
+        "halfWidth": 0.2,
+        "toeOut": 15,
+        "kneeTrack": 0,
+        "sidePush": "auto"
+      },
+      "notes": "Weight held in front of the chest acts as a counterweight, so the trunk can stay upright even at depth. Each foot carries half the weight. How hard the feet push sideways against the floor can't be found from statics; by default it is set to whatever needs the least overall muscle effort. Untick \"least effort\" to see how much that assumption matters."
+    },
+    {
+      "id": "wide",
+      "name": "Wide-stance (sumo) squat, toes out 35°",
+      "equipment": "Barbell on the upper back",
+      "params": {
+        "shinPerKnee": 0.18,
+        "barAlong": 1.0,
+        "barOut": -0.05,
+        "halfWidth": 0.36,
+        "toeOut": 35,
+        "kneeTrack": 0,
+        "sidePush": "auto"
+      },
+      "notes": "High bar, feet wide and turned out, knees over the toes, shins kept fairly vertical (a common sumo cue). That sends the hips back: more hip and less knee work than the normal stance. Try the shin-lean slider: the hip/knee split depends mostly on it. The sideways floor push is the least-effort estimate."
+    },
+    {
+      "id": "knees-in",
+      "name": "High-bar squat, knees caving in",
+      "equipment": "Barbell on the upper back",
+      "params": {
+        "shinPerKnee": 0.33,
+        "barAlong": 1.0,
+        "barOut": -0.05,
+        "halfWidth": 0.2,
+        "toeOut": 15,
+        "kneeTrack": -12,
+        "sidePush": 0.1
+      },
+      "notes": "Same stance as the high-bar squat, but the knees drift 12° inside the line over the toes, with the feet pushing outwards at a fixed 10%. The knee's valgus moment and the hip's rotation load rise sharply. Switch the sideways push back to least effort and most of it disappears: the feet can push against the floor to cancel it, which is one way to read the coaching cue \"spread the floor\"."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Squats", "note": "TODO: look up the wger exercise id"}
+  "wger": {"exerciseId": null, "name": "Squats", "note": "TODO: look up the wger exercise id"},
+  "placement": [
+    {
+      "key": "shinPerKnee",
+      "label": "Shin forward lean (% of the knee angle)",
+      "min": 0.1,
+      "max": 0.45,
+      "step": 0.01,
+      "unit": "%",
+      "scale": 100
+    },
+    {
+      "key": "halfWidth",
+      "label": "Stance: each foot from the middle",
+      "min": 0.06,
+      "max": 0.38,
+      "step": 0.01,
+      "unit": "cm",
+      "scale": 100
+    },
+    {
+      "key": "toeOut",
+      "label": "Toes out (+) / in (−)",
+      "min": -20,
+      "max": 45,
+      "step": 1,
+      "unit": "°",
+      "scale": 1
+    },
+    {
+      "key": "kneeTrack",
+      "label": "Knees out (+) / in (−) of the toes",
+      "min": -15,
+      "max": 15,
+      "step": 1,
+      "unit": "°",
+      "scale": 1
+    },
+    {
+      "key": "sidePush",
+      "label": "Feet push outwards against the floor (% of the vertical force)",
+      "min": -0.2,
+      "max": 0.6,
+      "step": 0.02,
+      "unit": "%",
+      "scale": 100,
+      "auto": "Least effort (auto)"
+    }
+  ]
 }

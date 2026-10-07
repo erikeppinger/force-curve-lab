@@ -1,27 +1,80 @@
 {
   "id": "bench-press",
   "name": "Bench press",
-  "joint": "Shoulder",
+  "joint": "Shoulder and elbow",
   "model": "multi",
-  "solver": "bench",
-  "view": "side",
+  "solver": "bench3d",
+  "view": "3d",
   "angleLabel": "Bar height",
   "angleUnit": "%",
   "concentric": "increase",
   "angleRange": [0, 100],
-  "angleNote": "Bar height: 0% = on the chest, 100% = arms locked out. Torque is per arm. Only the shoulder is analysed: see the variant notes about the elbow.",
+  "angleNote": "Bar height: 0% = on the chest, 100% = arms locked out. Torques are per arm; drag the figure to turn it.",
+  "momentArmNote": "Moment arm = the joint's 3D distance from the bar's push line through that hand; it feeds every component of that joint's torque.",
   "defaults": {"loadKg": 60, "variant": "flat", "bodyMassKg": 75},
   "ui": {"load": [0, 200, 2.5]},
   "joints": [
     {
-      "id": "shoulder",
-      "name": "Shoulder",
-      "action": "Shoulder flexion / horizontal adduction",
-      "angleLabel": "bar height (%)",
-      "peakTorqueNm": 60,
+      "id": "shoulder-h",
+      "name": "Shoulder (across)",
+      "action": "Horizontal adduction",
+      "angleLabel": "upper-arm angle (0° = out to the side, 90° = up)",
+      "peakTorqueNm": 90,
       "strength": {
-        "points": [[0, 1.0], [50, 0.9], [100, 0.7]],
-        "note": "Relative shoulder (pec / anterior deltoid) strength by bar height, assumed strongest with the bar on the chest. Indexed by bar height, not a joint angle, because the 2D view can't measure the real shoulder angle. Peak is per arm. Approximate.",
+        "points": [[-30, 1.0], [0, 1.0], [45, 0.9], [90, 0.7]],
+        "note": "Relative horizontal-adduction torque (pecs, front delts), assumed strongest with the arm low and out to the side. Peak per arm. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "shoulder-flex",
+      "name": "Shoulder (forward)",
+      "action": "Shoulder flexion",
+      "angleLabel": "upper-arm angle",
+      "peakTorqueNm": 60,
+      "negative": {"action": "Shoulder extension", "peakTorqueNm": 70},
+      "strength": {
+        "points": [[-60, 1.0], [180, 1.0]],
+        "note": "Shoulder flexion (positive) and extension (negative) peak torque per arm, taken as constant. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "shoulder-rotation",
+      "name": "Shoulder (rotation)",
+      "action": "External rotation",
+      "angleLabel": "upper-arm angle",
+      "peakTorqueNm": 35,
+      "negative": {"action": "Internal rotation", "peakTorqueNm": 50},
+      "strength": {
+        "points": [[-60, 1.0], [180, 1.0]],
+        "note": "Shoulder external (positive) and internal (negative) rotation peak torque per arm, taken as constant. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "elbow",
+      "name": "Elbow",
+      "action": "Elbow extension",
+      "angleLabel": "elbow flexion",
+      "peakTorqueNm": 90,
+      "negative": {"action": "Elbow flexion", "peakTorqueNm": 80},
+      "strength": {
+        "points": [[0, 0.6], [30, 0.8], [60, 0.95], [90, 1.0], [120, 0.95], [150, 0.88]],
+        "note": "Relative elbow-extension torque vs elbow flexion (as in the triceps extension). Peak per arm, trained adult. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "elbow-side",
+      "name": "Elbow (sideways)",
+      "action": "Hand pushed inwards",
+      "angleLabel": "elbow flexion",
+      "passive": true,
+      "negative": {"action": "Hand pushed outwards"},
+      "strength": {
+        "points": [[-60, 1.0], [180, 1.0]],
+        "note": "No muscle capacity: the elbow's sideways moment is carried mostly by ligaments and the joint surfaces, so it is shown as torque only.",
         "source": "TODO: verify against published torque–angle data"
       }
     }
@@ -33,11 +86,11 @@
       "wgerId": 4,
       "role": "Prime mover",
       "driver": "jointEffort",
-      "joint": "shoulder",
-      "weight": [[0, 1.0], [100, 0.8]],
-      "note": "Main pressing muscle at the shoulder.",
+      "joint": "shoulder-h",
+      "weight": [[-60, 1.0], [180, 1.0]],
+      "note": "Main horizontal adductor: brings the upper arms in across the chest. Wider grips load it more.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "upperArm", "along": [-0.05, 0.12], "offset": 0.03, "w": 0.06}
+      "draw3d": {"seg": "upperArm", "side": "medial", "along": [-0.06, 0.12], "offset": 0.04, "w": 0.07}
     },
     {
       "id": "anterior-deltoid",
@@ -45,22 +98,49 @@
       "wgerId": 2,
       "role": "Prime mover",
       "driver": "jointEffort",
-      "joint": "shoulder",
-      "weight": [[0, 0.8], [100, 0.9]],
-      "note": "Shoulder flexor, works with the pecs.",
+      "joint": "shoulder-flex",
+      "weight": [[-60, 1.0], [180, 1.0]],
+      "note": "Shoulder flexor; also helps horizontal adduction.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "upperArm", "along": [-0.02, 0.1], "offset": -0.02, "w": 0.045}
+      "sign": 1,
+      "draw3d": {"seg": "upperArm", "side": "anterior", "along": [-0.02, 0.1], "offset": 0.035, "w": 0.05}
     },
     {
       "id": "triceps",
       "name": "Triceps",
       "wgerId": 5,
       "role": "Prime mover",
-      "driver": "none",
-      "joint": null,
-      "weight": [[0, 1], [100, 1]],
-      "note": "Not modelled: the elbow's torque in a bench press comes from the frontal plane (bar inside or outside the elbows), which this side view can't see.",
-      "source": "TODO: check against EMG literature"
+      "driver": "jointEffort",
+      "joint": "elbow",
+      "weight": [[0, 0.9], [90, 1.0], [150, 1.0]],
+      "note": "Elbow extensor. Its torque depends on where the hands sit relative to the elbows, which only shows up in 3D.",
+      "source": "TODO: check against EMG literature",
+      "sign": 1,
+      "draw3d": {"seg": "upperArm", "side": "posterior", "along": [0.06, 0.27], "offset": 0.04, "w": 0.055}
+    },
+    {
+      "id": "rotator-cuff-ext",
+      "name": "Infraspinatus, teres minor",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "shoulder-rotation",
+      "weight": [[-60, 1.0], [180, 1.0]],
+      "note": "External rotators of the rotator cuff: hold the upper arm from turning inwards.",
+      "source": "TODO: check against EMG literature",
+      "sign": 1
+    },
+    {
+      "id": "subscapularis",
+      "name": "Subscapularis",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "shoulder-rotation",
+      "weight": [[-60, 1.0], [180, 1.0]],
+      "note": "Internal rotator of the rotator cuff: holds the upper arm from turning outwards.",
+      "source": "TODO: check against EMG literature",
+      "sign": -1
     }
   ],
   "phases": [
@@ -73,31 +153,74 @@
     {
       "name": "Lockout",
       "range": [70, 100],
-      "text": "Bar over the shoulder: little shoulder torque; the triceps (not modelled) finish the lift."
+      "text": "Bar over the shoulders: little shoulder torque; whatever the elbows still do depends on the grip."
     }
   ],
   "variants": [
     {
       "id": "flat",
-      "name": "Flat barbell bench press",
+      "name": "Flat bench, medium grip",
       "equipment": "Barbell, flat bench",
-      "params": {"touch": {"x": 0.09, "y": 0.13}, "lockout": {"x": 0.0, "y": 0.63}},
-      "notes": "Bar touches the lower chest and travels back to lock out over the shoulder. Forearms vertical, so the elbow has no torque in this view; its demand comes from the frontal plane (not modelled)."
+      "params": {"gripHalf": 0.32, "elbowOut": 0, "touch": 0.08, "incline": 0},
+      "notes": "Hands about 1.7× shoulder width, elbows stacked under the hands in the front view. The flare angle follows from the arm's geometry (shown under the table). Each hand pushes straight up with half the bar (it isn't pulled apart or squeezed), and the shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
     },
     {
-      "id": "touch-high",
-      "name": "Flat bench, bar to the upper chest",
+      "id": "wide",
+      "name": "Wide grip",
       "equipment": "Barbell, flat bench",
-      "params": {"touch": {"x": 0.03, "y": 0.13}, "lockout": {"x": 0.0, "y": 0.63}},
-      "notes": "Touching higher keeps the bar closer over the shoulder: a smaller shoulder moment arm, but usually with more elbow flare (more shoulder stress in the frontal plane, not modelled)."
+      "params": {"gripHalf": 0.4, "elbowOut": 0, "touch": 0.06, "incline": 0},
+      "notes": "Hands far out: the upper arms flare, the pecs (horizontal adduction) work much harder and the triceps much less. The bar also travels less. Each hand pushes straight up with half the bar (it isn't pulled apart or squeezed), and the shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
+    },
+    {
+      "id": "close",
+      "name": "Close grip",
+      "equipment": "Barbell, flat bench",
+      "params": {"gripHalf": 0.2, "elbowOut": 0, "touch": 0.1, "incline": 0},
+      "notes": "Hands at shoulder width, elbows tucked: the triceps take over and the pecs' across-the-body work nearly vanishes. Each hand pushes straight up with half the bar (it isn't pulled apart or squeezed), and the shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
+    },
+    {
+      "id": "elbows-out",
+      "name": "Medium grip, elbows flared past the hands",
+      "equipment": "Barbell, flat bench",
+      "params": {"gripHalf": 0.32, "elbowOut": 0.06, "touch": 0.04, "incline": 0},
+      "notes": "Elbows pushed 6 cm outside the hands and the bar lowered higher on the chest: see how the rotation torque and flare angle change. Each hand pushes straight up with half the bar (it isn't pulled apart or squeezed), and the shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
     },
     {
       "id": "incline",
-      "name": "Incline bench press (30°)",
+      "name": "Incline bench (30°), medium grip",
       "equipment": "Barbell, incline bench",
-      "params": {"touch": {"x": 0.03, "y": 0.13}, "lockout": {"x": 0.0, "y": 0.63}, "incline": 30},
-      "notes": "Bench tilted 30°: the bar touches the upper chest and presses vertically over the shoulder."
+      "params": {"gripHalf": 0.32, "elbowOut": 0, "touch": 0.03, "incline": 30},
+      "notes": "Bench tilted 30°: the bar touches the upper chest and presses vertically over the shoulders. Each hand pushes straight up with half the bar (it isn't pulled apart or squeezed), and the shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Bench Press", "note": "TODO: look up the wger exercise id"}
+  "wger": {"exerciseId": null, "name": "Bench Press", "note": "TODO: look up the wger exercise id"},
+  "placement": [
+    {
+      "key": "gripHalf",
+      "label": "Grip: each hand from the middle",
+      "min": 0.17,
+      "max": 0.45,
+      "step": 0.01,
+      "unit": "cm",
+      "scale": 100
+    },
+    {
+      "key": "elbowOut",
+      "label": "Elbows outside (+) / inside (−) the hands, front view",
+      "min": -0.06,
+      "max": 0.1,
+      "step": 0.01,
+      "unit": "cm",
+      "scale": 100
+    },
+    {
+      "key": "touch",
+      "label": "Bar touches the chest, cm below the shoulders",
+      "min": 0,
+      "max": 0.15,
+      "step": 0.01,
+      "unit": "cm",
+      "scale": 100
+    }
+  ]
 }

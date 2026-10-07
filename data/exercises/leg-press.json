@@ -1,1 +1,306 @@
-{"id": "leg-press", "name": "Leg press", "joint": "Hip, knee and ankle", "model": "multi", "solver": "legPress3d", "view": "3d", "angleLabel": "Knee angle", "concentric": "decrease", "angleRange": [10, 110], "angleNote": "Knee flexion: 10° = legs nearly straight, 110° = sled lowered deep. Lifting makes the angle smaller. Torques are per leg; drag the figure to turn it.", "defaults": {"loadKg": 100, "variant": "middle", "bodyMassKg": 75}, "ui": {"load": [0, 300, 5]}, "joints": [{"id": "hip", "name": "Hip", "action": "Hip extension", "angleLabel": "hip flexion", "peakTorqueNm": 220, "strength": {"points": [[-25, 0.6], [0, 0.75], [45, 0.95], [90, 1.0], [130, 1.0]], "note": "Relative hip-extension torque vs hip flexion, assumed strongest with the hip bent. Peak is per leg, typical trained adult. Approximate.", "source": "TODO: verify against published torque–angle data"}}, {"id": "knee", "name": "Knee", "action": "Knee extension", "angleLabel": "knee flexion", "peakTorqueNm": 220, "strength": {"points": [[0, 0.55], [30, 0.8], [60, 1.0], [90, 0.95], [130, 0.8]], "note": "Relative knee-extension torque vs knee flexion, weakest near straight, strongest around 60°. Peak is per leg. Approximate.", "source": "TODO: verify against published torque–angle data"}}, {"id": "ankle", "name": "Ankle", "action": "Plantarflexion", "angleLabel": "plantarflexion (negative = shin forward)", "peakTorqueNm": 150, "strength": {"points": [[-45, 1.0], [-20, 1.0], [0, 0.9], [20, 0.7], [40, 0.45]], "note": "Relative plantarflexion torque, strongest with the calf stretched. Peak is per leg. Approximate.", "source": "TODO: verify against published torque–angle data"}}, {"id": "hip-frontal", "name": "Hip (sideways)", "action": "Hip adduction", "angleLabel": "hip flexion", "peakTorqueNm": 130, "negative": {"action": "Hip abduction", "peakTorqueNm": 110}, "strength": {"points": [[0, 1.0], [160, 1.0]], "note": "Hip adductor (positive) and abductor (negative) peak torque per leg, taken as constant across the range. Approximate.", "source": "TODO: verify against published torque–angle data"}}, {"id": "hip-rotation", "name": "Hip (rotation)", "action": "Hip external rotation", "angleLabel": "hip flexion", "peakTorqueNm": 70, "negative": {"action": "Hip internal rotation", "peakTorqueNm": 60}, "strength": {"points": [[0, 1.0], [160, 1.0]], "note": "Hip external (positive) and internal (negative) rotation peak torque per leg, taken as constant; the external side includes the gluteus maximus. Approximate.", "source": "TODO: verify against published torque–angle data"}}, {"id": "knee-frontal", "name": "Knee (sideways)", "action": "Knee valgus (pushed inwards)", "angleLabel": "knee flexion", "passive": true, "negative": {"action": "Knee varus (pushed outwards)"}, "strength": {"points": [[0, 1.0], [160, 1.0]], "note": "No muscle capacity: a sideways knee moment is carried mostly by ligaments and the joint surfaces, so it is shown as torque only.", "source": "TODO: verify against published torque–angle data"}}], "muscles": [{"id": "quadriceps", "name": "Quadriceps", "wgerId": 10, "role": "Prime mover", "driver": "jointEffort", "joint": "knee", "weight": [[0, 1.0], [130, 1.0]], "note": "All four heads extend the knee, so net joint torques can't say how the toe angle shifts work between vastus medialis and lateralis.", "source": "TODO: check against EMG literature", "draw3d": {"seg": "thigh", "side": "anterior", "along": [0.08, 0.36], "offset": 0.05, "w": 0.065}}, {"id": "gluteus-maximus", "name": "Gluteus maximus", "wgerId": 8, "role": "Prime mover", "driver": "jointEffort", "joint": "hip", "weight": [[0, 0.8], [90, 1.0], [160, 1.0]], "note": "Main hip extensor; deep hip bend (feet high) loads it more.", "source": "TODO: check against EMG literature", "draw3d": {"seg": "thigh", "side": "posterior", "along": [0.0, 0.12], "offset": 0.06, "w": 0.09}}, {"id": "adductor-magnus", "name": "Adductor magnus", "wgerId": null, "role": "Synergist", "driver": "jointEffort", "joint": "hip", "weight": [[0, 0.3], [90, 0.8], [160, 1.0]], "note": "Rear part extends the hip, more so when it is deeply bent.", "source": "TODO: check against EMG literature"}, {"id": "adductors", "name": "Adductors (longus, brevis, gracilis)", "wgerId": null, "role": "Stabiliser", "driver": "jointEffort", "joint": "hip-frontal", "weight": [[0, 1.0], [160, 1.0]], "note": "Work when the plate's push tends to spread the thighs apart: wide stances and toes out.", "source": "TODO: check against EMG literature", "sign": 1, "draw3d": {"seg": "thigh", "side": "medial", "along": [0.03, 0.25], "offset": 0.05, "w": 0.05}}, {"id": "gluteus-medius", "name": "Gluteus medius and minimus", "wgerId": null, "role": "Stabiliser", "driver": "jointEffort", "joint": "hip-frontal", "weight": [[0, 1.0], [160, 1.0]], "note": "Work when the push tends to pull the thighs together: narrow stances, toes in.", "source": "TODO: check against EMG literature", "sign": -1, "draw3d": {"seg": "thigh", "side": "lateral", "along": [-0.05, 0.08], "offset": 0.06, "w": 0.06}}, {"id": "external-rotators", "name": "Deep hip external rotators", "wgerId": null, "role": "Stabiliser", "driver": "jointEffort", "joint": "hip-rotation", "weight": [[0, 1.0], [160, 1.0]], "note": "Piriformis, obturators and gemelli (with the glutes) resist the thigh turning inwards.", "source": "TODO: check against EMG literature", "sign": 1}, {"id": "calves", "name": "Calves (soleus, gastrocnemius)", "wgerId": 7, "role": "Stabiliser", "driver": "jointEffort", "joint": "ankle", "weight": [[-60, 1.0], [40, 1.0]], "note": "Plantarflexors: push through the ball of the foot.", "source": "TODO: check against EMG literature", "draw3d": {"seg": "shank", "side": "posterior", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055}}], "phases": [{"name": "Top", "range": [10, 40], "text": "Legs nearly straight: the push line passes close to the knees."}, {"name": "Mid-range", "range": [40, 80], "text": "Knees bending."}, {"name": "Bottom", "range": [80, 110], "text": "Deep: the knees and hips have their largest moment arms."}], "variants": [{"id": "middle", "name": "Feet middle, shoulder width", "equipment": "45° leg press", "params": {"railAngle": 45, "backRecline": 55, "footHeight": 0.08, "halfWidth": 0.2, "toeOut": 10, "kneeTrack": 0}, "notes": "The plate pushes along the rail through the middle of each foot. Each joint's torque depends on how far it sits from that push line, in 3D. Sled weight and friction are ignored, and the plate is assumed to push straight (no sideways grip)."}, {"id": "high", "name": "Feet high", "equipment": "45° leg press", "params": {"railAngle": 45, "backRecline": 55, "footHeight": 0.2, "halfWidth": 0.2, "toeOut": 10, "kneeTrack": 0}, "notes": "Feet higher on the plate: the push line passes further from the hip and closer to the knee. More hip work, less knee work."}, {"id": "low", "name": "Feet low", "equipment": "45° leg press", "params": {"railAngle": 45, "backRecline": 55, "footHeight": -0.04, "halfWidth": 0.2, "toeOut": 10, "kneeTrack": 0}, "notes": "Feet low on the plate: the push line passes close to (or below) the hip and far from the knee. Mostly knee work, and the ankle bends further."}, {"id": "wide", "name": "Wide stance, toes out 30°", "equipment": "45° leg press", "params": {"railAngle": 45, "backRecline": 55, "footHeight": 0.08, "halfWidth": 0.33, "toeOut": 30, "kneeTrack": 0}, "notes": "Feet wide and turned out, knees over the toes. The push now tends to spread the thighs apart and turn them inwards, so the adductors and the hip's external rotators have to hold against it."}, {"id": "narrow", "name": "Narrow stance, toes forward", "equipment": "45° leg press", "params": {"railAngle": 45, "backRecline": 55, "footHeight": 0.08, "halfWidth": 0.1, "toeOut": 0, "kneeTrack": 0}, "notes": "Feet under the hips: almost everything stays in the side-view plane, so the sideways and rotation torques nearly vanish."}, {"id": "toes-in", "name": "Toes in 10°", "equipment": "45° leg press", "params": {"railAngle": 45, "backRecline": 55, "footHeight": 0.08, "halfWidth": 0.2, "toeOut": -10, "kneeTrack": 0}, "notes": "Turning the toes in (with the knees following them) brings the knees towards each other."}, {"id": "knees-in", "name": "Knees caving in", "equipment": "45° leg press", "params": {"railAngle": 45, "backRecline": 55, "footHeight": 0.08, "halfWidth": 0.2, "toeOut": 10, "kneeTrack": -10}, "notes": "Same foot position as the middle preset, but the knees drift 10° inside the line over the toes: the knee's sideways (valgus) moment rises, which ligaments rather than muscles have to carry."}], "wger": {"exerciseId": null, "name": "Leg Press", "note": "TODO: look up the wger exercise id"}, "placement": [{"key": "footHeight", "label": "Feet up (+) / down (−) the plate", "min": -0.1, "max": 0.3, "step": 0.01, "unit": "cm", "scale": 100}, {"key": "halfWidth", "label": "Stance: each foot from the middle", "min": 0.06, "max": 0.38, "step": 0.01, "unit": "cm", "scale": 100}, {"key": "toeOut", "label": "Toes out (+) / in (−)", "min": -20, "max": 45, "step": 1, "unit": "°", "scale": 1}, {"key": "kneeTrack", "label": "Knees out (+) / in (−) of the toes", "min": -15, "max": 15, "step": 1, "unit": "°", "scale": 1}]}
+{
+  "id": "leg-press",
+  "name": "Leg press",
+  "joint": "Hip, knee and ankle",
+  "model": "multi",
+  "solver": "legPress3d",
+  "view": "3d",
+  "angleLabel": "Knee angle",
+  "concentric": "decrease",
+  "angleRange": [10, 110],
+  "angleNote": "Knee flexion: 10° = legs nearly straight, 110° = sled lowered deep. Lifting makes the angle smaller. Torques are per leg; drag the figure to turn it.",
+  "momentArmNote": "Moment arm = the joint's 3D distance from the plate's push line; it feeds every component of that joint's torque.",
+  "defaults": {"loadKg": 100, "variant": "middle", "bodyMassKg": 75},
+  "ui": {"load": [0, 300, 5]},
+  "joints": [
+    {
+      "id": "hip",
+      "name": "Hip",
+      "action": "Hip extension",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 220,
+      "strength": {
+        "points": [[-25, 0.6], [0, 0.75], [45, 0.95], [90, 1.0], [130, 1.0]],
+        "note": "Relative hip-extension torque vs hip flexion, assumed strongest with the hip bent. Peak is per leg, typical trained adult. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "knee",
+      "name": "Knee",
+      "action": "Knee extension",
+      "angleLabel": "knee flexion",
+      "peakTorqueNm": 220,
+      "strength": {
+        "points": [[0, 0.55], [30, 0.8], [60, 1.0], [90, 0.95], [130, 0.8]],
+        "note": "Relative knee-extension torque vs knee flexion, weakest near straight, strongest around 60°. Peak is per leg. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "ankle",
+      "name": "Ankle",
+      "action": "Plantarflexion",
+      "angleLabel": "plantarflexion (negative = shin forward)",
+      "peakTorqueNm": 150,
+      "strength": {
+        "points": [[-45, 1.0], [-20, 1.0], [0, 0.9], [20, 0.7], [40, 0.45]],
+        "note": "Relative plantarflexion torque, strongest with the calf stretched. Peak is per leg. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "hip-frontal",
+      "name": "Hip (sideways)",
+      "action": "Hip adduction",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 130,
+      "negative": {"action": "Hip abduction", "peakTorqueNm": 110},
+      "strength": {
+        "points": [[0, 1.0], [160, 1.0]],
+        "note": "Hip adductor (positive) and abductor (negative) peak torque per leg, taken as constant across the range. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "hip-rotation",
+      "name": "Hip (rotation)",
+      "action": "Hip external rotation",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 70,
+      "negative": {"action": "Hip internal rotation", "peakTorqueNm": 60},
+      "strength": {
+        "points": [[0, 1.0], [160, 1.0]],
+        "note": "Hip external (positive) and internal (negative) rotation peak torque per leg, taken as constant; the external side includes the gluteus maximus. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "knee-frontal",
+      "name": "Knee (sideways)",
+      "action": "Knee valgus (pushed inwards)",
+      "angleLabel": "knee flexion",
+      "passive": true,
+      "negative": {"action": "Knee varus (pushed outwards)"},
+      "strength": {
+        "points": [[0, 1.0], [160, 1.0]],
+        "note": "No muscle capacity: a sideways knee moment is carried mostly by ligaments and the joint surfaces, so it is shown as torque only.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    }
+  ],
+  "muscles": [
+    {
+      "id": "quadriceps",
+      "name": "Quadriceps",
+      "wgerId": 10,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "knee",
+      "weight": [[0, 1.0], [130, 1.0]],
+      "note": "All four heads extend the knee, so net joint torques can't say how the toe angle shifts work between vastus medialis and lateralis.",
+      "source": "TODO: check against EMG literature",
+      "draw3d": {"seg": "thigh", "side": "anterior", "along": [0.08, 0.36], "offset": 0.05, "w": 0.065}
+    },
+    {
+      "id": "gluteus-maximus",
+      "name": "Gluteus maximus",
+      "wgerId": 8,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.8], [90, 1.0], [160, 1.0]],
+      "note": "Main hip extensor; deep hip bend (feet high) loads it more.",
+      "source": "TODO: check against EMG literature",
+      "draw3d": {"seg": "thigh", "side": "posterior", "along": [0.0, 0.12], "offset": 0.06, "w": 0.09}
+    },
+    {
+      "id": "adductor-magnus",
+      "name": "Adductor magnus",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.3], [90, 0.8], [160, 1.0]],
+      "note": "Rear part extends the hip, more so when it is deeply bent.",
+      "source": "TODO: check against EMG literature"
+    },
+    {
+      "id": "adductors",
+      "name": "Adductors (longus, brevis, gracilis)",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip-frontal",
+      "weight": [[0, 1.0], [160, 1.0]],
+      "note": "Work when the plate's push tends to spread the thighs apart: wide stances and toes out.",
+      "source": "TODO: check against EMG literature",
+      "sign": 1,
+      "draw3d": {"seg": "thigh", "side": "medial", "along": [0.03, 0.25], "offset": 0.05, "w": 0.05}
+    },
+    {
+      "id": "gluteus-medius",
+      "name": "Gluteus medius and minimus",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip-frontal",
+      "weight": [[0, 1.0], [160, 1.0]],
+      "note": "Work when the push tends to pull the thighs together: narrow stances, toes in.",
+      "source": "TODO: check against EMG literature",
+      "sign": -1,
+      "draw3d": {"seg": "thigh", "side": "lateral", "along": [-0.05, 0.08], "offset": 0.06, "w": 0.06}
+    },
+    {
+      "id": "external-rotators",
+      "name": "Deep hip external rotators",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip-rotation",
+      "weight": [[0, 1.0], [160, 1.0]],
+      "note": "Piriformis, obturators and gemelli (with the glutes) resist the thigh turning inwards.",
+      "source": "TODO: check against EMG literature",
+      "sign": 1
+    },
+    {
+      "id": "calves",
+      "name": "Calves (soleus, gastrocnemius)",
+      "wgerId": 7,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "ankle",
+      "weight": [[-60, 1.0], [40, 1.0]],
+      "note": "Plantarflexors: push through the ball of the foot.",
+      "source": "TODO: check against EMG literature",
+      "draw3d": {"seg": "shank", "side": "posterior", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055}
+    }
+  ],
+  "phases": [
+    {
+      "name": "Top",
+      "range": [10, 40],
+      "text": "Legs nearly straight: the push line passes close to the knees."
+    },
+    {"name": "Mid-range", "range": [40, 80], "text": "Knees bending."},
+    {"name": "Bottom", "range": [80, 110], "text": "Deep: the knees and hips have their largest moment arms."}
+  ],
+  "variants": [
+    {
+      "id": "middle",
+      "name": "Feet middle, shoulder width",
+      "equipment": "45° leg press",
+      "params": {"railAngle": 45, "backRecline": 55, "footHeight": 0.08, "halfWidth": 0.2, "toeOut": 10, "kneeTrack": 0},
+      "notes": "The plate pushes along the rail through the middle of each foot. Each joint's torque depends on how far it sits from that push line, in 3D. Sled weight and friction are ignored, and the plate is assumed to push straight (no sideways grip)."
+    },
+    {
+      "id": "high",
+      "name": "Feet high",
+      "equipment": "45° leg press",
+      "params": {"railAngle": 45, "backRecline": 55, "footHeight": 0.2, "halfWidth": 0.2, "toeOut": 10, "kneeTrack": 0},
+      "notes": "Feet higher on the plate: the push line passes further from the hip and closer to the knee. More hip work, less knee work."
+    },
+    {
+      "id": "low",
+      "name": "Feet low",
+      "equipment": "45° leg press",
+      "params": {
+        "railAngle": 45,
+        "backRecline": 55,
+        "footHeight": -0.04,
+        "halfWidth": 0.2,
+        "toeOut": 10,
+        "kneeTrack": 0
+      },
+      "notes": "Feet low on the plate: the push line passes close to (or below) the hip and far from the knee. Mostly knee work, and the ankle bends further."
+    },
+    {
+      "id": "wide",
+      "name": "Wide stance, toes out 30°",
+      "equipment": "45° leg press",
+      "params": {
+        "railAngle": 45,
+        "backRecline": 55,
+        "footHeight": 0.08,
+        "halfWidth": 0.33,
+        "toeOut": 30,
+        "kneeTrack": 0
+      },
+      "notes": "Feet wide and turned out, knees over the toes. The push now tends to spread the thighs apart and turn them inwards, so the adductors and the hip's external rotators have to hold against it."
+    },
+    {
+      "id": "narrow",
+      "name": "Narrow stance, toes forward",
+      "equipment": "45° leg press",
+      "params": {"railAngle": 45, "backRecline": 55, "footHeight": 0.08, "halfWidth": 0.1, "toeOut": 0, "kneeTrack": 0},
+      "notes": "Feet under the hips: almost everything stays in the side-view plane, so the sideways and rotation torques nearly vanish."
+    },
+    {
+      "id": "toes-in",
+      "name": "Toes in 10°",
+      "equipment": "45° leg press",
+      "params": {
+        "railAngle": 45,
+        "backRecline": 55,
+        "footHeight": 0.08,
+        "halfWidth": 0.2,
+        "toeOut": -10,
+        "kneeTrack": 0
+      },
+      "notes": "Turning the toes in (with the knees following them) brings the knees towards each other."
+    },
+    {
+      "id": "knees-in",
+      "name": "Knees caving in",
+      "equipment": "45° leg press",
+      "params": {
+        "railAngle": 45,
+        "backRecline": 55,
+        "footHeight": 0.08,
+        "halfWidth": 0.2,
+        "toeOut": 10,
+        "kneeTrack": -10
+      },
+      "notes": "Same foot position as the middle preset, but the knees drift 10° inside the line over the toes: the knee's sideways (valgus) moment rises, which ligaments rather than muscles have to carry."
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Leg Press", "note": "TODO: look up the wger exercise id"},
+  "placement": [
+    {
+      "key": "footHeight",
+      "label": "Feet up (+) / down (−) the plate",
+      "min": -0.1,
+      "max": 0.3,
+      "step": 0.01,
+      "unit": "cm",
+      "scale": 100
+    },
+    {
+      "key": "halfWidth",
+      "label": "Stance: each foot from the middle",
+      "min": 0.06,
+      "max": 0.38,
+      "step": 0.01,
+      "unit": "cm",
+      "scale": 100
+    },
+    {
+      "key": "toeOut",
+      "label": "Toes out (+) / in (−)",
+      "min": -20,
+      "max": 45,
+      "step": 1,
+      "unit": "°",
+      "scale": 1
+    },
+    {
+      "key": "kneeTrack",
+      "label": "Knees out (+) / in (−) of the toes",
+      "min": -15,
+      "max": 15,
+      "step": 1,
+      "unit": "°",
+      "scale": 1
+    }
+  ]
+}

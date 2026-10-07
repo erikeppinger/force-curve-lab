@@ -99,11 +99,20 @@ function setPlacement(v) {
   $("placement-sliders").replaceChildren(...spec.map((s) => {
     const label = document.createElement("label");
     const out = document.createElement("output");
-    const input = Object.assign(document.createElement("input"), { type: "range", min: s.min, max: s.max, step: s.step, value: state.placement[s.key] });
-    const show = () => { out.textContent = `${Math.round(state.placement[s.key] * s.scale)} ${s.unit}`; };
+    const isAuto = () => state.placement[s.key] === "auto";
+    const input = Object.assign(document.createElement("input"), { type: "range", min: s.min, max: s.max, step: s.step, value: isAuto() ? 0 : state.placement[s.key] });
+    const show = () => { out.textContent = isAuto() ? "auto" : `${Math.round(state.placement[s.key] * s.scale)} ${s.unit}`; input.disabled = isAuto(); };
     input.addEventListener("input", () => { state.placement[s.key] = +input.value; show(); render(); });
-    show();
     label.append(`${s.label} `, out, input);
+    if (s.auto) {
+      // A value the model can pick itself (e.g. the least-effort sideways floor push).
+      const box = Object.assign(document.createElement("input"), { type: "checkbox", checked: isAuto() });
+      box.addEventListener("change", () => { state.placement[s.key] = box.checked ? "auto" : +input.value; show(); render(); });
+      const auto = Object.assign(document.createElement("span"), { className: "auto-toggle" });
+      auto.append(box, ` ${s.auto}`);
+      label.append(auto);
+    }
+    show();
     return label;
   }));
 }
@@ -318,7 +327,7 @@ function renderMulti() {
   const over = r.joints.filter((j) => j.effort > 1);
   $("ro-warning").hidden = !over.length;
   $("ro-warning").textContent = `Load exceeds ${over.map((j) => j.name.toLowerCase()).join(" and ")} strength here — this is where the lift would fail.`;
-  const info = ex.view === "3d" ? [{ text: "Moment arm = the joint's 3D distance from the plate's push line; it feeds every component of that joint's torque." }, ...r.info] : r.info;
+  const info = ex.momentArmNote ? [{ text: ex.momentArmNote }, ...r.info] : r.info;
   $("ro-limb").hidden = !info.length;
   $("ro-limb").replaceChildren(...info.map((i) => Object.assign(document.createElement("span"), { textContent: `${i.text} `, className: i.warn ? "warn" : "" })));
   renderPhase(ex);
