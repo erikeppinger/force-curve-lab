@@ -303,5 +303,9 @@
       "auto": "Under the bar (auto)"
     }
   ],
-  "wger": {"exerciseId": null, "name": "Lat Pull Down", "note": "TODO: look up the wger exercise id"}
+  "wger": {
+    "exerciseId": 354,
+    "name": "Lat Pull Down (Leaning Back)",
+    "note": "Checked against wger's public exercise list (id = the number in the page address). Closest entry: no exact \"Lat Pull Down\"; leaning-back entry chosen to match the default variant; alternatives 355 \"(Straight Back)\", 2631 \"Machine Lat Pulldown\"."
+  }
 }

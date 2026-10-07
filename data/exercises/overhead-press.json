@@ -280,5 +280,9 @@
       "auto": "Least effort (auto)"
     }
   ],
-  "wger": {"exerciseId": null, "name": "Shoulder Press", "note": "TODO: look up the wger exercise id"}
+  "wger": {
+    "exerciseId": 566,
+    "name": "Shoulder Press, Barbell",
+    "note": "Checked against wger's public exercise list (id = the number in the page address). Closest entry: no exact \"Shoulder Press\"; alternatives 687 \"Overhead Press\", 567 \"Shoulder Press, Dumbbells\"."
+  }
 }

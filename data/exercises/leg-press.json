@@ -296,7 +296,7 @@
   "wger": {
     "exerciseId": 371,
     "name": "Leg Press",
-    "note": "Id taken from the exercise's media URL in the wger starter library CSV (wger.de/media/exercise-video/371/…); not checked against the API from here. Check at https://wger.de/en/exercise/371/view/"
+    "note": "Checked against wger's public exercise list (id = the number in the page address)."
   },
   "placement": [
     {

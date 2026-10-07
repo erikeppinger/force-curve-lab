@@ -132,5 +132,9 @@
       "notes": "Pad on the outside of the thigh above the knee. The common seated machine (hip bent 90°, knee bent) is a different joint set-up this model can't put in the same exercise."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Abduction while standing", "note": "TODO: look up the wger exercise id"}
+  "wger": {
+    "exerciseId": 1096,
+    "name": "Abduction while standing",
+    "note": "Checked against wger's public exercise list (id = the number in the page address)."
+  }
 }

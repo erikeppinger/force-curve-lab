@@ -132,5 +132,9 @@
       "notes": "Leaning face-down on a 45° bench tilts gravity relative to the body. Below 45° gravity helps raise the arm, and the torque keeps rising past shoulder height (outside this range)."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Front Raises", "note": "TODO: look up the wger exercise id"}
+  "wger": {
+    "exerciseId": 256,
+    "name": "Front Raises",
+    "note": "Checked against wger's public exercise list (id = the number in the page address)."
+  }
 }

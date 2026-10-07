@@ -137,5 +137,10 @@
       "defaultLoadKg": 6,
       "notes": "Band anchored under the foot on the working side. Nearly slack at the bottom, so the start is easy; tension and moment arm both grow as the arm rises, making the top much harder than with a dumbbell. The load slider is the band's tension at 1.6 m (about its length at shoulder height)."
     }
-  ]
+  ],
+  "wger": {
+    "exerciseId": 348,
+    "name": "Lateral Raises",
+    "note": "Checked against wger's public exercise list (id = the number in the page address)."
+  }
 }

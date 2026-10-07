@@ -149,6 +149,6 @@
   "wger": {
     "exerciseId": 365,
     "name": "Leg Curls (laying)",
-    "note": "Id taken from the exercise's media URL in the wger starter library CSV (wger.de/media/exercise-video/365/…); not checked against the API from here. Check at https://wger.de/en/exercise/365/view/"
+    "note": "Checked against wger's public exercise list (id = the number in the page address). This is the lying leg curl, the exercise's default variant."
   }
 }

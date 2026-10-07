@@ -334,7 +334,11 @@
       "text": "Load at the trunk: the shoulder extensors (lats) work hardest, and the shoulder blades squeeze together."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Bent Over Barbell Row", "note": "TODO: look up the wger exercise id"},
+  "wger": {
+    "exerciseId": 83,
+    "name": "Bent Over Rowing",
+    "note": "Checked against wger's public exercise list (id = the number in the page address). Closest entry: no exact \"Bent Over Barbell Row\" on wger; alternative 1698 \"Barbell Row (Overhand)\"."
+  },
   "momentArmNote": "Moment arm = the joint's 3D distance from the load's line of action through that hand (the cable, or straight down); it feeds every component of that joint's torque.",
   "placement": [
     {

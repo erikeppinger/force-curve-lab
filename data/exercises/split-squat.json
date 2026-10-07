@@ -306,7 +306,11 @@
       "notes": "Front knee drifting 10° inside the toe line: compare the hip and knee sideways rows with the default."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Bulgarian split squats left", "note": "TODO: look up the wger exercise id"},
+  "wger": {
+    "exerciseId": 988,
+    "name": "Bulgarian split squats left",
+    "note": "Checked against wger's public exercise list (id = the number in the page address)."
+  },
   "momentArmNote": "Moment arm = the joint's 3D distance from the floor's push line under the front foot; it feeds every component of that joint's torque.",
   "placement": [
     {

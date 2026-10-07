@@ -323,7 +323,11 @@
       "notes": "Same stance as the high-bar squat, but the knees drift 12° inside the line over the toes, with the feet pushing outwards at a fixed 10%. The knee's valgus moment and the hip's rotation load rise sharply. Switch the sideways push back to least effort and most of it disappears: the feet can push against the floor to cancel it, which is one way to read the coaching cue \"spread the floor\"."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Squats", "note": "TODO: look up the wger exercise id"},
+  "wger": {
+    "exerciseId": 615,
+    "name": "Squats",
+    "note": "Checked against wger's public exercise list (id = the number in the page address)."
+  },
   "placement": [
     {
       "key": "shinPerKnee",

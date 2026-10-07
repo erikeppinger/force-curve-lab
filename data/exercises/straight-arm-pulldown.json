@@ -129,8 +129,8 @@
     }
   ],
   "wger": {
-    "exerciseId": null,
+    "exerciseId": 628,
     "name": "Straight-arm Pull Down (bar Attachment)",
-    "note": "TODO: look up the wger exercise id"
+    "note": "Checked against wger's public exercise list (id = the number in the page address)."
   }
 }
