@@ -46,7 +46,7 @@ From <https://simtk.org/home/full_body> (free account needed for downloads):
 - The licence text on the project page: check that results derived from the model may be published under CC BY 4.0 (the model file itself stays out of the repo unless its licence allows it, like the papers).
 
 What it is for: moment arms of each leg muscle across hip, knee and ankle angles, plus each muscle's force capacity (Table II of the paper). Together they would give muscle weights that change with the joint angles, replacing the flat `TODO` guesses for the leg muscles. Two ways to run it:
-1. With OpenSim installed locally (free; conda package `opensim`): a short Python script exports moment arms and forces on an angle grid as JSON, and only that JSON is committed. The script can be written here before the files arrive.
+1. With OpenSim installed locally (free; `conda install -c opensim-org opensim`): run `python tools/opensim_export.py Rajagopal2016.osim data/opensim/rajagopal-right-leg.json` (file name as downloaded). It writes moment arms and force capacity for every right-leg muscle on hip × knee and knee × ankle grids. Only that JSON is committed. The script was checked against a stand-in module, not real OpenSim yet, so the first run may need a fix; its `check:` lines print three well-known moment arms to compare against the paper.
 2. Without OpenSim: read the `.osim` XML here and compute moment arms from the path points. This ignores the wrap surfaces, so muscles that bend around bone (gluteus maximus, quadriceps over the knee, hamstrings) would come out wrong; only usable as a rough check.
 
 

@@ -14,6 +14,7 @@ Static teaching site (GitHub Pages). Vanilla ES modules. **No build step, no npm
 - `data/exercises/*.json`: all exercise content (chain, variants, strength curve, muscles, postures, phases, `placement` sliders)
 - `data/references.json`: every paper cited in a `source` field, shown in the app's References section
 - `docs/model-limits.md`: what the model approximates, per lift, and how each was checked against measurements; `docs/reading-list.md`: papers still to get
+- `tools/opensim_export.py`: optional, run locally with OpenSim: exports leg-muscle moment arms and force capacity from the Rajagopal model as JSON (`data/opensim/`). Not part of the site or the tests
 - `tests/*.test.mjs`: `npm test` (node --test)
 - Uploaded papers are read locally and removed from the repo afterwards (copyright); never commit PDFs
 
