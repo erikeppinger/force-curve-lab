@@ -235,9 +235,9 @@ These three now run in 3D with the same leg model as the squat. The tests check 
 
 Limits:
 
-- **Split squat contacts push straight up.** The rear foot on a bench can't take sideways or front-back friction, and the front foot's sideways push isn't modelled. The pelvis stays level (no hip drop), and the trunk stays upright in the front view.
+- **Split squat contacts push straight up, so its rotation numbers are upper limits.** With measured hip-rotation strength, the default Bulgarian split squat reaches 53–86% internal-rotation effort, and the feet-in-line variant passes 100% when deep. The rear foot on a bench can't take sideways or front-back friction, and the front foot's sideways push isn't modelled. The pelvis stays level (no hip drop), and the trunk stays upright in the front view.
 - **Pelvis shift instead of a hip drop.** Real lifters also let the pelvis tilt and the knee drift. The model keeps the pelvis level and moves it sideways as one piece.
-- **Hip-rotation and frontal-plane strength** are the squat's, still partly estimated (`TODO`).
+- **Hip rotation strength** is from Uritani & Fukumoto 2012, by hip flexion. Internal rotation rises from 25 Nm lying back to 39 Nm sitting; external rotation stays about 37–43 Nm. Their group was mostly women (60 kg), so the values are likely low for men. Frontal-plane strength is the squat's.
 
 ## 3D: rows
 
@@ -388,18 +388,9 @@ What it shows:
   - Black et al.'s hamstring numbers (48 Nm supine vs 78 Nm sitting, a ratio of 0.62) confirm Guex et al.'s 0.56.
 - **Hammer grip strength:** Mandalidis & O'Brien 2001 found neutral 2–5% weaker than palms up; Guenzkofer et al. found it equal or slightly stronger. Within about 5% either way.
 - **Brachioradialis with palms down:**
-  - Kleiber et al. and Marcolin et al. 2018 (EZ bar vs dumbbell) found more activity.
-  - Boland et al. 2008 (fine-wire EMG) found no grip effect.
-  - The reverse curl's 1.2× modifier stays an estimate.
-
-**In the multi-joint lifts** (squat, Romanian deadlift, deadlift, split squat, leg press, hip thrust, bent-over row), an exercise-wide `jointScale` makes one joint's strength depend on another joint's angle, for one torque direction only:
-
-- **Calves:** plantarflexion strength follows the knee angle (Cresswell et al.). That is 1.20 with the knee straight, 0.92 at 90° and 0.72 at 120° of knee bend, relative to the base curve's 50°. A squat's calves get weaker as it deepens; a stiff-legged RDL's are at their strongest.
-- **Hamstrings:** knee-flexion strength follows the hip angle (Guex et al.). That is 0.61 with the hip straight and 1.09 at 90°.
-  - The knees now have Anderson et al.'s knee-flexion curve as their negative direction. Knee-flexor demands (the RDL, the hip thrust with the feet far out, the deadlift's top) now show an effort instead of "opposite muscles".
-  - A hip thrust at the bottom puts the hamstrings short at both joints (knee bent past 100°), so their knee-flexion capacity is low there.
-- **Least-effort search:** it uses the same corrected strengths, so the sideways floor push it picks matches the effort the app shows.
-- **Not corrected:** knee extension needs no correction (rectus femoris: Black et al., Bampouras et al.). Hip extension vs knee angle (the hamstrings at the hip) has no source yet.
+  - Coratella et al. 2023 compared grips at the same relative effort (each grip at its own 8RM). Palms up gave the most biceps *and* brachioradialis activity. Neutral was −12% / −6% and palms down −19% / −5%.
+  - The hammer and reverse curls now carry those factors (0.89 / 0.94 and 0.84 / 0.95) instead of the old 1.2× estimate.
+  - Earlier studies at unmatched loads found no change (Boland et al.) or more brachioradialis with the palms turned down (Kleiber et al., Marcolin et al.).
 
 Limits:
 
@@ -411,5 +402,5 @@ Limits:
 
 - Muscle activation weights (62 values; the bench grip-width effects are now backed by Mausehund et al. qualitatively).
 - Machine cam profiles.
-- Hip rotation strength in the 3D lifts, and the peak horizontal-adduction torque.
+- The peak horizontal-adduction torque (bench) and horizontal-abduction torque (rows: rear delts).
 - Hip-extension strength vs knee angle (the hamstrings' share at the hip).

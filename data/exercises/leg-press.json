@@ -74,12 +74,18 @@
       "name": "Hip (rotation)",
       "action": "Hip external rotation",
       "angleLabel": "hip flexion",
-      "peakTorqueNm": 70,
-      "negative": {"action": "Hip internal rotation", "peakTorqueNm": 60},
+      "peakTorqueNm": 43,
+      "negative": {
+        "action": "Hip internal rotation",
+        "peakTorqueNm": 39,
+        "points": [[10, 0.64], [55, 0.9], [85, 1.0]],
+        "note": "Internal rotation (negative) by hip flexion: 25.2 Nm lying back (backrest 10°), 35.5 Nm at 55°, 39.4 Nm sitting (85°); it rises as the hip flexes (Uritani & Fukumoto). Held flat outside the tested range.",
+        "source": "Uritani D, Fukumoto T (2012). Differences of isometric internal and external hip rotation torques among three different hip flexion positions. J Phys Ther Sci 24(9):863–865 (Table 2: 20 students, 6 men and 14 women, isometric)"
+      },
       "strength": {
-        "points": [[0, 1.0], [160, 1.0]],
-        "note": "Hip external (positive) and internal (negative) rotation peak torque per leg, taken as constant; the external side includes the gluteus maximus. Approximate.",
-        "source": "TODO: rotation torques not taken from a source yet (Kulig et al. 1984 review only the curve shapes: internal rotation ascending, external descending)"
+        "points": [[10, 0.84], [55, 0.97], [85, 1.0]],
+        "note": "External rotation (positive) by hip flexion: 36.5, 42.0 and 43.4 Nm with the backrest at 10°, 55° and 85° (Uritani & Fukumoto; the change wasn't significant). Hip flexion is taken as the backrest angle, which the authors didn't measure directly. The group (14 of 20 women, 60 kg on average) is lighter than this model's 75 kg man, so these are likely low for men; the strength slider scales them.",
+        "source": "Uritani D, Fukumoto T (2012). Differences of isometric internal and external hip rotation torques among three different hip flexion positions. J Phys Ther Sci 24(9):863–865 (Table 2: 20 students, 6 men and 14 women, isometric)"
       }
     },
     {

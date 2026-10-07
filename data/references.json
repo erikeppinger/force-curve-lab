@@ -66,6 +66,14 @@
       "usedFor": "Hip abduction and adduction strength vs hip angle."
     },
     {
+      "key": "Uritani 2012",
+      "match": "Uritani D",
+      "group": "Strength curves",
+      "citation": "Uritani D, Fukumoto T (2012). Differences of isometric internal and external hip rotation torques among three different hip flexion positions. J Phys Ther Sci 24(9):863–865.",
+      "url": "https://www.jstage.jst.go.jp/article/jpts/24/9/24_863/_article",
+      "usedFor": "Hip internal and external rotation strength by hip flexion (3D leg lifts)."
+    },
+    {
       "key": "de Leva 1996",
       "match": "de Leva P",
       "group": "Body data",
@@ -176,6 +184,14 @@
       "citation": "Marcolin G, Panizzolo FA, Petrone N, Moro T, Grigoletto D, Piccolo D, Paoli A (2018). Differences in electromyographic activity of biceps brachii and brachioradialis while performing three variants of curl. PeerJ 6:e5165.",
       "url": "https://doi.org/10.7717/peerj.5165",
       "usedFor": "Biceps and brachioradialis activity: dumbbell, straight-bar and EZ-bar curls."
+    },
+    {
+      "key": "Coratella 2023",
+      "match": "Coratella G",
+      "group": "Muscle activity",
+      "citation": "Coratella G, Tornatore G, Longo S, Toninelli N, Padovan R, Esposito F, Cè E (2023). Biceps brachii and brachioradialis excitation in biceps curl exercise: different handgrips, different synergy. Sports 11(3):64.",
+      "url": "https://doi.org/10.3390/sports11030064",
+      "usedFor": "Biceps and brachioradialis activity by grip at matched effort (hammer and reverse curl factors)."
     },
     {
       "key": "Mausehund 2022",
