@@ -3,12 +3,12 @@
   "name": "Romanian deadlift",
   "joint": "Hip, knee and ankle",
   "model": "multi",
-  "solver": "standing",
-  "view": "side",
+  "solver": "hinge3d",
+  "view": "3d",
   "angleLabel": "Hip angle",
   "concentric": "decrease",
   "angleRange": [0, 90],
-  "angleNote": "Hip flexion: 0° = standing, 90° = trunk about horizontal. The knees bend a little as you hinge. Lifting makes the angle smaller. Torques are per leg.",
+  "angleNote": "Hip flexion: 0° = standing, 90° = trunk about horizontal. The knees bend a little as you hinge. Lifting makes the angle smaller. Torques are per leg; drag the figure to turn it.",
   "defaults": {"loadKg": 50, "variant": "barbell", "bodyMassKg": 75},
   "ui": {"load": [0, 200, 2.5]},
   "joints": [
@@ -47,6 +47,45 @@
         "note": "Relative isometric plantarflexion torque vs plantarflexion (negative = dorsiflexed), peak about 23° of dorsiflexion, measured with the knee bent 50° (tested 29° dorsiflexion to 34° plantarflexion). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m).",
         "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
       }
+    },
+    {
+      "id": "hip-frontal",
+      "name": "Hip (sideways)",
+      "action": "Hip adduction",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 247,
+      "negative": {"action": "Hip abduction", "peakTorqueNm": 130},
+      "strength": {
+        "points": [[0, 1.0], [160, 1.0]],
+        "note": "Hip adductor (positive) and abductor (negative) peak torque per leg, taken as constant across the range: Welsh et al.'s isometric means at 10° of hip abduction (trained recreational hockey players, hip straight): adductors 247 Nm, abductors 130 Nm. Abductor strength falls as the hip abducts (Neumann et al.; Welsh et al.), which isn't modelled here.",
+        "source": "Welsh P, et al. (2020). The influence of hip joint angle on the ratio between adduction and abduction torque in experienced, recreational male ice hockey players. Int J Sports Phys Ther 15(1):22–33"
+      }
+    },
+    {
+      "id": "hip-rotation",
+      "name": "Hip (rotation)",
+      "action": "Hip external rotation",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 70,
+      "negative": {"action": "Hip internal rotation", "peakTorqueNm": 60},
+      "strength": {
+        "points": [[0, 1.0], [160, 1.0]],
+        "note": "Hip external (positive) and internal (negative) rotation peak torque per leg, taken as constant; the external side includes the gluteus maximus. Approximate.",
+        "source": "TODO: rotation torques not taken from a source yet (Kulig et al. 1984 review only the curve shapes: internal rotation ascending, external descending)"
+      }
+    },
+    {
+      "id": "knee-frontal",
+      "name": "Knee (sideways)",
+      "action": "Knee valgus (pushed inwards)",
+      "angleLabel": "knee flexion",
+      "passive": true,
+      "negative": {"action": "Knee varus (pushed outwards)"},
+      "strength": {
+        "points": [[0, 1.0], [160, 1.0]],
+        "note": "No muscle capacity: a sideways knee moment is carried mostly by ligaments and the joint surfaces, so it is shown as torque only.",
+        "source": "Not applicable: carried by ligaments and joint surfaces, so no muscle strength is used"
+      }
     }
   ],
   "muscles": [
@@ -60,7 +99,8 @@
       "weight": [[0, 0.8], [90, 1.0]],
       "note": "Lengthened as you hinge with nearly straight knees: the main target of the lift.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "thigh", "along": [0.06, 0.34], "offset": 0.045, "w": 0.055}
+      "draw": {"seg": "thigh", "along": [0.06, 0.34], "offset": 0.045, "w": 0.055},
+      "draw3d": {"seg": "thigh", "side": "posterior", "along": [0.12, 0.36], "offset": 0.06, "w": 0.06}
     },
     {
       "id": "gluteus-maximus",
@@ -72,7 +112,8 @@
       "weight": [[0, 0.8], [90, 1.0], [130, 1.0]],
       "note": "Main hip extensor.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "thigh", "along": [0.33, 0.47], "offset": 0.06, "w": 0.09}
+      "draw": {"seg": "thigh", "along": [0.33, 0.47], "offset": 0.06, "w": 0.09},
+      "draw3d": {"seg": "thigh", "side": "posterior", "along": [0.0, 0.12], "offset": 0.06, "w": 0.09}
     },
     {
       "id": "adductor-magnus",
@@ -107,7 +148,46 @@
       "weight": [[-45, 1.0], [40, 1.0]],
       "note": "Plantarflexors: keep the shin from tipping forward.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "shank", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055}
+      "draw": {"seg": "shank", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055},
+      "draw3d": {"seg": "shank", "side": "posterior", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055}
+    },
+    {
+      "id": "adductors",
+      "name": "Adductors (longus, brevis, gracilis)",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip-frontal",
+      "weight": [[0, 1.0], [160, 1.0]],
+      "note": "Work when the plate's push tends to spread the thighs apart: wide stances and toes out.",
+      "source": "TODO: check against EMG literature",
+      "sign": 1,
+      "draw3d": {"seg": "thigh", "side": "medial", "along": [0.03, 0.25], "offset": 0.05, "w": 0.05}
+    },
+    {
+      "id": "gluteus-medius",
+      "name": "Gluteus medius and minimus",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip-frontal",
+      "weight": [[0, 1.0], [160, 1.0]],
+      "note": "Work when the push tends to pull the thighs together: narrow stances, toes in.",
+      "source": "TODO: check against EMG literature",
+      "sign": -1,
+      "draw3d": {"seg": "thigh", "side": "lateral", "along": [-0.05, 0.08], "offset": 0.06, "w": 0.06}
+    },
+    {
+      "id": "external-rotators",
+      "name": "Deep hip external rotators",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip-rotation",
+      "weight": [[0, 1.0], [160, 1.0]],
+      "note": "Piriformis, obturators and gemelli (with the glutes) resist the thigh turning inwards.",
+      "source": "TODO: check against EMG literature",
+      "sign": 1
     }
   ],
   "phases": [
@@ -128,16 +208,90 @@
       "id": "barbell",
       "name": "Barbell Romanian deadlift",
       "equipment": "Barbell",
-      "params": {"mode": "hinge", "load": "hang", "kneeBase": 5, "kneePerHip": 0.2},
+      "params": {
+        "mode": "hinge",
+        "load": "hang",
+        "kneeBase": 5,
+        "kneePerHip": 0.2,
+        "halfWidth": 0.09,
+        "toeOut": 0,
+        "kneeTrack": 0,
+        "sidePush": "auto"
+      },
       "notes": "Arms hang straight down from the shoulders. The solver tilts the shins so the centre of mass of body + bar stays over the mid-foot, which is what moves the hips back. Knee flexion grows from 5° to 23° through the hinge."
     },
     {
       "id": "stiff-leg",
       "name": "Stiff-legged deadlift",
       "equipment": "Barbell",
-      "params": {"mode": "hinge", "load": "hang", "kneeBase": 3, "kneePerHip": 0.03},
+      "params": {
+        "mode": "hinge",
+        "load": "hang",
+        "kneeBase": 3,
+        "kneePerHip": 0.03,
+        "halfWidth": 0.09,
+        "toeOut": 0,
+        "kneeTrack": 0,
+        "sidePush": "auto"
+      },
       "notes": "Knees almost locked: the shins can't help, so the hips must travel further back and the hamstrings are stretched more."
+    },
+    {
+      "id": "wide",
+      "name": "Wide stance, toes out",
+      "equipment": "Barbell",
+      "params": {
+        "mode": "hinge",
+        "load": "hang",
+        "kneeBase": 5,
+        "kneePerHip": 0.2,
+        "halfWidth": 0.25,
+        "toeOut": 25,
+        "kneeTrack": 0,
+        "sidePush": "auto"
+      },
+      "notes": "Feet wide and turned out. Hip extension stays about the same, but the feet now push outwards against the floor (least-effort estimate), which brings in the hip's sideways muscles. With the sideways push set to zero the adductors would have to hold the stance instead."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Romanian Deadlift", "note": "TODO: look up the wger exercise id"}
+  "wger": {"exerciseId": null, "name": "Romanian Deadlift", "note": "TODO: look up the wger exercise id"},
+  "momentArmNote": "Moment arm = the joint's 3D distance from the floor's push line under that foot; it feeds every component of that joint's torque.",
+  "placement": [
+    {
+      "key": "halfWidth",
+      "label": "Stance: each foot from the middle",
+      "min": 0.06,
+      "max": 0.38,
+      "step": 0.01,
+      "unit": "cm",
+      "scale": 100
+    },
+    {
+      "key": "toeOut",
+      "label": "Toes out (+) / in (−)",
+      "min": -20,
+      "max": 45,
+      "step": 1,
+      "unit": "°",
+      "scale": 1
+    },
+    {
+      "key": "kneeTrack",
+      "label": "Knees out (+) / in (−) of the toes",
+      "min": -15,
+      "max": 15,
+      "step": 1,
+      "unit": "°",
+      "scale": 1
+    },
+    {
+      "key": "sidePush",
+      "label": "Feet push outwards against the floor (% of the vertical force)",
+      "min": -0.2,
+      "max": 0.6,
+      "step": 0.02,
+      "unit": "%",
+      "scale": 100,
+      "auto": "Least effort (auto)"
+    }
+  ]
 }

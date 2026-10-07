@@ -548,3 +548,239 @@ export function press3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       ...(ok || elbowFlex < 30 ? [] : [{ warn: true, text: "The elbows can't sit that far from the hands at this bar height; shown as close as the arm allows." }])],
   };
 }
+
+// ---------- lower-body lifts in 3D beyond the squat ----------
+
+/**
+ * One leg loaded from the floor up: the floor pushes at `cop` with `Fy` up and ratio·Fy sideways
+ * (+ = the right foot pushed inwards, i.e. the foot pushes outwards), plus the leg's own weights.
+ * The ratio is P.sidePush, or the least-effort one when that is "auto" (the default).
+ */
+function legFromFloor(ex, P, { H, K, A, f, cop, Fy, back, kneeAngle, kg, body }) {
+  const m = body.mass, c = body.com, L = body.lengths;
+  const footW = weight(add3(A, f, L.midfoot), m.foot * kg);
+  const shankW = weight(lerp3(A, K, c.shank), m.shank * kg);
+  const thighW = weight(lerp3(K, H, c.thigh), m.thigh * kg);
+  const solveAt = (ratio) => {
+    const grf = { at: cop, f: v3(0, Fy, -ratio * Fy) };
+    const dir = unit3(grf.f);
+    const Mankle = moment3(A, [grf, footW]);
+    const Mknee = moment3(K, [grf, footW, shankW]);
+    const Mhip = moment3(H, [grf, footW, shankW, thighW]);
+    return { grf, dir, Mhip, Mknee, Mankle, ...legComponents({ H, K, A, f, back, Mhip, Mknee, Mankle, knee: kneeAngle, line: { at: cop, dir } }) };
+  };
+  const auto = P.sidePush === "auto" || P.sidePush == null;
+  const ratio = auto ? leastEffort(ex, (r) => solveAt(r).joints) : P.sidePush;
+  return { ...solveAt(ratio), ratio, auto };
+}
+
+const sidePushInfo = (leg) => ({ text: `Feet push ${leg.ratio >= 0 ? "outwards" : "inwards"} against the floor with ${Math.round(Math.abs(leg.ratio) * 100)}% of the vertical force${leg.auto ? " (least-effort estimate)" : ""}.` });
+const footPrims = (A, f, L) => [add3(v3(A.x, 0.01, A.z), f, -L.heel), add3(v3(A.x, 0.01, A.z), f, L.footFront)];
+const DOWN = v3(0, -1, 0);
+
+/** Bisection for g(t) = 0 on [lo, hi]; ok = false if g doesn't change sign. */
+function bisect(g, lo, hi, n = 60) {
+  const ok = g(lo) * g(hi) <= 0;
+  const up = g(lo) < g(hi);
+  for (let i = 0; i < n; i++) { const mid = (lo + hi) / 2; if ((g(mid) < 0) === up) lo = mid; else hi = mid; }
+  return { t: (lo + hi) / 2, ok };
+}
+
+/**
+ * Hip hinge in 3D: Romanian / stiff-legged deadlift (driver: hip flexion). Both feet flat at
+ * `halfWidth` from the midline, toes turned `toeOut`, knees `kneeTrack` out of the toe line.
+ * Knee flexion = kneeBase + kneePerHip · hip flexion; the hips move back (the shins tilt) until
+ * the centre of mass of body + load is over the mid-foot. The bar hangs under the shoulders.
+ * With the feet under the hips, toes forward and no sideways push it matches the side-view hinge.
+ */
+export function hinge3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
+  const L = body.lengths, m = body.mass, c = body.com;
+  const P = { halfWidth: L.hipHalfWidth, toeOut: 0, kneeTrack: 0, ...v.params, ...placement };
+  const toe = rad(P.toeOut);
+  const f = v3(Math.cos(toe), 0, Math.sin(toe));
+  const A = v3(0, L.ankleHeight, P.halfWidth);
+  const kneeFlex = P.kneeBase + P.kneePerHip * x;
+  const D = Math.sqrt(L.thigh ** 2 + L.shank ** 2 + 2 * L.thigh * L.shank * Math.cos(rad(kneeFlex)));
+  const dz = L.hipHalfWidth - P.halfWidth;
+  const R = Math.sqrt(Math.max(1e-9, D * D - dz * dz));
+  const balanceX = A.x + f.x * L.midfoot;
+  const armsKg = 2 * (m.upperArm + m.forearmHand) * kg;
+  const pose = (psi) => {
+    const H = v3(A.x + R * Math.sin(psi), A.y + R * Math.cos(psi), L.hipHalfWidth);
+    const K = placeMid(H, A, L.thigh, L.shank, f, P.kneeTrack);
+    const dT = unit3(sub3(K, H));
+    // Trunk lean that gives this hip flexion, measured in the side view (signed, as in 2D).
+    const thighLean = Math.atan2(-dT.x, -dT.y); // knee → hip, from vertical, + = forward
+    const tk = thighLean + rad(x);
+    const back = v3(Math.sin(tk), Math.cos(tk), 0);
+    const pelvis = v3(H.x, H.y, 0);
+    const S = add3(pelvis, back, L.trunk);
+    const bar = v3(S.x, S.y - (L.upperArm + L.forearm), 0);
+    const trunkCom = add3(pelvis, back, c.headTrunk * L.trunk);
+    const armCom = lerp3(S, bar, 0.45);
+    const items = [[lerp3(K, H, c.thigh), 2 * m.thigh * kg], [lerp3(A, K, c.shank), 2 * m.shank * kg], [v3(balanceX, 0, 0), 2 * m.foot * kg],
+      [trunkCom, m.headTrunk * kg], [armCom, armsKg], [bar, loadKg]];
+    const total = items.reduce((s, [, k]) => s + k, 0);
+    const comX = items.reduce((s, [p, k]) => s + p.x * k, 0) / total;
+    return { H, K, back, pelvis, S, bar, comX, total };
+  };
+  const bal = bisect((psi) => pose(psi).comX - balanceX, rad(-60), rad(40));
+  const Q = pose(bal.t);
+  const cop = add3(v3(A.x, 0, A.z), f, L.midfoot);
+  const leg = legFromFloor(ex, P, { H: Q.H, K: Q.K, A, f, cop, Fy: (Q.total * G) / 2, back: Q.back, kneeAngle: angleBetween3(sub3(Q.K, Q.H), sub3(A, Q.K)), kg, body });
+  const shoulder = add3(Q.S, Z, L.shoulderHalfWidth);
+  const hand = add3(Q.bar, Z, L.shoulderHalfWidth + 0.03);
+  return {
+    joints: leg.joints, frames: leg.frames,
+    moments: { hip: leg.Mhip, knee: leg.Mknee, ankle: leg.Mankle },
+    balance: { x: balanceX, com: Q.comX, ok: bal.ok },
+    scene: [
+      { kind: "poly", pts: [[-0.5, -0.6], [0.7, -0.6], [0.7, 0.6], [-0.5, 0.6]].map(([px, pz]) => v3(px, 0, pz)), cls: "floor3d" },
+      L3(Q.pelvis, Q.S, 0.3, "body"), dot(add3(Q.S, Q.back, 0.22), 0.11, "body"), L3(mirror(Q.H), Q.H, 0.16, "body"),
+      L3(mirror(shoulder), shoulder, 0.1, "body"), L3(mirror(shoulder), mirror(hand), 0.07, "body arm back"), L3(shoulder, hand, 0.07, "body arm"),
+      ...legPrims(Q.H, Q.K, A, ...footPrims(A, f, L)),
+      L3(add3(Q.bar, Z, -0.7), add3(Q.bar, Z, 0.7), 0.03, "equipment"), ...both(add3(Q.bar, Z, 0.62)).map((p) => dot(p, 0.13, "weight")),
+    ],
+    forces: [{ at: cop, dir: leg.dir }, { at: mirror(cop), dir: mirror(leg.dir) }],
+    grf: leg.grf.f, sidePush: leg.ratio,
+    parts: { bar: Q.bar, S: Q.S },
+    info: bal.ok ? [sidePushInfo(leg)] : [{ warn: true, text: "Can't balance: no shin angle keeps the centre of mass over the mid-foot here." }],
+  };
+}
+
+/**
+ * Split squat in 3D (driver: front-knee flexion). Front (right) foot flat at `frontWidth` from
+ * the midline, rear (left) foot on a bench or the floor at `rearWidth` on the other side. Both
+ * contacts push straight up. Balance needs the centre of mass over the line between them, so the
+ * pelvis shifts sideways (towards the front foot when that carries more); the weight then splits
+ * by where the centre of mass sits along that line. Torques are for the front leg.
+ */
+export function split3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
+  const L = body.lengths, m = body.mass, c = body.com;
+  const P = { frontWidth: L.hipHalfWidth, rearWidth: L.hipHalfWidth, toeOut: 0, kneeTrack: 0, ...v.params, ...placement };
+  const toe = rad(P.toeOut);
+  const f = v3(Math.cos(toe), 0, Math.sin(toe));
+  const A = v3(0, L.ankleHeight, P.frontWidth);
+  const Rr = v3(P.rearFoot.x, P.rearFoot.y, -P.rearWidth);
+  const D = Math.sqrt(L.thigh ** 2 + L.shank ** 2 + 2 * L.thigh * L.shank * Math.cos(rad(x)));
+  const tk = rad(P.trunkLean), back = v3(Math.sin(tk), Math.cos(tk), 0);
+  const cop1 = add3(v3(A.x, 0, A.z), f, L.midfoot), cop2 = v3(Rr.x, 0, Rr.z);
+  const armsKg = 2 * (m.upperArm + m.forearmHand) * kg;
+  const pose = (s) => {
+    const hz = s + L.hipHalfWidth;
+    const R = Math.sqrt(Math.max(1e-9, D * D - (hz - A.z) ** 2));
+    const legAt = (psi) => {
+      const H = v3(A.x + R * Math.sin(psi), A.y + R * Math.cos(psi), hz);
+      const K = placeMid(H, A, L.thigh, L.shank, f, P.kneeTrack);
+      const sh = sub3(K, A);
+      return { H, K, tilt: Math.atan2(sh.x * f.x + sh.z * f.z, sh.y) };
+    };
+    const { H, K } = legAt(bisect((psi) => legAt(psi).tilt - rad(P.shinPerKnee * x), rad(-85), rad(45)).t);
+    const pelvis = v3(H.x, H.y, s);
+    const Hr = add3(pelvis, Z, -L.hipHalfWidth);
+    const Kr = placeMid(Hr, Rr, L.thigh, L.shank, DOWN);
+    const S = add3(pelvis, back, L.trunk);
+    const n = v3(back.y, -back.x, 0);
+    const bar = P.load === "hang" ? v3(S.x, S.y - (L.upperArm + L.forearm), s) : add3(add3(pelvis, back, P.barAlong * L.trunk), n, P.barOut);
+    const items = [[lerp3(K, H, c.thigh), m.thigh * kg], [lerp3(A, K, c.shank), m.shank * kg], [add3(A, f, L.midfoot), m.foot * kg],
+      [lerp3(Kr, Hr, c.thigh), m.thigh * kg], [lerp3(Rr, Kr, c.shank), m.shank * kg], [Rr, m.foot * kg],
+      [add3(pelvis, back, c.headTrunk * L.trunk), m.headTrunk * kg], [lerp3(S, bar, 0.45), armsKg], [bar, loadKg]];
+    const total = items.reduce((t, [, k]) => t + k, 0);
+    const com = v3(items.reduce((t, [p, k]) => t + p.x * k, 0) / total, 0, items.reduce((t, [p, k]) => t + p.z * k, 0) / total);
+    const u = sub3(cop2, cop1), w = sub3(com, cop1);
+    return { H, K, Hr, Kr, pelvis, S, bar, total, com, side: u.x * w.z - u.z * w.x, along: dot3(w, u) / dot3(u, u), reach: len3(sub3(Rr, Hr)) <= L.thigh + L.shank };
+  };
+  const sol = bisect((s) => pose(s).side, -0.3, 0.3);
+  const Q = pose(sol.t);
+  const W = Q.total * G, frontR = W * (1 - Q.along);
+  const ok = sol.ok && Q.reach && Q.along >= 0 && Q.along <= 1;
+  const leg = legFromFloor(ex, { ...P, sidePush: 0 }, { H: Q.H, K: Q.K, A, f, cop: cop1, Fy: frontR, back, kneeAngle: x, kg, body });
+  const sh = add3(Q.S, Z, L.shoulderHalfWidth);
+  const loadPrims = P.load === "hang"
+    ? [dot(add3(Q.bar, Z, L.shoulderHalfWidth + 0.04), 0.07, "weight"), dot(add3(Q.bar, Z, -L.shoulderHalfWidth - 0.04), 0.07, "weight")]
+    : [L3(add3(Q.bar, Z, -0.7), add3(Q.bar, Z, 0.7), 0.03, "equipment"), dot(add3(Q.bar, Z, 0.62), 0.13, "weight"), dot(add3(Q.bar, Z, -0.62), 0.13, "weight")];
+  const handZ = L.shoulderHalfWidth + 0.04;
+  return {
+    joints: leg.joints, frames: leg.frames,
+    moments: { hip: leg.Mhip, knee: leg.Mknee, ankle: leg.Mankle },
+    balance: { x: cop1.x, com: Q.com.x, ok },
+    shares: { front: frontR / W }, pelvisShift: sol.t, com: Q.com, contacts: [cop1, cop2],
+    scene: [
+      { kind: "poly", pts: [[-0.9, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.9, 0.5]].map(([px, pz]) => v3(px, 0, pz)), cls: "floor3d" },
+      ...(Rr.y > 0.2 ? [{ kind: "poly", pts: [[-0.25, -0.18], [0.08, -0.18], [0.08, 0.18], [-0.25, 0.18]].map(([px, pz]) => v3(Rr.x + px, Rr.y - 0.04, Rr.z + pz)), cls: "plate3d bench3d" },
+        L3(v3(Rr.x - 0.1, Rr.y - 0.04, Rr.z), v3(Rr.x - 0.1, 0, Rr.z), 0.04, "equipment")] : []),
+      L3(Q.Hr, Q.Kr, 0.13, "body back"), L3(Q.Kr, Rr, 0.1, "body back"),
+      L3(Q.pelvis, Q.S, 0.3, "body"), dot(add3(Q.S, back, 0.22), 0.11, "body"), L3(Q.Hr, Q.H, 0.16, "body"),
+      L3(add3(sh, Z, -2 * L.shoulderHalfWidth), sh, 0.1, "body"),
+      L3(add3(sh, Z, -2 * L.shoulderHalfWidth), add3(Q.bar, Z, P.load === "hang" ? -handZ : -0.3), 0.07, "body arm back"),
+      L3(sh, add3(Q.bar, Z, P.load === "hang" ? handZ : 0.3), 0.07, "body arm"),
+      L3(Q.H, Q.K, 0.14, "body"), L3(Q.K, A, 0.1, "body"), L3(...footPrims(A, f, L), 0.06, "body"),
+      ...loadPrims,
+      { kind: "line", a: cop1, b: cop2, w: 0.006, cls: "line-of-action" },
+    ],
+    forces: [{ at: cop1, dir: leg.dir }],
+    grf: leg.grf.f,
+    info: [{ text: `Front leg carries ${Math.round((100 * frontR) / W)}% of the weight, the rear foot the rest. Pelvis shifted ${Math.abs(Math.round(sol.t * 100))} cm ${sol.t >= 0 ? "towards the front foot's side" : "towards the rear foot's side"} to balance.` },
+      ...(ok ? [] : [{ warn: true, text: Q.reach ? "The centre of mass can't be brought over the line between the feet here." : "The rear foot is out of reach at this depth." }])],
+  };
+}
+
+/**
+ * Hip thrust / glute bridge in 3D (driver: hip flexion). Shoulders on the bench (or floor) at
+ * `shoulder`, feet flat at `feetAt` in front, `halfWidth` from the midline, toes `toeOut`,
+ * knees `kneeTrack` out of the toe line. Bench and feet push up (moment balance gives the split);
+ * the feet may also push sideways (sidePush, least effort by default). Torques per leg.
+ * With the feet under the hips, toes forward and no sideways push it matches the side view.
+ */
+export function hipThrust3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
+  const L = body.lengths, m = body.mass, c = body.com;
+  const P = { halfWidth: L.hipHalfWidth, toeOut: 0, kneeTrack: 0, ...v.params, ...placement };
+  const toe = rad(P.toeOut);
+  const f = v3(Math.cos(toe), 0, Math.sin(toe));
+  const Sm = v3(P.shoulder.x, P.shoulder.y, 0);
+  const A = v3(P.feetAt, L.ankleHeight, P.halfWidth);
+  const pose = (beta) => {
+    const e = v3(Math.cos(beta), -Math.sin(beta), 0); // shoulder → hip
+    const pelvis = add3(Sm, e, L.trunk);
+    const H = add3(pelvis, Z, L.hipHalfWidth);
+    const K = placeMid(H, A, L.thigh, L.shank, add3(UP, f), P.kneeTrack); // knees up, over the toes
+    const d = sub3(K, H);
+    return { e, pelvis, H, K, flex: deg(Math.atan2(e.x * d.y - e.y * d.x, e.x * d.x + e.y * d.y)) };
+  };
+  const sol = bisect((b) => pose(b).flex - x, rad(-60), rad(70));
+  const { e, pelvis, H, K } = pose(sol.t);
+  const reach = len3(sub3(A, H)) <= L.thigh + L.shank;
+  const n = v3(-e.y, e.x, 0);
+  const bar = add3(pelvis, n, 0.12);
+  const armCom = lerp3(Sm, bar, 0.5);
+  const midfoot = add3(v3(A.x, 0, A.z), f, L.midfoot);
+  const items = [[lerp3(pelvis, Sm, c.headTrunk), m.headTrunk * kg], [lerp3(K, H, c.thigh), 2 * m.thigh * kg], [lerp3(A, K, c.shank), 2 * m.shank * kg],
+    [v3(midfoot.x, 0.04, 0), 2 * m.foot * kg], [armCom, 2 * (m.upperArm + m.forearmHand) * kg], [bar, loadKg]];
+  const total = items.reduce((s, [, k]) => s + k, 0), W = total * G;
+  const comX = items.reduce((s, [p, k]) => s + p.x * k, 0) / total;
+  const shoulderR = (W * (comX - midfoot.x)) / (Sm.x - midfoot.x);
+  const feetR = W - shoulderR;
+  const aboveFloor = H.y - 0.1 >= 0;
+  const ok = shoulderR >= 0 && feetR >= 0 && sol.ok && reach && aboveFloor;
+  const leg = legFromFloor(ex, P, { H, K, A, f, cop: midfoot, Fy: feetR / 2, back: unit3(neg3(e)), kneeAngle: angleBetween3(sub3(K, H), sub3(A, K)), kg, body });
+  const shoulder = add3(Sm, Z, L.shoulderHalfWidth);
+  const hand = add3(bar, Z, 0.3);
+  return {
+    joints: leg.joints, frames: leg.frames,
+    moments: { hip: leg.Mhip, knee: leg.Mknee, ankle: leg.Mankle },
+    reactions: { shoulder: shoulderR, feet: feetR, weight: W },
+    scene: [
+      { kind: "poly", pts: [[-0.7, -0.5], [0.7, -0.5], [0.7, 0.5], [-0.7, 0.5]].map(([px, pz]) => v3(px, 0, pz)), cls: "floor3d" },
+      ...(Sm.y > 0.2 ? [{ kind: "poly", pts: [[-0.45, -0.25], [0.02, -0.25], [0.02, 0.25], [-0.45, 0.25]].map(([px, pz]) => v3(Sm.x + px, Sm.y - 0.1, pz)), cls: "plate3d bench3d" },
+        L3(v3(Sm.x - 0.2, Sm.y - 0.1, 0), v3(Sm.x - 0.2, 0, 0), 0.04, "equipment")] : []),
+      L3(Sm, pelvis, 0.3, "body"), dot(add3(Sm, e, -0.22), 0.11, "body"), L3(mirror(H), H, 0.16, "body"),
+      L3(mirror(shoulder), shoulder, 0.1, "body"), L3(mirror(shoulder), mirror(hand), 0.07, "body arm back"), L3(shoulder, hand, 0.07, "body arm"),
+      ...legPrims(H, K, A, ...footPrims(A, f, L)),
+      L3(add3(bar, Z, -0.7), add3(bar, Z, 0.7), 0.03, "equipment"), ...both(add3(bar, Z, 0.62)).map((p) => dot(p, 0.2, "weight")),
+    ],
+    forces: [{ at: midfoot, dir: leg.dir }, { at: mirror(midfoot), dir: mirror(leg.dir) }],
+    grf: leg.grf.f, sidePush: leg.ratio,
+    info: [{ text: `The ${Sm.y > 0.2 ? "bench" : "floor"} carries ${Math.round((100 * shoulderR) / W)}% of the weight at the shoulders, the feet the rest.` }, sidePushInfo(leg),
+      ...(ok ? [] : [{ warn: true, text: aboveFloor ? "This hip angle can't be reached with this foot position." : "The hips would have to go below the floor: this hip angle is out of range here." }])],
+  };
+}

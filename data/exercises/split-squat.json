@@ -3,12 +3,12 @@
   "name": "Split squat / lunge",
   "joint": "Front hip, knee and ankle",
   "model": "multi",
-  "solver": "split",
-  "view": "side",
+  "solver": "split3d",
+  "view": "3d",
   "angleLabel": "Front knee angle",
   "concentric": "decrease",
   "angleRange": [40, 100],
-  "angleNote": "Front-knee flexion: 40° = top, 100° = bottom. Lifting makes the angle smaller. Torques are for the front leg.",
+  "angleNote": "Front-knee flexion: 40° = top, 100° = bottom. Lifting makes the angle smaller. Torques are for the front leg; drag the figure to turn it.",
   "defaults": {"loadKg": 12, "variant": "bulgarian", "bodyMassKg": 75},
   "ui": {"load": [0, 120, 1]},
   "joints": [
@@ -47,6 +47,45 @@
         "note": "Relative isometric plantarflexion torque vs plantarflexion (negative = dorsiflexed), peak about 23° of dorsiflexion, measured with the knee bent 50° (tested 29° dorsiflexion to 34° plantarflexion). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m).",
         "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
       }
+    },
+    {
+      "id": "hip-frontal",
+      "name": "Hip (sideways)",
+      "action": "Hip adduction",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 247,
+      "negative": {"action": "Hip abduction", "peakTorqueNm": 130},
+      "strength": {
+        "points": [[0, 1.0], [160, 1.0]],
+        "note": "Hip adductor (positive) and abductor (negative) peak torque per leg, taken as constant across the range: Welsh et al.'s isometric means at 10° of hip abduction (trained recreational hockey players, hip straight): adductors 247 Nm, abductors 130 Nm. Abductor strength falls as the hip abducts (Neumann et al.; Welsh et al.), which isn't modelled here.",
+        "source": "Welsh P, et al. (2020). The influence of hip joint angle on the ratio between adduction and abduction torque in experienced, recreational male ice hockey players. Int J Sports Phys Ther 15(1):22–33"
+      }
+    },
+    {
+      "id": "hip-rotation",
+      "name": "Hip (rotation)",
+      "action": "Hip external rotation",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 70,
+      "negative": {"action": "Hip internal rotation", "peakTorqueNm": 60},
+      "strength": {
+        "points": [[0, 1.0], [160, 1.0]],
+        "note": "Hip external (positive) and internal (negative) rotation peak torque per leg, taken as constant; the external side includes the gluteus maximus. Approximate.",
+        "source": "TODO: rotation torques not taken from a source yet (Kulig et al. 1984 review only the curve shapes: internal rotation ascending, external descending)"
+      }
+    },
+    {
+      "id": "knee-frontal",
+      "name": "Knee (sideways)",
+      "action": "Knee valgus (pushed inwards)",
+      "angleLabel": "knee flexion",
+      "passive": true,
+      "negative": {"action": "Knee varus (pushed outwards)"},
+      "strength": {
+        "points": [[0, 1.0], [160, 1.0]],
+        "note": "No muscle capacity: a sideways knee moment is carried mostly by ligaments and the joint surfaces, so it is shown as torque only.",
+        "source": "Not applicable: carried by ligaments and joint surfaces, so no muscle strength is used"
+      }
     }
   ],
   "muscles": [
@@ -60,7 +99,8 @@
       "weight": [[0, 1.0], [130, 1.0]],
       "note": "Knee extensors: their share follows the knee torque.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "thigh", "along": [0.08, 0.36], "offset": -0.05, "w": 0.065}
+      "draw": {"seg": "thigh", "along": [0.08, 0.36], "offset": -0.05, "w": 0.065},
+      "draw3d": {"seg": "thigh", "side": "anterior", "along": [0.08, 0.36], "offset": 0.05, "w": 0.065}
     },
     {
       "id": "gluteus-maximus",
@@ -72,7 +112,8 @@
       "weight": [[0, 0.8], [90, 1.0], [130, 1.0]],
       "note": "Main hip extensor.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "thigh", "along": [0.33, 0.47], "offset": 0.06, "w": 0.09}
+      "draw": {"seg": "thigh", "along": [0.33, 0.47], "offset": 0.06, "w": 0.09},
+      "draw3d": {"seg": "thigh", "side": "posterior", "along": [0.0, 0.12], "offset": 0.06, "w": 0.09}
     },
     {
       "id": "adductor-magnus",
@@ -95,7 +136,46 @@
       "weight": [[-45, 1.0], [40, 1.0]],
       "note": "Plantarflexors: keep the shin from tipping forward.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "shank", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055}
+      "draw": {"seg": "shank", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055},
+      "draw3d": {"seg": "shank", "side": "posterior", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055}
+    },
+    {
+      "id": "adductors",
+      "name": "Adductors (longus, brevis, gracilis)",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip-frontal",
+      "weight": [[0, 1.0], [160, 1.0]],
+      "note": "Work when the plate's push tends to spread the thighs apart: wide stances and toes out.",
+      "source": "TODO: check against EMG literature",
+      "sign": 1,
+      "draw3d": {"seg": "thigh", "side": "medial", "along": [0.03, 0.25], "offset": 0.05, "w": 0.05}
+    },
+    {
+      "id": "gluteus-medius",
+      "name": "Gluteus medius and minimus",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip-frontal",
+      "weight": [[0, 1.0], [160, 1.0]],
+      "note": "Work when the push tends to pull the thighs together: narrow stances, toes in.",
+      "source": "TODO: check against EMG literature",
+      "sign": -1,
+      "draw3d": {"seg": "thigh", "side": "lateral", "along": [-0.05, 0.08], "offset": 0.06, "w": 0.06}
+    },
+    {
+      "id": "external-rotators",
+      "name": "Deep hip external rotators",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip-rotation",
+      "weight": [[0, 1.0], [160, 1.0]],
+      "note": "Piriformis, obturators and gemelli (with the glutes) resist the thigh turning inwards.",
+      "source": "TODO: check against EMG literature",
+      "sign": 1
     }
   ],
   "phases": [
@@ -112,14 +192,32 @@
       "id": "bulgarian",
       "name": "Bulgarian split squat (dumbbells)",
       "equipment": "Dumbbells, rear foot on a bench",
-      "params": {"shinPerKnee": 0.35, "trunkLean": 10, "rearFoot": {"x": -0.7, "y": 0.45}, "load": "hang"},
+      "params": {
+        "shinPerKnee": 0.35,
+        "trunkLean": 10,
+        "rearFoot": {"x": -0.7, "y": 0.45},
+        "load": "hang",
+        "frontWidth": 0.09,
+        "rearWidth": 0.09,
+        "toeOut": 0,
+        "kneeTrack": 0
+      },
       "notes": "Rear foot on a bench behind you, trunk nearly upright. Most of the weight is on the front leg."
     },
     {
       "id": "bulgarian-lean",
       "name": "Bulgarian split squat, forward lean",
       "equipment": "Dumbbells, rear foot on a bench",
-      "params": {"shinPerKnee": 0.2, "trunkLean": 30, "rearFoot": {"x": -0.7, "y": 0.45}, "load": "hang"},
+      "params": {
+        "shinPerKnee": 0.2,
+        "trunkLean": 30,
+        "rearFoot": {"x": -0.7, "y": 0.45},
+        "load": "hang",
+        "frontWidth": 0.09,
+        "rearWidth": 0.09,
+        "toeOut": 0,
+        "kneeTrack": 0
+      },
       "notes": "Leaning the trunk forward and keeping the shin more vertical moves torque from the knee to the hip, and shifts the weight further onto the front leg."
     },
     {
@@ -133,10 +231,85 @@
         "rearFoot": {"x": -0.45, "y": 0.15},
         "load": "back",
         "barAlong": 1.0,
-        "barOut": -0.05
+        "barOut": -0.05,
+        "frontWidth": 0.09,
+        "rearWidth": 0.09,
+        "toeOut": 0,
+        "kneeTrack": 0
       },
       "notes": "Rear foot on the floor, up on its toes. The rear leg takes a bigger share than in the Bulgarian version."
+    },
+    {
+      "id": "tightrope",
+      "name": "Bulgarian, feet in line (\"tightrope\")",
+      "equipment": "Dumbbells, rear foot on a bench",
+      "params": {
+        "shinPerKnee": 0.35,
+        "trunkLean": 10,
+        "rearFoot": {"x": -0.7, "y": 0.45},
+        "load": "hang",
+        "frontWidth": 0,
+        "rearWidth": 0,
+        "toeOut": 0,
+        "kneeTrack": 0
+      },
+      "notes": "Both feet on the midline. To balance, the centre of mass has to stay over that line, so the front foot sits under the middle of the body, inside the front hip. The floor's push then passes inside the hip and knee: the glute medius and the hip's rotators work much harder, and balance is harder. Feet on hip-width \"tracks\" (the default) cut both by about a quarter."
+    },
+    {
+      "id": "knees-in",
+      "name": "Bulgarian, front knee caving in",
+      "equipment": "Dumbbells, rear foot on a bench",
+      "params": {
+        "shinPerKnee": 0.35,
+        "trunkLean": 10,
+        "rearFoot": {"x": -0.7, "y": 0.45},
+        "load": "hang",
+        "frontWidth": 0.09,
+        "rearWidth": 0.09,
+        "toeOut": 0,
+        "kneeTrack": -10
+      },
+      "notes": "Front knee drifting 10° inside the toe line: compare the hip and knee sideways rows with the default."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Bulgarian split squats left", "note": "TODO: look up the wger exercise id"}
+  "wger": {"exerciseId": null, "name": "Bulgarian split squats left", "note": "TODO: look up the wger exercise id"},
+  "momentArmNote": "Moment arm = the joint's 3D distance from the floor's push line under the front foot; it feeds every component of that joint's torque.",
+  "placement": [
+    {
+      "key": "frontWidth",
+      "label": "Front foot from the middle",
+      "min": -0.05,
+      "max": 0.2,
+      "step": 0.01,
+      "unit": "cm",
+      "scale": 100
+    },
+    {
+      "key": "rearWidth",
+      "label": "Rear foot from the middle (other side)",
+      "min": -0.05,
+      "max": 0.2,
+      "step": 0.01,
+      "unit": "cm",
+      "scale": 100
+    },
+    {
+      "key": "toeOut",
+      "label": "Toes out (+) / in (−)",
+      "min": -20,
+      "max": 45,
+      "step": 1,
+      "unit": "°",
+      "scale": 1
+    },
+    {
+      "key": "kneeTrack",
+      "label": "Knees out (+) / in (−) of the toes",
+      "min": -15,
+      "max": 15,
+      "step": 1,
+      "unit": "°",
+      "scale": 1
+    }
+  ]
 }

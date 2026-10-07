@@ -16,13 +16,13 @@ We tried 5 standard upper-body and 10 standard leg exercises from the wger start
 | Glute kickback | ✅ added | standing cable, kneeling with ankle weight, machine |
 | Squat | ✅ 3D | high-bar, low-bar, front, goblet, wide (sumo), knees caving in |
 | Leg press | ✅ 3D | feet middle, high, low, wide toes-out, narrow, toes in, knees caving in |
-| Lunge / split squat | ✅ multi-joint | Bulgarian, Bulgarian with forward lean, split squat |
-| Romanian deadlift | ✅ multi-joint | barbell, stiff-legged |
+| Lunge / split squat | ✅ 3D | Bulgarian, Bulgarian with forward lean, split squat, feet in line, front knee caving in |
+| Romanian deadlift | ✅ 3D | barbell, stiff-legged, wide stance toes out |
 | Deadlift | ✅ multi-joint | conventional, trap (hex) bar |
 | Bent-over row | ✅ multi-joint | barbell (trunk ~45°), trunk horizontal, more upright |
 | Seated cable row, chest-supported row | ✅ multi-joint | trunk upright, leaning back, leaning forward; dumbbells on an incline pad |
 | Overhead press | ✅ 3D | standing, wide grip, behind the neck, seated dumbbells |
-| Hip thrust | ✅ multi-joint | barbell, feet further away, glute bridge |
+| Hip thrust | ✅ 3D | barbell, feet further away, glute bridge, knees caving in, wide stance toes out |
 
 ## What broke, and what changed to fix it
 
@@ -214,10 +214,32 @@ Limits:
 - **Strength overhead is estimated.** Flexion strength is sourced up to 110° and abduction up to 90°. Beyond that, both are marked `TODO` (60% and 50% of peak at 180°). The adduction peak (90 Nm) is also an estimate.
 - **Shoulder blade muscles** (serratus anterior, trapezius) are listed but not estimated.
 
+## 3D: Romanian deadlift, split squat and hip thrust
+
+These three now run in 3D with the same leg model as the squat. The tests check that the hinge and the hip thrust reduce exactly to their side-view versions when the feet are under the hips, the toes point forward and there's no sideways push.
+
+- **Romanian deadlift** (`hinge3d`):
+  - Placement controls: stance width, toe angle, knee tracking, and the sideways floor push (least effort by default).
+  - Knee bend follows the hip angle; balance over the mid-foot sets how far the hips go back.
+  - In a wide, toes-out stance the hip extension hardly changes. The feet push outwards (about 11–14% of the vertical force), and setting that push to zero shows the adductor work it saves (about 80 Nm per side at 70° of hip flexion).
+- **Split squat** (`split3d`):
+  - Placement controls: front and rear foot distance from the midline, toe angle, and front-knee tracking.
+  - Both contacts push straight up. The centre of mass must sit over the line between them, so the pelvis shifts sideways, towards the front foot when the feet are on hip-width tracks.
+  - With the feet in line ("tightrope"), the front foot ends up under the middle of the body, inside the front hip. The front hip's sideways and rotation torques are then about a third higher than on hip-width tracks. That is the extra glute medius and rotator work, and the balance challenge, of a narrow split squat.
+- **Hip thrust** (`hipThrust3d`):
+  - Placement controls: stance width, toe angle, knee tracking, and the sideways floor push.
+  - Knees caving in barely changes hip extension. With no sideways push it brings in hip rotation and knee torques. Least effort instead has the feet push outwards (about 10–13% of the vertical force), which is what "knees out" (or a band around the knees) trains.
+  - A wide, toes-out stance lowers the knee's share.
+
+Limits:
+
+- **Split squat contacts push straight up.** The rear foot on a bench can't take sideways or front-back friction, and the front foot's sideways push isn't modelled. The pelvis stays level (no hip drop), and the trunk stays upright in the front view.
+- **Pelvis shift instead of a hip drop.** Real lifters also let the pelvis tilt and the knee drift. The model keeps the pelvis level and moves it sideways as one piece.
+- **Hip-rotation and frontal-plane strength** are the squat's, still partly estimated (`TODO`).
+
 ## 3D: what's left
 
-- The **split squat, RDL and hip thrust** are still side-view only; stance width matters less there but could use the same tools.
-- **Overhead press, rows and pull-ups** would follow the bench's arm model with different contacts.
+- **Rows (elbow flare) and pull-ups** would follow the bench and overhead press arm model with different contacts. The overhead press is done (see above); rows are side view only.
 
 ## Sources for the curated numbers
 

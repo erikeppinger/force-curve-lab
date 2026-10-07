@@ -10,8 +10,11 @@ const body = JSON.parse(readFileSync(new URL("../data/body.json", import.meta.ur
 const load = (id) => JSON.parse(readFileSync(new URL(`../data/exercises/${id}.json`, import.meta.url)));
 const close = (a, b, eps = 1e-6) => assert.ok(Math.abs(a - b) < eps, `${a} ≉ ${b}`);
 const opts = { loadKg: 60, bodyMassKg: 75, body };
+// These lifts run in 3D in the app; the side-view tests below check their 2D solvers.
+const TWO_D = { "romanian-deadlift": "standing", "split-squat": "split", "hip-thrust": "hipThrust" };
+const load2d = (id) => { const ex = load(id); return TWO_D[id] ? { ...ex, solver: TWO_D[id], joints: ex.joints.slice(0, 3) } : ex; };
 const run = (id, vid, x, o = opts) => {
-  const ex = load(id);
+  const ex = load2d(id);
   return analyzeMulti(ex, ex.variants.find((v) => v.id === vid), x, o);
 };
 const J = (r, id) => r.joints.find((j) => j.id === id);
@@ -70,7 +73,7 @@ test("RDL: bottom-up from the floor gives the same ankle torque as top-down", ()
 });
 
 test("Romanian deadlift: hip torque grows with the hinge; the knee needs its flexors", () => {
-  const ex = load("romanian-deadlift");
+  const ex = load2d("romanian-deadlift");
   const curve = sampleMulti(ex, ex.variants[0], opts, 10).map((s) => J(s, "hip").torque);
   curve.forEach((t, i) => i && assert.ok(t > curve[i - 1]));
   assert.ok(J(run("romanian-deadlift", "barbell", 80), "knee").torque < 0);
@@ -461,5 +464,62 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
       const best = cost(at("wide", x, { barSpread: "auto" }));
       for (const fixed of [-0.3, 0, 0.3]) assert.ok(best <= cost(at("wide", x, { barSpread: fixed })) + 1e-9, `@${x} vs ${fixed}`);
     }
+  });
+}
+
+// ---------- Romanian deadlift, split squat and hip thrust in 3D ----------
+{
+  const run3d = (id, vid, x, placement, o = opts) => { const ex = load(id); return analyzeMulti(ex, ex.variants.find((v) => v.id === vid), x, { ...o, placement }); };
+  const flat = { halfWidth: body.lengths.hipHalfWidth, toeOut: 0, kneeTrack: 0, sidePush: 0 };
+
+  test("3D hinge and hip thrust reduce exactly to the side view with feet under the hips", () => {
+    for (const [id, vids, xs] of [["romanian-deadlift", ["barbell", "stiff-leg"], [10, 45, 80]], ["hip-thrust", ["barbell", "feet-far"], [10, 40]]]) {
+      for (const vid of vids) {
+        for (const x of xs) {
+          const a = run(id, vid, x), b = run3d(id, vid, x, flat);
+          for (const j of ["hip", "knee", "ankle"]) close(J(b, j).torque, J(a, j).torque, 1e-6);
+          for (const j of ["hip-frontal", "hip-rotation", "knee-frontal"]) close(J(b, j).torque, 0, 1e-6);
+        }
+      }
+    }
+  });
+
+  test("3D split squat: contacts carry the weight, the centre of mass sits on the line between them", () => {
+    for (const vid of ["bulgarian", "split", "tightrope"]) {
+      for (const x of [50, 80]) {
+        const r = run3d("split-squat", vid, x);
+        const [c1, c2] = r.contacts, u = { x: c2.x - c1.x, z: c2.z - c1.z }, w = { x: r.com.x - c1.x, z: r.com.z - c1.z };
+        close(u.x * w.z - u.z * w.x, 0, 1e-6);
+        assert.ok(r.shares.front > 0.5 && r.shares.front < 1, `${vid}@${x}: front share ${r.shares.front}`);
+        // Side view barely changes: within a few percent of the 2D split squat.
+        if (vid !== "tightrope") for (const j of ["hip", "knee"]) assert.ok(Math.abs(J(r, j).torque / J(run("split-squat", vid, x), j).torque - 1) < 0.03, `${vid}@${x} ${j}`);
+      }
+    }
+  });
+
+  test("3D split squat: feet in line ('tightrope') load the front hip's side and rotators more than hip-width tracks", () => {
+    for (const x of [60, 90]) {
+      const t = run3d("split-squat", "tightrope", x), b = run3d("split-squat", "bulgarian", x);
+      assert.ok(Math.abs(J(t, "hip-frontal").torque) > 1.2 * Math.abs(J(b, "hip-frontal").torque), `@${x}: frontal`);
+      assert.ok(Math.abs(J(t, "hip-rotation").torque) > 1.2 * Math.abs(J(b, "hip-rotation").torque), `@${x}: rotation`);
+      assert.ok(Math.abs(t.pelvisShift) < Math.abs(b.pelvisShift));
+    }
+  });
+
+  test("3D hip thrust: knees caving in costs frontal-plane torque unless the feet push outwards", () => {
+    const fixed = run3d("hip-thrust", "knees-in", 10, { sidePush: 0 }), auto = run3d("hip-thrust", "knees-in", 10);
+    assert.ok(Math.abs(J(fixed, "hip-rotation").torque) > 5 && Math.abs(J(fixed, "knee-frontal").torque) > 5);
+    assert.ok(auto.sidePush > 0.03, "least effort pushes the feet outwards");
+    // Reactions add up to the weight.
+    close(auto.reactions.shoulder + auto.reactions.feet, auto.reactions.weight, 1e-6);
+    // The whole range is reachable, as in the side view (knees stay above the hip–ankle line).
+    for (const vid of ["barbell", "knees-in", "wide"]) for (let x = 0; x <= 80; x += 10) assert.ok(!run3d("hip-thrust", vid, x).info.some((i) => i.warn), `${vid}@${x}`);
+  });
+
+  test("3D Romanian deadlift: wide toes-out stance, the floor's sideways push replaces adductor work", () => {
+    const z = run3d("romanian-deadlift", "wide", 70, { sidePush: 0 }), a = run3d("romanian-deadlift", "wide", 70);
+    assert.ok(J(z, "hip-frontal").torque > 3 * Math.abs(J(a, "hip-frontal").torque));
+    assert.ok(a.balance.ok);
+    close(a.balance.com, a.balance.x, 1e-6);
   });
 }
