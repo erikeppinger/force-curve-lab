@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "force-curve-lab", "runtimeExecutable": "node", "runtimeArgs": ["tools/serve.mjs", "8093"], "port": 8093 }
+  ]
+}

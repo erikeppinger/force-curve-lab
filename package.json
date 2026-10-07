@@ -1,0 +1,10 @@
+{
+  "name": "force-curve-lab",
+  "private": true,
+  "type": "module",
+  "description": "Teaching tool: exercise resistance curves, strength curves and muscle involvement across equipment variants.",
+  "scripts": {
+    "start": "node tools/serve.mjs 8080",
+    "test": "node --test \"tests/*.test.mjs\""
+  }
+}
