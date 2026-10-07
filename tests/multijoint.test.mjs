@@ -485,12 +485,13 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
     }
   });
 
-  test("3D split squat: contacts carry the weight, the centre of mass sits on the line between them", () => {
+  test("3D split squat: contacts carry the weight; with no sideways push the centre of mass sits on the line between them", () => {
     for (const vid of ["bulgarian", "split", "tightrope"]) {
       for (const x of [50, 80]) {
-        const r = run3d("split-squat", vid, x);
+        const r = run3d("split-squat", vid, x, { sidePush: 0 });
         const [c1, c2] = r.contacts, u = { x: c2.x - c1.x, z: c2.z - c1.z }, w = { x: r.com.x - c1.x, z: r.com.z - c1.z };
         close(u.x * w.z - u.z * w.x, 0, 1e-6);
+        close(r.frontal.F1 + r.frontal.F2, r.frontal.W, 1e-9);
         assert.ok(r.shares.front > 0.5 && r.shares.front < 1, `${vid}@${x}: front share ${r.shares.front}`);
         // Side view barely changes: within a few percent of the 2D split squat.
         if (vid !== "tightrope") for (const j of ["hip", "knee"]) assert.ok(Math.abs(J(r, j).torque / J(run("split-squat", vid, x), j).torque - 1) < 0.03, `${vid}@${x} ${j}`);
@@ -498,12 +499,33 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
     }
   });
 
-  test("3D split squat: feet in line ('tightrope') load the front hip's side and rotators more than hip-width tracks", () => {
+  test("3D split squat with a sideways foot push: moments balance about the front-back axis (hand formula)", () => {
+    for (const vid of ["bulgarian", "split", "tightrope"]) {
+      for (const x of [50, 80]) {
+        for (const push of ["auto", 0.2, -0.2]) {
+          const r = run3d("split-squat", vid, x, { sidePush: push });
+          const [c1, c2] = r.contacts, { F1, F2, W, rearY } = r.frontal, rho = r.sidePush;
+          // Σ (y·Fz − z·Fy): front contact (0, F1, −ρF1) at the floor, rear (0, F2, +ρF1) at rearY, weight at the centre of mass.
+          const M = -c1.z * F1 + (rearY * rho * F1 - c2.z * F2) + r.com.z * W;
+          close(M, 0, 1e-4 * W);
+          close(F1 + F2, W, 1e-9);
+          assert.ok(Math.abs(rho) <= 0.6);
+        }
+      }
+    }
+  });
+
+  test("3D split squat: feet in line ('tightrope') load the front hip's side and rotators more, or need more sideways push", () => {
     for (const x of [60, 90]) {
-      const t = run3d("split-squat", "tightrope", x), b = run3d("split-squat", "bulgarian", x);
+      const t = run3d("split-squat", "tightrope", x, { sidePush: 0 }), b = run3d("split-squat", "bulgarian", x, { sidePush: 0 });
       assert.ok(Math.abs(J(t, "hip-frontal").torque) > 1.2 * Math.abs(J(b, "hip-frontal").torque), `@${x}: frontal`);
       assert.ok(Math.abs(J(t, "hip-rotation").torque) > 1.2 * Math.abs(J(b, "hip-rotation").torque), `@${x}: rotation`);
       assert.ok(Math.abs(t.pelvisShift) < Math.abs(b.pelvisShift));
+      // With the floor allowed to push sideways (least effort), the rotation load nearly vanishes,
+      // and the narrow stance shows up as a larger push instead.
+      const ta = run3d("split-squat", "tightrope", x), ba = run3d("split-squat", "bulgarian", x);
+      assert.ok(J(ta, "hip-rotation").effort < 0.2 && J(ba, "hip-rotation").effort < 0.2);
+      assert.ok(Math.abs(ta.sidePush) > Math.abs(ba.sidePush));
     }
   });
 

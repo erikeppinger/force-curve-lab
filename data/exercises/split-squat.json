@@ -229,7 +229,8 @@
         "frontWidth": 0.09,
         "rearWidth": 0.09,
         "toeOut": 0,
-        "kneeTrack": 0
+        "kneeTrack": 0,
+        "sidePush": "auto"
       },
       "notes": "Rear foot on a bench behind you, trunk nearly upright. Most of the weight is on the front leg."
     },
@@ -245,7 +246,8 @@
         "frontWidth": 0.09,
         "rearWidth": 0.09,
         "toeOut": 0,
-        "kneeTrack": 0
+        "kneeTrack": 0,
+        "sidePush": "auto"
       },
       "notes": "Leaning the trunk forward and keeping the shin more vertical moves torque from the knee to the hip, and shifts the weight further onto the front leg."
     },
@@ -264,7 +266,8 @@
         "frontWidth": 0.09,
         "rearWidth": 0.09,
         "toeOut": 0,
-        "kneeTrack": 0
+        "kneeTrack": 0,
+        "sidePush": "auto"
       },
       "notes": "Rear foot on the floor, up on its toes. The rear leg takes a bigger share than in the Bulgarian version."
     },
@@ -280,9 +283,10 @@
         "frontWidth": 0,
         "rearWidth": 0,
         "toeOut": 0,
-        "kneeTrack": 0
+        "kneeTrack": 0,
+        "sidePush": "auto"
       },
-      "notes": "Both feet on the midline. To balance, the centre of mass has to stay over that line, so the front foot sits under the middle of the body, inside the front hip. The floor's push then passes inside the hip and knee: the glute medius and the hip's rotators work much harder, and balance is harder. Feet on hip-width \"tracks\" (the default) cut both by about a quarter. Deep in this stance the hip's internal-rotation demand passes the measured maximum (Uritani & Fukumoto): as modelled it can't be held. In this model the feet can only push straight up, so that is an upper limit; real lifters use foot friction and let the pelvis turn, and still find this stance hard to balance."
+      "notes": "Both feet on the midline. To balance, the centre of mass has to stay over that line, so the front foot sits under the middle of the body, inside the front hip. The floor's push then passes inside the hip and knee: the glute medius and the hip's rotators work much harder, and balance is harder. Feet on hip-width \"tracks\" (the default) cut both by about a quarter. With the feet unable to push sideways (set the slider to 0), the hip's internal-rotation demand passes the measured maximum when deep: as modelled it couldn't be held. With least effort the front foot instead presses inwards on the floor with up to about a third of its vertical force, more than on hip-width tracks; that grip, and a pelvis that turns, is what real lifters rely on."
     },
     {
       "id": "knees-in",
@@ -296,7 +300,8 @@
         "frontWidth": 0.09,
         "rearWidth": 0.09,
         "toeOut": 0,
-        "kneeTrack": -10
+        "kneeTrack": -10,
+        "sidePush": "auto"
       },
       "notes": "Front knee drifting 10° inside the toe line: compare the hip and knee sideways rows with the default."
     }
@@ -339,6 +344,16 @@
       "step": 1,
       "unit": "°",
       "scale": 1
+    },
+    {
+      "key": "sidePush",
+      "label": "Front foot pushes outwards (+) / inwards (−) against the floor, % of its vertical force (the rear contact pushes back)",
+      "min": -0.6,
+      "max": 0.6,
+      "step": 0.02,
+      "unit": "%",
+      "scale": 100,
+      "auto": "Least effort (auto)"
     }
   ]
 }

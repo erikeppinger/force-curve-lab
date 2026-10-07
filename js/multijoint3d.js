@@ -702,14 +702,42 @@ export function split3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       [add3(pelvis, back, c.headTrunk * L.trunk), m.headTrunk * kg], [lerp3(S, bar, 0.45), armsKg], [bar, loadKg]];
     const total = items.reduce((t, [, k]) => t + k, 0);
     const com = v3(items.reduce((t, [p, k]) => t + p.x * k, 0) / total, 0, items.reduce((t, [p, k]) => t + p.z * k, 0) / total);
-    const u = sub3(cop2, cop1), w = sub3(com, cop1);
-    return { H, K, Hr, Kr, pelvis, S, bar, total, com, side: u.x * w.z - u.z * w.x, along: dot3(w, u) / dot3(u, u), reach: len3(sub3(Rr, Hr)) <= L.thigh + L.shank };
+    const W = total * G, along = (com.x - cop1.x) / (cop2.x - cop1.x);
+    return { H, K, Hr, Kr, pelvis, S, bar, total, com, W, F1: W * (1 - along), F2: W * along, along, reach: len3(sub3(Rr, Hr)) <= L.thigh + L.shank };
   };
-  const sol = bisect((s) => pose(s).side, -0.3, 0.3);
-  const Q = pose(sol.t);
-  const W = Q.total * G, frontR = W * (1 - Q.along);
+  // Sideways balance (moments about the front-back axis): the vertical contact forces, the
+  // weight, and a sideways push ρ·F1 on the front foot (+ = inwards) that the rear contact
+  // returns (−ρ·F1 at its height, so the pair also tips the body). ρ = 0: the centre of mass
+  // is over the line between the contacts.
+  const rearY = Rr.y > 0.2 ? Rr.y - 0.04 : 0; // rear foot on a bench: its top; on the floor: the toes
+  const tipping = (Q, rho) => -cop1.z * Q.F1 - cop2.z * Q.F2 + Q.com.z * Q.W + rearY * rho * Q.F1;
+  const poses = new Map();
+  const poseAt = (sv) => { const k = sv.toFixed(12); if (!poses.has(k)) poses.set(k, pose(sv)); return poses.get(k); };
+  // Secant search for the pelvis shift (the tipping moment is nearly linear in it); bisection
+  // as the fallback when it doesn't converge inside ±0.3 m.
+  const shiftFor = (rho) => {
+    const g = (sv) => tipping(poseAt(sv), rho);
+    let a = 0, b = 0.05, ga = g(a), gb = g(b);
+    for (let i = 0; i < 12 && Math.abs(gb) > 1e-7 * poseAt(b).W; i++) {
+      const next = b - (gb * (b - a)) / (gb - ga);
+      if (!Number.isFinite(next) || Math.abs(next) > 0.3) return bisect(g, -0.3, 0.3, 40);
+      [a, ga, b] = [b, gb, next];
+      gb = g(b);
+    }
+    return Math.abs(gb) <= 1e-6 * poseAt(b).W ? { t: b, ok: true } : bisect(g, -0.3, 0.3, 40);
+  };
+  const solveFor = (rho) => {
+    const sol = shiftFor(rho);
+    const Q = poseAt(sol.t);
+    const leg = legFromFloor(ex, { sidePush: rho }, { H: Q.H, K: Q.K, A, f, cop: cop1, Fy: Q.F1, back, kneeAngle: x, kg, body });
+    return { sol, Q, leg };
+  };
+  const auto = P.sidePush === "auto" || P.sidePush == null;
+  const rho = auto ? leastEffort(ex, (r) => solveFor(r).leg.joints) : P.sidePush;
+  const { sol, Q, leg: leg0 } = solveFor(rho);
+  const leg = { ...leg0, ratio: rho, auto };
+  const W = Q.W, frontR = Q.F1;
   const ok = sol.ok && Q.reach && Q.along >= 0 && Q.along <= 1;
-  const leg = legFromFloor(ex, { ...P, sidePush: 0 }, { H: Q.H, K: Q.K, A, f, cop: cop1, Fy: frontR, back, kneeAngle: x, kg, body });
   const sh = add3(Q.S, Z, L.shoulderHalfWidth);
   const loadPrims = P.load === "hang"
     ? [dot(add3(Q.bar, Z, L.shoulderHalfWidth + 0.04), 0.07, "weight"), dot(add3(Q.bar, Z, -L.shoulderHalfWidth - 0.04), 0.07, "weight")]
@@ -720,6 +748,7 @@ export function split3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     moments: { hip: leg.Mhip, knee: leg.Mknee, ankle: leg.Mankle },
     balance: { x: cop1.x, com: Q.com.x, ok },
     shares: { front: frontR / W }, pelvisShift: sol.t, com: Q.com, contacts: [cop1, cop2],
+    sidePush: rho, frontal: { F1: Q.F1, F2: Q.F2, W, rearY, tipping: tipping(Q, rho) },
     scene: [
       { kind: "poly", pts: [[-0.9, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.9, 0.5]].map(([px, pz]) => v3(px, 0, pz)), cls: "floor3d" },
       ...(Rr.y > 0.2 ? [{ kind: "poly", pts: [[-0.25, -0.18], [0.08, -0.18], [0.08, 0.18], [-0.25, 0.18]].map(([px, pz]) => v3(Rr.x + px, Rr.y - 0.04, Rr.z + pz)), cls: "plate3d bench3d" },
@@ -735,7 +764,7 @@ export function split3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     ],
     forces: [{ at: cop1, dir: leg.dir }],
     grf: leg.grf.f,
-    info: [{ text: `Front leg carries ${Math.round((100 * frontR) / W)}% of the weight, the rear foot the rest. Pelvis shifted ${Math.abs(Math.round(sol.t * 100))} cm ${sol.t >= 0 ? "towards the front foot's side" : "towards the rear foot's side"} to balance.` },
+    info: [{ text: `Front leg carries ${Math.round((100 * frontR) / W)}% of the weight, the rear foot the rest. Pelvis shifted ${Math.abs(Math.round(sol.t * 100))} cm ${sol.t >= 0 ? "towards the front foot's side" : "towards the rear foot's side"} to balance.` }, sidePushInfo(leg),
       ...(ok ? [] : [{ warn: true, text: Q.reach ? "The centre of mass can't be brought over the line between the feet here." : "The rear foot is out of reach at this depth." }])],
   };
 }
