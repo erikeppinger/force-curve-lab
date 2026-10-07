@@ -65,8 +65,8 @@
       "negative": {"action": "Hip abduction", "peakTorqueNm": 130},
       "strength": {
         "points": [[0, 1.0], [160, 1.0]],
-        "note": "Hip adductor (positive) and abductor (negative) peak torque per leg, taken as constant across the range: Welsh et al.'s isometric means at 10° of hip abduction (trained recreational hockey players, hip straight): adductors 247 Nm, abductors 130 Nm. Abductor strength falls as the hip abducts (Neumann et al.; Welsh et al.), which isn't modelled here.",
-        "source": "Welsh P, Howitt S, Howarth SJ (2020). The influence of hip joint angle on the ratio between adduction and abduction torque in experienced, recreational male ice hockey players. Int J Sports Phys Ther 15(1):22–33. doi:10.26603/ijspt20200022"
+        "note": "Hip adductor (positive) and abductor (negative) peak torque per leg, taken as constant across the range: Welsh et al.'s isometric means at 10° of hip abduction (trained recreational hockey players, hip straight): adductors 247 Nm, abductors 130 Nm. Abductor strength falls as the hip abducts (Neumann et al.; Welsh et al.), which isn't modelled here. Welsh et al.'s men were trained ice hockey players: 247 Nm is about 1.9 Nm per kg·m (body mass × height), above every isometric adduction dataset collected by Chen & Franklin (roughly 0.5–1.3 Nm per kg·m, 75–175 Nm), so the adductor effort shown here is probably too low for an untrained lifter. Their abduction data (roughly 0.5–1.0 Nm per kg·m) bracket the 130 Nm used here (about 1.0).",
+        "source": "Welsh P, Howitt S, Howarth SJ (2020). The influence of hip joint angle on the ratio between adduction and abduction torque in experienced, recreational male ice hockey players. Int J Sports Phys Ther 15(1):22–33. doi:10.26603/ijspt20200022; cross-check: Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183 (read as the bioRxiv preprint, doi:10.1101/2024.06.22.600197, CC BY 4.0)"
       }
     },
     {

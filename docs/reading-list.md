@@ -16,31 +16,39 @@ Each would close one remaining `TODO`. All were seen in search results only (the
 
 ### Hip extension strength vs knee angle
 
-The hamstrings' share at the hip (deadlift, RDL, hip thrust, split squat). Authors still to check in both:
+The hamstrings' share at the hip (deadlift, RDL, hip thrust, split squat). Still to get:
 - Isometric hip extension at 15° vs 90° of knee bend, 10 men, torque plus EMG of the hamstrings, adductor magnus and gluteus maximus. Japanese Journal of Physical Fitness and Sports Medicine: <https://jlc.jst.go.jp/DN/JLC/20011214456?from=WPRIM>. Snippet: more torque and more hamstring EMG with the knee nearly straight; more gluteus maximus EMG with it bent.
 - Sprinters and hurdlers, supine dynamometer, isometric and concentric hip extension with the knee at 30° vs about 90°: <https://lida.sport-iat.de/ta/Record/4080023?lng=en>. Snippet: 29–42% more hip-extension torque with the knee straighter, at every speed.
+- Waters RL et al. (1974; co-authors still to check). "The relative strength of the hamstrings during hip extension." J Bone Joint Surg Am 56(8):1592–1597. Cited by Rajagopal et al. 2016 for hip-extension strength; the title is the open question exactly.
+- Chen & Franklin's collection (read) found hip extension nearly flat with knee angle in three datasets, against the two studies above. Waters et al. would settle which applies to lifting.
 
 ### Machine cam profiles
 
 - Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. Eight knee-extension machines from six makers, resistive torque measured at five knee angles. Would replace the illustrative leg-extension cam with measured ones (makers likely anonymised).
 
+### Hip adduction strength, general population
+
+The 247 Nm adductor peak is from trained ice hockey players and sits above every dataset in Chen & Franklin's collection. Candidate: Danneskiold-Samsøe et al. 2009 (normative isometric and isokinetic strength, hip included), listed in Chen & Franklin's study table; full citation still to check.
+
 ### Muscle activation weights
 
 The largest group of `TODO`s (every `muscles` entry). No single source covers them; it needs EMG studies per exercise, ideally ones that report several muscles in the same lift. No candidates checked yet.
 
+## Read
+
+- **Chen & Franklin 2025, joint moments** (preprint, CC BY 4.0) and **Chen & Franklin 2025, moment arms** (Ann Biomed Eng 53:1757–1776, open access): read; used as a cross-check (`docs/model-limits.md`). Their raw data are still to get: moment arms at <https://doi.org/10.6084/m9.figshare.26018563>; the joint-moment data link is in the published J Biomech version (the preprint says "link-to-add"). Both are MATLAB `.mat` files.
+- **Rajagopal et al. 2016** (OpenSim full-body model): read. Muscle forces and moment arms need the model files from <https://simtk.org/home/full_body> and an offline run.
+
 ## Open data worth a look
 
 Seen in search results; the sites are blocked from the build environment, so none has been opened yet.
-- **Chen J, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183.** 962 passive, isometric and isokinetic datasets from the literature. Could check or replace the leg strength curves and give strength vs a second joint's angle. Preprint: <https://www.biorxiv.org/content/10.1101/2024.06.22.600197>; author copy: <https://www.hs.mh.tum.de/fileadmin/w00bbr/nd/pdf/Chen_JBiomech_2025.pdf>. Check whether the collected data are published with it, and under which licence.
-- **Muscle moment arm–joint angle relations in the hip, knee, and ankle: a visualization of datasets** (same group, open access): <https://pmc.ncbi.nlm.nih.gov/articles/PMC12283864/>. Moment arms per muscle would let the muscle weights follow the joint angle instead of being flat guesses.
-- **OpenSim full-body model** (Rajagopal et al. 2016): <https://simtk.org/home/full_body>. Precomputing moment arms or muscle forces offline and storing them as JSON keeps the site build-free. Check the model's licence first.
+
+- **EMG datasets** (to be fetched with the papers): PolyF-EMG, 18 people, knee extension, barbell and band bench press (<https://ieee-dataport.org/documents/ployf-emg-comprehensive-multi-muscle-surface-electromyography-dataset-fatigue-analysis>, doi:10.21227/ccze-7z50); EMAHA-DB2, two weight-training activities, isotonic and isometric (<https://ieee-dataport.org/documents/electromyography-analysis-human-activities-database-2>, doi:10.21227/0e4c-zc53). Raw signals, so they could give relative muscle shares for the leg extension and bench press. Read locally like the papers; commit only derived numbers with a citation unless the licence allows more.
 
 ## Classic strength-curve sources (not found online)
 
 - Provins KA, Salter N: elbow-flexion strength by forearm position.
 - Rasch PJ: elbow-flexion strength by forearm position.
-
-- **EMG datasets** (to be fetched with the papers): PolyF-EMG, 18 people, knee extension, barbell and band bench press (<https://ieee-dataport.org/documents/ployf-emg-comprehensive-multi-muscle-surface-electromyography-dataset-fatigue-analysis>, doi:10.21227/ccze-7z50); EMAHA-DB2, two weight-training activities, isotonic and isometric (<https://ieee-dataport.org/documents/electromyography-analysis-human-activities-database-2>, doi:10.21227/0e4c-zc53). Raw signals, so they could give relative muscle shares for the leg extension and bench press. Read locally like the papers; commit only derived numbers with a citation unless the licence allows more.
 
 ## Checked and unavailable
 
