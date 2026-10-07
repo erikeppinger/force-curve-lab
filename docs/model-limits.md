@@ -323,7 +323,7 @@ Every strength curve, peak strength and limb mass now carries its source in the 
 - **Thigh mass is 14% of body mass, not 10%.** That makes the leg's own weight matter more in leg extensions, leg curls and hip abduction.
 - **The calf raise had a geometry error, now fixed.** The ankle-to-ball lever slopes down from the ankle, so its reach shrinks faster as you rise onto the toes.
 - **Sources disagree on shoulder abduction near the start.** Haidar et al. find 0° the weakest position; Clarke et al. find it the strongest. The curve follows Haidar (the only numbers at these angles) and says so.
-- **Test postures differ from the exercises.** Plantarflexion was measured with the knee bent (gastrocnemius slack), so standing calf raises high on the toes look harder than they are. Elbow curves were measured with the arm raised 90°. The leg curl and the elbow exercises now correct for this (next section); the calf raise doesn't yet.
+- **Test postures differ from the exercises.** Plantarflexion was measured with the knee bent (gastrocnemius slack), so standing calf raises high on the toes look harder than they are. Elbow curves were measured with the arm raised 90°. The leg curl, the calf raise and the elbow exercises now correct for this (next section).
 - **Default loads were lowered** where the measured curves made the old defaults fail mid-range. Several defaults still pass 100% right at an end of the range (lockouts, hip hyperextension, the deepest squat). That's where the measured strength really is lowest.
 
 ### Checking the bench press against measurements
@@ -370,6 +370,8 @@ Variants can carry a `strengthScale`: a factor on the strength curve, constant o
 | Biceps curl | Preacher (upper arm 45° forward) | 0.87–0.96 by elbow angle | Guenzkofer et al. 2012, Table A1: supinated elbow flexion at 0° vs 60° of shoulder flexion, interpolated to 45°. |
 | Biceps curl | Hammer (neutral grip) | 0.95–1.10 | Guenzkofer et al.: neutral vs supinated. Kohn et al. 2018 found no significant difference either. |
 | Biceps curl | Reverse (palms down) | 0.83–0.99 | Guenzkofer et al. (torque). Kohn et al. measured 53% of supinated force at 70° of elbow flexion, so this may be optimistic. |
+| Calf raise | Standing, single or two legs (knee straight) | 1.20 | Cresswell et al. 1995, Table 1: 134.9 Nm with the knee straight vs about 112 Nm at the base curve's 50° of knee bend (10 men). Baptista et al. 2014 (100 vs 73 Nm, knee straight vs 90°) and Kovács et al. 2024 (31% lower bent) agree. |
+| Calf raise | Seated (knee 90°) | 0.92 | Cresswell et al.: 103.7 Nm at 90°. The gastrocnemius modifier is 0.65 (its EMG fell by about a third with the knee bent: Baptista et al., Kovács et al.). |
 | Triceps extension | Overhead | 0.85–0.90 | Guenzkofer et al.: extension torque at 135° vs 0° of shoulder flexion (held at 135° for the 180° posture). |
 | Triceps extension | Skullcrusher (shoulder 90°) | 0.89–0.95 | Interpolated between their 60° and 135°. |
 
@@ -379,7 +381,16 @@ What it shows:
 - **Hammer grip:**
   - Kleiber et al. 2015 found the biceps and brachioradialis working at the same levels with a neutral or palms-up grip; only palms down shifted work to the brachioradialis. Guenzkofer et al. found neutral and palms-up equally strong. So the data don't support the hammer curl as a brachioradialis exercise.
   - The reverse curl gets a 1.2× brachioradialis modifier. Kleiber et al. give the direction of the shift but not a number in the text, so the size is an estimate.
-- **Overhead triceps:** measured elbow-extension torque was *lower* with the arm overhead, despite the long head being stretched there. Whether that position builds more muscle is a different question, about training rather than strength.
+- **Overhead triceps:** measured elbow-extension torque was *lower* with the arm overhead, despite the long head being stretched there. Whether that position builds more muscle is a different question, about training rather than strength: Maeo et al. 2023 found about 1.5× more long-head growth with overhead training, at 34–39% lower loads.
+- **Calf:** a standing calf raise (knee straight) has about 30% more plantarflexion strength than a seated one (knee bent 90°). The same load is about 1.3× harder, relative to strength, when seated.
+- **Checked, no correction needed:**
+  - Knee-extension strength doesn't change with the hip angle (two-joint rectus femoris). Black et al. 1993 measured 139 Nm supine vs 140 Nm sitting, Bampouras et al. 2017 245 vs 241 Nm.
+  - Black et al.'s hamstring numbers (48 Nm supine vs 78 Nm sitting, a ratio of 0.62) confirm Guex et al.'s 0.56.
+- **Hammer grip strength:** Mandalidis & O'Brien 2001 found neutral 2–5% weaker than palms up; Guenzkofer et al. found it equal or slightly stronger. Within about 5% either way.
+- **Brachioradialis with palms down:**
+  - Kleiber et al. and Marcolin et al. 2018 (EZ bar vs dumbbell) found more activity.
+  - Boland et al. 2008 (fine-wire EMG) found no grip effect.
+  - The reverse curl's 1.2× modifier stays an estimate.
 
 Limits:
 
@@ -392,4 +403,4 @@ Limits:
 - Muscle activation weights (62 values; the bench grip-width effects are now backed by Mausehund et al. qualitatively).
 - Machine cam profiles.
 - Hip rotation strength in the 3D lifts, and the peak horizontal-adduction torque.
-- Two-joint muscles in the multi-joint lifts, the calf (knee straight vs bent) and the rectus femoris (see `docs/reading-list.md`).
+- Two-joint muscles in the multi-joint lifts (e.g. the hamstrings' length in the deadlift and the gastrocnemius in the squat).

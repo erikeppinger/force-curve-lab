@@ -79,11 +79,16 @@ const variantOf = (ex) => (id) => ex.variants.find((x) => x.id === id);
     close(analyze(ex, v("seated"), 0, opts).jointTorque, 10 * G * reach(0));
   });
 
-  test("seated calf raise halves the gastrocnemius estimate", () => {
+  test("seated calf raise: gastrocnemius share cut by a third (measured EMG), strength × 0.92 vs × 1.2 standing (Cresswell et al.)", () => {
     const r = analyze(ex, v("seated"), 10, opts);
     const act = Object.fromEntries(muscleActivation(ex, v("seated"), r, 10).map((m) => [m.id, m.value]));
     const w = (id) => interp(ex.muscles.find((m) => m.id === id).weight, 10);
-    close(act.gastrocnemius / act.soleus, (0.5 * w("gastrocnemius")) / w("soleus"));
+    close(act.gastrocnemius / act.soleus, (0.65 * w("gastrocnemius")) / w("soleus"));
+    // Cresswell et al. Table 1: 134.9 Nm knee straight, 103.7 Nm at 90°, base curve at 50° (119.25 → 108.91 between 30° and 60°).
+    const ref = 119.25 + (108.91 - 119.25) * (20 / 30);
+    close(v("seated").strengthScale.factor, Math.round((103.7 / ref) * 100) / 100);
+    close(v("single-leg").strengthScale.factor, Math.round((134.91 / ref) * 100) / 100);
+    close(analyze(ex, v("single-leg"), 10, opts).capacity / analyze(ex, v("seated"), 10, opts).capacity, v("single-leg").strengthScale.factor / v("seated").strengthScale.factor);
   });
 }
 

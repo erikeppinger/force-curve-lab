@@ -133,8 +133,8 @@
       "notes": "Upper arm pointing up. Torque = m·g·L·sin(elbow angle), largest with the forearm horizontal behind the head. The long head is stretched in this position, which this model can't credit.",
       "strengthScale": {
         "points": [[45, 0.85], [90, 0.9], [120, 0.86]],
-        "note": "arm overhead: elbow-extension strength 85–90% of arm-at-side. Guenzkofer et al. measured it at 135° of shoulder flexion (the highest they tested; held there for 180°). Despite the long head being stretched overhead, the measured torque was lower, not higher.",
-        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric)"
+        "note": "arm overhead: elbow-extension strength 85–90% of arm-at-side. Guenzkofer et al. measured it at 135° of shoulder flexion (the highest they tested; held there for 180°). Despite the long head being stretched overhead, the measured torque was lower, not higher. For training, a separate question: Maeo et al. found 1.5× more long-head growth (1.4× for the whole triceps) after 12 weeks of overhead vs arm-at-side extensions, even though the loads used overhead were 34–39% lower.",
+        "source": "Guenzkofer F, Bubb H, Bengler K (2012). Maximum elbow joint torques for digital human models. Int J Human Factors Modelling and Simulation 3(2):109–132. doi:10.1504/IJHFMS.2012.051092 (Table A1: 20 young men, isometric); training context: Maeo S, Wu Y, Huang M, Sakurai H, Kusagawa Y, Sugiyama T, Kanehisa H, Isaka T (2023). Triceps brachii hypertrophy is substantially greater after elbow extension training performed in the overhead versus neutral arm position. Eur J Sport Sci 23(7):1240–1250. doi:10.1080/17461391.2022.2100279"
       }
     },
     {

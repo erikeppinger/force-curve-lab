@@ -20,7 +20,7 @@
   "strengthCurve": {
     "label": "Plantarflexor strength",
     "points": [[-28, 0.99], [-20, 1.0], [-10, 0.95], [0, 0.84], [10, 0.69], [20, 0.49], [34, 0.18]],
-    "note": "Relative isometric plantarflexion torque vs plantarflexion (negative = dorsiflexed), peak about 23° of dorsiflexion, measured with the knee bent 50° (tested 29° dorsiflexion to 34° plantarflexion). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m). Measured with the knee bent, where the gastrocnemius is slack; standing (knee straight) the plantarflexors are somewhat stronger (not modelled). Peak default raised to 150 Nm above Anderson's knee-bent mean (119 Nm): standing with the knee straight, the gastrocnemius adds torque, by an amount not taken from a source here (TODO). Because of the knee-bent test position this curve probably understates strength high on the toes, so standing calf-raise efforts there are overstated.",
+    "note": "Relative isometric plantarflexion torque vs plantarflexion (negative = dorsiflexed), peak about 23° of dorsiflexion, measured with the knee bent 50° (tested 29° dorsiflexion to 34° plantarflexion). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m). Measured with the knee bent, where the gastrocnemius is slack; standing (knee straight) the plantarflexors are somewhat stronger (not modelled). Peak default raised to 150 Nm above Anderson's knee-bent mean (119 Nm): standing with the knee straight, the gastrocnemius adds torque, by an amount not taken from a source here (TODO). Because of the knee-bent test position this curve probably understates strength high on the toes, so standing calf-raise efforts there are overstated. Variants correct this for the knee angle (two-joint gastrocnemius): see each variant's strength note.",
     "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
   },
   "postures": {
@@ -46,7 +46,7 @@
       "driver": "jointEffort",
       "weight": [[-20, 1.0], [40, 0.85]],
       "note": "Crosses the knee too: with the knee bent (seated) it is slack and contributes much less.",
-      "source": "TODO: check against EMG literature",
+      "source": "Weights: TODO. Knee-angle effect: Baptista MT, Nascimento FXM, Nardes LK, Matta TT, Oliveira LF (2014). Influência de posições do joelho no torque e atividade mioelétrica do tríceps sural na flexão plantar isométrica máxima. Rev Bras Educ Fís Esporte 28(2):197–202. doi:10.1590/1807-55092014000200197; Kovács B, Csala D, Yang S, Tihanyi J, Gu Y, Hortobágyi T (2024). Knee position affects medial gastrocnemius and soleus activation during dynamic plantarflexion: no evidence for an inter-muscle compensation in healthy young adults. Biol Open 13:bio061810. doi:10.1242/bio.061810",
       "draw": {"seg": "proximal", "along": [0.05, 0.22], "offset": -0.045, "w": 0.07, "layer": 1}
     },
     {
@@ -86,7 +86,12 @@
       "posture": "standing",
       "load": {"type": "reaction", "bodyWeight": 1},
       "defaultLoadKg": 0,
-      "notes": "Closed chain: the floor pushes up on the ball of the foot with your whole body weight plus the dumbbell. Torque = (body + m)·g × the horizontal distance from the ankle to the ball of the foot."
+      "notes": "Closed chain: the floor pushes up on the ball of the foot with your whole body weight plus the dumbbell. Torque = (body + m)·g × the horizontal distance from the ankle to the ball of the foot.",
+      "strengthScale": {
+        "factor": 1.2,
+        "note": "knee straight, so the gastrocnemius is at a useful length: plantarflexion strength about 120% of the base curve's (measured with the knee bent 50°). Cresswell et al.: 134.9 Nm with the knee straight vs about 112 Nm at 50° (interpolated between their 30° and 60°). Baptista et al. and Kovács et al. found 28–31% less torque at 90° of knee bend than straight, the same direction.",
+        "source": "Cresswell AG, Löscher WN, Thorstensson A (1995). Influence of gastrocnemius muscle length on triceps surae torque development and electromyographic activity in man. Exp Brain Res 105:283–290 (Table 1: 10 men, isometric, ankle 5° dorsiflexed); Baptista MT, Nascimento FXM, Nardes LK, Matta TT, Oliveira LF (2014). Influência de posições do joelho no torque e atividade mioelétrica do tríceps sural na flexão plantar isométrica máxima. Rev Bras Educ Fís Esporte 28(2):197–202. doi:10.1590/1807-55092014000200197; Kovács B, Csala D, Yang S, Tihanyi J, Gu Y, Hortobágyi T (2024). Knee position affects medial gastrocnemius and soleus activation during dynamic plantarflexion: no evidence for an inter-muscle compensation in healthy young adults. Biol Open 13:bio061810. doi:10.1242/bio.061810"
+      }
     },
     {
       "id": "two-leg",
@@ -95,7 +100,12 @@
       "posture": "standing",
       "load": {"type": "reaction", "bodyWeight": 0.5},
       "defaultLoadKg": 20,
-      "notes": "Each leg carries half your body weight plus half the load (the load slider is per leg)."
+      "notes": "Each leg carries half your body weight plus half the load (the load slider is per leg).",
+      "strengthScale": {
+        "factor": 1.2,
+        "note": "knee straight, so the gastrocnemius is at a useful length: plantarflexion strength about 120% of the base curve's (measured with the knee bent 50°). Cresswell et al.: 134.9 Nm with the knee straight vs about 112 Nm at 50° (interpolated between their 30° and 60°). Baptista et al. and Kovács et al. found 28–31% less torque at 90° of knee bend than straight, the same direction.",
+        "source": "Cresswell AG, Löscher WN, Thorstensson A (1995). Influence of gastrocnemius muscle length on triceps surae torque development and electromyographic activity in man. Exp Brain Res 105:283–290 (Table 1: 10 men, isometric, ankle 5° dorsiflexed); Baptista MT, Nascimento FXM, Nardes LK, Matta TT, Oliveira LF (2014). Influência de posições do joelho no torque e atividade mioelétrica do tríceps sural na flexão plantar isométrica máxima. Rev Bras Educ Fís Esporte 28(2):197–202. doi:10.1590/1807-55092014000200197; Kovács B, Csala D, Yang S, Tihanyi J, Gu Y, Hortobágyi T (2024). Knee position affects medial gastrocnemius and soleus activation during dynamic plantarflexion: no evidence for an inter-muscle compensation in healthy young adults. Biol Open 13:bio061810. doi:10.1242/bio.061810"
+      }
     },
     {
       "id": "seated",
@@ -104,8 +114,13 @@
       "posture": "seated",
       "load": {"type": "reaction", "bodyWeight": 0},
       "defaultLoadKg": 25,
-      "muscleModifiers": {"gastrocnemius": 0.5},
-      "notes": "The load sits on the knees, so body weight isn't lifted. With the knee bent the gastrocnemius is slack; the 0.5 factor on it is an estimate, not a measured value."
+      "muscleModifiers": {"gastrocnemius": 0.65},
+      "notes": "The load sits on the knees, so body weight isn't lifted. With the knee bent the gastrocnemius is slack: its EMG fell by about a third (Baptista et al.: −41% lateral, −32% medial head; Kovács et al.: −35% medial head), hence the 0.65 factor. The soleus results differ between studies (more active in Baptista et al., unchanged in Cresswell et al.), so it keeps its weight.",
+      "strengthScale": {
+        "factor": 0.92,
+        "note": "knee bent 90°, gastrocnemius slack: about 92% of the base curve's strength (Cresswell et al.: 103.7 Nm at 90° vs about 112 Nm at 50°).",
+        "source": "Cresswell AG, Löscher WN, Thorstensson A (1995). Influence of gastrocnemius muscle length on triceps surae torque development and electromyographic activity in man. Exp Brain Res 105:283–290 (Table 1: 10 men, isometric, ankle 5° dorsiflexed)"
+      }
     }
   ],
   "wger": {
