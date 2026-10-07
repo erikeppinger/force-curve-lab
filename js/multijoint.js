@@ -37,7 +37,7 @@ const weight = (at, kg) => ({ at, f: { x: 0, y: -kg * G } });
  * leg in a leg press); "proximal" = the free side is the trunk side (e.g. everything
  * above the knee in a squat). The proximal sense is the distal one reversed.
  */
-const SENSE = { "hip-extension": -1, "knee-extension": 1, "plantarflexion": -1, "shoulder-flexion": 1 };
+const SENSE = { "hip-extension": -1, "knee-extension": 1, "plantarflexion": -1, "shoulder-flexion": 1, "shoulder-extension": -1, "elbow-flexion": 1 };
 const senseOf = (action, side) => SENSE[action] * (side === "proximal" ? -1 : 1);
 
 /**
@@ -129,6 +129,31 @@ function hang(b, arm, clearShins) {
   return bar;
 }
 
+/**
+ * Row (driver: pull, 0 = arms hanging straight, 100 = load at the trunk): the hands move in a
+ * straight line from under the shoulders to `touchAlong` × trunk length up from the hip and
+ * `touchOut` in front of the trunk line (belly side). The elbow bends away from the belly.
+ * Returns the hand, elbow, both arm segments (one arm) and the combined centre of mass of both arms.
+ */
+function rowArm(b, body, P, x) {
+  const L = body.lengths, m = body.mass, c = body.com, kg = b.arm.kg / (m.upperArm + m.forearmHand);
+  const start = { x: b.S.x, y: b.S.y - (L.upperArm + L.forearm) * 0.995 };
+  const end = onTrunk(b.H, b.S, P.touchAlong, P.touchOut);
+  const hand = lerp(start, end, x / 100);
+  const u = unit(sub(b.S, b.H));
+  const belly = { x: u.y, y: -u.x }, down = { x: -u.x, y: -u.y }; // trunk axes: front, and towards the hips
+  const dot2 = (p, q) => p.x * q.x + p.y * q.y;
+  const E = [1, -1].map((side) => ik2(b.S, hand, L.upperArm, L.forearm, side))
+    .sort((p, q) => dot2(sub(p, b.S), belly) - dot2(sub(q, b.S), belly))[0]; // elbow away from the belly
+  const upper = { at: lerp(b.S, E, c.upperArm), kg: m.upperArm * kg };
+  const fore = { at: lerp(E, hand, c.forearmHand), kg: m.forearmHand * kg };
+  const com = { x: (upper.at.x * upper.kg + fore.at.x * fore.kg) / (upper.kg + fore.kg), y: (upper.at.y * upper.kg + fore.at.y * fore.kg) / (upper.kg + fore.kg) };
+  // Shoulder flexion: the upper arm's angle from the trunk line (pointing to the hips), + towards the belly.
+  const ua = sub(E, b.S);
+  const shoulderFlex = deg(Math.atan2(dot2(ua, belly), dot2(ua, down)));
+  return { hand, E, upper, fore, com, start, end, shoulderFlex, elbowFlex: angleBetween(sub(E, b.S), sub(hand, E)) };
+}
+
 function feet(body, A) {
   const L = body.lengths;
   return [{ a: { x: A.x - L.heel, y: 0.01 }, b: { x: A.x + L.footFront, y: 0.01 }, w: 0.05, cls: "body" }];
@@ -147,45 +172,54 @@ function standing(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
   const A = { x: 0, y: L.ankleHeight };
   const target = A.x + L.midfoot;
   const hinge = P.mode === "hinge";
+  const row = P.load === "row";
   const pose = (free) => {
     let ts, tt, tk;
-    if (hinge) { // x = hip flexion; the knees bend a little as you hinge
-      const knee = rad(P.kneeBase + P.kneePerHip * x);
-      ts = free; tt = ts - knee; tk = tt + rad(x);
+    if (hinge) { // x = hip flexion (rows: held at hipFlex); the knees bend a little as you hinge
+      const hip = row ? P.hipFlex : x;
+      const knee = rad(P.kneeBase + P.kneePerHip * hip);
+      ts = free; tt = ts - knee; tk = tt + rad(hip);
     } else { // x = knee flexion; shin angle follows the knee
       ts = rad(P.shinPerKnee * x); tt = ts - rad(x); tk = free;
     }
     const b = standingBody(body, kg, A, ts, tt, tk);
-    const bar = P.load === "hang"
-      ? hang(b, L.upperArm + L.forearm, P.clearShins)
+    const arm = row ? rowArm(b, body, P, x) : null;
+    const bar = row ? arm.hand
+      : P.load === "hang" ? hang(b, L.upperArm + L.forearm, P.clearShins)
       : onTrunk(b.H, b.S, P.barAlong, P.barOut);
-    const armCom = lerp(b.S, bar, 0.45);
+    const armCom = row ? arm.com : lerp(b.S, bar, 0.45);
     const items = [b.shank, b.shank, b.thigh, b.thigh, b.trunk, b.foot, b.foot,
       { at: armCom, kg: 2 * b.arm.kg }, { at: bar, kg: loadKg }];
-    return { b, bar, armCom, ts, tt, tk, items };
+    return { b, bar, arm, armCom, ts, tt, tk, items };
   };
   const sol = hinge
     ? solve((s) => comX(pose(s).items) - target, rad(-30), rad(45))
     : solve((t) => comX(pose(t).items) - target, rad(-20), rad(89));
-  const { b, bar, armCom, ts, tt, tk, items } = pose(sol.x);
+  const { b, bar, arm, armCom, ts, tt, tk, items } = pose(sol.x);
 
   // Per leg: half of everything above the hips.
   const aboveHip = [weight(b.trunk.at, b.trunk.kg / 2), weight(armCom, b.arm.kg), weight(bar, loadKg / 2)];
   const aboveKnee = [...aboveHip, weight(b.thigh.at, b.thigh.kg)];
   const aboveAnkle = [...aboveKnee, weight(b.shank.at, b.shank.kg)];
+  // Rows: per arm, half the load at the hand.
+  const armJoints = row ? {
+    shoulder: { at: b.S, angle: arm.shoulderFlex, ...jointTorque(b.S, [weight(arm.upper.at, arm.upper.kg), weight(arm.fore.at, arm.fore.kg), weight(bar, loadKg / 2)], "shoulder-extension", "distal") },
+    elbow: { at: arm.E, angle: arm.elbowFlex, ...jointTorque(arm.E, [weight(arm.fore.at, arm.fore.kg), weight(bar, loadKg / 2)], "elbow-flexion", "distal") },
+  } : {};
   return {
     joints: {
       hip: { at: b.H, angle: deg(tk - tt), ...jointTorque(b.H, aboveHip, "hip-extension", "proximal") },
       knee: { at: b.K, angle: deg(ts - tt), ...jointTorque(b.K, aboveKnee, "knee-extension", "proximal") },
       ankle: { at: b.A, angle: -deg(ts), ...jointTorque(b.A, aboveAnkle, "plantarflexion", "proximal") },
+      ...armJoints,
     },
-    segs: { shank: [b.A, b.K], thigh: [b.K, b.H], trunk: [b.H, b.S], arm: [b.S, bar] },
+    segs: { shank: [b.A, b.K], thigh: [b.K, b.H], trunk: [b.H, b.S], arm: [b.S, bar], ...(row ? { upperArm: [b.S, arm.E], forearm: [arm.E, bar] } : {}) },
     draw: [...feet(body, A),
       { a: b.A, b: b.K, w: 0.1, cls: "body" }, { a: b.K, b: b.H, w: 0.14, cls: "body" }, { a: b.H, b: b.S, w: 0.2, cls: "body" },
       { circle: up(b.S, tk, 0.22), r: 0.11, cls: "body" }],
-    arms: [{ from: b.S, to: bar }],
+    arms: [{ from: b.S, to: bar, ...(row ? { elbow: arm.E } : {}) }],
     loads: [{ at: bar, kind: v.loadShape ?? "bar" }],
-    props: [],
+    props: row ? [{ a: arm.start, b: arm.end, cls: "line-of-action", w: 0.006 }] : [],
     balance: { x: target, com: comX(items), ok: sol.ok },
     parts: { trunk: b.trunk, arms: { at: armCom, kg: 2 * b.arm.kg }, load: { at: bar, kg: loadKg }, thigh: b.thigh, shank: b.shank, foot: b.foot },
     info: sol.ok ? [] : [{ warn: true, text: "Can't balance: no trunk or shin angle keeps the centre of mass over the mid-foot here." }],

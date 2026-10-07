@@ -245,11 +245,11 @@ export function renderMultiFigure(svg, { exercise, result, activation, bounds })
   }
 
   // Arms (elbow bent behind when the hands are close to the shoulder)
-  for (const { from, to } of result.arms) {
+  for (const { from, to, elbow } of result.arms) {
     const d = Math.hypot(to.x - from.x, to.y - from.y);
-    if (d >= ARM * 0.98) seg(svg, from, to, "body arm", 0.07);
+    if (d >= ARM * 0.98 && !elbow) seg(svg, from, to, "body arm", 0.07);
     else {
-      const e = elbowFor(from, to);
+      const e = elbow ?? elbowFor(from, to);
       seg(svg, from, e, "body arm", 0.07);
       seg(svg, e, to, "body arm", 0.06);
     }

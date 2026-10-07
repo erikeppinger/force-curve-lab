@@ -19,6 +19,8 @@ We tried 5 standard upper-body and 10 standard leg exercises from the wger start
 | Lunge / split squat | ✅ multi-joint | Bulgarian, Bulgarian with forward lean, split squat |
 | Romanian deadlift | ✅ multi-joint | barbell, stiff-legged |
 | Deadlift | ✅ multi-joint | conventional, trap (hex) bar |
+| Bent-over row | ✅ multi-joint | barbell (trunk ~45°), trunk horizontal, more upright |
+| Overhead press | ✅ 3D | standing, wide grip, behind the neck, seated dumbbells |
 | Hip thrust | ✅ multi-joint | barbell, feet further away, glute bridge |
 
 ## What broke, and what changed to fix it
@@ -57,6 +59,7 @@ For each position in the lift (the *driver*, e.g. knee angle):
 1. **A solver finds the posture** from the lift's constraint:
    - **Squat, Romanian deadlift:** both feet flat, and the centre of mass of body + load stays over the mid-foot. The squat sets the shin angle from the knee angle and solves the trunk lean (in 3D, see below). The hinge sets the knee bend from the hip angle and solves the shin angle (which is what pushes the hips back). If no angle balances, the UI says so.
    - **Deadlift:** the same hinge, with more knee bend and a range down to the floor (bar at plate height, about 22 cm). The arms hang straight down from the shoulders, but a straight bar can't pass through the legs: where it would, the straight arms swing forward until the bar just touches the shins or thighs (the bar is taken to touch without pushing). A trap bar's handles sit beside the legs, so there the load hangs straight down all the way.
+   - **Bent-over row:** the hinge held at a fixed hip angle; the driver is the pull. The hands move in a straight line from hanging under the shoulders to the trunk, the elbow bends away from the belly, and balance still sets the shin angle. On top of hip, knee and ankle it adds shoulder (extension) and elbow (flexion) torques per arm, each from the arm segments and half the load on its free side.
    - **Split squat / lunge:** front foot flat, rear foot on a bench or the floor. The floor and bench push straight up, and how the weight splits between them follows from where the centre of mass is. The UI shows the front leg's share.
    - **Leg press:** hips fixed in the seat, feet moving along the sled rail. The plate pushes along the rail with m·g·sin(rail angle). This one runs in 3D; see below.
    - **Hip thrust / glute bridge:** shoulders on the bench (or floor), feet flat, bar on the hips. Both contacts push straight up, and the reactions come from moment balance.
@@ -73,6 +76,7 @@ The tests check the classic hand formulas (e.g. squat hip torque = Σ m·g·hori
 - **Squat:** low-bar moves torque from the knees to the hips; the front and goblet squats keep the trunk upright and load the knees more. The ankle torque stays small and constant: it's the weight above the ankle times the 4 cm from the ankle to the mid-foot.
 - **Romanian deadlift:** hip torque grows steadily through the hinge, and the knee has a small *flexor* demand (hamstrings and calves pulling the knee back).
 - **Deadlift:** around the knees the conventional bar is pushed out in front of the shins, the hips go back to keep the balance, and the hip torque climbs to several times the knee torque. The trap bar keeps the load under the shoulders and lets the knees bend more, which moves torque from the hips to the knees (at the floor, with the default load: trap bar vs conventional: hip 136 vs 176 Nm, knee 90 vs 47 Nm per leg). The model predicts this from geometry alone; the knee-bend rates (0.7° and 0.9° per degree of hip flexion) are assumptions.
+- **Bent-over row:** the trunk angle decides the hip and lower-back load (at the start, with 50 kg: 177 Nm per leg with the trunk horizontal, 126 at 45°, 62 fairly upright). The pull brings the bar closer to the hips, so that load eases a little through each rep. A flat trunk makes the top of the pull a shoulder-extension (lats) job. Upright, the load travels along the trunk, so the shoulder does little and the elbow flexors carry it. The knee has a flexor demand, as in the Romanian deadlift.
 - **Split squat:** leaning forward with a more vertical shin moves torque from the knee to the hip.
 - **Leg press:** feet high = more hip, less knee; feet low = the opposite. Stance width, toe angle and knee tracking: see the 3D section.
 - **Hip thrust:** effort is highest at lockout, where hip-extensor strength is lowest. Moving the feet further away turns the knee demand from quads to hamstrings.
@@ -86,6 +90,7 @@ The tests check the classic hand formulas (e.g. squat hip torque = Σ m·g·hori
 - **Spine as one rigid trunk.** Erector-spinae load is approximated by the hip's effort.
 - **Strength per joint ignores the other joints.** As with the single-joint model, two-joint muscles (hamstrings, rectus femoris, gastrocnemius) aren't credited for their length at the other joint.
 - **Deadlift at the floor is past the measured hip strength.** Anderson's hip-extension curve was tested up to 74° of hip flexion; the deadlift starts near 135°, where the app holds the 74° value flat. The effort near the floor is an extrapolation, so its near-limit readings at a modest 50 kg say more about the strength curve than about real lifters. The bar path, the lats pulling the bar back and the shoulders sitting in front of the bar are not modelled; arms are straight lines from shoulder to bar.
+- **Rows in the side view only.** The elbows stay in the side-view plane (tucked). Flared elbows turn the pull into horizontal abduction (rear delts), which needs the 3D arm model. The shoulder blades (rhomboids, middle trapezius) aren't modelled. The hand path is a straight line, and the trunk is held perfectly still, with no hip drive or body English. Seated cable rows and chest-supported rows aren't in yet.
 - **One driver range per exercise.** The glute bridge only reaches about 0–35° of hip flexion before the hips hit the floor (the UI flags it), but shares the hip thrust's 0–80° range. The split squat starts at 40° of front-knee bend because a rear foot on the floor can't be reached with a straighter front leg.
 - **Leg press:** sled weight and friction are ignored; only the plates count.
 - **Strength numbers are estimates**, per leg, for a typical trained adult, marked `TODO` with no source checked. Use the strength slider to scale them.

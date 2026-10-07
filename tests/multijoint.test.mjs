@@ -37,7 +37,7 @@ test("ik2 keeps both segment lengths", () => {
 });
 
 // ---------- squat and hinge ----------
-for (const [id, vids, xs] of [["romanian-deadlift", ["barbell", "stiff-leg"], [20, 50, 90]], ["deadlift", ["conventional", "trap-bar"], [0, 60, 90, 135]]]) {
+for (const [id, vids, xs] of [["romanian-deadlift", ["barbell", "stiff-leg"], [20, 50, 90]], ["deadlift", ["conventional", "trap-bar"], [0, 60, 90, 135]], ["bent-over-row", ["barbell", "pendlay", "upright"], [0, 50, 100]]]) {
   for (const vid of vids) {
     test(`${id}/${vid}: centre of mass over the mid-foot, and torques match the hand formulas`, () => {
       for (const x of xs) {
@@ -113,6 +113,34 @@ test("deadlift: the bottom of the range is about where the bar sits on the floor
     const y = run("deadlift", vid, 135).loads[0].at.y;
     assert.ok(y > 0.17 && y < 0.27, `${vid}: bar at ${y} m (plates hold it about 0.225 m up)`);
   }
+});
+
+test("bent-over row: shoulder and elbow torques match the hand formulas (half the load per arm)", () => {
+  const F = 20 * G;
+  for (const vid of ["barbell", "pendlay", "upright"]) {
+    for (const x of [0, 40, 80, 100]) {
+      const r = run("bent-over-row", vid, x, { ...opts, loadKg: 40, bodyMassKg: 1e-9 });
+      const hand = r.loads[0].at, S = J(r, "shoulder").at, E = J(r, "elbow").at;
+      close(J(r, "elbow").torque, F * (hand.x - E.x), 1e-6); // hand in front of the elbow → flexors
+      close(J(r, "shoulder").torque, F * (S.x - hand.x), 1e-6); // hand behind the shoulder → extensors (lats)
+      close(Math.hypot(E.x - S.x, E.y - S.y), body.lengths.upperArm, 1e-9);
+      close(Math.hypot(hand.x - E.x, hand.y - E.y), body.lengths.forearm, 1e-9);
+    }
+  }
+});
+
+test("bent-over row: the flatter the trunk, the more hip torque; the pull brings the bar closer to the hips", () => {
+  for (const x of [0, 50, 100]) {
+    const [p, b, u] = ["pendlay", "barbell", "upright"].map((vid) => J(run("bent-over-row", vid, x), "hip").torque);
+    assert.ok(p > b && b > u, `@${x}: ${p} > ${b} > ${u}`);
+  }
+  const ex = load("bent-over-row");
+  const hip = sampleMulti(ex, ex.variants.find((v) => v.id === "pendlay"), opts, 10).map((s) => J(s, "hip").torque);
+  hip.forEach((t, i) => i && assert.ok(t < hip[i - 1]));
+  // Upright: the load travels along the trunk, so the shoulder does little and the elbow flexors more.
+  const [top, flat] = [run("bent-over-row", "upright", 100), run("bent-over-row", "pendlay", 100)];
+  assert.ok(J(top, "shoulder").torque < 0.3 * J(flat, "shoulder").torque);
+  assert.ok(J(top, "elbow").torque > J(flat, "elbow").torque);
 });
 
 // ---------- split squat ----------
