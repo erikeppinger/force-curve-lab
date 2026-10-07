@@ -161,36 +161,36 @@
       "id": "flat",
       "name": "Flat bench, medium grip",
       "equipment": "Barbell, flat bench",
-      "params": {"gripHalf": 0.32, "elbowOut": 0, "touch": 0.08, "incline": 0},
-      "notes": "Hands about 1.7× shoulder width, elbows stacked under the hands in the front view. The flare angle follows from the arm's geometry (shown under the table). Each hand pushes straight up with half the bar (it isn't pulled apart or squeezed), and the shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
+      "params": {"gripHalf": 0.32, "elbowOut": 0, "touch": 0.08, "incline": 0, "barSpread": 0},
+      "notes": "Hands about 1.7× shoulder width, elbows stacked under the hands in the front view. The flare angle follows from the arm's geometry (shown under the table). Each hand pushes up with half the bar; how hard the hands pull the bar apart (or squeeze it) can't be found from statics, so by default they don't. Tick \"least effort\" to let the model choose: it has the hands pull the bar apart hard in wider grips, moving work from the pecs to the triceps, which is likely more than lifters really do. The shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
     },
     {
       "id": "wide",
       "name": "Wide grip",
       "equipment": "Barbell, flat bench",
-      "params": {"gripHalf": 0.4, "elbowOut": 0, "touch": 0.06, "incline": 0},
-      "notes": "Hands far out: the upper arms flare, the pecs (horizontal adduction) work much harder and the triceps much less. The bar also travels less. Each hand pushes straight up with half the bar (it isn't pulled apart or squeezed), and the shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
+      "params": {"gripHalf": 0.4, "elbowOut": 0, "touch": 0.06, "incline": 0, "barSpread": 0},
+      "notes": "Hands far out: the upper arms flare, the pecs (horizontal adduction) work much harder and the triceps much less. The bar also travels less. Each hand pushes up with half the bar; how hard the hands pull the bar apart (or squeeze it) can't be found from statics, so by default they don't. Tick \"least effort\" to let the model choose: it has the hands pull the bar apart hard in wider grips, moving work from the pecs to the triceps, which is likely more than lifters really do. The shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
     },
     {
       "id": "close",
       "name": "Close grip",
       "equipment": "Barbell, flat bench",
-      "params": {"gripHalf": 0.2, "elbowOut": 0, "touch": 0.1, "incline": 0},
-      "notes": "Hands at shoulder width, elbows tucked: the triceps take over and the pecs' across-the-body work nearly vanishes. Each hand pushes straight up with half the bar (it isn't pulled apart or squeezed), and the shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
+      "params": {"gripHalf": 0.2, "elbowOut": 0, "touch": 0.1, "incline": 0, "barSpread": 0},
+      "notes": "Hands at shoulder width, elbows tucked: the triceps take over and the pecs' across-the-body work nearly vanishes. Each hand pushes up with half the bar; how hard the hands pull the bar apart (or squeeze it) can't be found from statics, so by default they don't. Tick \"least effort\" to let the model choose: it has the hands pull the bar apart hard in wider grips, moving work from the pecs to the triceps, which is likely more than lifters really do. The shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
     },
     {
       "id": "elbows-out",
       "name": "Medium grip, elbows flared past the hands",
       "equipment": "Barbell, flat bench",
-      "params": {"gripHalf": 0.32, "elbowOut": 0.06, "touch": 0.04, "incline": 0},
-      "notes": "Elbows pushed 6 cm outside the hands and the bar lowered higher on the chest: see how the rotation torque and flare angle change. Each hand pushes straight up with half the bar (it isn't pulled apart or squeezed), and the shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
+      "params": {"gripHalf": 0.32, "elbowOut": 0.06, "touch": 0.04, "incline": 0, "barSpread": 0},
+      "notes": "Elbows pushed 6 cm outside the hands and the bar lowered higher on the chest: see how the rotation torque and flare angle change. Each hand pushes up with half the bar; how hard the hands pull the bar apart (or squeeze it) can't be found from statics, so by default they don't. Tick \"least effort\" to let the model choose: it has the hands pull the bar apart hard in wider grips, moving work from the pecs to the triceps, which is likely more than lifters really do. The shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
     },
     {
       "id": "incline",
       "name": "Incline bench (30°), medium grip",
       "equipment": "Barbell, incline bench",
-      "params": {"gripHalf": 0.32, "elbowOut": 0, "touch": 0.03, "incline": 30},
-      "notes": "Bench tilted 30°: the bar touches the upper chest and presses vertically over the shoulders. Each hand pushes straight up with half the bar (it isn't pulled apart or squeezed), and the shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
+      "params": {"gripHalf": 0.32, "elbowOut": 0, "touch": 0.03, "incline": 30, "barSpread": 0},
+      "notes": "Bench tilted 30°: the bar touches the upper chest and presses vertically over the shoulders. Each hand pushes up with half the bar; how hard the hands pull the bar apart (or squeeze it) can't be found from statics, so by default they don't. Tick \"least effort\" to let the model choose: it has the hands pull the bar apart hard in wider grips, moving work from the pecs to the triceps, which is likely more than lifters really do. The shoulder joints stay put; real shoulder blades move, so the mid-press elbow numbers are probably on the high side."
     }
   ],
   "wger": {"exerciseId": null, "name": "Bench Press", "note": "TODO: look up the wger exercise id"},
@@ -221,6 +221,16 @@
       "step": 0.01,
       "unit": "cm",
       "scale": 100
+    },
+    {
+      "key": "barSpread",
+      "label": "Hands pull the bar apart (+) / squeeze it (−), % of the vertical force",
+      "min": -0.4,
+      "max": 0.4,
+      "step": 0.02,
+      "unit": "%",
+      "scale": 100,
+      "auto": "Least effort (auto)"
     }
   ]
 }

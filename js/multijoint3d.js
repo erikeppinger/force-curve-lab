@@ -62,6 +62,27 @@ const toLine = (j, at, dir) => {
 };
 
 /**
+ * Static optimisation for one force statics can't decide (e.g. how hard the feet push sideways):
+ * the value in [lo, hi] (a friction limit) that minimises the sum of squared efforts of the
+ * exercise's muscle groups. `jointsAt(value)` returns the solver's joint components.
+ */
+export function leastEffort(exercise, jointsAt, lo = -0.6, hi = 0.6) {
+  const cost = (value) => {
+    const js = jointsAt(value);
+    return exercise.joints.filter((j) => !j.passive).reduce((sum, j) => {
+      const t = js[j.id].torque;
+      const cap = interp(j.strength.points, js[j.id].angle) * (t < 0 && j.negative ? j.negative.peakTorqueNm : j.peakTorqueNm);
+      return sum + (t < 0 && !j.negative ? 0 : (t / cap) ** 2);
+    }, 0);
+  };
+  for (let i = 0; i < 60; i++) {
+    const m1 = lo + (hi - lo) / 3, m2 = hi - (hi - lo) / 3;
+    if (cost(m1) < cost(m2)) hi = m2; else lo = m1;
+  }
+  return (lo + hi) / 2;
+}
+
+/**
  * Leg components from the external moments on the distal side of each joint.
  * `back` is the trunk's direction (hip → shoulder), `line` the main force's line for moment arms.
  */
@@ -229,24 +250,8 @@ export function squat3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     const Mhip = moment3(H, [grf, footW, shankW, thighW]);
     return { grf, dir, Mhip, Mknee, Mankle, ...legComponents({ H, K, A, f, back: U.back, Mhip, Mknee, Mankle, knee: x, line: { at: cop, dir } }) };
   };
-  // Static optimisation over the sideways push: least sum of squared efforts (muscle groups only).
-  const cost = (ratio) => {
-    const js = solveAt(ratio).joints;
-    return ex.joints.filter((j) => !j.passive).reduce((sum, j) => {
-      const t = js[j.id].torque;
-      const cap = interp(j.strength.points, js[j.id].angle) * (t < 0 && j.negative ? j.negative.peakTorqueNm : j.peakTorqueNm);
-      return sum + (t < 0 && !j.negative ? 0 : (t / cap) ** 2);
-    }, 0);
-  };
-  let ratio = P.sidePush;
-  if (ratio === "auto" || ratio == null) {
-    let a = -0.6, b = 0.6;
-    for (let i = 0; i < 60; i++) {
-      const m1 = a + (b - a) / 3, m2 = b - (b - a) / 3;
-      if (cost(m1) < cost(m2)) b = m2; else a = m1;
-    }
-    ratio = (a + b) / 2;
-  }
+  const auto = P.sidePush === "auto" || P.sidePush == null;
+  const ratio = auto ? leastEffort(ex, (r) => solveAt(r).joints) : P.sidePush;
   const { grf, dir, Mhip, Mknee, Mankle, joints, frames } = solveAt(ratio);
 
   const shoulder = add3(U.S, Z, 0.19);
@@ -311,7 +316,10 @@ export function elbowUnderHand(S, hand, l1, l2, offsetZ, front) {
  * the bench; both hands on a rigid bar at the grip width; the bar moves in a straight line from
  * the touch point to lockout over the shoulders. The elbow is placed relative to the hand in
  * the front view (elbowOut: + outside, − inside; see elbowUnderHand); the flare angle follows.
- * Each hand pushes straight up with half the bar (no sideways pull on it).
+ * Each hand pushes up with half the bar. Whether the hands also pull the bar apart or squeeze
+ * it isn't fixed by statics: barSpread = the bar's sideways push on each hand as a fraction of
+ * the vertical one (+ = hands pull the bar apart, so it pushes them inwards); "auto" = least
+ * effort, as for the squat's floor push.
  */
 export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const P = { ...v.params, ...placement };
@@ -329,25 +337,33 @@ export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const hand = v3(touch.x + (lockout.x - touch.x) * k, touch.y + (lockout.y - touch.y) * k, P.gripHalf);
   const { E, ok } = elbowUnderHand(S, hand, L.upperArm, L.forearm, P.elbowOut, front);
 
-  const bar = { at: hand, f: v3(0, (-loadKg * G) / 2, 0) };
+  const Fv = (loadKg * G) / 2;
   const foreW = weight(lerp3(E, hand, c.forearmHand), m.forearmHand * kg);
   const upperW = weight(lerp3(S, E, c.upperArm), m.upperArm * kg);
-  const Mel = moment3(E, [bar, foreW]);
-  const Msh = moment3(S, [bar, foreW, upperW]);
   const dU = unit3(sub3(E, S)), dF = unit3(sub3(hand, E));
   const eFlex = unit3(cross3(dU, dF)); // elbow flexion axis
   const eSide = unit3(cross3(eFlex, dF)); // turning about it moves the hand inwards
   const horizAdd = deg(Math.atan2(dot3(dU, front), dot3(dU, Z))); // 0 = out to the side, 90 = up
   const elbowFlex = angleBetween3(dU, dF);
   const flare = deg(Math.atan2(dot3(dU, Z), dot3(dU, toFeet))); // top view: 0 = along the body
-  const line = { at: hand, dir: UP };
-  const joints = {
-    "shoulder-h": { at: S, angle: horizAdd, torque: dot3(Msh, toFeet), ...toLine(S, line.at, line.dir) },
-    "shoulder-flex": { at: S, angle: horizAdd, torque: -dot3(Msh, Z) },
-    "shoulder-rotation": { at: S, angle: horizAdd, torque: -dot3(Msh, dU) },
-    elbow: { at: E, angle: elbowFlex, torque: dot3(Mel, eFlex), ...toLine(E, line.at, line.dir) },
-    "elbow-side": { at: E, angle: elbowFlex, torque: dot3(Mel, eSide) },
+  const solveAt = (spread) => {
+    const bar = { at: hand, f: v3(0, -Fv, -spread * Fv) };
+    const Mel = moment3(E, [bar, foreW]);
+    const Msh = moment3(S, [bar, foreW, upperW]);
+    const line = { at: hand, dir: unit3(neg3(bar.f)) };
+    return {
+      bar, Mel, Msh, joints: {
+        "shoulder-h": { at: S, angle: horizAdd, torque: dot3(Msh, toFeet), ...toLine(S, line.at, line.dir) },
+        "shoulder-flex": { at: S, angle: horizAdd, torque: -dot3(Msh, Z) },
+        "shoulder-rotation": { at: S, angle: horizAdd, torque: -dot3(Msh, dU) },
+        elbow: { at: E, angle: elbowFlex, torque: dot3(Mel, eFlex), ...toLine(E, line.at, line.dir) },
+        "elbow-side": { at: E, angle: elbowFlex, torque: dot3(Mel, eSide) },
+      },
+    };
   };
+  const auto = P.barSpread === "auto";
+  const spread = auto ? leastEffort(ex, (r) => solveAt(r).joints) : P.barSpread ?? 0;
+  const { bar, Mel, Msh, joints } = solveAt(spread);
 
   const hips = add3(mid, toFeet, L.trunk);
   const head = add3(mid, toFeet, -0.22);
@@ -375,9 +391,11 @@ export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       ...both(v3(hand.x, hand.y, 0.66)).map((p) => dot(p, 0.12, "weight")),
       { kind: "line", a: v3(touch.x, touch.y, P.gripHalf), b: v3(lockout.x, lockout.y, P.gripHalf), w: 0.006, cls: "line-of-action" },
     ],
-    forces: both(hand).map((at) => ({ at, dir: v3(0, -1, 0) })),
+    forces: [{ at: hand, dir: unit3(bar.f) }, { at: mirror(hand), dir: mirror(unit3(bar.f)) }],
     flare,
+    barSpread: spread,
     info: [{ text: `Elbow flare (upper arm from the body, seen from above): ${Math.round(flare)}°.` },
+      ...(Math.abs(spread) > 0.005 ? [{ text: `Hands ${spread > 0 ? "pull the bar apart" : "squeeze the bar inwards"} with ${Math.round(Math.abs(spread) * 100)}% of the vertical force${auto ? " (least-effort estimate)" : ""}.` }] : []),
       ...(ok ? [] : [{ warn: true, text: "The elbows can't sit that far from the hands at this bar height; shown as close as the arm allows." }])],
   };
 }

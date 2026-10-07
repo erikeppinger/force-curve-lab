@@ -233,7 +233,7 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
     const F = 40 * G;
     for (const vid of ["flat", "wide", "close"]) {
       for (const x of [0, 50]) {
-        const r = at(vid, x, undefined, noBody);
+        const r = at(vid, x, { barSpread: 0 }, noBody);
         const S = J(r, "shoulder-h").at, hand = r.forces[0].at;
         close(J(r, "shoulder-flex").torque, F * (hand.x - S.x), 1e-6); // bar in front of (towards the feet from) the shoulder
         close(J(r, "shoulder-h").torque, F * (hand.z - S.z), 1e-6); // hands outside the shoulders → pecs
@@ -244,13 +244,23 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
   test("3D bench: the elbow's moment is F × the horizontal elbow–hand distance; elbows stacked under the hands", () => {
     const F = 40 * G;
     for (const vid of ["flat", "close"]) {
-      const r = at(vid, 0, undefined, noBody);
+      const r = at(vid, 0, { barSpread: 0 }, noBody);
       const E = J(r, "elbow").at, hand = r.forces[0].at;
       const horiz = Math.hypot(hand.x - E.x, hand.z - E.z);
       const M = r.moments.elbow;
       close(Math.hypot(M.x, M.y, M.z), F * horiz, 1e-6);
       close(J(r, "elbow").momentArm, horiz, 1e-6);
       close(E.z, hand.z, 1e-3);
+    }
+  });
+
+  test("3D bench: the least-effort bar spread really is the least effort", () => {
+    const cost = (r) => r.joints.filter((j) => !j.passive).reduce((sum, j) => sum + (j.effort ?? 0) ** 2, 0);
+    for (const vid of ["flat", "wide", "close"]) {
+      for (const x of [0, 50]) {
+        const best = cost(at(vid, x, { barSpread: "auto" }, { ...opts, loadKg: 80 }));
+        for (const fixed of [-0.4, -0.1, 0, 0.1, 0.4]) assert.ok(best <= cost(at(vid, x, { barSpread: fixed }, { ...opts, loadKg: 80 })) + 1e-9, `${vid}@${x} vs ${fixed}`);
+      }
     }
   });
 

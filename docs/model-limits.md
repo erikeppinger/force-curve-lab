@@ -157,7 +157,7 @@ What it shows:
 Limits:
 
 - **Fixed shoulder joints and a straight-line bar path.** Real shoulder blades retract and move, and real bar paths curve. Mid-press, the arm's geometry forces the elbows well away from the bar line, so those elbow torques are probably overstated.
-- **The bar isn't pulled apart or squeezed.** Like the floor push in the squat, that sideways hand force is undetermined by statics; it could get the same least-effort treatment.
+- **Pulling the bar apart.** Like the squat's floor push, how hard the hands pull the bar apart (or squeeze it) isn't fixed by statics. A slider sets it, defaulting to zero; its "least effort" option lets the model choose. In wider grips that choice pulls hard (up to about 40% of the vertical force) and shifts work from the pecs to the triceps, likely more than lifters really do, so it isn't the default. Unlike the squat, where pushing straight up gave unrealistic numbers, zero here gives results that match coaching experience.
 
 ## 3D: what's left
 
