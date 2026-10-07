@@ -86,7 +86,7 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] Pull-ups, chin-ups and lat pulldowns: grip width and grip, body lean, elbow strength by arm angle and grip
 - [ ] Moving shoulder blades in the bench, press and rows
 - [x] Literature sources for the strength curves, peak strengths and limb masses (see `docs/model-limits.md`)
-- [x] References section in the app: the current exercise's papers, plus all 24 papers and resources with links and what each is used for (`data/references.json`)
+- [x] References section in the app: the current exercise's papers, plus every paper and resource with links and what each is used for (`data/references.json`)
 - [x] Hip rotation strength by hip flexion (Uritani 2012); hammer and reverse curl muscle factors at matched effort (Coratella 2023)
 - [ ] Literature for muscle activation weights, machine cam profiles and hip-extension strength vs knee angle; rear-delt and bench horizontal strength now from Lategan 2002; optionally precomputed OpenSim results as JSON
 - [x] Back-view body map

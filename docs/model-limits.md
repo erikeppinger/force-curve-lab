@@ -42,14 +42,14 @@ Each of these was a real break: the exercise either gave wrong numbers or couldn
 
 ## Still limited (added, but the numbers are approximate)
 
-- **Muscles that cross two joints.** Strength curves and muscle weights depend on one joint angle only. But the triceps long head is stronger overhead, the hamstrings are stronger in a seated leg curl than a lying one, and the gastrocnemius goes slack in a seated calf raise. These differences can't be shown, except for one estimated 0.5 factor on the gastrocnemius in the seated calf raise. Fix: strength and weight tables that take both joint angles, or per-variant curves.
+- **Muscles that cross two joints.** Muscle weights depend on one joint angle only, so the long heads of the triceps and biceps and the hamstrings keep the same share in every posture. The only exception is the gastrocnemius in the seated calf raise (modifier 0.65). Strength is now corrected per variant for the other joint's angle (see *Two-joint muscles and grip* below). Fix for the weights: tables that take both joint angles.
 - **Stabiliser demand is one-directional and arm-specific.** It only counts torque that rotates the upper arm backwards (as in a curl). In a pushdown or a pulldown the shoulder holding work isn't counted, so the new exercises have no stabiliser muscles.
 - **Flat 2D.** In a standing cable fly gravity is perpendicular to the plane, so holding the arms up isn't counted. Cables that run beside the body are drawn through it.
 - **One range of motion per exercise.** A standing cable kickback realistically uses 30° to −25°, the kneeling one 90° to −25°. The incline front raise keeps getting harder past 90°, outside the range.
 - **A variant can't change the joint set-up.** The common *seated* hip-abduction machine (hip bent 90°, knee bent, horizontal plane) is a different chain from standing abduction, so it was left out. The same applies to seated vs lying leg curls if both hip angles needed to be shown properly.
 - **Straight limbs.** The soft elbow in a fly and the forward lean in a straight-arm pulldown aren't modelled.
 - **Machine cams are illustrative.** None was measured, and stack kg don't compare with dumbbell kg.
-- **wger links.** The starter library has no exercise ids (its `Movement Pattern` column is empty and `Equipment` is unreliable, e.g. "None (Bodyweight)" for the leg-extension machine), so the wger panel stays hidden for new exercises (`TODO` in each file).
+- **wger links.** The starter library has no exercise ids (its `Movement Pattern` column is empty and `Equipment` is unreliable, e.g. "None (Bodyweight)" for the leg-extension machine). All 23 ids are now set by hand from wger's public exercise list; four have no exact match there, so they link the closest entry and name the alternatives in their note.
 
 ## Multi-joint model
 
@@ -418,8 +418,32 @@ Nothing here is far enough off to swap sources. The knee and rotation values may
 
 The calf raise had a double count, now fixed. Its peak had been raised from Anderson's 119 Nm to 150 Nm for the straight knee, by an unsourced amount. Once the measured ×1.20 knee correction was added, a standing calf raise reached 180 Nm, against 131–135 Nm measured. The peak is back to 119 Nm, and the correction gives 143 Nm.
 
+### Cross-check against Chen & Franklin's dataset collection
+
+Chen & Franklin (2025, read as the CC BY 4.0 preprint) collected several hundred isometric hip, knee and ankle torque datasets from the literature and plotted them normalised by body mass × height. They give ranges, not a pooled curve, and say outright that the studies are too varied to combine. Their raw data (`.mat`) are on figshare, which the build environment can't reach, so the ranges below are read from their text and figures. The model's default lifter is 75 kg and 1.75 m (131 kg·m).
+
+| Movement | Chen & Franklin (Nm per kg·m) | Model | Comment |
+|---|---|---|---|
+| Hip extension | 1.0–1.6 with the hip well bent, below 1.0 near straight | 1.53 at the peak (200 Nm), 0.96 at 0° | Agrees, at the upper end. |
+| Hip flexion | 1.5–2.0 near straight, below 1.0 well bent | 1.08 (142 Nm; lat pulldown only) | About 30% low. Only holds the lean-back in the pulldown, so its effort percentage reads high. |
+| Knee extension | Peak 1.0–2.0 at 60–80° of knee bend | 1.53 at 65° | Agrees, angle and size. |
+| Knee flexion | Roughly 0.5–1.2 | 0.84 (110 Nm) | Agrees. |
+| Plantarflexion | 0.5–1.5 with the ankle dorsiflexed (some up to 2.0) | 0.91 knee bent, 1.09 knee straight | Agrees. |
+| Hip abduction | Roughly 0.5–1.0 | 0.99 (130 Nm, 3D lifts), 0.84 (110 Nm, hip abduction) | Agrees, at the upper end. |
+| Hip adduction | Roughly 0.5–1.3 (75–175 Nm) | 1.89 (247 Nm) | **High.** Welsh et al. tested trained ice hockey players. Adductor effort in the 3D leg lifts is probably shown too low; flagged in the data notes until a general-population source replaces it. |
+| Hip rotation | Roughly 0.2–0.45 | 0.33 / 0.30 (43 / 39 Nm) | Agrees. |
+
+Other points from the same paper:
+- **Anderson et al. 2007 is the model's main leg source, and Chen & Franklin left it out.** Its fitted angle–velocity surface smooths the peaks, and its young men's plantarflexion peak (95 Nm, about 0.7 Nm per kg·m) is barely enough for walking. The model's peaks taken from Anderson (200 Nm hip and knee extension, 110 Nm knee flexion, 119 Nm plantarflexion, the knee-bent mean rather than the fitted value) all land inside Chen & Franklin's ranges above, so the sizes check out. The curve shapes are still Anderson's smooth fits, which may flatten real peaks.
+- **Hip extension hardly changes with knee angle** in the three datasets they found (hip at 0–45°): the curves in their Figure 5 are nearly flat from 0° to 90° of knee bend. Two other studies on the reading list report 30–40% more with the knee nearly straight, so this stays open.
+- **Lowering vs lifting:** measured joint torque rarely goes above 125% of isometric in eccentric tests, and rarely below 25% even at high concentric speeds. The app uses isometric strength in both phases, so effort while lowering is overstated by up to about a fifth.
+- **Hip rotators change role as the hip bends.** The gluteus maximus and medius rotate the thigh outwards with the hip straight and turn into internal rotators when it is deeply bent (Chen & Franklin's moment-arm review, citing Delp et al. 1999). The model's "external rotators" keep the same weight at every hip angle, which overstates them at the bottom of a deep squat or leg press.
+
+Rajagopal et al. 2016 (the OpenSim full-body model) gives each leg muscle's force capacity (from MRI volumes) and moment arms. Turning those into angle-dependent muscle weights needs the model run offline; the files are on simtk.org, which is also blocked here. Its strength validation cites Waters et al. 1974 on hip extension with the hamstrings, now on the reading list.
+
 ### Still without a source
 
 - Muscle activation weights (62 values; the bench grip-width effects are now backed by Mausehund et al. qualitatively).
 - Machine cam profiles.
-- Hip-extension strength vs knee angle (the hamstrings' share at the hip).
+- Hip-extension strength vs knee angle (the hamstrings' share at the hip): Chen & Franklin's data say little change, two other studies say 30–40%; see the reading list.
+- Hip adduction peak for untrained lifters (the current value is from trained hockey players).

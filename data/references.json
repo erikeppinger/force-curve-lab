@@ -10,6 +10,14 @@
       "usedFor": "Hip, knee and ankle strength curves and peak torques (hip extension and flexion, knee extension and flexion, plantarflexion)."
     },
     {
+      "key": "Chen 2025",
+      "match": "Chen Z, Franklin DW",
+      "group": "Strength curves",
+      "citation": "Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183. Read as the bioRxiv preprint (CC BY 4.0).",
+      "url": "https://doi.org/10.1101/2024.06.22.600197",
+      "usedFor": "Cross-check of the leg peak strengths against several hundred isometric datasets, normalised by body mass × height; flags the hip adductor peak as high."
+    },
+    {
       "key": "Lindahl 1972",
       "match": "Lindahl O",
       "group": "Strength curves",
