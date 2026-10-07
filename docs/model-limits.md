@@ -399,6 +399,25 @@ Limits:
 - **Reference postures:** Guenzkofer et al.'s reference (shoulder at 0°) isn't the base curve's posture (Pinter et al., arm raised to the side). The corrections are relative to the arm at the side (standing curl, pushdown), and those variants are taken as the base curve.
 - **A suspect table value:** their arm-at-side extension value at 120° with a neutral forearm (7.2 Nm) looks like a misprint; the mean of the other two forearm positions is used instead.
 
+### Cross-check against Lategan's norms
+
+Lategan 2002 measured a large group of young South African men (aged 16–29, 71.5 kg on average, 116–438 per test). The tests were concentric and isokinetic at 60°/s (ankle 30°/s), and weren't corrected for gravity. The model's peak values come from isometric studies, so the two should agree roughly but not exactly: isokinetic torque at 60°/s is usually a little below isometric.
+
+| Movement | Lategan (mean) | Model peak | Comment |
+|---|---|---|---|
+| Knee extension | 236 Nm | 200 Nm (Anderson) | Model about 15% lower: Anderson's sample and test position differ. Conservative. |
+| Knee flexion (seated) | 159 Nm | 110 Nm (Anderson, seated) | Model about 30% lower. Seated, gravity helps flexion in Lategan's uncorrected test, so part of the gap is the lower leg's weight. |
+| Plantarflexion, knee straight | 131 Nm (30°/s) | 143 Nm (119 × 1.20) | Agrees. Cresswell measured 135 Nm. |
+| Elbow flexion, palms up / neutral | 57 / 49 Nm | 65 Nm (Pinter, all) or 85 Nm (men) | Model higher, as expected for isometric vs isokinetic. Lategan's two grips were different subgroups, so their ratio isn't a paired comparison. |
+| Elbow extension | 48–61 Nm | 58 Nm (Pinter, all), 77–80 Nm (men) | Same pattern. |
+| Shoulder flexion / extension | 81 / 87 Nm | 68 / 93 Nm (Mayer) | Close. Lategan notes his flexion value is higher than other studies'. |
+| Shoulder external / internal rotation (arm out at 90°) | 39 / 51 Nm | 30 / 43 Nm (Mayer) | Model about 20% lower. |
+| Horizontal abduction / adduction | 93 / 92 Nm | 93 / 92 Nm | Now taken from Lategan directly. |
+
+Nothing here is far enough off to swap sources. The knee and rotation values may be on the low side for trained men, which the strength slider covers.
+
+The calf raise had a double count, now fixed. Its peak had been raised from Anderson's 119 Nm to 150 Nm for the straight knee, by an unsourced amount. Once the measured ×1.20 knee correction was added, a standing calf raise reached 180 Nm, against 131–135 Nm measured. The peak is back to 119 Nm, and the correction gives 143 Nm.
+
 ### Still without a source
 
 - Muscle activation weights (62 values; the bench grip-width effects are now backed by Mausehund et al. qualitatively).
