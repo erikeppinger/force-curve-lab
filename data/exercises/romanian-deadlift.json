@@ -1,0 +1,143 @@
+{
+  "id": "romanian-deadlift",
+  "name": "Romanian deadlift",
+  "joint": "Hip, knee and ankle",
+  "model": "multi",
+  "solver": "standing",
+  "view": "side",
+  "angleLabel": "Hip angle",
+  "concentric": "decrease",
+  "angleRange": [0, 90],
+  "angleNote": "Hip flexion: 0° = standing, 90° = trunk about horizontal. The knees bend a little as you hinge. Lifting makes the angle smaller. Torques are per leg.",
+  "defaults": {"loadKg": 60, "variant": "barbell", "bodyMassKg": 75},
+  "ui": {"load": [0, 200, 2.5]},
+  "joints": [
+    {
+      "id": "hip",
+      "name": "Hip",
+      "action": "Hip extension",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 220,
+      "strength": {
+        "points": [[-25, 0.6], [0, 0.75], [45, 0.95], [90, 1.0], [130, 1.0]],
+        "note": "Relative hip-extension torque vs hip flexion, assumed strongest with the hip bent. Peak is per leg, typical trained adult. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "knee",
+      "name": "Knee",
+      "action": "Knee extension",
+      "angleLabel": "knee flexion",
+      "peakTorqueNm": 220,
+      "strength": {
+        "points": [[0, 0.55], [30, 0.8], [60, 1.0], [90, 0.95], [130, 0.8]],
+        "note": "Relative knee-extension torque vs knee flexion, weakest near straight, strongest around 60°. Peak is per leg. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "ankle",
+      "name": "Ankle",
+      "action": "Plantarflexion",
+      "angleLabel": "plantarflexion (negative = shin forward)",
+      "peakTorqueNm": 150,
+      "strength": {
+        "points": [[-45, 1.0], [-20, 1.0], [0, 0.9], [20, 0.7], [40, 0.45]],
+        "note": "Relative plantarflexion torque, strongest with the calf stretched. Peak is per leg. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    }
+  ],
+  "muscles": [
+    {
+      "id": "hamstrings",
+      "name": "Hamstrings",
+      "wgerId": 11,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.8], [90, 1.0]],
+      "note": "Lengthened as you hinge with nearly straight knees: the main target of the lift.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "thigh", "along": [0.06, 0.34], "offset": 0.045, "w": 0.055}
+    },
+    {
+      "id": "gluteus-maximus",
+      "name": "Gluteus maximus",
+      "wgerId": 8,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.8], [90, 1.0], [130, 1.0]],
+      "note": "Main hip extensor.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "thigh", "along": [0.33, 0.47], "offset": 0.06, "w": 0.09}
+    },
+    {
+      "id": "adductor-magnus",
+      "name": "Adductor magnus",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.3], [90, 0.8], [130, 0.9]],
+      "note": "Rear part extends the hip, more so when it is deeply bent.",
+      "source": "TODO: check against EMG literature"
+    },
+    {
+      "id": "erector-spinae",
+      "name": "Erector spinae",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.6], [90, 0.9]],
+      "note": "Hold the spine straight against a long lever. Approximation: driven by the hip's effort.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "trunk", "along": [0.1, 0.45], "offset": 0.08, "w": 0.05}
+    },
+    {
+      "id": "calves",
+      "name": "Calves (soleus, gastrocnemius)",
+      "wgerId": 7,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "ankle",
+      "weight": [[-45, 1.0], [40, 1.0]],
+      "note": "Plantarflexors: keep the shin from tipping forward.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "shank", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055}
+    }
+  ],
+  "phases": [
+    {"name": "Top", "range": [0, 30], "text": "Standing tall: the bar hangs close under the hips."},
+    {
+      "name": "Hinge",
+      "range": [30, 60],
+      "text": "Hips move back while the shins tilt back slightly so the bar stays over the mid-foot."
+    },
+    {
+      "name": "Bottom",
+      "range": [60, 90],
+      "text": "Trunk near horizontal: the hip's moment arm is largest here."
+    }
+  ],
+  "variants": [
+    {
+      "id": "barbell",
+      "name": "Barbell Romanian deadlift",
+      "equipment": "Barbell",
+      "params": {"mode": "hinge", "load": "hang", "kneeBase": 5, "kneePerHip": 0.2},
+      "notes": "Arms hang straight down from the shoulders. The solver tilts the shins so the centre of mass of body + bar stays over the mid-foot, which is what moves the hips back. Knee flexion grows from 5° to 23° through the hinge."
+    },
+    {
+      "id": "stiff-leg",
+      "name": "Stiff-legged deadlift",
+      "equipment": "Barbell",
+      "params": {"mode": "hinge", "load": "hang", "kneeBase": 3, "kneePerHip": 0.03},
+      "notes": "Knees almost locked: the shins can't help, so the hips must travel further back and the hamstrings are stretched more."
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Romanian Deadlift", "note": "TODO: look up the wger exercise id"}
+}

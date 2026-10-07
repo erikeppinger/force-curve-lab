@@ -182,3 +182,91 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
   const mk = el("marker", { id: "arrow", viewBox: "0 0 10 10", refX: 5, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto-start-reverse" }, defs);
   el("path", { d: "M0,0 L10,5 L0,10 z", class: "arrowhead" }, mk);
 }
+
+// ---------- multi-joint figure (world frame: x forward, y up, floor at y = 0) ----------
+
+const ARM = 0.63; // shoulder → hand, for drawing the elbow
+
+/** Bounding box over every sampled posture of a multi-joint lift. */
+export function multiBounds(samples) {
+  const pts = [{ x: 0, y: 0 }];
+  for (const r of samples) {
+    for (const d of [...r.draw, ...r.props]) {
+      if (d.circle) pts.push(add(d.circle, { x: d.r, y: d.r }), add(d.circle, { x: -d.r, y: -d.r }));
+      else pts.push(d.a, d.b);
+    }
+    for (const l of r.loads) pts.push(add(l.at, { x: 0.12, y: 0.12 }), add(l.at, { x: -0.12, y: -0.12 }));
+  }
+  const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y);
+  return { x0: Math.min(...xs) - MARGIN, x1: Math.max(...xs) + MARGIN, y0: Math.min(...ys) - 0.08, y1: Math.max(...ys) + 0.15 };
+}
+
+export function renderMultiFigure(svg, { exercise, result, activation, bounds }) {
+  const V = bounds;
+  svg.setAttribute("viewBox", `0 0 ${((V.x1 - V.x0) * S).toFixed(1)} ${((V.y1 - V.y0) * S).toFixed(1)}`);
+  svg.replaceChildren();
+  const toPx = (p) => ({ x: (p.x - V.x0) * S, y: (V.y1 - p.y) * S });
+  const seg = (parent, a, b, cls, w, extra = {}) => {
+    const A = toPx(a), B = toPx(b);
+    return el("line", { x1: A.x, y1: A.y, x2: B.x, y2: B.y, class: cls, "stroke-width": w * S, ...extra }, parent);
+  };
+  const circle = (c, r, cls) => { const C = toPx(c); el("circle", { cx: C.x, cy: C.y, r: r * S, class: cls }, svg); };
+
+  seg(svg, { x: V.x0, y: 0 }, { x: V.x1, y: 0 }, "floor", 0.01);
+  for (const p of result.props) seg(svg, p.a, p.b, p.cls, p.w);
+  if (result.balance) seg(svg, { x: result.balance.x, y: 0 }, { x: result.balance.x, y: V.y1 }, "balance", 0.006);
+
+  for (const d of result.draw) {
+    if (d.circle) circle(d.circle, d.r, d.cls);
+    else seg(svg, d.a, d.b, d.cls, d.w);
+  }
+
+  // Muscles on named segments (offset to the counter-clockwise side of the segment's direction).
+  const act = Object.fromEntries(activation.map((m) => [m.id, m.value]));
+  for (const m of exercise.muscles.filter((x) => x.draw && result.segs[x.draw.seg])) {
+    const [from, to] = result.segs[m.draw.seg];
+    const u = unit({ x: to.x - from.x, y: to.y - from.y });
+    const n = { x: -u.y, y: u.x };
+    const a = add(add(from, u, m.draw.along[0]), n, m.draw.offset ?? 0);
+    const b = add(add(from, u, m.draw.along[1]), n, m.draw.offset ?? 0);
+    const value = act[m.id] ?? 0;
+    const g = el("g", {}, svg);
+    seg(g, a, b, "muscle-base", m.draw.w);
+    seg(g, a, b, "muscle-on", m.draw.w, { "stroke-opacity": value.toFixed(3) });
+    el("title", {}, g).textContent = `${m.name}: ${Math.round(value * 100)}%`;
+  }
+
+  // Arms (elbow bent behind when the hands are close to the shoulder)
+  for (const { from, to } of result.arms) {
+    const d = Math.hypot(to.x - from.x, to.y - from.y);
+    if (d >= ARM * 0.98) seg(svg, from, to, "body arm", 0.07);
+    else {
+      const e = elbowFor(from, to);
+      seg(svg, from, e, "body arm", 0.07);
+      seg(svg, e, to, "body arm", 0.06);
+    }
+  }
+
+  for (const l of result.loads) circle(l.at, l.kind === "dumbbell" ? 0.06 : 0.08, "weight");
+
+  // Per joint: moment arm to the line of action of everything on its free side.
+  for (const j of result.joints) {
+    circle(j.at, 0.022, "joint");
+    if (j.momentArm < 0.005) continue;
+    const R = unit(j.resultant);
+    seg(svg, add(j.foot, R, -0.12), add(j.foot, R, 0.12), `line-of-action ma-${j.id}`, 0.006);
+    seg(svg, j.at, j.foot, `moment-arm ma-${j.id}`, 0.012);
+    const mid = toPx(lerp(j.at, j.foot, 0.5));
+    el("text", { x: mid.x + 4, y: mid.y - 6, class: `fig-label ma-label ma-${j.id}` }, svg).textContent = `${Math.round(j.momentArm * 100)} cm`;
+  }
+}
+
+/** Elbow for drawing an arm of length ARM from shoulder to hand, bent backwards/down. */
+function elbowFor(s, h) {
+  const d = Math.min(Math.hypot(h.x - s.x, h.y - s.y), ARM - 1e-6);
+  const e = unit({ x: h.x - s.x, y: h.y - s.y });
+  const a = d / 2, k = Math.sqrt(Math.max(0, (ARM / 2) ** 2 - a * a));
+  const n = { x: -e.y, y: e.x };
+  const side = n.x < 0 ? 1 : -1; // towards the back (−x)
+  return add(add(s, e, a), n, side * k);
+}

@@ -1,0 +1,31 @@
+{
+  "lengths": {
+    "ankleHeight": 0.08,
+    "footFront": 0.14,
+    "heel": 0.06,
+    "midfoot": 0.04,
+    "shank": 0.43,
+    "thigh": 0.43,
+    "trunk": 0.52,
+    "upperArm": 0.30,
+    "forearm": 0.33
+  },
+  "lengthsNote": "Metres, typical adult. ankleHeight: floor→ankle joint. footFront / heel: ball of the foot in front of / heel behind the ankle. midfoot: balance point in front of the ankle. trunk: hip→shoulder joint.",
+  "mass": {
+    "foot": 0.0145,
+    "shank": 0.0465,
+    "thigh": 0.100,
+    "headTrunk": 0.578,
+    "upperArm": 0.028,
+    "forearmHand": 0.022
+  },
+  "com": {
+    "shank": 0.567,
+    "thigh": 0.567,
+    "headTrunk": 0.66,
+    "upperArm": 0.436,
+    "forearmHand": 0.682
+  },
+  "massNote": "mass: fraction of body mass per segment (one leg or arm; the masses sum to 1 for the whole body). com: centre of mass as a fraction of segment length, measured from the ankle (shank), knee (thigh), hip (head + trunk), shoulder (upper arm) or elbow (forearm + hand). Approximate textbook anthropometry.",
+  "source": "TODO: check against a published anthropometric table (e.g. Dempster's segment parameters as tabulated by Winter)"
+}

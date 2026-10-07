@@ -60,11 +60,15 @@
         <span class="pill" id="variant-equipment"></span>
       </div>
       <svg id="figure" role="img" aria-label="The arm, load, force direction and moment arm"></svg>
-      <dl class="readouts">
+      <dl class="readouts" id="readouts">
         <div><dt>Joint torque</dt><dd id="ro-torque"></dd></div>
         <div><dt>Moment arm</dt><dd id="ro-arm"></dd></div>
         <div><dt>Effort</dt><dd id="ro-effort"></dd></div>
       </dl>
+      <table id="joint-table" class="joint-table" hidden>
+        <thead><tr><th scope="col">Joint</th><th scope="col">Torque</th><th scope="col">Moment arm</th><th scope="col">Effort</th></tr></thead>
+        <tbody></tbody>
+      </table>
       <p id="ro-limb" class="hint" hidden></p>
       <p id="ro-warning" class="warning" hidden>Load exceeds strength at this angle — this is where the lift would fail.</p>
       <div class="phase">
@@ -75,11 +79,7 @@
 
     <section class="card charts" aria-label="Curves">
       <h3>Resistance vs strength</h3>
-      <ul class="legend">
-        <li><i class="sw primary"></i>Selected variant</li>
-        <li><i class="sw compare"></i>Comparison</li>
-        <li><i class="sw strength"></i>Muscle strength (capacity)</li>
-      </ul>
+      <ul class="legend" id="torque-legend"></ul>
       <svg id="torque-chart" role="img" aria-label="Load torque and strength over the range of motion"></svg>
       <h3>Effort across the range</h3>
       <p class="hint">Joint torque ÷ strength at each angle. The peak is the sticking point.</p>

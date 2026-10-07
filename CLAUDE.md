@@ -5,6 +5,7 @@ Static teaching site (GitHub Pages). Vanilla ES modules. **No build step, no npm
 ## Layout
 - `index.html`, `css/style.css`: one page; light and dark mode via CSS variables
 - `js/physics.js`: pure statics (`pose`, `loadForce`, `limbWeights`, `analyze`, `sampleCurve`). No DOM. Imported by the tests. Every exercise is a two-segment chain (base → mid → tip); `analyze` returns `jointTorque` (= `loadTorque` + `limbTorque`) about the moving joint, positive when it resists the lift.
+- `js/multijoint.js`: multi-joint lifts. A solver per lift family turns the driver value into a posture (balance, rail, bar path, contacts), then `jointTorque` sums the moments on one side of each joint. Shared anthropometry in `data/body.json`
 - `js/muscles.js`: activation estimate from the physics result
 - `js/figure.js`, `js/chart.js`: hand-rolled SVG rendering. The figure draws `postures` and muscle `draw` specs from the JSON, rotated so the variant's gravity points down
 - `js/wger.js`: optional wger.de API calls; must fail silently
@@ -14,7 +15,7 @@ Static teaching site (GitHub Pages). Vanilla ES modules. **No build step, no npm
 
 ## Conventions
 - Coordinates: base-joint origin, metres, in the exercise's frame: `side` (x forward, y towards the head), `front` (x out to the side, y towards the head), `top` (x out to the side, y forward). Gravity is per variant in that frame. Angles in degrees; positive joint torque = resists the lift.
-- Physics changes need a test that checks a hand-computable case (e.g. m·g·L·sin θ).
+- Physics changes need a test that checks a hand-computable case (e.g. m·g·L·sin θ). For multi-joint solvers, also check equilibrium (the same torque from both sides of a joint, reactions that add up to the weight).
 - Curated numbers (strength curves, muscle weights, modifiers) are estimates. Never present them as measured. Keep or add a `source`/`note`, and never invent citations; write `TODO` if no source has been checked.
 - wger content is CC-BY-SA: keep the attribution visible. Render wger descriptions as text only (no `innerHTML`).
 - Test mobile width (375 px): no horizontal scroll, touch-sized controls.

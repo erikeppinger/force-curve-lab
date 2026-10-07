@@ -1,6 +1,6 @@
-# Model limits: what broke when we added 15 standard exercises
+# Model limits
 
-We tried to add 5 standard upper-body and 10 standard leg exercises from the wger starter library to the single-joint model, to see where it stops working. Nine now work. Six can't be modelled honestly with one moving joint, so they're written up here instead of being added with made-up numbers.
+We tried 5 standard upper-body and 10 standard leg exercises from the wger starter library against the single-joint model, to see where it stops working. Nine fitted after generalising the model. The six that didn't now run on a separate **multi-joint model** (`js/multijoint.js`), described in the second half of this page.
 
 | Exercise | Status | Variants |
 |---|---|---|
@@ -8,17 +8,17 @@ We tried to add 5 standard upper-body and 10 standard leg exercises from the wge
 | Front raise | ✅ added | dumbbell, cable from behind, chest-supported 45° incline |
 | Chest fly | ✅ added | lying dumbbell, standing cable, pec deck |
 | Straight-arm pulldown / pullover | ✅ added | cable pulldown, lying dumbbell pullover |
-| Bench press | ❌ needs a multi-joint model | |
+| Bench press | ✅ multi-joint (shoulder only, see below) | flat, bar to upper chest, 30° incline |
 | Leg extension | ✅ added | machine, ankle weight |
 | Leg curl | ✅ added | lying machine, seated machine, standing with ankle weight |
 | Calf raise | ✅ added | single-leg with dumbbell, two-leg machine, seated machine |
 | Hip abduction | ✅ added | standing cable, side-lying, standing machine |
 | Glute kickback | ✅ added | standing cable, kneeling with ankle weight, machine |
-| Squat | ❌ needs a multi-joint model | |
-| Leg press | ❌ needs a multi-joint model | |
-| Lunge / split squat | ❌ needs a multi-joint model | |
-| Romanian deadlift | ❌ needs a balance constraint | |
-| Hip thrust | ❌ statically indeterminate in this model | |
+| Squat | ✅ multi-joint | high-bar, low-bar, front, goblet |
+| Leg press | ✅ multi-joint | feet middle, high, low |
+| Lunge / split squat | ✅ multi-joint | Bulgarian, Bulgarian with forward lean, split squat |
+| Romanian deadlift | ✅ multi-joint | barbell, stiff-legged |
+| Hip thrust | ✅ multi-joint | barbell, feet further away, glute bridge |
 
 ## What broke, and what changed to fix it
 
@@ -45,22 +45,43 @@ Each of these was a real break: the exercise either gave wrong numbers or couldn
 - **Machine cams are illustrative.** None was measured, and stack kg don't compare with dumbbell kg.
 - **wger links.** The starter library has no exercise ids (its `Movement Pattern` column is empty and `Equipment` is unreliable, e.g. "None (Bodyweight)" for the leg-extension machine), so the wger panel stays hidden for new exercises (`TODO` in each file).
 
-## Didn't fit: these need a multi-joint model
+## Multi-joint model
 
-All six break the same core assumption: **one joint moves and everything else stays still.**
+All six broke the same single-joint assumption: **one joint moves and everything else stays still.** In these lifts several joints move together, tied by a constraint.
 
-- **Bench press** (and overhead press, rows, pull-ups, dips): shoulder and elbow move together while the hands are tied to a bar. How the torque splits between them depends on the bar path and elbow position.
-- **Squat, leg press, lunge / split squat**: hip, knee and ankle all move together. With free weights, the body's centre of mass and the bar must stay over the mid-foot. A leg press instead fixes the path of the feet.
-- **Romanian deadlift**: closest to fitting, as it is mostly the hip. But the hips move back to keep the bar over the mid-foot, so treating the hip as a fixed pivot overstates the moment arm at the bottom.
-- **Hip thrust / glute bridge**: three contacts (upper back on the bench, feet on the floor, bar on the hips). How the load splits between them can't be found from one joint's statics.
+### How it works
 
-### What a multi-joint model needs
+For each position in the lift (the *driver*, e.g. knee angle):
 
-The statics are the easy part: for a known posture, each joint's torque is the load times the horizontal distance from that joint to the line of action. What's missing:
+1. **A solver finds the posture** from the lift's constraint:
+   - **Squat, Romanian deadlift:** both feet flat, and the centre of mass of body + load stays over the mid-foot. The squat sets the shin angle from the knee angle and solves the trunk lean. The hinge sets a slight knee bend and solves the shin angle (which is what pushes the hips back). If no angle balances, the UI says so.
+   - **Split squat / lunge:** front foot flat, rear foot on a bench or the floor. The floor and bench push straight up, and how the weight splits between them follows from where the centre of mass is. The UI shows the front leg's share.
+   - **Leg press:** hips fixed in the seat, feet moving along the sled rail. The plate pushes along the rail with m·g·sin(rail angle).
+   - **Hip thrust / glute bridge:** shoulders on the bench (or floor), feet flat, bar on the hips. Both contacts push straight up, and the reactions come from moment balance.
+   - **Bench press:** shoulder fixed, the bar moving in a straight line from the touch point to lockout, forearms vertical.
+2. **Statics:** each joint's torque is the moment of every force on one side of it, choosing the side whose forces are all known (everything above the hip in a squat; the leg and sled in a leg press). Torques are per leg (or arm), positive when the joint's working muscles resist.
+3. **Per joint:** a strength curve (hip extension, knee extension, plantarflexion) turns torque into effort. The joint whose effort peaks first is the sticking point. The figure draws each joint's moment arm to the line of action of the forces on its free side.
 
-1. **Posture across the range**: hip, knee and ankle (or shoulder and elbow) angles at each point of the lift. This comes from a constraint (bar over the mid-foot, a fixed sled or bar path) plus one or two shape parameters (e.g. torso lean or squat depth). This is inverse kinematics, not a lookup table.
-2. **Per-joint outputs**: one torque, strength and effort curve per joint, and charts that show 2–3 joints at once. The sticking point is whichever joint's effort peaks first.
-3. **Per-joint strength curves** for hip and knee extension and plantarflexion, sourced properly.
-4. **Contacts**: where the ground and bench push (feet, back), for hip thrusts and benches.
+Segment lengths and masses are shared in `data/body.json`.
 
-Steps 1–2 would cover squat, leg press, lunge and RDL with one model, and bench press and rows with the same model applied to the arm.
+The tests check the classic hand formulas (e.g. squat hip torque = Σ m·g·horizontal distance in front of the hip). They also check equilibrium: the squat's ankle torque worked out from the floor up equals the one from the top down, the hip thrust's hip torque is the same from the trunk side and the leg side, and both reactions add up to the body + bar weight.
+
+### What it shows
+
+- **Squat:** low-bar moves torque from the knees to the hips; the front and goblet squats keep the trunk upright and load the knees more. The ankle torque stays small and constant: it's the weight above the ankle times the 4 cm from the ankle to the mid-foot.
+- **Romanian deadlift:** hip torque grows steadily through the hinge, and the knee has a small *flexor* demand (hamstrings and calves pulling the knee back).
+- **Split squat:** leaning forward with a more vertical shin moves torque from the knee to the hip.
+- **Leg press:** feet high = more hip, less knee; feet low = the opposite.
+- **Hip thrust:** effort is highest at lockout, where hip-extensor strength is lowest. Moving the feet further away turns the knee demand from quads to hamstrings.
+- **Bench press:** the shoulder's moment arm is largest with the bar on the chest and close to zero at lockout.
+
+### Still limited
+
+- **Posture rules are assumptions.** "Shin angle = a fixed fraction of knee angle" (squat), the knee-bend rate in the hinge, the fixed trunk lean in the split squat and the straight bar path in the bench are reasonable shapes, not measurements. Real lifters vary. The balance constraint is solid; the rest isn't.
+- **Contacts push straight up** (no friction) in the split squat and hip thrust, and the foot's push is taken at the mid-foot. That's what makes those lifts solvable. Real feet also push sideways and move their centre of pressure.
+- **Bench press is shoulder-only.** With vertical forearms the elbow has no torque in a side view; the triceps' real demand comes from the frontal plane (bar inside or outside the elbows), which needs 3D. The triceps is listed as "not modelled".
+- **Spine as one rigid trunk.** Erector-spinae load is approximated by the hip's effort.
+- **Strength per joint ignores the other joints.** As with the single-joint model, two-joint muscles (hamstrings, rectus femoris, gastrocnemius) aren't credited for their length at the other joint.
+- **One driver range per exercise.** The glute bridge only reaches about 0–35° of hip flexion before the hips hit the floor (the UI flags it), but shares the hip thrust's 0–80° range. The split squat starts at 40° of front-knee bend because a rear foot on the floor can't be reached with a straighter front leg.
+- **Leg press:** sled weight and friction are ignored; only the plates count.
+- **Strength numbers are estimates**, per leg, for a typical trained adult, marked `TODO` with no source checked. Use the strength slider to scale them.

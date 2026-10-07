@@ -6,8 +6,9 @@ Exercises (2–5 equipment variants each):
 
 - **Arms and shoulders:** biceps curl, triceps extension, lateral raise, front raise, chest fly, straight-arm pulldown / pullover
 - **Legs:** leg extension, leg curl, calf raise, hip abduction, glute kickback
+- **Multi-joint:** squat, Romanian deadlift, split squat / lunge, leg press, hip thrust, bench press. These show hip, knee and ankle torques and effort together.
 
-Multi-joint lifts (squat, bench press, deadlift and others) don't fit the single-joint model yet. [`docs/model-limits.md`](docs/model-limits.md) explains why, and lists what the model still approximates.
+[`docs/model-limits.md`](docs/model-limits.md) explains how both models work and what they still approximate.
 
 For each exercise variant it shows:
 
@@ -38,6 +39,7 @@ Push to GitHub, then go to **Settings → Pages → Deploy from a branch → `ma
 |---|---|---|
 | Load torque | Live 2D statics in the browser: torque = r × F about the joint, plus the limb's own weight. Gravity's direction depends on the posture; cables pull towards the pulley; machines push through a pad with torque = m·g·r(angle) from a cam table; closed-chain lifts (calf raise) get the floor's push with a share of body weight. | `js/physics.js` |
 | Strength curve | Relative torque–angle table × the user's peak torque | `strengthCurve` in exercise JSON |
+| Multi-joint lifts | A solver finds the posture from the lift's constraint (centre of mass over the mid-foot, sled rail, bar path, bench and floor contacts); each joint's torque is the moment of all forces on one side of it | `js/multijoint.js`, `data/body.json` |
 | Muscle activation | Demand (effort, or stabilising torque) × the muscle's angle-dependent weight × variant modifier | `js/muscles.js`, `muscles` in JSON |
 | Exercise text and images | Fetched live from the [wger API](https://wger.de/api/v2/) and optional (the tool still works offline) | `js/wger.js` |
 
@@ -55,7 +57,8 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
    - Angle: `angleRange`, `angleLabel`, `angleNote`, `angleSense` (−1 if a growing angle turns the limb clockwise, e.g. the knee), `angleOffset` (degrees added for the pose, e.g. 90 at the ankle), `concentric` (`decrease` if lifting makes the angle smaller, e.g. extensions).
    - Content: `strengthCurve`, `muscles` (`driver`: `jointEffort` | `stabiliserDemand`; optional `draw`), `postures` (body shapes for the figure), `phases`, `defaults`, `ui` (slider ranges).
 3. Variant fields: `posture`, `gravity` (`{x, y}` in the exercise's frame; default straight down, `{x: 0, y: 0}` for a horizontal plane), `viewLabel`, `proximalAngle` (fixed angle of the proximal segment, or its offset when it moves), `distalBend`, `proximalSupported`, `load` (`gravity` | `cable` with `pulley` | `machine` with `padDistance` and `camProfile` `[[angle, effective radius in m]]` | `reaction` with `bodyWeight` share), `defaultLoadKg`, `muscleModifiers`, `notes`.
-4. Add a test in `tests/` that pins down the variant's key teaching point with a hand-computable case. `tests/exercises.test.mjs` checks every listed exercise file's structure and model-wide invariants automatically.
+4. Multi-joint lifts (`"model": "multi"`) instead pick a `solver` (`standing`, `split`, `legPress`, `hipThrust`, `bench`) with per-variant `params`, and list `joints` with their strength curves; each muscle names its `joint`. Copy the closest existing file.
+5. Add a test in `tests/` that pins down the variant's key teaching point with a hand-computable case. `tests/exercises.test.mjs` checks every listed exercise file's structure and model-wide invariants automatically.
 
 ## Roadmap
 
@@ -66,7 +69,9 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [ ] Hammer/neutral grip as a variant parameter (brachioradialis emphasis)
 - [x] Machines with cam profiles (resistance curve as a data table): `load.type: "machine"`. The lateral-raise cam is illustrative; measured profiles still needed
 - [ ] Bands (load grows with stretch)
-- [ ] Multi-joint model for squat, leg press, lunge, deadlift, hip thrust and bench (see `docs/model-limits.md`)
+- [x] Multi-joint model: squat, Romanian deadlift, split squat, leg press, hip thrust, bench press (shoulder only)
+- [ ] Multi-joint: conventional deadlift, overhead press, rows; measured posture rules instead of assumed ones
+- [ ] 3D elbow model for presses (bar inside or outside the elbows)
 - [ ] Literature sources for strength curves, muscle weights and cam profiles; optionally precomputed OpenSim results as JSON
 - [x] Back-view body map
 - [ ] Vendor the wger SVGs locally for offline use; look up wger exercise ids for the new exercises

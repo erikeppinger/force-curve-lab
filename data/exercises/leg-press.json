@@ -1,0 +1,134 @@
+{
+  "id": "leg-press",
+  "name": "Leg press",
+  "joint": "Hip, knee and ankle",
+  "model": "multi",
+  "solver": "legPress",
+  "view": "side",
+  "angleLabel": "Knee angle",
+  "concentric": "decrease",
+  "angleRange": [10, 110],
+  "angleNote": "Knee flexion: 10° = legs nearly straight, 110° = sled lowered deep. Lifting makes the angle smaller. Torques are per leg.",
+  "defaults": {"loadKg": 100, "variant": "middle", "bodyMassKg": 75},
+  "ui": {"load": [0, 300, 5]},
+  "joints": [
+    {
+      "id": "hip",
+      "name": "Hip",
+      "action": "Hip extension",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 220,
+      "strength": {
+        "points": [[-25, 0.6], [0, 0.75], [45, 0.95], [90, 1.0], [130, 1.0]],
+        "note": "Relative hip-extension torque vs hip flexion, assumed strongest with the hip bent. Peak is per leg, typical trained adult. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "knee",
+      "name": "Knee",
+      "action": "Knee extension",
+      "angleLabel": "knee flexion",
+      "peakTorqueNm": 220,
+      "strength": {
+        "points": [[0, 0.55], [30, 0.8], [60, 1.0], [90, 0.95], [130, 0.8]],
+        "note": "Relative knee-extension torque vs knee flexion, weakest near straight, strongest around 60°. Peak is per leg. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "ankle",
+      "name": "Ankle",
+      "action": "Plantarflexion",
+      "angleLabel": "plantarflexion (negative = shin forward)",
+      "peakTorqueNm": 150,
+      "strength": {
+        "points": [[-45, 1.0], [-20, 1.0], [0, 0.9], [20, 0.7], [40, 0.45]],
+        "note": "Relative plantarflexion torque, strongest with the calf stretched. Peak is per leg. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    }
+  ],
+  "muscles": [
+    {
+      "id": "quadriceps",
+      "name": "Quadriceps",
+      "wgerId": 10,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "knee",
+      "weight": [[0, 1.0], [130, 1.0]],
+      "note": "Knee extensors: their share follows the knee torque.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "thigh", "along": [0.08, 0.36], "offset": -0.05, "w": 0.065}
+    },
+    {
+      "id": "gluteus-maximus",
+      "name": "Gluteus maximus",
+      "wgerId": 8,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.8], [90, 1.0], [130, 1.0]],
+      "note": "Main hip extensor.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "thigh", "along": [0.33, 0.47], "offset": 0.06, "w": 0.09}
+    },
+    {
+      "id": "adductor-magnus",
+      "name": "Adductor magnus",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.3], [90, 0.8], [130, 0.9]],
+      "note": "Rear part extends the hip, more so when it is deeply bent.",
+      "source": "TODO: check against EMG literature"
+    },
+    {
+      "id": "calves",
+      "name": "Calves (soleus, gastrocnemius)",
+      "wgerId": 7,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "ankle",
+      "weight": [[-45, 1.0], [40, 1.0]],
+      "note": "Plantarflexors: keep the shin from tipping forward.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "shank", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055}
+    }
+  ],
+  "phases": [
+    {
+      "name": "Top",
+      "range": [10, 40],
+      "text": "Legs nearly straight: the sled's line of push passes close to the knees."
+    },
+    {"name": "Mid-range", "range": [40, 80], "text": "Knees bending."},
+    {"name": "Bottom", "range": [80, 110], "text": "Deep: the knees and hips have their largest moment arms."}
+  ],
+  "variants": [
+    {
+      "id": "middle",
+      "name": "45° leg press, feet in the middle",
+      "equipment": "Machine",
+      "params": {"railAngle": 45, "footOffset": 0.08, "backRecline": 55},
+      "notes": "The plate pushes along the rail. With the feet in the middle the push line runs close to the hip, so the knees do most of the work. Sled weight and friction are ignored (only the plates count)."
+    },
+    {
+      "id": "high",
+      "name": "45° leg press, feet high",
+      "equipment": "Machine",
+      "params": {"railAngle": 45, "footOffset": 0.2, "backRecline": 55},
+      "notes": "Feet higher on the plate move the push line away from the hip and closer to the knee: more hip work, less knee work."
+    },
+    {
+      "id": "low",
+      "name": "45° leg press, feet low",
+      "equipment": "Machine",
+      "params": {"railAngle": 45, "footOffset": -0.04, "backRecline": 55},
+      "notes": "Feet low on the plate move the push line further from the knee: more knee work, and more ankle range."
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Leg Press", "note": "TODO: look up the wger exercise id"}
+}

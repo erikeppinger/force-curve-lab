@@ -1,0 +1,138 @@
+{
+  "id": "hip-thrust",
+  "name": "Hip thrust",
+  "joint": "Hip, knee and ankle",
+  "model": "multi",
+  "solver": "hipThrust",
+  "view": "side",
+  "angleLabel": "Hip angle",
+  "concentric": "decrease",
+  "angleRange": [0, 80],
+  "angleNote": "Hip flexion: 0° = hips fully up (body straight from shoulders to knees), 80° = hips down. Lifting makes the angle smaller. Torques are per leg.",
+  "defaults": {"loadKg": 60, "variant": "barbell", "bodyMassKg": 75},
+  "ui": {"load": [0, 200, 2.5]},
+  "joints": [
+    {
+      "id": "hip",
+      "name": "Hip",
+      "action": "Hip extension",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 220,
+      "strength": {
+        "points": [[-25, 0.6], [0, 0.75], [45, 0.95], [90, 1.0], [130, 1.0]],
+        "note": "Relative hip-extension torque vs hip flexion, assumed strongest with the hip bent. Peak is per leg, typical trained adult. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "knee",
+      "name": "Knee",
+      "action": "Knee extension",
+      "angleLabel": "knee flexion",
+      "peakTorqueNm": 220,
+      "strength": {
+        "points": [[0, 0.55], [30, 0.8], [60, 1.0], [90, 0.95], [130, 0.8]],
+        "note": "Relative knee-extension torque vs knee flexion, weakest near straight, strongest around 60°. Peak is per leg. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "ankle",
+      "name": "Ankle",
+      "action": "Plantarflexion",
+      "angleLabel": "plantarflexion (negative = shin forward)",
+      "peakTorqueNm": 150,
+      "strength": {
+        "points": [[-45, 1.0], [-20, 1.0], [0, 0.9], [20, 0.7], [40, 0.45]],
+        "note": "Relative plantarflexion torque, strongest with the calf stretched. Peak is per leg. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    }
+  ],
+  "muscles": [
+    {
+      "id": "gluteus-maximus",
+      "name": "Gluteus maximus",
+      "wgerId": 8,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 1.0], [80, 0.85]],
+      "note": "Main hip extensor, working hardest at full hip extension.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "thigh", "along": [0.33, 0.47], "offset": 0.06, "w": 0.09}
+    },
+    {
+      "id": "hamstrings",
+      "name": "Hamstrings",
+      "wgerId": 11,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.5], [90, 0.8]],
+      "note": "Extend the hip; with the knee bending at the same time they change length little, so they help less in squats than in hinges.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "thigh", "along": [0.06, 0.34], "offset": 0.045, "w": 0.055}
+    },
+    {
+      "id": "adductor-magnus",
+      "name": "Adductor magnus",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.3], [90, 0.8], [130, 0.9]],
+      "note": "Rear part extends the hip, more so when it is deeply bent.",
+      "source": "TODO: check against EMG literature"
+    },
+    {
+      "id": "quadriceps",
+      "name": "Quadriceps",
+      "wgerId": 10,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "knee",
+      "weight": [[0, 1.0], [130, 1.0]],
+      "note": "Knee extensors: their share follows the knee torque.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "thigh", "along": [0.08, 0.36], "offset": -0.05, "w": 0.065}
+    }
+  ],
+  "phases": [
+    {
+      "name": "Top",
+      "range": [0, 25],
+      "text": "Hips up: the bar's moment arm about the hips is set by where the bench and feet carry the load."
+    },
+    {"name": "Mid-range", "range": [25, 55], "text": "Hips rising."},
+    {
+      "name": "Bottom",
+      "range": [55, 80],
+      "text": "Hips down: the trunk tilts and more weight rests on the bench."
+    }
+  ],
+  "variants": [
+    {
+      "id": "barbell",
+      "name": "Barbell hip thrust",
+      "equipment": "Barbell, upper back on a bench",
+      "params": {"shoulder": {"x": 0, "y": 0.42}, "feetAt": 0.85},
+      "notes": "Upper back on a bench, feet flat, bar across the hips. The bench and the floor push straight up; how much each carries follows from balance. The knee torque shows the quads also work."
+    },
+    {
+      "id": "feet-far",
+      "name": "Barbell hip thrust, feet further away",
+      "equipment": "Barbell, upper back on a bench",
+      "params": {"shoulder": {"x": 0, "y": 0.42}, "feetAt": 1.0},
+      "notes": "Feet further from the bench: less knee bend, the knee torque shifts towards flexion (hamstrings) and the hips keep their load."
+    },
+    {
+      "id": "bridge",
+      "name": "Glute bridge",
+      "equipment": "Barbell, shoulders on the floor",
+      "params": {"shoulder": {"x": 0, "y": 0.12}, "feetAt": 0.95},
+      "notes": "Shoulders on the floor: a much shorter range of hip motion (try 0–35°)."
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Hip Thrust", "note": "TODO: look up the wger exercise id"}
+}

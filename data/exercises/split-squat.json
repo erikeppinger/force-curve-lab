@@ -1,0 +1,142 @@
+{
+  "id": "split-squat",
+  "name": "Split squat / lunge",
+  "joint": "Front hip, knee and ankle",
+  "model": "multi",
+  "solver": "split",
+  "view": "side",
+  "angleLabel": "Front knee angle",
+  "concentric": "decrease",
+  "angleRange": [40, 100],
+  "angleNote": "Front-knee flexion: 40° = top, 100° = bottom. Lifting makes the angle smaller. Torques are for the front leg.",
+  "defaults": {"loadKg": 20, "variant": "bulgarian", "bodyMassKg": 75},
+  "ui": {"load": [0, 120, 1]},
+  "joints": [
+    {
+      "id": "hip",
+      "name": "Hip",
+      "action": "Hip extension",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 220,
+      "strength": {
+        "points": [[-25, 0.6], [0, 0.75], [45, 0.95], [90, 1.0], [130, 1.0]],
+        "note": "Relative hip-extension torque vs hip flexion, assumed strongest with the hip bent. Peak is per leg, typical trained adult. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "knee",
+      "name": "Knee",
+      "action": "Knee extension",
+      "angleLabel": "knee flexion",
+      "peakTorqueNm": 220,
+      "strength": {
+        "points": [[0, 0.55], [30, 0.8], [60, 1.0], [90, 0.95], [130, 0.8]],
+        "note": "Relative knee-extension torque vs knee flexion, weakest near straight, strongest around 60°. Peak is per leg. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    },
+    {
+      "id": "ankle",
+      "name": "Ankle",
+      "action": "Plantarflexion",
+      "angleLabel": "plantarflexion (negative = shin forward)",
+      "peakTorqueNm": 150,
+      "strength": {
+        "points": [[-45, 1.0], [-20, 1.0], [0, 0.9], [20, 0.7], [40, 0.45]],
+        "note": "Relative plantarflexion torque, strongest with the calf stretched. Peak is per leg. Approximate.",
+        "source": "TODO: verify against published torque–angle data"
+      }
+    }
+  ],
+  "muscles": [
+    {
+      "id": "quadriceps",
+      "name": "Quadriceps",
+      "wgerId": 10,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "knee",
+      "weight": [[0, 1.0], [130, 1.0]],
+      "note": "Knee extensors: their share follows the knee torque.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "thigh", "along": [0.08, 0.36], "offset": -0.05, "w": 0.065}
+    },
+    {
+      "id": "gluteus-maximus",
+      "name": "Gluteus maximus",
+      "wgerId": 8,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.8], [90, 1.0], [130, 1.0]],
+      "note": "Main hip extensor.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "thigh", "along": [0.33, 0.47], "offset": 0.06, "w": 0.09}
+    },
+    {
+      "id": "adductor-magnus",
+      "name": "Adductor magnus",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.3], [90, 0.8], [130, 0.9]],
+      "note": "Rear part extends the hip, more so when it is deeply bent.",
+      "source": "TODO: check against EMG literature"
+    },
+    {
+      "id": "calves",
+      "name": "Calves (soleus, gastrocnemius)",
+      "wgerId": 7,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "ankle",
+      "weight": [[-45, 1.0], [40, 1.0]],
+      "note": "Plantarflexors: keep the shin from tipping forward.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "shank", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055}
+    }
+  ],
+  "phases": [
+    {"name": "Top", "range": [40, 55], "text": "Front leg nearly straight."},
+    {
+      "name": "Mid-range",
+      "range": [55, 80],
+      "text": "Lowering: how the weight splits between the legs depends on where the centre of mass is."
+    },
+    {"name": "Bottom", "range": [80, 100], "text": "Deepest point: largest front-knee and hip torques."}
+  ],
+  "variants": [
+    {
+      "id": "bulgarian",
+      "name": "Bulgarian split squat (dumbbells)",
+      "equipment": "Dumbbells, rear foot on a bench",
+      "params": {"shinPerKnee": 0.35, "trunkLean": 10, "rearFoot": {"x": -0.7, "y": 0.45}, "load": "hang"},
+      "notes": "Rear foot on a bench behind you, trunk nearly upright. Most of the weight is on the front leg."
+    },
+    {
+      "id": "bulgarian-lean",
+      "name": "Bulgarian split squat, forward lean",
+      "equipment": "Dumbbells, rear foot on a bench",
+      "params": {"shinPerKnee": 0.2, "trunkLean": 30, "rearFoot": {"x": -0.7, "y": 0.45}, "load": "hang"},
+      "notes": "Leaning the trunk forward and keeping the shin more vertical moves torque from the knee to the hip, and shifts the weight further onto the front leg."
+    },
+    {
+      "id": "split",
+      "name": "Split squat / static lunge (barbell)",
+      "equipment": "Barbell, rear foot on the floor",
+      "loadShape": "bar",
+      "params": {
+        "shinPerKnee": 0.35,
+        "trunkLean": 8,
+        "rearFoot": {"x": -0.45, "y": 0.15},
+        "load": "back",
+        "barAlong": 1.0,
+        "barOut": -0.05
+      },
+      "notes": "Rear foot on the floor, up on its toes. The rear leg takes a bigger share than in the Bulgarian version."
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Bulgarian split squats left", "note": "TODO: look up the wger exercise id"}
+}

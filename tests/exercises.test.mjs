@@ -12,11 +12,34 @@ const sorted = (pts) => pts.every((p, i) => i === 0 || p[0] > pts[i - 1][0]);
 const opts = (ex) => ({ loadKg: ex.defaults.loadKg, peakTorqueNm: ex.defaults.peakTorqueNm, bodyMassKg: 75 });
 
 test("main.js lists every exercise once", () => {
-  assert.ok(ids.length >= 11);
+  assert.ok(ids.length >= 17);
   assert.equal(new Set(ids).size, ids.length);
 });
 
-for (const id of ids) {
+const single = ids.filter((id) => load(id).model !== "multi");
+const multi = ids.filter((id) => load(id).model === "multi");
+
+for (const id of multi) {
+  const ex = load(id);
+  test(`${id}: multi-joint shape`, () => {
+    assert.equal(ex.id, id);
+    assert.ok(["standing", "split", "legPress", "hipThrust", "bench"].includes(ex.solver));
+    assert.ok(ex.joints.length >= 1);
+    for (const j of ex.joints) {
+      assert.ok(j.peakTorqueNm > 0 && sorted(j.strength.points) && j.strength.note && j.strength.source, j.id);
+    }
+    for (const m of ex.muscles) {
+      assert.ok(m.note && sorted(m.weight), m.id);
+      if (m.driver !== "none") assert.ok(ex.joints.some((j) => j.id === m.joint), `${m.id}: joint ${m.joint}`);
+    }
+    assert.ok(ex.variants.some((v) => v.id === ex.defaults.variant));
+    const [lo, hi] = ex.angleRange;
+    assert.equal(ex.phases[0].range[0], lo);
+    assert.equal(ex.phases.at(-1).range[1], hi);
+  });
+}
+
+for (const id of single) {
   const ex = load(id);
 
   test(`${id}: basic shape`, () => {

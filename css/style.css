@@ -15,6 +15,10 @@
   --cable: #3a3f48;
   --band: rgba(0, 0, 0, 0.035);
   --warning: #b3261e;
+  --j-hip: #8e44ad;
+  --j-knee: #2f6fdb;
+  --j-ankle: #1e8a5a;
+  --j-shoulder: #2f6fdb;
   --radius: 14px;
   color-scheme: light;
 }
@@ -37,6 +41,10 @@
     --cable: #c8ccd2;
     --band: rgba(255, 255, 255, 0.04);
     --warning: #ff8a80;
+    --j-hip: #c39bd3;
+    --j-knee: #6b9cf0;
+    --j-ankle: #5fd39a;
+    --j-shoulder: #6b9cf0;
     color-scheme: dark;
   }
 }
@@ -129,6 +137,26 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .arrowhead { fill: var(--accent); }
 #figure .fig-label { fill: var(--text); font-size: 15px; font-weight: 600; paint-order: stroke; stroke: var(--card); stroke-width: 4px; }
 #figure .force-label { fill: var(--accent); }
+#figure .body.back { opacity: 0.55; }
+#figure .balance { stroke: var(--muted); stroke-dasharray: 3 5; }
+#figure .ma-label { font-size: 12px; }
+#figure .ma-hip { stroke: var(--j-hip); fill: var(--j-hip); }
+#figure .ma-knee { stroke: var(--j-knee); fill: var(--j-knee); }
+#figure .ma-ankle { stroke: var(--j-ankle); fill: var(--j-ankle); }
+#figure .ma-shoulder { stroke: var(--j-shoulder); fill: var(--j-shoulder); }
+#figure text.ma-label { stroke: var(--card); }
+
+.joint-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-variant-numeric: tabular-nums; }
+.joint-table th, .joint-table td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--border); }
+.joint-table th:first-child { text-align: left; }
+.joint-table thead th { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
+.joint-table tbody th { font-weight: 700; border-left: 4px solid; }
+.joint-table .jt-hip { border-left-color: var(--j-hip); }
+.joint-table .jt-knee { border-left-color: var(--j-knee); }
+.joint-table .jt-ankle { border-left-color: var(--j-ankle); }
+.joint-table .jt-shoulder { border-left-color: var(--j-shoulder); }
+.joint-table td.over { color: var(--warning); font-weight: 700; }
+#ro-limb .warn { color: var(--warning); font-weight: 600; }
 
 .readouts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0 0; }
 .readouts div { background: var(--bg); border-radius: 10px; padding: 8px 10px; }
@@ -152,16 +180,29 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 .charts .line.compare { stroke: var(--compare); stroke-dasharray: 7 5; }
 .charts .line.strength { stroke: var(--strength); stroke-width: 2; stroke-dasharray: 2 4; }
 .charts .marker { stroke: var(--text); stroke-width: 1.5; opacity: 0.5; }
+.charts .zero { stroke: var(--muted); stroke-width: 1; }
+.charts .line.joint-hip { stroke: var(--j-hip); }
+.charts .line.joint-knee { stroke: var(--j-knee); }
+.charts .line.joint-ankle { stroke: var(--j-ankle); }
+.charts .line.joint-shoulder { stroke: var(--j-shoulder); }
+.charts .line.cap { stroke-width: 1.5; stroke-dasharray: 2 4; opacity: 0.8; }
+.charts .line.dash { stroke-dasharray: 7 5; opacity: 0.8; }
 .legend { list-style: none; padding: 0; margin: 0 0 6px; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.85rem; color: var(--muted); }
 .legend .sw { display: inline-block; width: 20px; height: 0; border-top: 3px solid; vertical-align: middle; margin-right: 6px; }
 .legend .sw.primary { border-color: var(--accent); }
 .legend .sw.compare { border-color: var(--compare); border-top-style: dashed; }
 .legend .sw.strength { border-color: var(--strength); border-top-style: dotted; }
+.legend .sw.joint-hip { border-color: var(--j-hip); }
+.legend .sw.joint-knee { border-color: var(--j-knee); }
+.legend .sw.joint-ankle { border-color: var(--j-ankle); }
+.legend .sw.joint-shoulder { border-color: var(--j-shoulder); }
+.legend .sw.cap { border-color: var(--muted); border-top-style: dotted; }
+.legend .sw.dash { border-color: var(--muted); border-top-style: dashed; }
 
 /* Muscles */
 .muscle-layout { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start; }
 .bodymaps { display: flex; gap: 6px; width: 150px; }
-.bodymaps.both { width: 260px; }
+.bodymaps.both { width: 210px; }
 .bodymap { position: relative; flex: 1; min-width: 0; aspect-ratio: 200 / 369; }
 .bodymap img { position: absolute; inset: 0 auto auto 0; width: 100%; height: auto; }
 .bodymap img.overlay { transition: opacity 0.15s linear; }
