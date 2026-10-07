@@ -31,6 +31,8 @@ const state = {
   direction: 1,
 };
 
+/** Cables and bands pull towards a movable point (pulley or band anchor). */
+const anchored = (v) => v.load?.type === "cable" || v.load?.type === "band";
 const variant = (id = state.variantId) => state.exercise.variants.find((v) => v.id === id);
 const opts = (v) => ({
   loadKg: state.loadKg,
@@ -51,7 +53,7 @@ function readHash() {
 function writeHash() {
   const p = new URLSearchParams({ ex: state.exercise.id, v: state.variantId, kg: state.loadKg });
   if (state.compareId) p.set("cmp", state.compareId);
-  if (variant().load?.type === "cable") {
+  if (anchored(variant())) {
     p.set("px", state.pulley.x.toFixed(2));
     p.set("py", state.pulley.y.toFixed(2));
   }
@@ -76,9 +78,14 @@ function setVariant(id, pulley, load) {
   // Machines, cables and ankle weights need very different loads: use the variant's default.
   const kg = load ?? v.defaultLoadKg;
   if (kg != null) { state.loadKg = kg; $("load").value = kg; $("load-out").textContent = `${kg} kg`; }
-  state.pulley = v.load?.type === "cable" ? { ...(pulley ?? v.load.pulley) } : null;
+  state.pulley = anchored(v) ? { ...(pulley ?? v.load.pulley) } : null;
   $("variant").value = id;
-  $("pulley-controls").hidden = v.load?.type !== "cable";
+  $("pulley-controls").hidden = !anchored(v);
+  const band = v.load?.type === "band";
+  $("pulley-reset").textContent = band ? "Reset anchor" : "Reset pulley";
+  for (const id of ["pulley-x-label", "pulley-y-label"]) {
+    $(id).textContent = $(id).textContent.replace(/^(Pulley|Band anchor)/, band ? "Band anchor" : "Pulley");
+  }
   if (state.pulley) {
     $("pulley-x").value = state.pulley.x;
     $("pulley-y").value = state.pulley.y;

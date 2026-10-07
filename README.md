@@ -69,7 +69,7 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [ ] Two-joint muscles: strength and muscle weights that depend on the other joint's angle (overhead triceps, seated vs lying leg curl)
 - [ ] Hammer/neutral grip as a variant parameter (brachioradialis emphasis)
 - [x] Machines with cam profiles (resistance curve as a data table): `load.type: "machine"`. The lateral-raise cam is illustrative; measured profiles still needed
-- [ ] Bands (load grows with stretch)
+- [x] Resistance bands (`load.type: "band"`): band curl, band lateral raise
 - [x] Multi-joint model: squat, Romanian deadlift, split squat, leg press, hip thrust, bench press
 - [ ] Multi-joint: conventional deadlift, overhead press, rows; measured posture rules instead of assumed ones
 - [x] 3D leg press: stance width, toe angle, knee tracking

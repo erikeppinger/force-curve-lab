@@ -92,7 +92,8 @@ for (const id of single) {
 
   test(`${id}: variant load types are known`, () => {
     for (const v of ex.variants) {
-      assert.ok(["gravity", "cable", "machine", "reaction"].includes(v.load.type), v.id);
+      assert.ok(["gravity", "cable", "machine", "reaction", "band"].includes(v.load.type), v.id);
+      if (v.load.type === "band") assert.ok(v.load.refLength > v.load.restLength && v.load.restLength > 0, `${v.id}: band lengths`);
       if (v.load.type === "cable") assert.ok(Number.isFinite(v.load.pulley.x) && Number.isFinite(v.load.pulley.y));
       if (v.load.type === "reaction") assert.ok(v.load.bodyWeight >= 0 && v.load.bodyWeight <= 1);
     }

@@ -64,6 +64,9 @@ export function pose(exercise, variant, angleDeg) {
  * Force the external load applies to the body (N) and the point it acts at (`at`).
  * gravity:  m·g along the variant's gravity vector, at the tip.
  * cable:    m·g towards the pulley, at the tip.
+ * band:     an elastic band from its anchor (load.pulley) to the tip. Tension grows linearly
+ *           with stretch: zero at load.restLength, m·g at load.refLength (the slider's kg is
+ *           the band's tension at that reference length). Slack bands pull nothing.
  * machine:  a pad on the moving segment, load.padDistance from the joint, pushing
  *           perpendicular to the segment against the lift. The cam profile gives the
  *           effective radius r(angle) in metres, so joint torque = m·g·r. Assumes the
@@ -83,6 +86,13 @@ export function loadForce(exercise, variant, p, angleDeg, { loadKg, pulley, body
     const F = (mag * interp(load.camProfile.points, angleDeg)) / load.padDistance;
     const w = workSense(exercise);
     return { x: w * F * u.y, y: -w * F * u.x, mag: F, at };
+  }
+  if (load.type === "band") {
+    const d = sub(pulley ?? load.pulley, p.tip);
+    const len = Math.hypot(d.x, d.y);
+    const F = (mag * Math.max(0, len - load.restLength)) / (load.refLength - load.restLength);
+    if (len < 1e-6 || F <= 0) return { x: 0, y: 0, mag: 0, at: p.tip };
+    return { x: (F * d.x) / len, y: (F * d.y) / len, mag: F, at: p.tip };
   }
   if (load.type === "cable") {
     const d = sub(pulley ?? load.pulley, p.tip);

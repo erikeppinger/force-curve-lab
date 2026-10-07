@@ -127,6 +127,15 @@
         }
       },
       "notes": "A pad on the upper arm near the elbow pushes against the raise, and the cam sets the resistance at each angle. This illustrative cam loads the start far more than a dumbbell and stays fairly even. Machine stack weights don't compare directly with dumbbell weights: the same number of kg gives a different torque."
+    },
+    {
+      "id": "band",
+      "name": "Band lateral raise (band under the foot)",
+      "equipment": "Resistance band",
+      "load": {"type": "band", "pulley": {"x": 0.05, "y": -1.45}, "restLength": 0.8, "refLength": 1.6},
+      "adjustablePulley": true,
+      "defaultLoadKg": 6,
+      "notes": "Band anchored under the foot on the working side. Nearly slack at the bottom, so the start is easy; tension and moment arm both grow as the arm rises, making the top much harder than with a dumbbell. The load slider is the band's tension at 1.6 m (about its length at shoulder height)."
     }
   ]
 }

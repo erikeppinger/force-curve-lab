@@ -136,6 +136,9 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .pad { stroke: var(--compare); stroke-linecap: round; opacity: 0.6; }
 #figure .equipment, #figure .cable-column { stroke: var(--equipment); opacity: 0.5; }
 #figure .cable { stroke: var(--cable); }
+#figure .band { stroke: var(--compare); stroke-linecap: round; }
+#figure .band.slack { stroke-dasharray: 4 6; opacity: 0.6; }
+#figure .anchor { fill: var(--card); stroke: var(--compare); stroke-width: 3; }
 #figure .pulley { fill: var(--card); stroke: var(--cable); stroke-width: 3; }
 #figure .line-of-action { stroke: var(--accent); stroke-dasharray: 4 5; opacity: 0.6; }
 #figure .moment-arm { stroke: var(--compare); stroke-dasharray: 6 4; }

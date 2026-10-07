@@ -124,6 +124,11 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
     seg(svg, tip, pulley, "cable", 0.008);
     circle(svg, pulley, 0.045, "pulley");
   }
+  if (variant.load.type === "band") {
+    // Band: drawn thicker when it carries tension, dashed when slack.
+    seg(svg, tip, pulley, result.force.mag > 0 ? "band" : "band slack", 0.014);
+    circle(svg, pulley, 0.03, "anchor");
+  }
   if (variant.load.type === "machine") {
     // Cam at the joint, lever along the segment, pad on the side the force pushes from.
     circle(svg, joint, 0.07, "cam");
@@ -161,7 +166,7 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
   // Load at the tip
   if (variant.load.type === "gravity") {
     circle(svg, tip, variant.equipment.startsWith("Dumbbell") || variant.equipment.startsWith("Ankle") ? 0.055 : 0.09, "weight");
-  } else if (variant.load.type === "cable") {
+  } else if (variant.load.type === "cable" || variant.load.type === "band") {
     circle(svg, tip, 0.025, "handle");
   }
 

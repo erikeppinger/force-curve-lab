@@ -135,6 +135,16 @@
       "adjustablePulley": true,
       "muscleModifiers": {"biceps": 1.05},
       "notes": "Facing away from the cable with the arm behind the body. The cable keeps a large moment arm in the stretched (bottom) position, which free weights cannot."
+    },
+    {
+      "id": "band",
+      "name": "Band curl (standing on the band)",
+      "equipment": "Resistance band",
+      "proximalAngle": 0,
+      "load": {"type": "band", "pulley": {"x": 0.05, "y": -1.45}, "restLength": 0.75, "refLength": 1.4},
+      "adjustablePulley": true,
+      "defaultLoadKg": 12,
+      "notes": "An elastic band anchored under the feet. Its tension grows as it stretches, so unlike a dumbbell the resistance keeps rising towards the top of the curl. The load slider is the band's tension at 1.4 m stretched length (about its length at the top); slack below 0.75 m. Bands are linear here; real bands stiffen somewhat as they stretch."
     }
   ],
   "wger": {"exerciseId": 91},

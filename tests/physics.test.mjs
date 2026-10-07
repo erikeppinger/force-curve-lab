@@ -58,3 +58,22 @@ test("effort is torque divided by angle-specific capacity", () => {
   const r = analyze(ex, v("dumbbell"), 90, opts);
   close(r.effort, r.jointTorque / (interp(ex.strengthCurve.points, 90) * 60));
 });
+
+test("band: tension = load·g·stretch/(refLength − restLength) towards the anchor; nothing when slack", () => {
+  const band = v("band");
+  const { pulley, restLength, refLength } = band.load;
+  for (const a of [0, 60, 120, 145]) {
+    const r = analyze(ex, band, a, opts);
+    const hand = r.pose.tip;
+    const len = Math.hypot(pulley.x - hand.x, pulley.y - hand.y);
+    close(r.force.mag, Math.max(0, (10 * G * (len - restLength)) / (refLength - restLength)));
+  }
+  const slack = { ...band, load: { ...band.load, restLength: 5, refLength: 6 } };
+  assert.equal(analyze(ex, slack, 90, opts).force.mag, 0);
+});
+
+test("band curl keeps rising towards the top, where the dumbbell fades", () => {
+  const at = (id, a) => analyze(ex, v(id), a, opts).loadTorque;
+  assert.ok(at("band", 130) > at("band", 60));
+  assert.ok(at("dumbbell", 130) < at("dumbbell", 60));
+});
