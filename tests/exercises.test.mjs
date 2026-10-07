@@ -23,7 +23,7 @@ for (const id of multi) {
   const ex = load(id);
   test(`${id}: multi-joint shape`, () => {
     assert.equal(ex.id, id);
-    assert.ok(["standing", "split", "legPress3d", "hipThrust", "squat3d", "bench3d"].includes(ex.solver));
+    assert.ok(["standing", "split", "legPress3d", "hipThrust", "squat3d", "bench3d", "press3d"].includes(ex.solver));
     assert.ok(ex.joints.length >= 1);
     for (const j of ex.joints) {
       assert.ok(sorted(j.strength.points) && j.strength.note && j.strength.source, j.id);

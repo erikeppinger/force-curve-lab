@@ -15,6 +15,7 @@ const run = (id, vid, x, o = opts) => {
   return analyzeMulti(ex, ex.variants.find((v) => v.id === vid), x, o);
 };
 const J = (r, id) => r.joints.find((j) => j.id === id);
+const lerp = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t, z: (a.z ?? 0) + ((b.z ?? 0) - (a.z ?? 0)) * t });
 
 test("body segment masses add up to the whole body", () => {
   const m = body.mass;
@@ -307,5 +308,77 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
     const [w, c] = [at("wide", 30, undefined, { ...opts, loadKg: 80 }), at("close", 30, undefined, { ...opts, loadKg: 80 })];
     assert.ok(J(c, "elbow").torque > 1.5 * J(w, "elbow").torque);
     assert.ok(J(w, "shoulder-h").torque > 5 * J(c, "shoulder-h").torque);
+  });
+}
+
+// ---------- overhead press in 3D ----------
+{
+  const ex = load("overhead-press");
+  const preset = (vid) => ex.variants.find((v) => v.id === vid);
+  const at = (vid, x, placement, o = opts) => analyzeMulti(ex, preset(vid), x, { ...o, placement });
+  const noBody = { ...opts, loadKg: 40, bodyMassKg: 1e-9 };
+  const F = 20 * G; // half the bar per hand
+
+  test("3D overhead press: shoulder components match the hand formulas", () => {
+    for (const vid of ["standing", "wide", "behind-neck", "seated-dumbbell"]) {
+      for (const x of [0, 40, 80]) {
+        const r = at(vid, x, { barSpread: 0 }, noBody);
+        const S = J(r, "shoulder-flex").at, hand = r.forces[0].at;
+        close(J(r, "shoulder-flex").torque, F * (hand.x - S.x), 1e-6); // bar in front of the shoulder → flexors
+        close(J(r, "shoulder-abd").torque, F * (hand.z - S.z), 1e-6); // hands outside the shoulders → abductors
+        close(r.moments.shoulder.y, 0, 1e-9); // a vertical force has no moment about the vertical
+      }
+    }
+  });
+
+  test("3D overhead press: the arms' own weight adds m·g·horizontal distance at the shoulder", () => {
+    const o = { ...opts, loadKg: 0 };
+    const r = at("standing", 30, { barSpread: 0 }, o);
+    const { upperArm: u, forearm: f } = r.frames;
+    const S = u.from, ua = lerp(u.from, u.to, body.com.upperArm), fa = lerp(f.from, f.to, body.com.forearmHand);
+    const mu = body.mass.upperArm * 75 * G, mf = body.mass.forearmHand * 75 * G;
+    close(J(r, "shoulder-flex").torque, mu * (ua.x - S.x) + mf * (fa.x - S.x), 1e-6);
+    close(J(r, "shoulder-abd").torque, mu * (ua.z - S.z) + mf * (fa.z - S.z), 1e-6);
+  });
+
+  test("3D overhead press: arm lengths hold, elbows under the hands, lockout over the shoulders", () => {
+    for (const x of [0, 50, 100]) {
+      const r = at("standing", x, undefined, noBody);
+      const { upperArm: u, forearm: f } = r.frames;
+      close(Math.hypot(u.to.x - u.from.x, u.to.y - u.from.y, u.to.z - u.from.z), body.lengths.upperArm, 1e-9);
+      close(Math.hypot(f.to.x - f.from.x, f.to.y - f.from.y, f.to.z - f.from.z), body.lengths.forearm, 1e-9);
+      if (x < 100) close(f.from.z, f.to.z, 1e-3);
+    }
+    const top = at("standing", 100, undefined, noBody);
+    close(top.forces[0].at.x, J(top, "shoulder-flex").at.x, 1e-9);
+    close(J(top, "shoulder-flex").torque, 0, 1e-6);
+  });
+
+  test("3D overhead press: elbow moment = F × horizontal elbow–hand distance", () => {
+    for (const x of [20, 60]) {
+      const r = at("standing", x, { barSpread: 0 }, noBody);
+      const E = J(r, "elbow").at, hand = r.forces[0].at, M = r.moments.elbow;
+      close(Math.hypot(M.x, M.y, M.z), F * Math.hypot(hand.x - E.x, hand.z - E.z), 1e-6);
+    }
+  });
+
+  test("3D overhead press: wide grip loads the side deltoid; behind the neck loads the external rotators and starts in extension", () => {
+    const o = { ...opts, loadKg: 30 };
+    for (const x of [10, 50]) {
+      const s = at("standing", x, undefined, o), w = at("wide", x, undefined, o), b = at("behind-neck", x, undefined, o);
+      assert.ok(J(w, "shoulder-abd").torque > 2 * J(s, "shoulder-abd").torque, `@${x}: abduction`);
+      assert.ok(J(b, "shoulder-rotation").torque > Math.abs(J(s, "shoulder-rotation").torque) + 5, `@${x}: rotation`);
+      assert.ok(J(b, "shoulder-flex").torque < 0 && J(s, "shoulder-flex").torque > 0, `@${x}: flexion sign`);
+    }
+  });
+
+  test("3D overhead press: dumbbells can't push sideways; with a bar the least-effort spread is the minimum", () => {
+    const r = at("seated-dumbbell", 40, { barSpread: "auto" });
+    close(r.forces[0].dir.z, 0, 1e-12);
+    const cost = (q) => q.joints.filter((j) => !j.passive).reduce((sum, j) => sum + (j.effort ?? 0) ** 2, 0);
+    for (const x of [10, 60]) {
+      const best = cost(at("wide", x, { barSpread: "auto" }));
+      for (const fixed of [-0.3, 0, 0.3]) assert.ok(best <= cost(at("wide", x, { barSpread: fixed })) + 1e-9, `@${x} vs ${fixed}`);
+    }
   });
 }

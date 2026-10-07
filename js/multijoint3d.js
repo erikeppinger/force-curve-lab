@@ -399,3 +399,103 @@ export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       ...(ok ? [] : [{ warn: true, text: "The elbows can't sit that far from the hands at this bar height; shown as close as the arm allows." }])],
   };
 }
+
+/**
+ * Overhead press (driver: bar height, 0 = resting in front of the shoulders, 100 = arms locked
+ * out overhead). Standing or seated, trunk upright, shoulder joints fixed. Both hands push
+ * straight up with half the load; with a bar they may also pull it apart (`barSpread`, as in the
+ * bench), with dumbbells there is nothing to push against, so they can't. The hands move in a
+ * straight line from the start (`touchFront` in front of and `touchUp` above the shoulder line)
+ * to lockout over the shoulders.
+ * Shoulder components in the body frame: flexion (about the side-to-side axis), abduction
+ * (about the front-to-back axis) and rotation (about the upper arm). Their angle is the arm's
+ * elevation: 0° = by the side, 180° = straight up.
+ */
+export function press3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
+  const P = { ...v.params, ...placement };
+  const L = body.lengths, m = body.mass, c = body.com;
+  const seated = P.stance === "seated";
+  const hipY = seated ? 0.5 : L.ankleHeight + L.shank + L.thigh;
+  const mid = v3(0, hipY + L.trunk, 0);
+  const S = add3(mid, Z, L.shoulderHalfWidth);
+  const FRONT = v3(1, 0, 0), DOWN = v3(0, -1, 0);
+  const dz = P.gripHalf - L.shoulderHalfWidth;
+  const reach = Math.sqrt(Math.max(0, (L.upperArm + L.forearm) ** 2 - dz * dz)) * 0.985;
+  const start = add3(add3(mid, FRONT, P.touchFront), UP, P.touchUp);
+  const lockout = add3(mid, UP, reach);
+  const k = x / 100;
+  const hand = v3(start.x + (lockout.x - start.x) * k, start.y + (lockout.y - start.y) * k, P.gripHalf);
+  const { E, ok } = elbowUnderHand(S, hand, L.upperArm, L.forearm, P.elbowOut, UP);
+
+  const Fv = (loadKg * G) / 2;
+  const foreW = weight(lerp3(E, hand, c.forearmHand), m.forearmHand * kg);
+  const upperW = weight(lerp3(S, E, c.upperArm), m.upperArm * kg);
+  const dU = unit3(sub3(E, S)), dF = unit3(sub3(hand, E));
+  const eFlex = unit3(cross3(dU, dF));
+  const eSide = unit3(cross3(eFlex, dF));
+  const elev = angleBetween3(dU, DOWN);
+  const elbowFlex = angleBetween3(dU, dF);
+  const dumbbells = v.loadShape === "dumbbell";
+  const solveAt = (spread) => {
+    const push = { at: hand, f: v3(0, -Fv, -spread * Fv) };
+    const Mel = moment3(E, [push, foreW]);
+    const Msh = moment3(S, [push, foreW, upperW]);
+    const line = { at: hand, dir: unit3(neg3(push.f)) };
+    return {
+      push, Mel, Msh, joints: {
+        "shoulder-flex": { at: S, angle: elev, torque: -dot3(Msh, Z), ...toLine(S, line.at, line.dir) },
+        "shoulder-abd": { at: S, angle: elev, torque: dot3(Msh, FRONT) },
+        "shoulder-rotation": { at: S, angle: elev, torque: -dot3(Msh, dU) },
+        elbow: { at: E, angle: elbowFlex, torque: dot3(Mel, eFlex), ...toLine(E, line.at, line.dir) },
+        "elbow-side": { at: E, angle: elbowFlex, torque: dot3(Mel, eSide) },
+      },
+    };
+  };
+  const auto = !dumbbells && P.barSpread === "auto";
+  const spread = dumbbells ? 0 : auto ? leastEffort(ex, (r) => solveAt(r).joints) : P.barSpread ?? 0;
+  const { push, Mel, Msh, joints } = solveAt(spread);
+
+  const hips = v3(0, hipY, 0);
+  const head = add3(mid, UP, 0.24);
+  const legs = seated
+    ? [false, true].flatMap((left) => {
+      const t = left ? mirror : (p) => p, cls = left ? "body back" : "body";
+      const H = v3(0, hipY, 0.1), K = v3(L.thigh, hipY, 0.12), A = v3(L.thigh, L.ankleHeight, 0.13);
+      return [L3(t(H), t(K), 0.14, cls), L3(t(K), t(A), 0.1, cls), L3(t(v3(A.x - L.heel, 0.02, 0.13)), t(v3(A.x + L.footFront, 0.02, 0.13)), 0.06, cls)];
+    })
+    : legPrims(v3(0, hipY, 0.1), v3(0, L.ankleHeight + L.shank, 0.1), v3(0, L.ankleHeight, 0.1), v3(-L.heel, 0.02, 0.1), v3(L.footFront, 0.02, 0.1));
+  const load = dumbbells
+    ? both(hand).flatMap((h) => [L3(add3(h, Z, -0.1), add3(h, Z, 0.1), 0.025, "equipment"), dot(add3(h, Z, -0.09), 0.07, "weight"), dot(add3(h, Z, 0.09), 0.07, "weight")])
+    : [L3(v3(hand.x, hand.y, -0.75), v3(hand.x, hand.y, 0.75), 0.03, "equipment"), ...both(v3(hand.x, hand.y, 0.66)).map((p) => dot(p, 0.12, "weight"))];
+  return {
+    joints,
+    frames: {
+      upperArm: { from: S, to: E, anterior: unit3(cross3(dU, eFlex)), lateral: unit3(cross3(dU, cross3(Z, dU))) },
+      forearm: { from: E, to: hand, anterior: unit3(cross3(dF, eFlex)), lateral: unit3(cross3(dF, cross3(Z, dF))) },
+    },
+    moments: { shoulder: Msh, elbow: Mel },
+    scene: [
+      { kind: "poly", pts: [[-0.5, -0.5], [0.6, -0.5], [0.6, 0.5], [-0.5, 0.5]].map(([px, pz]) => v3(px, 0, pz)), cls: "floor3d" },
+      ...(seated ? [
+        { kind: "poly", pts: [[-0.2, -0.18], [0.25, -0.18], [0.25, 0.18], [-0.2, 0.18]].map(([px, pz]) => v3(px, hipY - 0.07, pz)), cls: "plate3d bench3d" },
+        { kind: "poly", pts: [[hipY - 0.07, -0.18], [mid.y, -0.18], [mid.y, 0.18], [hipY - 0.07, 0.18]].map(([py, pz]) => v3(-0.17, py, pz)), cls: "plate3d bench3d" },
+        L3(v3(0, hipY - 0.07, 0), v3(0, 0, 0), 0.04, "equipment"),
+      ] : []),
+      ...legs,
+      L3(hips, mid, 0.3, "body"), dot(head, 0.11, "body"), L3(mirror(S), S, 0.12, "body"),
+      ...[false, true].flatMap((left) => {
+        const tf = left ? mirror : (p) => p, cls = left ? "body back" : "body";
+        return [L3(tf(S), tf(E), 0.07, cls), L3(tf(E), tf(hand), 0.06, cls)];
+      }),
+      ...load,
+      { kind: "line", a: v3(start.x, start.y, P.gripHalf), b: v3(lockout.x, lockout.y, P.gripHalf), w: 0.006, cls: "line-of-action" },
+    ],
+    forces: [{ at: hand, dir: unit3(push.f) }, { at: mirror(hand), dir: mirror(unit3(push.f)) }],
+    barSpread: spread,
+    info: [{ text: `Upper arm raised ${Math.round(elev)}° from the side.` },
+      ...(dumbbells ? [{ text: "Dumbbells: no bar to push against, so the hands push straight up (the bar-spread setting is ignored)." }] : []),
+      ...(!dumbbells && Math.abs(spread) > 0.005 ? [{ text: `Hands ${spread > 0 ? "pull the bar apart" : "squeeze the bar inwards"} with ${Math.round(Math.abs(spread) * 100)}% of the vertical force${auto ? " (least-effort estimate)" : ""}.` }] : []),
+      // Near lockout a straight arm can't put the elbow under a wide hand; that's expected, not a warning.
+      ...(ok || elbowFlex < 30 ? [] : [{ warn: true, text: "The elbows can't sit that far from the hands at this bar height; shown as close as the arm allows." }])],
+  };
+}

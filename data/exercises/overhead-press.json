@@ -1,0 +1,284 @@
+{
+  "id": "overhead-press",
+  "name": "Overhead press",
+  "joint": "Shoulder and elbow",
+  "model": "multi",
+  "solver": "press3d",
+  "view": "3d",
+  "angleLabel": "Bar height",
+  "angleUnit": "%",
+  "concentric": "increase",
+  "angleRange": [0, 100],
+  "angleNote": "Bar height: 0% = resting in front of the shoulders, 100% = arms locked out overhead. Torques are per arm; drag the figure to turn it.",
+  "momentArmNote": "Moment arm = the joint's 3D distance from the bar's push line through that hand; it feeds every component of that joint's torque.",
+  "defaults": {"loadKg": 30, "variant": "standing", "bodyMassKg": 75},
+  "ui": {"load": [0, 120, 2.5]},
+  "joints": [
+    {
+      "id": "shoulder-flex",
+      "name": "Shoulder (front–back)",
+      "action": "Shoulder flexion",
+      "angleLabel": "arm elevation",
+      "peakTorqueNm": 68,
+      "negative": {"action": "Shoulder extension", "peakTorqueNm": 93},
+      "strength": {
+        "points": [[0, 1.0], [45, 0.96], [90, 0.92], [110, 0.9], [180, 0.6]],
+        "note": "Relative shoulder-flexion strength vs flexion: \"descending\" in all three studies Kulig et al. reviewed, strongest low, with a plateau around 45–90° and a clear drop only beyond about 110°. The size of the drop across 0–90° isn't given numerically, so these values are an estimate of that shape; Mayer et al. found the isometric peak at 35–72° (men). Peak torque default: Mayer's isometric shoulder flexion, men, 68 ± 18 Nm. Above 110° the curve here is an estimate: the drop to 60% at 180° is a guess at the size of the decline the studies describe, not a measured value.",
+        "source": "Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (shape); Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25. doi:10.1055/s-2007-1021105 (peak torque); above 110°: TODO, no source checked for the size of the drop"
+      }
+    },
+    {
+      "id": "shoulder-abd",
+      "name": "Shoulder (sideways)",
+      "action": "Shoulder abduction",
+      "angleLabel": "arm elevation",
+      "peakTorqueNm": 47,
+      "negative": {"action": "Shoulder adduction", "peakTorqueNm": 90},
+      "strength": {
+        "points": [[0, 0.62], [30, 1.0], [60, 0.86], [90, 0.76], [180, 0.5]],
+        "note": "Relative shoulder-abduction strength vs abduction: strongest at 30°, weakest with the arm by the side (0°). From a conference abstract (hand-held myometer, 30 adults): +31.3% at 30°, +12.5% at 60° and −18.8% at 0° relative to 90°; Mayer et al. 1994 place the isometric peak at 27–65° in men. The weakest evidence of the curves here. Peak torque default: Mayer's isometric shoulder abduction, men, 47 ± 12 Nm. The sources disagree near the start: Clarke et al. (64 men, supine, via Kulig et al.) found abduction strongest with the arm by the side and a plateau at 45–90°. Treat the 0–30° part as uncertain. Above 90° the curve here is an estimate (50% at 180°). Adduction peak (90 Nm) is also an estimate.",
+        "source": "Haidar SG, Lloyd J, Cox D, Deshmukh S (2009). Shoulder abduction strength: is it affected by the degree of abduction? J Bone Joint Surg Br 91-B Suppl I:160 (conference abstract). doi:10.1302/0301-620X.91BSUPP_I.0910160c; Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Normal values of isokinetic maximum strength, the strength/velocity curve, and the angle at peak torque of all degrees of freedom in the shoulder. Int J Sports Med 15:S19–S25. doi:10.1055/s-2007-1021105; Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (Clarke et al., contrary finding at 0°); above 90° and the adduction peak: TODO, no source checked"
+      }
+    },
+    {
+      "id": "shoulder-rotation",
+      "name": "Shoulder (rotation)",
+      "action": "External rotation",
+      "angleLabel": "upper-arm angle",
+      "peakTorqueNm": 30,
+      "negative": {"action": "Internal rotation", "peakTorqueNm": 43},
+      "strength": {
+        "points": [[-60, 1.0], [180, 1.0]],
+        "note": "Shoulder external (positive) and internal (negative) rotation peak torque per arm, taken as constant: Mayer's isometric means for men (30 and 43 Nm).",
+        "source": "Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25, Table 2 (men, dominant side, isometric)"
+      }
+    },
+    {
+      "id": "elbow",
+      "name": "Elbow",
+      "action": "Elbow extension",
+      "angleLabel": "elbow flexion",
+      "peakTorqueNm": 80,
+      "negative": {"action": "Elbow flexion", "peakTorqueNm": 80},
+      "strength": {
+        "points": [
+          [20, 0.55],
+          [30, 0.79],
+          [45, 0.97],
+          [54, 1.0],
+          [60, 0.99],
+          [75, 0.91],
+          [90, 0.8],
+          [105, 0.72],
+          [116, 0.71]
+        ],
+        "note": "Relative isometric elbow-extension torque vs elbow flexion (0° = straight), peak about 55°: the paper's mean cubic fit, normalised, inside the measured 20–116° (held flat beyond). Measured with the upper arm raised 90° to the side, so the long head's length differs from overhead or arm-at-side positions. Peak per arm: the paper's male mean, 77 Nm (rounded to 80 for trained lifters).",
+        "source": "Pinter IJ, Bobbert MF, van Soest AJ, Smeets JBJ (2010). Isometric torque–angle relationships of the elbow flexors and extensors in the transverse plane. J Electromyogr Kinesiol 20:923–931. doi:10.1016/j.jelekin.2010.05.001"
+      }
+    },
+    {
+      "id": "elbow-side",
+      "name": "Elbow (sideways)",
+      "action": "Hand pushed inwards",
+      "angleLabel": "elbow flexion",
+      "passive": true,
+      "negative": {"action": "Hand pushed outwards"},
+      "strength": {
+        "points": [[-60, 1.0], [180, 1.0]],
+        "note": "No muscle capacity: the elbow's sideways moment is carried mostly by ligaments and the joint surfaces, so it is shown as torque only.",
+        "source": "Not applicable: carried by ligaments and joint surfaces, so no muscle strength is used"
+      }
+    }
+  ],
+  "muscles": [
+    {
+      "id": "anterior-deltoid",
+      "name": "Anterior deltoid",
+      "wgerId": 2,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "shoulder-flex",
+      "weight": [[0, 1.0], [180, 1.0]],
+      "sign": 1,
+      "note": "Main shoulder flexor: works while the bar is in front of the shoulder, most at the start.",
+      "source": "TODO: check against EMG literature",
+      "draw3d": {"seg": "upperArm", "side": "anterior", "along": [-0.02, 0.1], "offset": 0.035, "w": 0.05}
+    },
+    {
+      "id": "lateral-deltoid",
+      "name": "Lateral deltoid",
+      "wgerId": 2,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "shoulder-abd",
+      "weight": [[0, 1.0], [180, 1.0]],
+      "sign": 1,
+      "note": "Abductor: works when the hands are wider than the shoulders, so the load hangs outside them. Wider grips load it more.",
+      "source": "TODO: check against EMG literature",
+      "draw3d": {"seg": "upperArm", "side": "lateral", "along": [-0.02, 0.1], "offset": 0.04, "w": 0.05}
+    },
+    {
+      "id": "triceps",
+      "name": "Triceps",
+      "wgerId": 5,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "elbow",
+      "weight": [[0, 0.9], [90, 1.0], [150, 1.0]],
+      "sign": 1,
+      "note": "Elbow extensor: works while the forearm leans away from vertical, most in the middle of the press.",
+      "source": "TODO: check against EMG literature",
+      "draw3d": {"seg": "upperArm", "side": "posterior", "along": [0.06, 0.27], "offset": 0.04, "w": 0.055}
+    },
+    {
+      "id": "rotator-cuff-ext",
+      "name": "Infraspinatus, teres minor",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "shoulder-rotation",
+      "weight": [[-60, 1.0], [180, 1.0]],
+      "note": "External rotators of the rotator cuff: hold the upper arm from turning inwards.",
+      "source": "TODO: check against EMG literature",
+      "sign": 1
+    },
+    {
+      "id": "subscapularis",
+      "name": "Subscapularis",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "shoulder-rotation",
+      "weight": [[-60, 1.0], [180, 1.0]],
+      "note": "Internal rotator of the rotator cuff: holds the upper arm from turning outwards.",
+      "source": "TODO: check against EMG literature",
+      "sign": -1
+    },
+    {
+      "id": "scapular-rotators",
+      "name": "Serratus anterior, upper and lower trapezius",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "none",
+      "weight": [[0, 1.0], [180, 1.0]],
+      "note": "Turn the shoulder blade upwards so the arm can reach overhead. Not estimated: the model holds the shoulder joints still and has no shoulder blade.",
+      "source": "Not modelled"
+    }
+  ],
+  "variants": [
+    {
+      "id": "standing",
+      "name": "Standing barbell press",
+      "equipment": "Barbell",
+      "params": {
+        "stance": "standing",
+        "gripHalf": 0.25,
+        "elbowOut": 0,
+        "touchFront": 0.12,
+        "touchUp": 0.04,
+        "barSpread": 0
+      },
+      "notes": "Hands just outside the shoulders, elbows under the hands in the front view. The bar starts in front of the shoulders, so the shoulder flexors (front deltoid) carry the start, and the triceps take over as the forearms tilt. The trunk stays upright and the shoulder joints stay put: real lifters lean back a little at the start and shrug the shoulder blades up at lockout. The hands move in a straight line, so at the start the bar would graze the chin; lifters tilt the head back."
+    },
+    {
+      "id": "wide",
+      "name": "Wide grip",
+      "equipment": "Barbell",
+      "params": {
+        "stance": "standing",
+        "gripHalf": 0.36,
+        "elbowOut": 0,
+        "touchFront": 0.1,
+        "touchUp": 0.06,
+        "barSpread": 0
+      },
+      "notes": "Hands well outside the shoulders: the load hangs outside the shoulder joints, so the abductors (side deltoid) work throughout, and the elbows bend less. The trunk stays upright and the shoulder joints stay put: real lifters lean back a little at the start and shrug the shoulder blades up at lockout. The hands move in a straight line, so at the start the bar would graze the chin; lifters tilt the head back."
+    },
+    {
+      "id": "behind-neck",
+      "name": "Behind-the-neck press",
+      "equipment": "Barbell",
+      "params": {
+        "stance": "standing",
+        "gripHalf": 0.32,
+        "elbowOut": 0,
+        "touchFront": -0.06,
+        "touchUp": 0.12,
+        "barSpread": 0
+      },
+      "notes": "The bar starts behind the head: the shoulder starts in extension (the bar is behind the joint) and the upper arm is turned far outwards. Compare the rotation row with the standing press. The trunk stays upright and the shoulder joints stay put: real lifters lean back a little at the start and shrug the shoulder blades up at lockout. The hands move in a straight line, so at the start the bar would graze the chin; lifters tilt the head back."
+    },
+    {
+      "id": "seated-dumbbell",
+      "name": "Seated dumbbell press",
+      "equipment": "Dumbbells, upright bench",
+      "loadShape": "dumbbell",
+      "params": {
+        "stance": "seated",
+        "gripHalf": 0.27,
+        "elbowOut": 0,
+        "touchFront": 0.04,
+        "touchUp": 0.06,
+        "barSpread": 0
+      },
+      "notes": "Dumbbells start beside the shoulders, almost over the joints. Load = both dumbbells together. With no bar to push against, the hands can't pull apart or squeeze, so each arm must hold its own dumbbell's line. The trunk stays upright and the shoulder joints stay put: real lifters lean back a little at the start and shrug the shoulder blades up at lockout. The hands move in a straight line, so at the start the bar would graze the chin; lifters tilt the head back."
+    }
+  ],
+  "phases": [
+    {
+      "name": "Off the shoulders",
+      "range": [0, 30],
+      "text": "The load is furthest from the shoulder front to back: in front of it the front deltoid works hardest; behind the neck the shoulder extensors and the external rotators take it."
+    },
+    {
+      "name": "Past the face",
+      "range": [30, 70],
+      "text": "The load moves back over the shoulder while the forearms are most tilted: the triceps peak."
+    },
+    {
+      "name": "Lockout",
+      "range": [70, 100],
+      "text": "Load over the shoulders and elbows straightening: little torque left, except the side deltoid's when the hands are wide."
+    }
+  ],
+  "placement": [
+    {
+      "key": "gripHalf",
+      "label": "Grip: each hand from the middle",
+      "min": 0.2,
+      "max": 0.42,
+      "step": 0.01,
+      "unit": "cm",
+      "scale": 100
+    },
+    {
+      "key": "elbowOut",
+      "label": "Elbows outside (+) / inside (−) the hands, front view",
+      "min": -0.06,
+      "max": 0.08,
+      "step": 0.01,
+      "unit": "cm",
+      "scale": 100
+    },
+    {
+      "key": "touchFront",
+      "label": "Start: bar in front of (+) / behind (−) the shoulders",
+      "min": -0.08,
+      "max": 0.16,
+      "step": 0.01,
+      "unit": "cm",
+      "scale": 100
+    },
+    {
+      "key": "barSpread",
+      "label": "Hands pull the bar apart (+) / squeeze it (−), % of the vertical force",
+      "min": -0.4,
+      "max": 0.4,
+      "step": 0.02,
+      "unit": "%",
+      "scale": 100,
+      "auto": "Least effort (auto)"
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Shoulder Press", "note": "TODO: look up the wger exercise id"}
+}

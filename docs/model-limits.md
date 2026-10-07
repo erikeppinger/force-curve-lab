@@ -163,6 +163,46 @@ Limits:
 - **Fixed shoulder joints and a straight-line bar path.** Real shoulder blades retract and move, and real bar paths curve. Mid-press, the arm's geometry forces the elbows well away from the bar line, so those elbow torques are probably overstated.
 - **Pulling the bar apart.** Like the squat's floor push, how hard the hands pull the bar apart (or squeeze it) isn't fixed by statics. A slider sets it, defaulting to zero; its "least effort" option lets the model choose. In wider grips that choice pulls hard (up to about 40% of the vertical force) and shifts work from the pecs to the triceps, likely more than lifters really do, so it isn't the default. Unlike the squat, where pushing straight up gave unrealistic numbers, zero here gives results that match coaching experience.
 
+## 3D: overhead press
+
+Shoulder and elbow (`press3d`), standing or seated, with a bar or dumbbells. It reuses the bench's arm model with the body upright.
+
+- **Placement controls:** grip width, elbows outside or inside the hands (front view), where the bar starts (in front of or behind the shoulders), and the bar spread.
+- **Posture:**
+  - Trunk upright and shoulder joints fixed.
+  - The hands move in a straight line from the start position to lockout over the shoulders.
+  - The elbow sits below the hand, at the chosen sideways offset.
+- **Components:** the shoulder moment is split along body axes:
+  - flexion (about the side-to-side axis: front delts)
+  - abduction (about the front-to-back axis: side delts)
+  - rotation about the upper arm (rotator cuff)
+
+  The strength curves use the arm's elevation (0° by the side, 180° overhead). Overhead, "flexion" and "abduction" stop being distinct anatomical motions, and the split is only a bookkeeping choice.
+- **Tests:**
+  - Flexion = F × forward distance and abduction = F × sideways distance of the hand from the shoulder.
+  - The arms' own weight adds m·g × distance.
+  - Elbow moment = F × horizontal elbow–hand distance.
+  - Lockout over the shoulder has no flexion torque.
+  - Dumbbells give no sideways force.
+  - The least-effort spread is the minimum.
+
+What it shows:
+
+- **Where the torque goes:**
+  - The start loads the shoulder flexors, which have the largest front-to-back moment arm.
+  - The middle loads the triceps, when the forearms are most tilted.
+  - Lockout leaves only the abduction torque from a grip wider than the shoulders.
+- **Grip width:** with a vertical push, the abduction torque is constant through the press (load × how far the hand is outside the shoulder). It gets harder towards lockout only because abduction strength drops overhead. A wide grip makes it about 3× the standard grip's.
+- **Behind the neck:** the bar starts behind the shoulder, so it needs the shoulder *extensors*, and it loads the external rotators (infraspinatus, teres minor) two to three times as much as the standard press, with the arm raised and turned out. That is the position the press is usually criticised for.
+- **Dumbbells:** with no bar there's nothing to push sideways against, so the bar-spread option doesn't apply.
+
+Limits:
+
+- **Fixed trunk and shoulders.** Lifters lean back at the start and shrug the shoulder blades up at lockout. Neither is modelled, so the start torques and the overhead geometry are approximate.
+- **Straight bar path.** At the start the line passes the chin; real lifters tilt the head back or curve the path.
+- **Strength overhead is estimated.** Flexion strength is sourced up to 110° and abduction up to 90°. Beyond that, both are marked `TODO` (60% and 50% of peak at 180°). The adduction peak (90 Nm) is also an estimate.
+- **Shoulder blade muscles** (serratus anterior, trapezius) are listed but not estimated.
+
 ## 3D: what's left
 
 - The **split squat, RDL and hip thrust** are still side-view only; stance width matters less there but could use the same tools.

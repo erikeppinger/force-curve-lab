@@ -14,7 +14,7 @@
 // Pure functions only — imported by the browser UI and by node tests.
 
 import { G, interp } from "./physics.js";
-import { legPress3d, squat3d, bench3d } from "./multijoint3d.js";
+import { legPress3d, squat3d, bench3d, press3d } from "./multijoint3d.js";
 
 const rad = (d) => (d * Math.PI) / 180;
 const deg = (r) => (r * 180) / Math.PI;
@@ -305,7 +305,7 @@ function hipThrust(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
   };
 }
 
-const SOLVERS = { standing, split, hipThrust, legPress3d, squat3d, bench3d };
+const SOLVERS = { standing, split, hipThrust, legPress3d, squat3d, bench3d, press3d };
 
 /** Full analysis at one driver value: posture, forces and per-joint torque, capacity and effort. */
 export function analyzeMulti(exercise, variant, x, opts) {
