@@ -1,10 +1,13 @@
 import { analyze, sampleCurve } from "./physics.js";
 import { muscleActivation } from "./muscles.js";
 import { renderChart } from "./chart.js";
-import { renderFigure } from "./figure.js";
-import { fetchExercise, descriptionParagraphs, bodyBackground, muscleOverlay } from "./wger.js";
+import { renderFigure, figureBounds, viewTitle } from "./figure.js";
+import { fetchExercise, descriptionParagraphs, bodyBackground, muscleOverlay, isBackMuscle } from "./wger.js";
 
-const EXERCISES = ["biceps-curl", "lateral-raise"];
+const EXERCISES = [
+  "biceps-curl", "triceps-extension", "lateral-raise", "front-raise", "chest-fly", "straight-arm-pulldown",
+  "leg-extension", "leg-curl", "calf-raise", "hip-abduction", "glute-kickback",
+];
 const $ = (id) => document.getElementById(id);
 
 const state = {
@@ -14,6 +17,7 @@ const state = {
   compareId: "",
   loadKg: 10,
   peakTorqueNm: 60,
+  bodyMassKg: 75,
   angle: 90,
   pulley: null,
   playing: false,
@@ -24,6 +28,7 @@ const variant = (id = state.variantId) => state.exercise.variants.find((v) => v.
 const opts = (v) => ({
   loadKg: state.loadKg,
   peakTorqueNm: state.peakTorqueNm,
+  bodyMassKg: state.bodyMassKg,
   pulley: v.id === state.variantId ? state.pulley : undefined,
 });
 
@@ -55,9 +60,12 @@ function fillSelect(sel, items, includeNone) {
   for (const v of items) sel.add(new Option(v.name, v.id));
 }
 
-function setVariant(id, pulley) {
+function setVariant(id, pulley, load) {
   state.variantId = id;
   const v = variant();
+  // Machines, cables and ankle weights need very different loads: use the variant's default.
+  const kg = load ?? v.defaultLoadKg;
+  if (kg != null) { state.loadKg = kg; $("load").value = kg; $("load-out").textContent = `${kg} kg`; }
   state.pulley = v.load.type === "cable" ? { ...(pulley ?? v.load.pulley) } : null;
   $("variant").value = id;
   $("pulley-controls").hidden = v.load.type !== "cable";
@@ -67,23 +75,34 @@ function setVariant(id, pulley) {
   }
   $("variant-notes").textContent = v.notes;
   $("variant-equipment").textContent = v.equipment;
+  $("figure-title").textContent = viewTitle(state.exercise, v);
+  $("load-label").textContent = v.load.type === "reaction" ? "Added load" : "Load";
 }
 
+/** Does the body-mass setting change anything (limb weight, or body weight on the floor)? */
+const usesBodyMass = (ex) => Boolean(ex.segments.massFractions) || ex.variants.some((v) => v.load.bodyWeight > 0);
+
 function buildBodyMap() {
-  const box = $("bodymap");
-  box.replaceChildren();
-  const bg = new Image();
-  bg.src = bodyBackground(true);
-  bg.alt = "Front view of the human muscular system";
-  box.appendChild(bg);
-  for (const m of state.exercise.muscles.filter((x) => x.wgerId)) {
-    const img = new Image();
-    img.src = muscleOverlay(m.wgerId);
-    img.alt = "";
-    img.dataset.muscle = m.id;
-    img.className = "overlay";
-    box.appendChild(img);
+  const mapped = state.exercise.muscles.filter((x) => x.wgerId);
+  for (const front of [true, false]) {
+    const box = $(front ? "bodymap-front" : "bodymap-back");
+    const here = mapped.filter((m) => isBackMuscle(m.wgerId) !== front);
+    box.replaceChildren();
+    box.hidden = !here.length && !(front && !mapped.length);
+    const bg = new Image();
+    bg.src = bodyBackground(front);
+    bg.alt = `${front ? "Front" : "Back"} view of the human muscular system`;
+    box.appendChild(bg);
+    for (const m of here) {
+      const img = new Image();
+      img.src = muscleOverlay(m.wgerId);
+      img.alt = "";
+      img.dataset.muscle = m.id;
+      img.className = "overlay";
+      box.appendChild(img);
+    }
   }
+  $("bodymap-front").parentElement.classList.toggle("both", !$("bodymap-front").hidden && !$("bodymap-back").hidden);
 }
 
 async function loadWger() {
@@ -116,19 +135,25 @@ async function loadWger() {
 /** Switch exercise: reset controls, labels, body map and wger info. `h` = values from the URL hash. */
 function setExercise(id, h = {}) {
   const ex = (state.exercise = state.catalog[id]);
-  const front = ex.view === "front";
+  const view = ex.view ?? "side";
+  const ui = { load: [1, 30, 0.5], strength: [25, 110], ...ex.ui };
   $("exercise").value = id;
   $("exercise-name").textContent = ex.name;
   $("angle-note").textContent = ex.angleNote;
   $("angle-label").textContent = ex.angleLabel;
   $("strength-label").textContent = `Strength (peak ${ex.joint.toLowerCase()} torque)`;
-  $("figure-title").textContent = front ? "Front view" : "Side view";
-  $("pulley-x-label").textContent = front ? "Pulley side to side" : "Pulley forward / back";
+  $("pulley-x-label").textContent = view === "side" ? "Pulley forward / back" : "Pulley side to side";
+  $("pulley-y-label").textContent = view === "top" ? "Pulley forward / back" : "Pulley height";
   fillSelect($("variant"), ex.variants);
   fillSelect($("compare"), ex.variants, true);
 
   state.loadKg = h.load ?? ex.defaults.loadKg;
   state.peakTorqueNm = ex.defaults.peakTorqueNm;
+  state.bodyMassKg = ex.defaults.bodyMassKg ?? 75;
+  [$("load").min, $("load").max, $("load").step] = ui.load;
+  [$("strength").min, $("strength").max] = ui.strength;
+  $("bodymass-control").hidden = !usesBodyMass(ex);
+  $("bodymass").value = state.bodyMassKg; $("bodymass-out").textContent = `${state.bodyMassKg} kg`;
   $("load").value = state.loadKg; $("load-out").textContent = `${state.loadKg} kg`;
   $("strength").value = state.peakTorqueNm; $("strength-out").textContent = `${state.peakTorqueNm} Nm`;
   const [lo, hi] = ex.angleRange;
@@ -136,7 +161,7 @@ function setExercise(id, h = {}) {
   $("angle").min = lo; $("angle").max = hi; $("angle").value = state.angle;
 
   const vId = ex.variants.some((v) => v.id === h.variant) ? h.variant : ex.defaults.variant;
-  setVariant(vId, h.px != null && h.py != null ? { x: h.px, y: h.py } : undefined);
+  setVariant(vId, h.px != null && h.py != null ? { x: h.px, y: h.py } : undefined, h.load);
   state.compareId = ex.variants.some((v) => v.id === h.compare) ? h.compare : "";
   $("compare").value = state.compareId;
 
@@ -148,12 +173,13 @@ function setExercise(id, h = {}) {
 // ---------- render ----------
 let curveCache = null;
 function curves() {
-  const key = JSON.stringify([state.exercise.id, state.variantId, state.compareId, state.loadKg, state.peakTorqueNm, state.pulley]);
+  const key = JSON.stringify([state.exercise.id, state.variantId, state.compareId, state.loadKg, state.peakTorqueNm, state.bodyMassKg, state.pulley]);
   if (curveCache?.key === key) return curveCache;
   const ex = state.exercise;
   const main = sampleCurve(ex, variant(), opts(variant()));
   const cmp = state.compareId ? sampleCurve(ex, variant(state.compareId), opts(variant(state.compareId))) : null;
-  curveCache = { key, main, cmp };
+  const bounds = figureBounds(ex, variant(), main.map((s) => s.pose), state.pulley);
+  curveCache = { key, main, cmp, bounds };
   return curveCache;
 }
 
@@ -166,9 +192,9 @@ function render() {
   const v = variant();
   const r = analyze(ex, v, state.angle, opts(v));
   const act = muscleActivation(ex, v, r, state.angle);
-  const { main, cmp } = curves();
+  const { main, cmp, bounds } = curves();
 
-  renderFigure($("figure"), { exercise: ex, variant: v, result: r, activation: act, pulley: state.pulley });
+  renderFigure($("figure"), { exercise: ex, variant: v, result: r, activation: act, pulley: state.pulley, bounds });
 
   const bands = ex.phases.map((p) => ({ from: p.range[0], to: p.range[1], label: p.name }));
   const strength = main.map((s) => [s.angle, s.capacity]);
@@ -194,12 +220,14 @@ function render() {
   // Readouts
   $("angle-out").textContent = `${state.angle.toFixed(0)}°`;
   $("ro-torque").textContent = `${Math.max(0, r.jointTorque).toFixed(1)} Nm`;
-  $("ro-arm").textContent = `${Math.abs(r.momentArm * 100).toFixed(1)} cm`;
+  $("ro-arm").textContent = r.force.mag > 0 ? `${Math.abs(r.momentArm * 100).toFixed(1)} cm` : "—";
+  $("ro-limb").hidden = !r.limbs.length;
+  $("ro-limb").textContent = `Includes ${r.limbTorque.toFixed(1)} Nm from the ${ex.segments.massLabel ?? "limb"}'s own weight; the moment arm is the load's.`;
   $("ro-effort").textContent = `${(r.effort * 100).toFixed(0)}%`;
   $("ro-effort").classList.toggle("over", r.effort > 1);
   $("ro-warning").hidden = !(r.effort > 1);
   const ph = phaseAt(state.angle);
-  $("phase-name").textContent = state.playing ? `${ph.name} · ${state.direction > 0 ? "concentric (lifting)" : "eccentric (lowering)"}` : ph.name;
+  $("phase-name").textContent = state.playing ? `${ph.name} · ${state.direction * (ex.concentric === "decrease" ? -1 : 1) > 0 ? "concentric (lifting)" : "eccentric (lowering)"}` : ph.name;
   $("phase-text").textContent = ph.text;
 
   // Muscles: bars + wger body map overlays
@@ -219,7 +247,7 @@ function render() {
     li.querySelector(".m-val").textContent = `${Math.round(m.value * 100)}%`;
     li.querySelector(".bar span").style.width = `${m.value * 100}%`;
   });
-  for (const img of $("bodymap").querySelectorAll("img.overlay")) {
+  for (const img of $("muscles-card").querySelectorAll(".bodymap img.overlay")) {
     const m = act.find((x) => x.id === img.dataset.muscle);
     img.style.opacity = (0.12 + 0.88 * (m?.value ?? 0)).toFixed(3);
   }
@@ -255,6 +283,7 @@ function bind() {
   $("variant").addEventListener("change", (e) => { setVariant(e.target.value); writeHash(); render(); });
   $("compare").addEventListener("change", (e) => { state.compareId = e.target.value; writeHash(); render(); });
   $("load").addEventListener("input", (e) => { state.loadKg = +e.target.value; $("load-out").textContent = `${state.loadKg} kg`; writeHash(); render(); });
+  $("bodymass").addEventListener("input", (e) => { state.bodyMassKg = +e.target.value; $("bodymass-out").textContent = `${state.bodyMassKg} kg`; render(); });
   $("strength").addEventListener("input", (e) => { state.peakTorqueNm = +e.target.value; $("strength-out").textContent = `${state.peakTorqueNm} Nm`; render(); });
   $("angle").addEventListener("input", (e) => { setPlaying(false); state.angle = +e.target.value; render(); });
   $("play").addEventListener("click", () => setPlaying(!state.playing));

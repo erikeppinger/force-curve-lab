@@ -2,24 +2,35 @@
   "id": "biceps-curl",
   "name": "Biceps curl",
   "joint": "Elbow flexion",
-  "movingJoint": "elbow",
+  "movingJoint": "distal",
   "view": "side",
   "angleLabel": "Elbow angle",
   "angleRange": [0, 145],
   "angleNote": "0° = arm straight, 145° = fully flexed",
   "segments": {
-    "upperArm": 0.30,
-    "forearm": 0.33,
-    "note": "Shoulder→elbow and elbow→grip centre in metres, typical adult"
+    "proximal": 0.3,
+    "distal": 0.33,
+    "names": ["Upper arm", "Forearm"],
+    "massFractions": [0.028, 0.022],
+    "comFractions": [0.436, 0.682],
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end (forearm includes the hand). Approximate textbook anthropometry.",
+    "massSource": "TODO: check against a published anthropometric table (e.g. Dempster's segment parameters as tabulated by Winter)",
+    "note": "Shoulder→elbow and elbow→grip centre in metres, typical adult."
   },
-  "defaults": { "loadKg": 10, "peakTorqueNm": 60, "variant": "dumbbell" },
+  "defaults": {"loadKg": 10, "peakTorqueNm": 60, "variant": "dumbbell", "bodyMassKg": 75},
   "strengthCurve": {
     "label": "Elbow flexor strength",
     "points": [[0, 0.62], [20, 0.72], [45, 0.88], [70, 0.98], [90, 1.0], [110, 0.92], [130, 0.72], [145, 0.55]],
     "note": "Relative isometric elbow-flexion torque vs angle (peak ≈ 90°). Approximate textbook shape.",
     "source": "TODO: verify against published isokinetic/isometric elbow-flexion torque–angle data"
   },
-  "shoulderFlexorCapacityNm": 70,
+  "postures": {
+    "standing": [
+      {"shape": "seg", "from": [0, -0.55], "to": [0.02, -1.45], "w": 0.14},
+      {"shape": "seg", "from": [0, 0.05], "to": [0, -0.55], "w": 0.2},
+      {"shape": "circle", "at": [0.02, 0.24], "r": 0.11}
+    ]
+  },
   "muscles": [
     {
       "id": "biceps",
@@ -28,7 +39,8 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "weight": [[0, 0.8], [45, 0.95], [90, 1.0], [120, 0.9], [145, 0.75]],
-      "note": "Largest flexion moment arm around 90°; also supinates the forearm."
+      "note": "Largest flexion moment arm around 90°; also supinates the forearm.",
+      "draw": {"seg": "proximal", "along": [0.045, 0.255], "offset": 0.04, "w": 0.055, "layer": 1}
     },
     {
       "id": "brachialis",
@@ -37,7 +49,8 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "weight": [[0, 0.85], [90, 0.9], [145, 0.9]],
-      "note": "Pure elbow flexor, works in every grip; contribution fairly constant."
+      "note": "Pure elbow flexor, works in every grip; contribution fairly constant.",
+      "draw": {"seg": "proximal", "along": [0.15, 0.294], "offset": 0.025, "w": 0.04, "layer": 0}
     },
     {
       "id": "brachioradialis",
@@ -46,56 +59,70 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "weight": [[0, 0.35], [45, 0.55], [90, 0.75], [120, 0.8], [145, 0.7]],
-      "note": "Contributes more in mid-to-high flexion and with a neutral (hammer) grip."
+      "note": "Contributes more in mid-to-high flexion and with a neutral (hammer) grip.",
+      "draw": {"seg": "distal", "along": [0.0066, 0.1815], "offset": 0.03, "w": 0.04, "layer": 2}
     },
     {
       "id": "anterior-deltoid",
       "name": "Anterior deltoid",
       "wgerId": 2,
       "role": "Stabiliser",
-      "driver": "shoulderFlexorDemand",
+      "driver": "stabiliserDemand",
       "weight": [[0, 1], [145, 1]],
-      "note": "Holds the upper arm still against the load's pull on the shoulder."
+      "note": "Holds the upper arm still against the load's pull on the shoulder.",
+      "draw": {"seg": "proximal", "along": [-0.02, 0.1], "offset": 0.05, "w": 0.06, "layer": 3}
     }
   ],
   "phases": [
-    { "name": "Bottom", "range": [0, 40], "text": "Forearm nearly vertical. With free weights the load's line of action passes close to the elbow, so the moment arm (and torque) is small." },
-    { "name": "Mid-range", "range": [40, 110], "text": "Forearm near horizontal. Free-weight moment arm is at its maximum here — the classic sticking point." },
-    { "name": "Top", "range": [110, 145], "text": "The weight moves back over the elbow. Free-weight torque drops off; cables can keep tension here depending on pulley position." }
+    {
+      "name": "Bottom",
+      "range": [0, 40],
+      "text": "Forearm nearly vertical. With free weights the load's line of action passes close to the elbow, so the moment arm (and torque) is small."
+    },
+    {
+      "name": "Mid-range",
+      "range": [40, 110],
+      "text": "Forearm near horizontal. Free-weight moment arm is at its maximum here — the classic sticking point."
+    },
+    {
+      "name": "Top",
+      "range": [110, 145],
+      "text": "The weight moves back over the elbow. Free-weight torque drops off; cables can keep tension here depending on pulley position."
+    }
   ],
   "variants": [
     {
       "id": "dumbbell",
       "name": "Standing dumbbell curl",
       "equipment": "Dumbbell",
-      "upperArmAngle": 0,
-      "load": { "type": "gravity" },
+      "proximalAngle": 0,
+      "load": {"type": "gravity"},
       "notes": "Gravity always pulls straight down, so torque ∝ sin(elbow angle): near zero at the bottom and top, maximum at 90°."
     },
     {
       "id": "barbell",
       "name": "Standing barbell curl",
       "equipment": "Barbell",
-      "upperArmAngle": 0,
-      "load": { "type": "gravity" },
+      "proximalAngle": 0,
+      "load": {"type": "gravity"},
       "notes": "Per arm the torque curve is identical to dumbbells — equipment alone does not change the curve. Differences are the fixed supinated grip, bilateral loading and wrist position."
     },
     {
       "id": "preacher",
       "name": "Preacher curl",
       "equipment": "Barbell / EZ-bar on pad",
-      "upperArmAngle": 45,
-      "upperArmSupported": true,
-      "load": { "type": "gravity" },
-      "muscleModifiers": { "biceps": 0.95, "brachialis": 1.05 },
+      "proximalAngle": 45,
+      "proximalSupported": true,
+      "load": {"type": "gravity"},
+      "muscleModifiers": {"biceps": 0.95, "brachialis": 1.05},
       "notes": "Tilting the upper arm 45° forward shifts peak torque to ~45° of elbow flexion: hardest in the stretched position, almost unloaded at the top. The pad removes the shoulder stabilising demand."
     },
     {
       "id": "cable-low",
       "name": "Cable curl (low pulley, in front)",
       "equipment": "Cable",
-      "upperArmAngle": 0,
-      "load": { "type": "cable", "pulley": { "x": 0.2, "y": -1.35 } },
+      "proximalAngle": 0,
+      "load": {"type": "cable", "pulley": {"x": 0.2, "y": -1.35}},
       "adjustablePulley": true,
       "notes": "The cable pulls towards the pulley instead of straight down. Move the pulley to see how the torque curve's peak shifts and the bottom of the movement gains tension."
     },
@@ -103,12 +130,13 @@
       "id": "cable-bayesian",
       "name": "Bayesian cable curl (pulley behind)",
       "equipment": "Cable",
-      "upperArmAngle": -25,
-      "load": { "type": "cable", "pulley": { "x": -0.9, "y": -0.45 } },
+      "proximalAngle": -25,
+      "load": {"type": "cable", "pulley": {"x": -0.9, "y": -0.45}},
       "adjustablePulley": true,
-      "muscleModifiers": { "biceps": 1.05 },
+      "muscleModifiers": {"biceps": 1.05},
       "notes": "Facing away from the cable with the arm behind the body. The cable keeps a large moment arm in the stretched (bottom) position, which free weights cannot."
     }
   ],
-  "wger": { "exerciseId": 91 }
+  "wger": {"exerciseId": 91},
+  "stabiliserCapacityNm": 70
 }

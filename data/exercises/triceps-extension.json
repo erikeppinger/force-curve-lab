@@ -1,0 +1,134 @@
+{
+  "id": "triceps-extension",
+  "name": "Triceps extension",
+  "joint": "Elbow extension",
+  "movingJoint": "distal",
+  "view": "side",
+  "angleLabel": "Elbow angle",
+  "concentric": "decrease",
+  "angleRange": [0, 140],
+  "angleNote": "Elbow flexion: 0° = arm straight (end of the lift), 140° = fully bent (start). Lifting makes the angle smaller.",
+  "segments": {
+    "proximal": 0.3,
+    "distal": 0.33,
+    "names": ["Upper arm", "Forearm"],
+    "massFractions": [0.028, 0.022],
+    "comFractions": [0.436, 0.682],
+    "massLabel": "forearm",
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end (forearm includes the hand). Approximate textbook anthropometry.",
+    "massSource": "TODO: check against a published anthropometric table (e.g. Dempster's segment parameters as tabulated by Winter)",
+    "note": "Shoulder→elbow and elbow→grip centre in metres, typical adult."
+  },
+  "defaults": {"loadKg": 10, "peakTorqueNm": 50, "variant": "pushdown", "bodyMassKg": 75},
+  "ui": {"load": [1, 40, 0.5], "strength": [20, 110]},
+  "strengthCurve": {
+    "label": "Elbow extensor strength",
+    "points": [[0, 0.6], [30, 0.8], [60, 0.95], [90, 1.0], [120, 0.95], [140, 0.88]],
+    "note": "Relative isometric elbow-extension torque vs elbow angle, assumed weakest near lockout. One curve for every variant, although the long head is stronger with the arm overhead. Approximate shape.",
+    "source": "TODO: verify against published torque–angle data"
+  },
+  "postures": {
+    "standing": [
+      {"shape": "seg", "from": [0, -0.55], "to": [0.02, -1.45], "w": 0.14},
+      {"shape": "seg", "from": [0, 0.05], "to": [0, -0.55], "w": 0.2},
+      {"shape": "circle", "at": [0.02, 0.24], "r": 0.11}
+    ],
+    "supine": [
+      {"shape": "seg", "from": [-0.14, 0.32], "to": [-0.14, -0.62], "w": 0.07, "class": "equipment"},
+      {"shape": "seg", "from": [-0.16, 0.2], "to": [-0.6, 0.2], "w": 0.03, "class": "equipment"},
+      {"shape": "seg", "from": [-0.16, -0.5], "to": [-0.6, -0.5], "w": 0.03, "class": "equipment"},
+      {"shape": "seg", "from": [0, 0.05], "to": [0, -0.55], "w": 0.2},
+      {"shape": "seg", "from": [0, -0.55], "to": [0.22, -0.95], "w": 0.14},
+      {"shape": "seg", "from": [0.22, -0.95], "to": [-0.6, -1.0], "w": 0.12},
+      {"shape": "circle", "at": [0, 0.24], "r": 0.11}
+    ]
+  },
+  "muscles": [
+    {
+      "id": "triceps-long",
+      "name": "Triceps (long head)",
+      "wgerId": 5,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[0, 0.85], [90, 1.0], [140, 1.0]],
+      "note": "Crosses the shoulder too, so it is stretched (and in reality stronger) with the arm overhead. The model can't show that: weights depend on the elbow angle only.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [0.03, 0.22], "offset": -0.045, "w": 0.05, "layer": 1}
+    },
+    {
+      "id": "triceps-lateral-medial",
+      "name": "Triceps (lateral and medial heads)",
+      "wgerId": 5,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[0, 1.0], [90, 1.0], [140, 0.9]],
+      "note": "Cross the elbow only, so they work much the same in every variant.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [0.12, 0.29], "offset": -0.03, "w": 0.045, "layer": 0}
+    },
+    {
+      "id": "anconeus",
+      "name": "Anconeus",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.4], [140, 0.3]],
+      "note": "Small muscle behind the elbow that assists extension near lockout.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "distal", "along": [-0.01, 0.05], "offset": -0.02, "w": 0.03, "layer": 2}
+    }
+  ],
+  "phases": [
+    {
+      "name": "Lockout",
+      "range": [0, 40],
+      "text": "Arm nearly straight. Triceps are weakest here; what the load does depends entirely on its direction."
+    },
+    {
+      "name": "Mid-range",
+      "range": [40, 100],
+      "text": "Forearm across the line of pull: free weights have their largest moment arm here."
+    },
+    {
+      "name": "Stretched",
+      "range": [100, 140],
+      "text": "Elbow fully bent. Overhead and lying versions still load this position; a pushdown mostly does not."
+    }
+  ],
+  "variants": [
+    {
+      "id": "pushdown",
+      "name": "Cable pushdown",
+      "equipment": "Cable",
+      "proximalAngle": 0,
+      "posture": "standing",
+      "load": {"type": "cable", "pulley": {"x": 0.35, "y": 0.55}},
+      "adjustablePulley": true,
+      "defaultLoadKg": 12,
+      "notes": "Upper arm by your side, cable from a high pulley. The pull is almost straight up, so the torque peaks with the forearm horizontal and fades at the bottom. The forearm's own weight helps you here."
+    },
+    {
+      "id": "overhead",
+      "name": "Overhead dumbbell extension",
+      "equipment": "Dumbbell",
+      "proximalAngle": 180,
+      "posture": "standing",
+      "load": {"type": "gravity"},
+      "defaultLoadKg": 10,
+      "notes": "Upper arm pointing up. Torque = m·g·L·sin(elbow angle), largest with the forearm horizontal behind the head. The long head is stretched in this position, which this model can't credit."
+    },
+    {
+      "id": "skullcrusher",
+      "name": "Lying EZ-bar extension (skullcrusher)",
+      "equipment": "EZ-bar on a bench",
+      "proximalAngle": 90,
+      "posture": "supine",
+      "gravity": {"x": -1, "y": 0},
+      "viewLabel": "Side view (lying)",
+      "load": {"type": "gravity"},
+      "defaultLoadKg": 10,
+      "notes": "Lying on your back with the upper arm vertical. Relative to gravity this is the overhead extension turned through 90°, so the torque curve is identical. Load is per arm (half the bar)."
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Triceps Pushdown", "note": "TODO: look up the wger exercise id"}
+}

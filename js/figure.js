@@ -1,14 +1,19 @@
-// Side-view (sagittal) or front-view (frontal) figure: body, arm segments, load, cable or
+// Figure: body (posture shapes from the exercise JSON), the moving chain, load, cable or
 // machine, force vector, moment arm and muscles coloured by estimated activation.
+// Everything is defined in the exercise's own frame and rotated so that the variant's
+// gravity points down the screen (lying postures appear lying). With no in-plane gravity
+// (a top view) nothing is rotated.
+
+import { gravityOf } from "./physics.js";
 
 const NS = "http://www.w3.org/2000/svg";
 const S = 150; // px per metre
-const VIEW = { x0: -1.05, x1: 1.05, y0: -1.5, y1: 0.42 };
-const FLOOR_Y = -1.45;
+const MARGIN = 0.25; // m around the drawing
 
-const px = (p) => ({ x: (p.x - VIEW.x0) * S, y: (VIEW.y1 - p.y) * S });
 const lerp = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
 const add = (a, b, k = 1) => ({ x: a.x + b.x * k, y: a.y + b.y * k });
+const unit = (v) => { const l = Math.hypot(v.x, v.y) || 1; return { x: v.x / l, y: v.y / l }; };
+const P = ([x, y]) => ({ x, y });
 
 function el(name, attrs, parent) {
   const n = document.createElementNS(NS, name);
@@ -17,147 +22,163 @@ function el(name, attrs, parent) {
   return n;
 }
 
-function seg(parent, a, b, cls, widthM, extra = {}) {
-  const A = px(a), B = px(b);
-  return el("line", { x1: A.x, y1: A.y, x2: B.x, y2: B.y, class: cls, "stroke-width": widthM * S, ...extra }, parent);
+/** Rotation that takes the variant's gravity to screen-down (identity when gravity is 0). */
+export function screenRotation(variant) {
+  const g = gravityOf(variant);
+  if (Math.hypot(g.x, g.y) < 1e-9) return 0;
+  return -Math.PI / 2 - Math.atan2(g.y, g.x);
 }
 
-/** Muscle drawn as a thick rounded stroke alongside a bone, offset towards `normal`. */
-function muscle(parent, from, to, t0, t1, normal, offset, widthM, value, title) {
-  const a = add(lerp(from, to, t0), normal, offset);
-  const b = add(lerp(from, to, t1), normal, offset);
-  const g = el("g", {}, parent);
-  seg(g, a, b, "muscle-base", widthM);
-  seg(g, a, b, "muscle-on", widthM, { "stroke-opacity": value.toFixed(3) });
-  el("title", {}, g).textContent = `${title}: ${Math.round(value * 100)}%`;
+/** Title for the figure card. */
+export function viewTitle(exercise, variant) {
+  if (variant.viewLabel) return variant.viewLabel;
+  return { side: "Side view", front: "Front view", top: "Top view" }[exercise.view ?? "side"];
 }
 
-export function renderFigure(svg, { exercise, variant, result, activation, pulley }) {
-  svg.setAttribute("viewBox", `0 0 ${(VIEW.x1 - VIEW.x0) * S} ${(VIEW.y1 - VIEW.y0) * S}`);
+const postureOf = (exercise, variant) => {
+  const all = exercise.postures ?? {};
+  return all[variant.posture] ?? Object.values(all)[0] ?? [];
+};
+
+/** Bounding box (screen frame, metres) that holds the body, the chain over its whole range and the pulley. */
+export function figureBounds(exercise, variant, poses, pulley) {
+  const rot = screenRotation(variant);
+  const R = rotator(rot);
+  const pts = [];
+  for (const s of postureOf(exercise, variant)) {
+    if (s.shape === "circle") { const c = R(P(s.at)); pts.push(add(c, { x: s.r, y: s.r }), add(c, { x: -s.r, y: -s.r })); }
+    else if (s.shape === "ellipse") { const c = R(P(s.at)); const r = Math.max(s.rx, s.ry); pts.push(add(c, { x: r, y: r }), add(c, { x: -r, y: -r })); }
+    else pts.push(R(P(s.from)), R(P(s.to)));
+  }
+  for (const p of poses) pts.push(R(p.base), R(p.mid), R(p.tip));
+  if (pulley) pts.push(R(pulley));
+  const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y);
+  return { x0: Math.min(...xs) - MARGIN, x1: Math.max(...xs) + MARGIN, y0: Math.min(...ys) - MARGIN, y1: Math.max(...ys) + MARGIN };
+}
+
+function rotator(rot) {
+  const c = Math.cos(rot), s = Math.sin(rot);
+  return (p) => ({ x: c * p.x - s * p.y, y: s * p.x + c * p.y });
+}
+
+export function renderFigure(svg, { exercise, variant, result, activation, pulley, bounds }) {
+  const V = bounds;
+  svg.setAttribute("viewBox", `0 0 ${((V.x1 - V.x0) * S).toFixed(1)} ${((V.y1 - V.y0) * S).toFixed(1)}`);
   svg.replaceChildren();
+  const R = rotator(screenRotation(variant));
+  const toPx = (p) => { const q = R(p); return { x: (q.x - V.x0) * S, y: (V.y1 - q.y) * S }; };
+  const seg = (parent, a, b, cls, widthM, extra = {}) => {
+    const A = toPx(a), B = toPx(b);
+    return el("line", { x1: A.x, y1: A.y, x2: B.x, y2: B.y, class: cls, "stroke-width": widthM * S, ...extra }, parent);
+  };
+  const circle = (parent, c, r, cls) => { const C = toPx(c); return el("circle", { cx: C.x, cy: C.y, r: r * S, class: cls }, parent); };
+  // Screen-frame helpers (for things that stand on the floor whatever the posture).
+  const fromScreen = rotator(-screenRotation(variant));
+  const gravityInPlane = Math.hypot(gravityOf(variant).x, gravityOf(variant).y) > 1e-9;
+
   const act = Object.fromEntries(activation.map((m) => [m.id, m.value]));
-  seg(svg, { x: VIEW.x0, y: FLOOR_Y }, { x: VIEW.x1, y: FLOOR_Y }, "floor", 0.01);
-  if (exercise.view === "front") drawFront(svg, variant, result, act, pulley);
-  else drawSide(svg, variant, result, act, pulley);
-  drawForce(svg, result);
+  const { base, mid, tip, joint } = result.pose;
+  const shapes = postureOf(exercise, variant);
 
-  const defs = el("defs", {}, svg);
-  const m = el("marker", { id: "arrow", viewBox: "0 0 10 10", refX: 5, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto-start-reverse" }, defs);
-  el("path", { d: "M0,0 L10,5 L0,10 z", class: "arrowhead" }, m);
-}
-
-function drawCable(svg, hand, pulley) {
-  const P = px(pulley);
-  seg(svg, { x: pulley.x, y: FLOOR_Y }, { x: pulley.x, y: Math.max(pulley.y, 0.3) }, "cable-column", 0.05);
-  seg(svg, hand, pulley, "cable", 0.008);
-  el("circle", { cx: P.x, cy: P.y, r: 0.045 * S, class: "pulley" }, svg);
-}
-
-function drawJoints(svg, ...joints) {
-  for (const j of joints) {
-    const J = px(j);
-    el("circle", { cx: J.x, cy: J.y, r: 0.022 * S, class: "joint" }, svg);
+  // Floor: under the lowest body point, or under the foot for a closed-chain (reaction) load.
+  let floorAt = 0;
+  if (gravityInPlane) {
+    const screenYs = shapes.flatMap((s) => (s.shape === "seg" ? [P(s.from), P(s.to)] : [P(s.at)])).map((p) => R(p).y);
+    const floorY = variant.load.type === "reaction" ? R(tip).y : Math.min(...screenYs);
+    seg(svg, fromScreen({ x: V.x0, y: floorY }), fromScreen({ x: V.x1, y: floorY }), "floor", 0.01);
+    if (variant.load.type === "reaction") {
+      const t = R(tip);
+      seg(svg, fromScreen({ x: t.x - 0.04, y: floorY - 0.05 }), fromScreen({ x: t.x + 0.3, y: floorY - 0.05 }), "equipment", 0.1);
+    }
+    floorAt = floorY;
   }
-}
-
-function drawHandLoad(svg, variant, hand) {
-  const H = px(hand);
-  if (variant.load.type === "gravity") {
-    const r = variant.equipment.startsWith("Dumbbell") ? 0.055 : 0.09;
-    el("circle", { cx: H.x, cy: H.y, r: r * S, class: "weight" }, svg);
-  } else if (variant.load.type === "cable") {
-    el("circle", { cx: H.x, cy: H.y, r: 0.025 * S, class: "handle" }, svg);
-  }
-}
-
-/** Machine: cam at the joint axis, lever along the arm and a pad where the force acts. */
-function drawMachine(svg, result) {
-  const { joint, hand } = result.pose;
-  const at = result.force.at;
-  const J = px(joint);
-  el("circle", { cx: J.x, cy: J.y, r: 0.07 * S, class: "cam" }, svg);
-  const len = Math.hypot(hand.x - joint.x, hand.y - joint.y);
-  const u = { x: (hand.x - joint.x) / len, y: (hand.y - joint.y) / len };
-  const n = { x: -u.y, y: u.x }; // side of the arm the pad pushes on
-  seg(svg, add(joint, n, 0.06), add(at, n, 0.06), "equipment", 0.025);
-  seg(svg, add(add(at, n, 0.045), u, -0.05), add(add(at, n, 0.045), u, 0.05), "pad", 0.04);
-}
-
-function drawSide(svg, variant, result, act, pulley) {
-  const { shoulder, elbow, hand, upperArmAngle: a, forearmAngle: phi } = result.pose;
 
   // Body
-  const hip = { x: 0, y: -0.55 };
-  seg(svg, hip, { x: 0.02, y: FLOOR_Y }, "body", 0.14);
-  seg(svg, { x: 0, y: 0.05 }, hip, "body", 0.2);
-  const head = px({ x: 0.02, y: 0.24 });
-  el("circle", { cx: head.x, cy: head.y, r: 0.11 * S, class: "body" }, svg);
-
-  // Equipment behind the arm
-  const upperDir = { x: Math.sin(a), y: -Math.cos(a) };
-  const upperFront = { x: Math.cos(a), y: Math.sin(a) };
-  if (variant.upperArmSupported) {
-    const p0 = add(lerp(shoulder, elbow, 0.25), upperFront, -0.05);
-    const p1 = add(add(elbow, upperDir, 0.04), upperFront, -0.05);
-    seg(svg, p0, p1, "pad", 0.06);
-    seg(svg, lerp(p0, p1, 0.5), { x: lerp(p0, p1, 0.5).x - 0.05, y: FLOOR_Y }, "equipment", 0.025);
+  for (const s of shapes) {
+    const cls = s.class ?? "body";
+    if (s.shape === "seg") seg(svg, P(s.from), P(s.to), cls, s.w);
+    else if (s.shape === "circle") circle(svg, P(s.at), s.r, cls);
+    else if (s.shape === "ellipse") {
+      const C = toPx(P(s.at));
+      el("ellipse", { cx: C.x, cy: C.y, rx: s.rx * S, ry: s.ry * S, class: cls }, svg);
+    }
   }
-  if (variant.load.type === "cable") drawCable(svg, hand, pulley);
-  if (variant.load.type === "machine") drawMachine(svg, result);
 
-  // Arm with muscles (deeper muscles first)
-  const foreInner = { x: Math.cos(phi), y: Math.sin(phi) };
-  seg(svg, shoulder, elbow, "bone", 0.06);
-  seg(svg, elbow, hand, "bone", 0.05);
-  muscle(svg, shoulder, elbow, 0.5, 0.98, upperFront, 0.025, 0.04, act.brachialis ?? 0, "Brachialis");
-  muscle(svg, shoulder, elbow, 0.15, 0.85, upperFront, 0.04, 0.055, act.biceps ?? 0, "Biceps brachii");
-  muscle(svg, elbow, hand, 0.02, 0.55, foreInner, 0.03, 0.04, act.brachioradialis ?? 0, "Brachioradialis");
-  muscle(svg, add(shoulder, upperDir, -0.02), add(shoulder, upperDir, 0.1), 0, 1, upperFront, 0.05, 0.06, act["anterior-deltoid"] ?? 0, "Anterior deltoid");
-  drawJoints(svg, shoulder, elbow);
-  drawHandLoad(svg, variant, hand);
-}
+  // Equipment behind the limb
+  const proxDir = unit({ x: mid.x - base.x, y: mid.y - base.y });
+  const proxSide = { x: -proxDir.y, y: proxDir.x };
+  if (variant.proximalSupported) {
+    const p0 = add(lerp(base, mid, 0.25), proxSide, -0.05);
+    const p1 = add(add(mid, proxDir, 0.04), proxSide, -0.05);
+    seg(svg, p0, p1, "pad", 0.06);
+    if (gravityInPlane) {
+      const m = R(lerp(p0, p1, 0.5));
+      seg(svg, fromScreen(m), fromScreen({ x: m.x - 0.05, y: floorAt }), "equipment", 0.025);
+    }
+  }
+  if (variant.load.type === "cable") {
+    if (gravityInPlane) {
+      const q = R(pulley);
+      seg(svg, fromScreen({ x: q.x, y: floorAt }), fromScreen({ x: q.x, y: Math.max(q.y, V.y1 - MARGIN) }), "cable-column", 0.05);
+    }
+    seg(svg, tip, pulley, "cable", 0.008);
+    circle(svg, pulley, 0.045, "pulley");
+  }
+  if (variant.load.type === "machine") {
+    // Cam at the joint, lever along the segment, pad on the side the force pushes from.
+    circle(svg, joint, 0.07, "cam");
+    const n = unit({ x: -result.force.x, y: -result.force.y });
+    const at = result.force.at;
+    const u = unit({ x: tip.x - joint.x, y: tip.y - joint.y });
+    seg(svg, add(joint, n, 0.06), add(at, n, 0.06), "equipment", 0.025);
+    seg(svg, add(add(at, n, 0.045), u, -0.05), add(add(at, n, 0.045), u, 0.05), "pad", 0.04);
+  }
 
-/** Front view of the right side of the body: the shoulder is the origin, the trunk is to its left. */
-function drawFront(svg, variant, result, act, pulley) {
-  const { shoulder, elbow, hand, upperArmAngle: a } = result.pose;
-  const mid = -0.19; // trunk centre line
+  // Limb with muscles (lower layers first)
+  seg(svg, base, mid, "bone", 0.06);
+  seg(svg, mid, tip, "bone", 0.05);
+  const segs = { proximal: [base, mid], distal: [mid, tip] };
+  const drawn = exercise.muscles.filter((m) => m.draw).sort((a, b) => (a.draw.layer ?? 0) - (b.draw.layer ?? 0));
+  for (const m of drawn) {
+    const d = m.draw;
+    let a, b;
+    if (d.points) [a, b] = d.points.map(P);
+    else {
+      const [from, to] = segs[d.seg];
+      const u = unit({ x: to.x - from.x, y: to.y - from.y });
+      const n = { x: -u.y, y: u.x };
+      a = add(add(from, u, d.along[0]), n, d.offset ?? 0);
+      b = add(add(from, u, d.along[1]), n, d.offset ?? 0);
+    }
+    const value = act[m.id] ?? 0;
+    const g = el("g", {}, svg);
+    seg(g, a, b, "muscle-base", d.w);
+    seg(g, a, b, "muscle-on", d.w, { "stroke-opacity": value.toFixed(3) });
+    el("title", {}, g).textContent = `${m.name}: ${Math.round(value * 100)}%`;
+  }
+  for (const j of [base, mid]) circle(svg, j, 0.022, "joint");
 
-  // Body: trunk, legs, the other (resting) arm and head
-  seg(svg, { x: mid, y: 0.02 }, { x: mid, y: -0.52 }, "body", 0.3);
-  for (const dx of [-0.08, 0.08]) seg(svg, { x: mid + dx, y: -0.6 }, { x: mid + dx * 1.2, y: FLOOR_Y }, "body", 0.12);
-  seg(svg, { x: 2 * mid, y: -0.02 }, { x: 2 * mid - 0.02, y: -0.6 }, "body", 0.07);
-  seg(svg, { x: mid, y: 0.05 }, { x: mid, y: 0.14 }, "body", 0.08);
-  const head = px({ x: mid, y: 0.25 });
-  el("circle", { cx: head.x, cy: head.y, r: 0.11 * S, class: "body" }, svg);
+  // Load at the tip
+  if (variant.load.type === "gravity") {
+    circle(svg, tip, variant.equipment.startsWith("Dumbbell") || variant.equipment.startsWith("Ankle") ? 0.055 : 0.09, "weight");
+  } else if (variant.load.type === "cable") {
+    circle(svg, tip, 0.025, "handle");
+  }
 
-  if (variant.load.type === "cable") drawCable(svg, hand, pulley);
-  if (variant.load.type === "machine") drawMachine(svg, result);
-
-  // Working arm with muscles (deeper muscles first)
-  const armDir = { x: Math.sin(a), y: -Math.cos(a) };
-  const armTop = { x: Math.cos(a), y: Math.sin(a) }; // lateral / upper side of the arm
-  seg(svg, shoulder, elbow, "bone", 0.06);
-  seg(svg, elbow, hand, "bone", 0.05);
-  muscle(svg, { x: mid + 0.06, y: 0.14 }, { x: -0.03, y: 0.05 }, 0, 1, armTop, 0, 0.04, act["upper-trapezius"] ?? 0, "Upper trapezius");
-  muscle(svg, { x: -0.15, y: 0.04 }, { x: 0.01, y: 0.03 }, 0, 1, armTop, 0, 0.03, act.supraspinatus ?? 0, "Supraspinatus");
-  muscle(svg, add(shoulder, armDir, -0.01), add(shoulder, armDir, 0.12), 0, 1, armTop, -0.005, 0.045, act["anterior-deltoid"] ?? 0, "Anterior deltoid");
-  muscle(svg, add(shoulder, armDir, -0.03), add(shoulder, armDir, 0.15), 0, 1, armTop, 0.035, 0.055, act["lateral-deltoid"] ?? 0, "Lateral deltoid");
-  drawJoints(svg, shoulder, elbow);
-  drawHandLoad(svg, variant, hand);
-}
-
-/** Line of action, moment arm (from the moving joint) and force vector. */
-function drawForce(svg, result) {
+  // Line of action, moment arm (from the moving joint) and force vector
   const f = result.force;
-  if (!(f.mag > 0)) return;
-  const { joint } = result.pose;
-  const u = { x: f.x / f.mag, y: f.y / f.mag };
-  seg(svg, add(f.at, u, -0.5), add(f.at, u, 0.5), "line-of-action", 0.006);
-  seg(svg, joint, result.momentArmFoot, "moment-arm", 0.012);
-  const mid = px(lerp(joint, result.momentArmFoot, 0.5));
-  const t = el("text", { x: mid.x + 6, y: mid.y - 6, class: "fig-label" }, svg);
-  t.textContent = `d = ${Math.abs(result.momentArm * 100).toFixed(0)} cm`;
-  seg(svg, f.at, add(f.at, u, 0.28), "force", 0.014, { "marker-end": "url(#arrow)" });
-  const tip = px(add(f.at, u, 0.33));
-  el("text", { x: tip.x, y: tip.y + 4, class: "fig-label force-label", "text-anchor": "middle" }, svg).textContent = "F";
+  if (f.mag > 0) {
+    const u = unit(f);
+    seg(svg, add(f.at, u, -0.5), add(f.at, u, 0.5), "line-of-action", 0.006);
+    seg(svg, joint, result.momentArmFoot, "moment-arm", 0.012);
+    const m = toPx(lerp(joint, result.momentArmFoot, 0.5));
+    el("text", { x: m.x + 6, y: m.y - 6, class: "fig-label" }, svg).textContent = `d = ${Math.abs(result.momentArm * 100).toFixed(0)} cm`;
+    seg(svg, f.at, add(f.at, u, 0.28), "force", 0.014, { "marker-end": "url(#arrow)" });
+    const t = toPx(add(f.at, u, 0.33));
+    el("text", { x: t.x, y: t.y + 4, class: "fig-label force-label", "text-anchor": "middle" }, svg).textContent = "F";
+  }
+
+  const defs = el("defs", {}, svg);
+  const mk = el("marker", { id: "arrow", viewBox: "0 0 10 10", refX: 5, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto-start-reverse" }, defs);
+  el("path", { d: "M0,0 L10,5 L0,10 z", class: "arrowhead" }, mk);
 }

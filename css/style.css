@@ -159,8 +159,10 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 .legend .sw.strength { border-color: var(--strength); border-top-style: dotted; }
 
 /* Muscles */
-.muscle-layout { display: grid; grid-template-columns: minmax(110px, 160px) 1fr; gap: 16px; align-items: start; }
-.bodymap { position: relative; width: 100%; aspect-ratio: 200 / 369; }
+.muscle-layout { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start; }
+.bodymaps { display: flex; gap: 6px; width: 150px; }
+.bodymaps.both { width: 260px; }
+.bodymap { position: relative; flex: 1; min-width: 0; aspect-ratio: 200 / 369; }
 .bodymap img { position: absolute; inset: 0 auto auto 0; width: 100%; height: auto; }
 .bodymap img.overlay { transition: opacity 0.15s linear; }
 @media (prefers-color-scheme: dark) {
@@ -184,7 +186,7 @@ footer { color: var(--muted); font-size: 0.8rem; padding-bottom: 24px; }
 
 @media (max-width: 520px) {
   .muscle-layout { grid-template-columns: 1fr; }
-  .bodymap { max-width: 150px; margin: 0 auto; }
+  .bodymaps { margin: 0 auto; }
   .wger-row { flex-direction: column; }
   .readouts dd { font-size: 1rem; }
 }

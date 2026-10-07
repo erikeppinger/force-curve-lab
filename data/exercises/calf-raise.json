@@ -1,0 +1,112 @@
+{
+  "id": "calf-raise",
+  "name": "Calf raise",
+  "joint": "Ankle plantarflexion",
+  "movingJoint": "distal",
+  "view": "side",
+  "angleLabel": "Ankle angle",
+  "angleOffset": 90,
+  "angleSense": -1,
+  "angleRange": [-20, 40],
+  "angleNote": "Plantarflexion: 0° = foot at right angles to the shin, negative = heel below the step (stretch), 40° = up on the toes. Knee at the origin.",
+  "segments": {
+    "proximal": 0.43,
+    "distal": 0.14,
+    "names": ["Lower leg", "Foot"],
+    "note": "Knee→ankle, and ankle→ball of the foot (the point the floor pushes on), in metres. Closed chain: the floor carries the foot's own weight, so no limb weight is added."
+  },
+  "defaults": {"loadKg": 10, "peakTorqueNm": 150, "variant": "single-leg", "bodyMassKg": 75},
+  "ui": {"load": [0, 120, 1], "strength": [50, 300]},
+  "strengthCurve": {
+    "label": "Plantarflexor strength",
+    "points": [[-20, 1.0], [0, 0.9], [20, 0.7], [40, 0.45]],
+    "note": "Relative plantarflexion torque, assumed strongest with the calf stretched and weakest high on the toes. Approximate shape.",
+    "source": "TODO: verify against published torque–angle data"
+  },
+  "postures": {
+    "standing": [
+      {"shape": "seg", "from": [0, 0], "to": [0, 0.43], "w": 0.14},
+      {"shape": "seg", "from": [0, 0.43], "to": [0, 0.95], "w": 0.2},
+      {"shape": "circle", "at": [0.02, 1.15], "r": 0.11}
+    ],
+    "seated": [
+      {"shape": "seg", "from": [0, 0], "to": [-0.43, 0], "w": 0.14},
+      {"shape": "seg", "from": [-0.43, 0], "to": [-0.43, 0.52], "w": 0.2},
+      {"shape": "circle", "at": [-0.41, 0.72], "r": 0.11},
+      {"shape": "seg", "from": [-0.5, -0.09], "to": [-0.2, -0.09], "w": 0.05, "class": "equipment"},
+      {"shape": "seg", "from": [-0.14, 0.1], "to": [0.06, 0.1], "w": 0.06, "class": "pad"}
+    ]
+  },
+  "muscles": [
+    {
+      "id": "gastrocnemius",
+      "name": "Gastrocnemius",
+      "wgerId": 7,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[-20, 1.0], [40, 0.85]],
+      "note": "Crosses the knee too: with the knee bent (seated) it is slack and contributes much less.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [0.05, 0.22], "offset": -0.045, "w": 0.07, "layer": 1}
+    },
+    {
+      "id": "soleus",
+      "name": "Soleus",
+      "wgerId": 15,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[-20, 0.9], [40, 0.9]],
+      "note": "Crosses the ankle only, so it works whatever the knee angle.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [0.15, 0.36], "offset": -0.035, "w": 0.05, "layer": 0}
+    }
+  ],
+  "phases": [
+    {
+      "name": "Stretch",
+      "range": [-20, 0],
+      "text": "Heel below the step. The ball of the foot is furthest in front of the ankle, so the moment arm is at its largest."
+    },
+    {
+      "name": "Mid-range",
+      "range": [0, 20],
+      "text": "Moment arm = foot lever × cos(angle): it shrinks slowly as you rise."
+    },
+    {
+      "name": "Top",
+      "range": [20, 40],
+      "text": "High on the toes: smaller moment arm, but the calves are weakest here too."
+    }
+  ],
+  "variants": [
+    {
+      "id": "single-leg",
+      "name": "Single-leg standing calf raise (dumbbell)",
+      "equipment": "Dumbbell, on a step",
+      "posture": "standing",
+      "load": {"type": "reaction", "bodyWeight": 1},
+      "defaultLoadKg": 10,
+      "notes": "Closed chain: the floor pushes up on the ball of the foot with your whole body weight plus the dumbbell. Torque = (body + m)·g·foot lever·cos(angle)."
+    },
+    {
+      "id": "two-leg",
+      "name": "Standing calf raise machine (two legs)",
+      "equipment": "Machine / Smith, on a step",
+      "posture": "standing",
+      "load": {"type": "reaction", "bodyWeight": 0.5},
+      "defaultLoadKg": 30,
+      "notes": "Each leg carries half your body weight plus half the load (the load slider is per leg)."
+    },
+    {
+      "id": "seated",
+      "name": "Seated calf raise machine",
+      "equipment": "Machine",
+      "posture": "seated",
+      "load": {"type": "reaction", "bodyWeight": 0},
+      "defaultLoadKg": 30,
+      "muscleModifiers": {"gastrocnemius": 0.5},
+      "notes": "The load sits on the knees, so body weight isn't lifted. With the knee bent the gastrocnemius is slack; the 0.5 factor on it is an estimate, not a measured value."
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Standing Calf Raises", "note": "TODO: look up the wger exercise id"}
+}

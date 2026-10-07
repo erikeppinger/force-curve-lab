@@ -26,18 +26,21 @@
         <label>Compare with
           <select id="compare"></select>
         </label>
-        <label>Load <output id="load-out"></output>
+        <label><span id="load-label">Load</span> <output id="load-out"></output>
           <input id="load" type="range" min="1" max="30" step="0.5">
         </label>
         <label><span id="strength-label">Strength (peak torque)</span> <output id="strength-out"></output>
           <input id="strength" type="range" min="25" max="110" step="1">
+        </label>
+        <label id="bodymass-control">Body mass <output id="bodymass-out"></output>
+          <input id="bodymass" type="range" min="40" max="140" step="1">
         </label>
       </div>
       <div id="pulley-controls" class="control-grid pulley" hidden>
         <label><span id="pulley-x-label">Pulley forward / back</span>
           <input id="pulley-x" type="range" min="-1.0" max="1.0" step="0.01">
         </label>
-        <label>Pulley height
+        <label><span id="pulley-y-label">Pulley height</span>
           <input id="pulley-y" type="range" min="-1.42" max="0.4" step="0.01">
         </label>
         <button id="pulley-reset" type="button" class="secondary">Reset pulley</button>
@@ -58,10 +61,11 @@
       </div>
       <svg id="figure" role="img" aria-label="The arm, load, force direction and moment arm"></svg>
       <dl class="readouts">
-        <div><dt>Load torque</dt><dd id="ro-torque"></dd></div>
+        <div><dt>Joint torque</dt><dd id="ro-torque"></dd></div>
         <div><dt>Moment arm</dt><dd id="ro-arm"></dd></div>
         <div><dt>Effort</dt><dd id="ro-effort"></dd></div>
       </dl>
+      <p id="ro-limb" class="hint" hidden></p>
       <p id="ro-warning" class="warning" hidden>Load exceeds strength at this angle — this is where the lift would fail.</p>
       <div class="phase">
         <strong id="phase-name"></strong>
@@ -78,14 +82,17 @@
       </ul>
       <svg id="torque-chart" role="img" aria-label="Load torque and strength over the range of motion"></svg>
       <h3>Effort across the range</h3>
-      <p class="hint">Load torque ÷ strength at each angle. The peak is the sticking point.</p>
+      <p class="hint">Joint torque ÷ strength at each angle. The peak is the sticking point.</p>
       <svg id="effort-chart" role="img" aria-label="Effort as percent of maximum over the range of motion"></svg>
     </section>
 
-    <section class="card muscles" aria-label="Muscles">
+    <section class="card muscles" id="muscles-card" aria-label="Muscles">
       <h3>Muscles involved</h3>
       <div class="muscle-layout">
-        <div id="bodymap" class="bodymap"></div>
+        <div class="bodymaps">
+          <div id="bodymap-front" class="bodymap"></div>
+          <div id="bodymap-back" class="bodymap"></div>
+        </div>
         <ul id="muscle-list" class="muscle-list"></ul>
       </div>
       <p class="hint">Estimated relative activation at the current angle (illustrative model, not EMG). Muscle map © wger.de, CC-BY-SA.</p>

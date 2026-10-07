@@ -1,0 +1,136 @@
+{
+  "id": "hip-abduction",
+  "name": "Hip abduction",
+  "joint": "Hip abduction",
+  "movingJoint": "proximal",
+  "view": "front",
+  "angleLabel": "Hip angle",
+  "angleRange": [0, 45],
+  "angleNote": "Abduction: 0° = leg straight down, 45° = leg out to the side. Hip at the origin, x out to the side.",
+  "segments": {
+    "proximal": 0.43,
+    "distal": 0.43,
+    "names": ["Thigh", "Lower leg"],
+    "massFractions": [0.1, 0.061],
+    "comFractions": [0.433, 0.606],
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end. Approximate textbook anthropometry. The lower leg includes the foot.",
+    "massSource": "TODO: check against a published anthropometric table (e.g. Dempster's segment parameters as tabulated by Winter)",
+    "note": "Hip→knee and knee→ankle in metres, typical adult. The leg is modelled straight.",
+    "massLabel": "leg"
+  },
+  "defaults": {"loadKg": 5, "peakTorqueNm": 100, "variant": "cable", "bodyMassKg": 75},
+  "ui": {"load": [0, 60, 0.5], "strength": [40, 250]},
+  "strengthCurve": {
+    "label": "Hip abductor strength",
+    "points": [[0, 1.0], [15, 0.95], [30, 0.8], [45, 0.65]],
+    "note": "Relative hip-abduction torque, assumed to fall off as the leg rises. Approximate shape.",
+    "source": "TODO: verify against published torque–angle data"
+  },
+  "postures": {
+    "standing": [
+      {"shape": "seg", "from": [-0.2, -0.02], "to": [-0.21, -0.86], "w": 0.12},
+      {"shape": "seg", "from": [-0.1, 0.05], "to": [-0.1, 0.55], "w": 0.3},
+      {"shape": "circle", "at": [-0.1, 0.8], "r": 0.11}
+    ],
+    "side-lying": [
+      {"shape": "seg", "from": [-0.3, 0.95], "to": [-0.3, -1.0], "w": 0.02, "class": "equipment"},
+      {"shape": "seg", "from": [-0.2, -0.02], "to": [-0.21, -0.86], "w": 0.12},
+      {"shape": "seg", "from": [-0.1, 0.05], "to": [-0.1, 0.55], "w": 0.3},
+      {"shape": "circle", "at": [-0.12, 0.8], "r": 0.11}
+    ]
+  },
+  "muscles": [
+    {
+      "id": "gluteus-medius",
+      "name": "Gluteus medius",
+      "wgerId": null,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[0, 1.0], [45, 0.95]],
+      "note": "Main hip abductor (no separate wger map).",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [-0.12, 0.08], "offset": 0.06, "w": 0.07, "layer": 0}
+    },
+    {
+      "id": "gluteus-minimus",
+      "name": "Gluteus minimus",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.7], [45, 0.7]],
+      "note": "Lies under gluteus medius and helps it.",
+      "source": "TODO: check against EMG literature"
+    },
+    {
+      "id": "tfl",
+      "name": "Tensor fasciae latae",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.5], [45, 0.6]],
+      "note": "Front-side abductor; works more if the hip is bent.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [0.02, 0.2], "offset": 0.045, "w": 0.035, "layer": 1}
+    },
+    {
+      "id": "gluteus-maximus",
+      "name": "Gluteus maximus (upper fibres)",
+      "wgerId": 8,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.3], [45, 0.4]],
+      "note": "Upper fibres assist abduction.",
+      "source": "TODO: check against EMG literature"
+    }
+  ],
+  "phases": [
+    {
+      "name": "Start",
+      "range": [0, 15],
+      "text": "Leg straight down. Side-lying, the leg's own weight has its full moment arm here; standing, gravity does almost nothing."
+    },
+    {"name": "Mid-range", "range": [15, 30], "text": "Leg rising."},
+    {"name": "Top", "range": [30, 45], "text": "Leg out to the side, abductors at their weakest."}
+  ],
+  "variants": [
+    {
+      "id": "cable",
+      "name": "Standing cable hip abduction",
+      "equipment": "Cable, ankle cuff",
+      "posture": "standing",
+      "load": {"type": "cable", "pulley": {"x": -0.6, "y": -0.85}},
+      "adjustablePulley": true,
+      "defaultLoadKg": 5,
+      "notes": "Standing on the other leg, cable from a low pulley on that side. The cable loads the start; the leg's own weight adds a little as it rises."
+    },
+    {
+      "id": "side-lying",
+      "name": "Side-lying hip abduction (ankle weight)",
+      "equipment": "Ankle weight",
+      "posture": "side-lying",
+      "gravity": {"x": -1, "y": 0},
+      "viewLabel": "Front view (lying on your side)",
+      "load": {"type": "gravity"},
+      "defaultLoadKg": 0,
+      "notes": "Lying on your side, gravity pulls the top leg back down: torque = (m·L + leg weight)·g·cos(angle). Even with no added weight the leg itself (about 16% of body mass) is a real load."
+    },
+    {
+      "id": "machine",
+      "name": "Standing hip abduction machine",
+      "equipment": "Machine",
+      "posture": "standing",
+      "load": {
+        "type": "machine",
+        "padDistance": 0.4,
+        "camProfile": {
+          "points": [[0, 0.3], [20, 0.34], [45, 0.34]],
+          "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
+          "source": "TODO: replace with a measured profile for a real machine"
+        }
+      },
+      "defaultLoadKg": 15,
+      "notes": "Pad on the outside of the thigh above the knee. The common seated machine (hip bent 90°, knee bent) is a different joint set-up this model can't put in the same exercise."
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Abduction while standing", "note": "TODO: look up the wger exercise id"}
+}

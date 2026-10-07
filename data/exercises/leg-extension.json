@@ -1,0 +1,108 @@
+{
+  "id": "leg-extension",
+  "name": "Leg extension",
+  "joint": "Knee extension",
+  "movingJoint": "distal",
+  "view": "side",
+  "angleLabel": "Knee angle",
+  "angleSense": -1,
+  "concentric": "decrease",
+  "angleRange": [0, 90],
+  "angleNote": "Knee flexion: 90° = lower leg hanging (start), 0° = leg straight (end). Lifting makes the angle smaller. Hip at the origin.",
+  "segments": {
+    "proximal": 0.43,
+    "distal": 0.43,
+    "names": ["Thigh", "Lower leg"],
+    "massFractions": [0.1, 0.061],
+    "comFractions": [0.433, 0.606],
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end. Approximate textbook anthropometry. The lower leg includes the foot.",
+    "massSource": "TODO: check against a published anthropometric table (e.g. Dempster's segment parameters as tabulated by Winter)",
+    "note": "Hip→knee and knee→ankle in metres, typical adult.",
+    "massLabel": "lower leg"
+  },
+  "defaults": {"loadKg": 30, "peakTorqueNm": 220, "variant": "machine", "bodyMassKg": 75},
+  "ui": {"load": [0, 100, 1], "strength": [80, 350]},
+  "strengthCurve": {
+    "label": "Knee extensor strength",
+    "points": [[0, 0.55], [30, 0.8], [60, 1.0], [90, 0.95]],
+    "note": "Relative isometric knee-extension torque vs knee angle, assumed weakest near full extension and strongest around 60°. Approximate shape.",
+    "source": "TODO: verify against published torque–angle data"
+  },
+  "postures": {
+    "seated": [
+      {"shape": "seg", "from": [-0.12, -0.09], "to": [0.4, -0.09], "w": 0.05, "class": "equipment"},
+      {"shape": "seg", "from": [-0.14, -0.06], "to": [-0.17, 0.5], "w": 0.05, "class": "equipment"},
+      {"shape": "seg", "from": [0.1, -0.11], "to": [0.1, -0.62], "w": 0.04, "class": "equipment"},
+      {"shape": "seg", "from": [0, 0], "to": [0, 0.52], "w": 0.2},
+      {"shape": "circle", "at": [0.02, 0.72], "r": 0.11}
+    ]
+  },
+  "muscles": [
+    {
+      "id": "vasti",
+      "name": "Vasti (quadriceps)",
+      "wgerId": 10,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[0, 1.0], [90, 1.0]],
+      "note": "Vastus lateralis, medialis and intermedius: cross the knee only.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [0.15, 0.4], "offset": 0.045, "w": 0.065, "layer": 0}
+    },
+    {
+      "id": "rectus-femoris",
+      "name": "Rectus femoris (quadriceps)",
+      "wgerId": 10,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[0, 0.8], [90, 0.7]],
+      "note": "Also crosses the hip; seated with the hip bent it is slack and contributes less. The weights here can't depend on hip angle.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [0.05, 0.38], "offset": 0.07, "w": 0.04, "layer": 1}
+    }
+  ],
+  "phases": [
+    {
+      "name": "Lockout",
+      "range": [0, 30],
+      "text": "Leg nearly straight. An ankle weight is hardest here, exactly where the quads are weakest."
+    },
+    {"name": "Mid-range", "range": [30, 60], "text": "Lower leg rising."},
+    {
+      "name": "Start",
+      "range": [60, 90],
+      "text": "Lower leg hanging. An ankle weight hangs almost under the knee, so there's little torque; a machine's cam can still load it."
+    }
+  ],
+  "variants": [
+    {
+      "id": "machine",
+      "name": "Leg extension machine",
+      "equipment": "Machine",
+      "posture": "seated",
+      "proximalAngle": 90,
+      "load": {
+        "type": "machine",
+        "padDistance": 0.38,
+        "camProfile": {
+          "points": [[0, 0.24], [45, 0.3], [90, 0.3]],
+          "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
+          "source": "TODO: replace with a measured profile for a real machine"
+        }
+      },
+      "defaultLoadKg": 30,
+      "notes": "Pad on the shin near the ankle. This illustrative cam eases off near lockout, where the quads are weakest. The lower leg's own weight adds torque too."
+    },
+    {
+      "id": "ankle-weight",
+      "name": "Seated knee extension with ankle weight",
+      "equipment": "Ankle weight",
+      "posture": "seated",
+      "proximalAngle": 90,
+      "load": {"type": "gravity"},
+      "defaultLoadKg": 5,
+      "notes": "Gravity: torque = (m·L + lower-leg weight)·g·cos(knee angle). Zero with the lower leg hanging, largest at lockout."
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Leg Extension", "note": "TODO: look up the wger exercise id"}
+}

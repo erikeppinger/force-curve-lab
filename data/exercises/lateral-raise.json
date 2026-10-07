@@ -2,22 +2,37 @@
   "id": "lateral-raise",
   "name": "Lateral raise",
   "joint": "Shoulder abduction",
-  "movingJoint": "shoulder",
+  "movingJoint": "proximal",
   "view": "front",
   "angleLabel": "Abduction angle",
   "angleRange": [0, 90],
   "angleNote": "0° = arm by your side, 90° = arm horizontal at shoulder height. Front view: x points out to the side.",
   "segments": {
-    "upperArm": 0.30,
-    "forearm": 0.33,
-    "note": "Shoulder→elbow and elbow→grip centre in metres, typical adult. The arm is modelled straight; a soft elbow shortens the lever slightly. The arm's own weight is not included, though in this lift it adds a noticeable share of the torque."
+    "proximal": 0.3,
+    "distal": 0.33,
+    "names": ["Upper arm", "Forearm"],
+    "massFractions": [0.028, 0.022],
+    "comFractions": [0.436, 0.682],
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end (forearm includes the hand). Approximate textbook anthropometry.",
+    "massSource": "TODO: check against a published anthropometric table (e.g. Dempster's segment parameters as tabulated by Winter)",
+    "note": "Shoulder→elbow and elbow→grip centre in metres, typical adult. The arm is modelled straight; a soft elbow shortens the lever slightly."
   },
-  "defaults": { "loadKg": 5, "peakTorqueNm": 50, "variant": "dumbbell" },
+  "defaults": {"loadKg": 5, "peakTorqueNm": 50, "variant": "dumbbell", "bodyMassKg": 75},
   "strengthCurve": {
     "label": "Shoulder abductor strength",
     "points": [[0, 0.9], [30, 1.0], [60, 0.9], [90, 0.75]],
     "note": "Relative isometric shoulder-abduction torque vs angle, assumed to fall off as the arm rises. Approximate shape.",
     "source": "TODO: verify against published isometric/isokinetic shoulder-abduction torque–angle data"
+  },
+  "postures": {
+    "standing": [
+      {"shape": "seg", "from": [-0.19, 0.02], "to": [-0.19, -0.52], "w": 0.3},
+      {"shape": "seg", "from": [-0.27, -0.6], "to": [-0.286, -1.45], "w": 0.12},
+      {"shape": "seg", "from": [-0.11, -0.6], "to": [-0.094, -1.45], "w": 0.12},
+      {"shape": "seg", "from": [-0.38, -0.02], "to": [-0.4, -0.6], "w": 0.07},
+      {"shape": "seg", "from": [-0.19, 0.05], "to": [-0.19, 0.14], "w": 0.08},
+      {"shape": "circle", "at": [-0.19, 0.25], "r": 0.11}
+    ]
   },
   "muscles": [
     {
@@ -28,7 +43,8 @@
       "driver": "jointEffort",
       "weight": [[0, 0.7], [30, 0.9], [60, 1.0], [90, 1.0]],
       "note": "Main abductor once the arm is away from the side; its moment arm grows as the arm rises. wger has no separate map for the lateral head.",
-      "source": "TODO: check against EMG literature"
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [-0.03, 0.15], "offset": 0.035, "w": 0.055, "layer": 3}
     },
     {
       "id": "supraspinatus",
@@ -38,7 +54,8 @@
       "driver": "jointEffort",
       "weight": [[0, 0.9], [30, 0.8], [60, 0.6], [90, 0.5]],
       "note": "Helps start the raise and keeps the head of the humerus centred in the socket; relatively more important early in the range.",
-      "source": "TODO: check against EMG literature"
+      "source": "TODO: check against EMG literature",
+      "draw": {"points": [[-0.15, 0.04], [0.01, 0.03]], "w": 0.03, "layer": 1}
     },
     {
       "id": "anterior-deltoid",
@@ -48,37 +65,51 @@
       "driver": "jointEffort",
       "weight": [[0, 0.35], [90, 0.45]],
       "note": "Assists abduction, and takes over more if the arm drifts forward of the body.",
-      "source": "TODO: check against EMG literature"
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [-0.01, 0.12], "offset": -0.005, "w": 0.045, "layer": 2}
     },
     {
       "id": "upper-trapezius",
       "name": "Upper trapezius",
-      "wgerId": null,
+      "wgerId": 9,
       "role": "Synergist",
       "driver": "jointEffort",
       "weight": [[0, 0.2], [30, 0.35], [60, 0.6], [90, 0.75]],
-      "note": "Rotates the shoulder blade upwards as the arm rises. A back-view muscle, so it isn't shown on the front body map.",
-      "source": "TODO: check against EMG literature"
+      "note": "Rotates the shoulder blade upwards as the arm rises. Shown on the back body map.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"points": [[-0.13, 0.14], [-0.03, 0.05]], "w": 0.04, "layer": 0}
     }
   ],
   "phases": [
-    { "name": "Start", "range": [0, 30], "text": "Arm by your side. A dumbbell's line of action passes close to the shoulder, so there's little torque here. A cable from the opposite side already pulls the arm across the body." },
-    { "name": "Mid-range", "range": [30, 70], "text": "The free-weight moment arm grows with the sine of the angle. The deltoid's leverage improves too, and the shoulder blade starts to rotate upwards." },
-    { "name": "Top", "range": [70, 90], "text": "Arm near horizontal. With a dumbbell the moment arm is the full arm length just as abductor strength is falling off, so this is the sticking point." }
+    {
+      "name": "Start",
+      "range": [0, 30],
+      "text": "Arm by your side. A dumbbell's line of action passes close to the shoulder, so there's little torque here. A cable from the opposite side already pulls the arm across the body."
+    },
+    {
+      "name": "Mid-range",
+      "range": [30, 70],
+      "text": "The free-weight moment arm grows with the sine of the angle. The deltoid's leverage improves too, and the shoulder blade starts to rotate upwards."
+    },
+    {
+      "name": "Top",
+      "range": [70, 90],
+      "text": "Arm near horizontal. With a dumbbell the moment arm is the full arm length just as abductor strength is falling off, so this is the sticking point."
+    }
   ],
   "variants": [
     {
       "id": "dumbbell",
       "name": "Standing dumbbell lateral raise",
       "equipment": "Dumbbell",
-      "load": { "type": "gravity" },
+      "load": {"type": "gravity"},
       "notes": "Gravity pulls straight down, so torque = m·g·L·sin(angle): zero with the arm by your side and maximum at shoulder height. The bottom of the range is almost unloaded."
     },
     {
       "id": "cable",
       "name": "Cable lateral raise (low pulley, opposite side)",
       "equipment": "Cable",
-      "load": { "type": "cable", "pulley": { "x": -0.7, "y": -1.3 } },
+      "load": {"type": "cable", "pulley": {"x": -0.7, "y": -1.3}},
       "adjustablePulley": true,
       "notes": "The cable comes from a low pulley on the other side of your body, so it pulls the arm across you even at the bottom. The torque curve is much flatter than with a dumbbell. In this flat front view the cable seems to pass through the body; in reality it runs just in front of or behind it."
     },
@@ -90,7 +121,7 @@
         "type": "machine",
         "padDistance": 0.25,
         "camProfile": {
-          "points": [[0, 0.30], [30, 0.36], [60, 0.38], [90, 0.34]],
+          "points": [[0, 0.3], [30, 0.36], [60, 0.38], [90, 0.34]],
           "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
           "source": "TODO: replace with a measured profile (torque per kg at each angle) for a real machine"
         }

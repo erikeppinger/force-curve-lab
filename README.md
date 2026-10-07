@@ -2,11 +2,16 @@
 
 An interactive teaching tool that shows **where an exercise is hard and which muscles do the work**, and how both change with equipment (dumbbell, barbell, cable, machine) and positioning (pulley height, arm angle).
 
-Exercises: **biceps curl** (dumbbell, barbell, preacher, two cable set-ups) and **lateral raise** (dumbbell, cable, machine).
+Exercises (2–5 equipment variants each):
+
+- **Arms and shoulders:** biceps curl, triceps extension, lateral raise, front raise, chest fly, straight-arm pulldown / pullover
+- **Legs:** leg extension, leg curl, calf raise, hip abduction, glute kickback
+
+Multi-joint lifts (squat, bench press, deadlift and others) don't fit the single-joint model yet. [`docs/model-limits.md`](docs/model-limits.md) explains why, and lists what the model still approximates.
 
 For each exercise variant it shows:
 
-- **Side or front view.** Animated arm, load, force direction, line of action and the **moment arm**.
+- **Side, front or top view.** Animated limb in the right posture (standing, seated, lying, kneeling), load, force direction, line of action and the **moment arm**.
 - **Resistance vs. strength.** The load's torque at the joint compared with the muscles' strength at each angle.
 - **Effort curve.** Torque ÷ strength across the range of motion. Its peak is the sticking point.
 - **Muscles involved.** Estimated relative activation per muscle, shown as bars and on the wger muscle map.
@@ -31,12 +36,12 @@ Push to GitHub, then go to **Settings → Pages → Deploy from a branch → `ma
 
 | Layer | Approach | Where |
 |---|---|---|
-| Load torque | Live 2D statics in the browser: torque = r × F about the joint. Gravity points down; cables pull towards the pulley; machines push through a pad with torque = m·g·r(angle) from a cam table. | `js/physics.js` |
+| Load torque | Live 2D statics in the browser: torque = r × F about the joint, plus the limb's own weight. Gravity's direction depends on the posture; cables pull towards the pulley; machines push through a pad with torque = m·g·r(angle) from a cam table; closed-chain lifts (calf raise) get the floor's push with a share of body weight. | `js/physics.js` |
 | Strength curve | Relative torque–angle table × the user's peak torque | `strengthCurve` in exercise JSON |
-| Muscle activation | Demand (effort, or shoulder-stabilising torque) × the muscle's angle-dependent weight × variant modifier | `js/muscles.js`, `muscles` in JSON |
+| Muscle activation | Demand (effort, or stabilising torque) × the muscle's angle-dependent weight × variant modifier | `js/muscles.js`, `muscles` in JSON |
 | Exercise text and images | Fetched live from the [wger API](https://wger.de/api/v2/) and optional (the tool still works offline) | `js/wger.js` |
 
-Coordinate system: origin at the shoulder, y up, metres. x points forward in side-view exercises and out to the side in front-view ones (lateral raise). Joint angles are in degrees, and positive torque means flexion (or abduction).
+Each exercise is a two-segment chain (base → mid → tip, e.g. shoulder → elbow → hand or hip → knee → ankle) in its own plane, in metres from the base joint. `view` sets the frame: `side` (x forward, y towards the head), `front` (x out to the side, y towards the head) or `top` (x out to the side, y forward). Joint angles are in degrees; positive torque means the load resists the lift.
 
 ### Data honesty
 
@@ -44,23 +49,27 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 
 ## Adding an exercise or variant
 
-1. Add a variant to `data/exercises/<id>.json`, or copy a file for a new single-joint exercise and add its id to `EXERCISES` in `js/main.js` (it then appears in the Exercise menu).
-2. Exercise fields: `movingJoint` (`elbow`: upper arm fixed, angle = elbow flexion | `shoulder`: straight arm swings from the side), `view` (`side` | `front`), `angleLabel`, `angleRange`, `strengthCurve`, `muscles` (`driver`: `jointEffort` | `shoulderFlexorDemand`), `phases`.
-3. Variant fields: `upperArmAngle` (degrees from vertical, + = forward; elbow exercises only), `load.type` (`gravity` | `cable` | `machine`), `load.pulley` (`{x, y}` in metres from the shoulder), `load.padDistance` and `load.camProfile` (machines: pad position in metres from the joint, and `[[angle, effective radius in m]]` so that torque = m·g·r), `upperArmSupported`, `muscleModifiers`, `notes`.
-4. Add a test in `tests/` that pins down the variant's key teaching point (e.g. where the peak is). `tests/exercises.test.mjs` checks every listed exercise file's structure automatically.
-
-Multi-joint lifts (squat, bench press) need a multi-segment model. See the roadmap.
+1. Add a variant to `data/exercises/<id>.json`, or copy the closest file for a new single-joint exercise and add its id to `EXERCISES` in `js/main.js` (it then appears in the Exercise menu).
+2. Exercise fields:
+   - Chain: `segments` (`proximal`, `distal` lengths in m, `names`, optional `massFractions` / `comFractions` for limb weight), `movingJoint` (`distal`: e.g. elbow or knee moves | `proximal`: the whole limb swings about the base), `view`.
+   - Angle: `angleRange`, `angleLabel`, `angleNote`, `angleSense` (−1 if a growing angle turns the limb clockwise, e.g. the knee), `angleOffset` (degrees added for the pose, e.g. 90 at the ankle), `concentric` (`decrease` if lifting makes the angle smaller, e.g. extensions).
+   - Content: `strengthCurve`, `muscles` (`driver`: `jointEffort` | `stabiliserDemand`; optional `draw`), `postures` (body shapes for the figure), `phases`, `defaults`, `ui` (slider ranges).
+3. Variant fields: `posture`, `gravity` (`{x, y}` in the exercise's frame; default straight down, `{x: 0, y: 0}` for a horizontal plane), `viewLabel`, `proximalAngle` (fixed angle of the proximal segment, or its offset when it moves), `distalBend`, `proximalSupported`, `load` (`gravity` | `cable` with `pulley` | `machine` with `padDistance` and `camProfile` `[[angle, effective radius in m]]` | `reaction` with `bodyWeight` share), `defaultLoadKg`, `muscleModifiers`, `notes`.
+4. Add a test in `tests/` that pins down the variant's key teaching point with a hand-computable case. `tests/exercises.test.mjs` checks every listed exercise file's structure and model-wide invariants automatically.
 
 ## Roadmap
 
 - [x] Lateral raise (dumbbell, cable, machine)
-- [ ] More single-joint exercises: triceps extension, chest fly, leg extension, leg curl
+- [x] Triceps extension, front raise, chest fly, straight-arm pulldown, leg extension, leg curl, calf raise, hip abduction, glute kickback
+- [x] Postures (lying, seated, kneeling, horizontal plane), limb weight, body weight for closed-chain lifts
+- [ ] Two-joint muscles: strength and muscle weights that depend on the other joint's angle (overhead triceps, seated vs lying leg curl)
 - [ ] Hammer/neutral grip as a variant parameter (brachioradialis emphasis)
 - [x] Machines with cam profiles (resistance curve as a data table): `load.type: "machine"`. The lateral-raise cam is illustrative; measured profiles still needed
 - [ ] Bands (load grows with stretch)
-- [ ] Multi-joint model for squat, deadlift and bench (hip/knee/shoulder torques)
+- [ ] Multi-joint model for squat, leg press, lunge, deadlift, hip thrust and bench (see `docs/model-limits.md`)
 - [ ] Literature sources for strength curves, muscle weights and cam profiles; optionally precomputed OpenSim results as JSON
-- [ ] Back-view body map (upper trapezius in the lateral raise); vendor the wger SVGs locally for offline use
+- [x] Back-view body map
+- [ ] Vendor the wger SVGs locally for offline use; look up wger exercise ids for the new exercises
 - [ ] Translations (DE)
 
 ## Licences and credits

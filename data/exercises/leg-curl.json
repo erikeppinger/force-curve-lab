@@ -1,0 +1,135 @@
+{
+  "id": "leg-curl",
+  "name": "Leg curl",
+  "joint": "Knee flexion",
+  "movingJoint": "distal",
+  "view": "side",
+  "angleLabel": "Knee angle",
+  "angleSense": -1,
+  "angleRange": [0, 120],
+  "angleNote": "Knee flexion: 0° = leg straight (start), 120° = heel towards the buttocks. Hip at the origin.",
+  "segments": {
+    "proximal": 0.43,
+    "distal": 0.43,
+    "names": ["Thigh", "Lower leg"],
+    "massFractions": [0.1, 0.061],
+    "comFractions": [0.433, 0.606],
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end. Approximate textbook anthropometry. The lower leg includes the foot.",
+    "massSource": "TODO: check against a published anthropometric table (e.g. Dempster's segment parameters as tabulated by Winter)",
+    "note": "Hip→knee and knee→ankle in metres, typical adult.",
+    "massLabel": "lower leg"
+  },
+  "defaults": {"loadKg": 25, "peakTorqueNm": 120, "variant": "lying", "bodyMassKg": 75},
+  "ui": {"load": [0, 100, 1], "strength": [40, 250]},
+  "strengthCurve": {
+    "label": "Knee flexor strength",
+    "points": [[0, 1.0], [30, 0.95], [60, 0.85], [90, 0.7], [120, 0.55]],
+    "note": "Relative knee-flexion torque vs knee angle, assumed strongest with the knee straight. One curve for every variant, although the hamstrings are longer (stronger) seated with the hip bent. Approximate shape.",
+    "source": "TODO: verify against published torque–angle data"
+  },
+  "postures": {
+    "prone": [
+      {"shape": "seg", "from": [0.15, 0.55], "to": [0.15, -0.5], "w": 0.07, "class": "equipment"},
+      {"shape": "seg", "from": [0.17, 0.4], "to": [0.7, 0.4], "w": 0.03, "class": "equipment"},
+      {"shape": "seg", "from": [0.17, -0.35], "to": [0.7, -0.35], "w": 0.03, "class": "equipment"},
+      {"shape": "seg", "from": [0, 0], "to": [0, 0.52], "w": 0.2},
+      {"shape": "circle", "at": [0.03, 0.72], "r": 0.11}
+    ],
+    "seated": [
+      {"shape": "seg", "from": [-0.12, -0.09], "to": [0.4, -0.09], "w": 0.05, "class": "equipment"},
+      {"shape": "seg", "from": [-0.14, -0.06], "to": [-0.17, 0.5], "w": 0.05, "class": "equipment"},
+      {"shape": "seg", "from": [0.1, -0.11], "to": [0.1, -0.62], "w": 0.04, "class": "equipment"},
+      {"shape": "seg", "from": [0, 0], "to": [0, 0.52], "w": 0.2},
+      {"shape": "circle", "at": [0.02, 0.72], "r": 0.11}
+    ],
+    "standing": [
+      {"shape": "seg", "from": [0.02, 0], "to": [0.03, -0.86], "w": 0.12},
+      {"shape": "seg", "from": [0, 0], "to": [0.06, 0.52], "w": 0.2},
+      {"shape": "circle", "at": [0.09, 0.72], "r": 0.11}
+    ]
+  },
+  "muscles": [
+    {
+      "id": "hamstrings",
+      "name": "Hamstrings",
+      "wgerId": 11,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[0, 1.0], [90, 0.9], [120, 0.8]],
+      "note": "Cross the hip as well; their length (and strength) depends on hip angle, which these weights ignore.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [0.08, 0.4], "offset": -0.045, "w": 0.06, "layer": 0}
+    },
+    {
+      "id": "gastrocnemius",
+      "name": "Gastrocnemius",
+      "wgerId": 7,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.5], [120, 0.3]],
+      "note": "Calf muscle that also crosses the knee and helps flex it.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "distal", "along": [0.03, 0.2], "offset": -0.04, "w": 0.055, "layer": 1}
+    }
+  ],
+  "phases": [
+    {"name": "Start", "range": [0, 40], "text": "Leg nearly straight, hamstrings strongest."},
+    {
+      "name": "Mid-range",
+      "range": [40, 90],
+      "text": "Lying or standing with an ankle weight, the lower leg passes horizontal near 90°, where gravity's torque peaks."
+    },
+    {"name": "Fully bent", "range": [90, 120], "text": "Heel near the buttocks; hamstrings are weakest here."}
+  ],
+  "variants": [
+    {
+      "id": "lying",
+      "name": "Lying leg curl machine",
+      "equipment": "Machine",
+      "posture": "prone",
+      "proximalAngle": 0,
+      "gravity": {"x": 1, "y": 0},
+      "viewLabel": "Side view (lying face down)",
+      "load": {
+        "type": "machine",
+        "padDistance": 0.38,
+        "camProfile": {
+          "points": [[0, 0.26], [60, 0.3], [120, 0.24]],
+          "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
+          "source": "TODO: replace with a measured profile for a real machine"
+        }
+      },
+      "defaultLoadKg": 25,
+      "notes": "Face down with the hip straight. The pad is behind the ankle; lifting the lower leg's weight also adds torque until it passes vertical (90°)."
+    },
+    {
+      "id": "seated",
+      "name": "Seated leg curl machine",
+      "equipment": "Machine",
+      "posture": "seated",
+      "proximalAngle": 90,
+      "load": {
+        "type": "machine",
+        "padDistance": 0.38,
+        "camProfile": {
+          "points": [[0, 0.26], [60, 0.3], [120, 0.24]],
+          "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
+          "source": "TODO: replace with a measured profile for a real machine"
+        }
+      },
+      "defaultLoadKg": 25,
+      "notes": "Hip bent 90°, so the hamstrings work from a longer length. Here the lower leg's weight helps the curl. The extra strength from the longer hamstrings is not modelled."
+    },
+    {
+      "id": "standing",
+      "name": "Standing leg curl (ankle weight)",
+      "equipment": "Ankle weight",
+      "posture": "standing",
+      "proximalAngle": 0,
+      "load": {"type": "gravity"},
+      "defaultLoadKg": 5,
+      "notes": "Torque = (m·L + lower-leg weight)·g·sin(knee angle): nothing at the start, largest with the lower leg horizontal at 90°."
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Leg Curls (laying)", "note": "TODO: look up the wger exercise id"}
+}

@@ -1,0 +1,129 @@
+{
+  "id": "glute-kickback",
+  "name": "Glute kickback",
+  "joint": "Hip extension",
+  "movingJoint": "proximal",
+  "view": "side",
+  "angleLabel": "Hip angle",
+  "concentric": "decrease",
+  "angleRange": [-25, 90],
+  "angleNote": "Hip flexion: positive = thigh in front of the body (start), negative = behind (end). Lifting makes the angle smaller. Hip at the origin.",
+  "segments": {
+    "proximal": 0.43,
+    "distal": 0.43,
+    "names": ["Thigh", "Lower leg"],
+    "massFractions": [0.1, 0.061],
+    "comFractions": [0.433, 0.606],
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end. Approximate textbook anthropometry. The lower leg includes the foot.",
+    "massSource": "TODO: check against a published anthropometric table (e.g. Dempster's segment parameters as tabulated by Winter)",
+    "note": "Hip→knee and knee→ankle in metres, typical adult.",
+    "massLabel": "leg"
+  },
+  "defaults": {"loadKg": 10, "peakTorqueNm": 150, "variant": "cable", "bodyMassKg": 75},
+  "ui": {"load": [0, 60, 0.5], "strength": [60, 300]},
+  "strengthCurve": {
+    "label": "Hip extensor strength",
+    "points": [[-25, 0.6], [0, 0.75], [45, 0.95], [90, 1.0]],
+    "note": "Relative hip-extension torque, assumed strongest with the hip bent and weakest behind the body. Approximate shape.",
+    "source": "TODO: verify against published torque–angle data"
+  },
+  "postures": {
+    "standing": [
+      {"shape": "seg", "from": [0.02, 0], "to": [0.03, -0.86], "w": 0.12},
+      {"shape": "seg", "from": [0, 0], "to": [0.06, 0.52], "w": 0.2},
+      {"shape": "circle", "at": [0.09, 0.72], "r": 0.11}
+    ],
+    "quadruped": [
+      {"shape": "seg", "from": [0.02, -0.02], "to": [0.43, -0.02], "w": 0.12},
+      {"shape": "seg", "from": [0.43, -0.02], "to": [0.45, -0.45], "w": 0.1},
+      {"shape": "seg", "from": [0, 0], "to": [0, 0.55], "w": 0.2},
+      {"shape": "seg", "from": [0.02, 0.5], "to": [0.43, 0.5], "w": 0.07},
+      {"shape": "circle", "at": [0.08, 0.75], "r": 0.11}
+    ]
+  },
+  "muscles": [
+    {
+      "id": "gluteus-maximus",
+      "name": "Gluteus maximus",
+      "wgerId": 8,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[-25, 1.0], [45, 0.95], [90, 0.85]],
+      "note": "Main hip extensor, working hardest near full hip extension.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [-0.1, 0.1], "offset": -0.07, "w": 0.1, "layer": 0}
+    },
+    {
+      "id": "hamstrings",
+      "name": "Hamstrings",
+      "wgerId": 11,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[-25, 0.5], [90, 0.8]],
+      "note": "Help extend the hip, more so when it is bent. With the knee bent (kneeling) they are shorter and help less, which these weights ignore.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "proximal", "along": [0.12, 0.4], "offset": -0.045, "w": 0.06, "layer": 1}
+    },
+    {
+      "id": "adductor-magnus",
+      "name": "Adductor magnus",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[-25, 0.2], [90, 0.6]],
+      "note": "Its rear part is a strong hip extensor when the hip is bent.",
+      "source": "TODO: check against EMG literature"
+    }
+  ],
+  "phases": [
+    {"name": "End", "range": [-25, 0], "text": "Thigh behind the body: glutes at their shortest."},
+    {
+      "name": "Mid-range",
+      "range": [0, 45],
+      "text": "Standing at a cable this is the start; on hands and knees the thigh passes through here."
+    },
+    {"name": "Hip bent", "range": [45, 90], "text": "Only the kneeling version starts this deep."}
+  ],
+  "variants": [
+    {
+      "id": "cable",
+      "name": "Standing cable kickback",
+      "equipment": "Cable, ankle cuff",
+      "posture": "standing",
+      "load": {"type": "cable", "pulley": {"x": 0.5, "y": -0.85}},
+      "adjustablePulley": true,
+      "defaultLoadKg": 10,
+      "notes": "Standing on the other leg, cable from a low pulley in front. Use the range from about 30° to −25°; the cable pulls the leg forward all the way, and the leg's own weight helps on the way back."
+    },
+    {
+      "id": "kneeling",
+      "name": "Kneeling kickback (ankle weight)",
+      "equipment": "Ankle weight",
+      "posture": "quadruped",
+      "distalBend": -90,
+      "gravity": {"x": 1, "y": 0},
+      "viewLabel": "Side view (on hands and knees)",
+      "load": {"type": "gravity"},
+      "defaultLoadKg": 5,
+      "notes": "On hands and knees with the knee bent 90°. Lifting the bent leg works against the leg's own weight too; torque peaks around 45°, when the whole leg is furthest from the hip horizontally."
+    },
+    {
+      "id": "machine",
+      "name": "Standing glute kickback machine",
+      "equipment": "Machine",
+      "posture": "standing",
+      "load": {
+        "type": "machine",
+        "padDistance": 0.35,
+        "camProfile": {
+          "points": [[-25, 0.32], [30, 0.3], [90, 0.28]],
+          "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
+          "source": "TODO: replace with a measured profile for a real machine"
+        }
+      },
+      "defaultLoadKg": 20,
+      "notes": "Pad behind the thigh above the knee. Illustrative cam that keeps the load on through hip extension."
+    }
+  ],
+  "wger": {"exerciseId": null, "name": "Glute Kickback (Machine)", "note": "TODO: look up the wger exercise id"}
+}

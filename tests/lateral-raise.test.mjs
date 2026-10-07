@@ -6,19 +6,24 @@ import { muscleActivation } from "../js/muscles.js";
 
 const ex = JSON.parse(readFileSync(new URL("../data/exercises/lateral-raise.json", import.meta.url)));
 const v = (id) => ex.variants.find((x) => x.id === id);
-const opts = { loadKg: 5, peakTorqueNm: 50 };
-const L = ex.segments.upperArm + ex.segments.forearm; // straight arm, shoulder → grip
+const opts = { loadKg: 5, peakTorqueNm: 50, bodyMassKg: 75 };
+const { proximal: L1, distal: L2, massFractions: mf, comFractions: cf } = ex.segments;
+const L = L1 + L2; // straight arm, shoulder → grip
+// Weight × distance of the arm's own centres of mass from the shoulder, along the arm (kg·m).
+const armMoment = 75 * (mf[0] * cf[0] * L1 + mf[1] * (L1 + cf[1] * L2));
 const close = (a, b, eps = 1e-6) => assert.ok(Math.abs(a - b) < eps, `${a} ≉ ${b}`);
 const sin = (deg) => Math.sin((deg * Math.PI) / 180);
 
-test("dumbbell lateral raise torque = m·g·L·sin(angle) about the shoulder", () => {
+test("dumbbell lateral raise torque = (m·L + arm mass·COM)·g·sin(angle) about the shoulder", () => {
   for (const a of [0, 30, 60, 90]) {
-    close(analyze(ex, v("dumbbell"), a, opts).jointTorque, 5 * G * L * sin(a));
+    const r = analyze(ex, v("dumbbell"), a, opts);
+    close(r.loadTorque, 5 * G * L * sin(a));
+    close(r.jointTorque, (5 * L + armMoment) * G * sin(a));
   }
   const top = analyze(ex, v("dumbbell"), 90, opts);
   close(top.momentArm, L);
-  close(top.pose.hand.x, L);
-  close(top.pose.hand.y, 0);
+  close(top.pose.tip.x, L);
+  close(top.pose.tip.y, 0);
 });
 
 test("dumbbell lateral raise is hardest at the top of the range", () => {
@@ -33,14 +38,14 @@ test("cable from the opposite side: hand-computed torque at the bottom", () => {
   // Arm hanging: hand at (0, -L). Torque = -r × F = m·g·L·(-px) / |pulley - hand|.
   const { x: px, y: py } = v("cable").load.pulley;
   const expected = (5 * G * L * -px) / Math.hypot(px, py + L);
-  close(analyze(ex, v("cable"), 0, opts).jointTorque, expected);
+  close(analyze(ex, v("cable"), 0, opts).loadTorque, expected);
   assert.ok(expected > 0);
   close(analyze(ex, v("dumbbell"), 0, opts).jointTorque, 0);
 });
 
 test("cable curve is flatter than the dumbbell curve", () => {
   const spread = (id) => {
-    const t = sampleCurve(ex, v(id), opts).map((s) => s.jointTorque);
+    const t = sampleCurve(ex, v(id), opts).map((s) => s.loadTorque);
     return Math.min(...t) / Math.max(...t);
   };
   assert.ok(spread("cable") > 0.5, `cable min/max ${spread("cable")}`);
@@ -51,18 +56,18 @@ test("machine torque = m·g·r(angle) from the cam table, applied at the pad", (
   const { padDistance, camProfile } = v("machine").load;
   for (const [a, r] of camProfile.points) {
     const res = analyze(ex, v("machine"), a, opts);
-    close(res.jointTorque, 5 * G * r);
+    close(res.loadTorque, 5 * G * r);
     close(res.momentArm, padDistance);
     close(Math.hypot(res.force.at.x, res.force.at.y), padDistance);
   }
   // Between table points the radius is interpolated linearly.
-  close(analyze(ex, v("machine"), 45, opts).jointTorque, 5 * G * interp(camProfile.points, 45));
+  close(analyze(ex, v("machine"), 45, opts).loadTorque, 5 * G * interp(camProfile.points, 45));
 });
 
 test("machine pad pushes perpendicular to the arm, against the raise", () => {
   for (const a of [0, 45, 90]) {
     const { force, pose } = analyze(ex, v("machine"), a, opts);
-    const arm = { x: pose.hand.x - pose.shoulder.x, y: pose.hand.y - pose.shoulder.y };
+    const arm = { x: pose.tip.x - pose.base.x, y: pose.tip.y - pose.base.y };
     close(force.x * arm.x + force.y * arm.y, 0, 1e-9);
   }
   const top = analyze(ex, v("machine"), 90, opts).force;
@@ -70,9 +75,9 @@ test("machine pad pushes perpendicular to the arm, against the raise", () => {
   assert.ok(top.y < 0, "pushes the horizontal arm down");
 });
 
-test("no shoulder-stabiliser demand when the shoulder is the moving joint", () => {
+test("no stabiliser demand when the base joint is the moving joint", () => {
   for (const id of ["dumbbell", "cable", "machine"]) {
-    assert.equal(analyze(ex, v(id), 60, opts).shoulderFlexorDemand, 0);
+    assert.equal(analyze(ex, v(id), 60, opts).stabiliserDemand, 0);
   }
 });
 
