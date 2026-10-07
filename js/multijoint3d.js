@@ -244,21 +244,8 @@ export function squat3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
 
   // Per leg, from the foot up: floor push W/2 at the mid-foot, then segment weights.
   const cop = add3(v3(A.x, 0, A.z), f, L.midfoot);
-  const Fy = (U.total * G) / 2;
-  const footW = weight(add3(A, f, L.midfoot), m.foot * kg);
-  const shankW = weight(lerp3(A, K, c.shank), m.shank * kg);
-  const thighW = weight(lerp3(K, H, c.thigh), m.thigh * kg);
-  const solveAt = (ratio) => {
-    const grf = { at: cop, f: v3(0, Fy, -ratio * Fy) }; // + ratio: floor pushes the right foot inwards
-    const dir = unit3(grf.f);
-    const Mankle = moment3(A, [grf, footW]);
-    const Mknee = moment3(K, [grf, footW, shankW]);
-    const Mhip = moment3(H, [grf, footW, shankW, thighW]);
-    return { grf, dir, Mhip, Mknee, Mankle, ...legComponents({ H, K, A, f, back: U.back, Mhip, Mknee, Mankle, knee: x, line: { at: cop, dir } }) };
-  };
-  const auto = P.sidePush === "auto" || P.sidePush == null;
-  const ratio = auto ? leastEffort(ex, (r) => solveAt(r).joints) : P.sidePush;
-  const { grf, dir, Mhip, Mknee, Mankle, joints, frames } = solveAt(ratio);
+  const leg = legFromFloor(ex, P, { H, K, A, f, cop, Fy: (U.total * G) / 2, back: U.back, kneeAngle: x, kg, body });
+  const { grf, dir, Mhip, Mknee, Mankle, joints, frames, ratio } = leg;
 
   const shoulder = add3(U.S, Z, 0.19);
   const hand = add3(U.bar, Z, 0.3);
@@ -280,7 +267,7 @@ export function squat3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     forces: [{ at: cop, dir }, { at: mirror(cop), dir: mirror(dir) }],
     grf: grf.f,
     sidePush: ratio,
-    info: ok ? [{ text: `Feet push ${ratio >= 0 ? "outwards" : "inwards"} against the floor with ${Math.round(Math.abs(ratio) * 100)}% of the vertical force${P.sidePush === "auto" || P.sidePush == null ? " (least-effort estimate)" : ""}.` }] : [{ warn: true, text: "Can't balance: no trunk angle keeps the centre of mass over the mid-foot here." }],
+    info: ok ? [sidePushInfo(leg)] : [{ warn: true, text: "Can't balance: no trunk angle keeps the centre of mass over the mid-foot here." }],
   };
 }
 
