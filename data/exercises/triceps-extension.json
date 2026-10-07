@@ -12,20 +12,30 @@
     "proximal": 0.3,
     "distal": 0.33,
     "names": ["Upper arm", "Forearm"],
-    "massFractions": [0.028, 0.022],
-    "comFractions": [0.436, 0.682],
+    "massFractions": [0.0271, 0.0223],
+    "comFractions": [0.577, 0.534],
     "massLabel": "forearm",
-    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end (forearm includes the hand). Approximate textbook anthropometry.",
-    "massSource": "TODO: check against a published anthropometric table (e.g. Dempster's segment parameters as tabulated by Winter)",
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end, from de Leva's adjusted Zatsiorsky-Seluyanov table (young adult males). The forearm segment includes the hand (combined centre of mass along elbow → grip).",
+    "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
     "note": "Shoulder→elbow and elbow→grip centre in metres, typical adult."
   },
-  "defaults": {"loadKg": 10, "peakTorqueNm": 50, "variant": "pushdown", "bodyMassKg": 75},
+  "defaults": {"loadKg": 10, "peakTorqueNm": 58, "variant": "pushdown", "bodyMassKg": 75},
   "ui": {"load": [1, 40, 0.5], "strength": [20, 110]},
   "strengthCurve": {
     "label": "Elbow extensor strength",
-    "points": [[0, 0.6], [30, 0.8], [60, 0.95], [90, 1.0], [120, 0.95], [140, 0.88]],
-    "note": "Relative isometric elbow-extension torque vs elbow angle, assumed weakest near lockout. One curve for every variant, although the long head is stronger with the arm overhead. Approximate shape.",
-    "source": "TODO: verify against published torque–angle data"
+    "points": [
+      [20, 0.55],
+      [30, 0.79],
+      [45, 0.97],
+      [54, 1.0],
+      [60, 0.99],
+      [75, 0.91],
+      [90, 0.8],
+      [105, 0.72],
+      [116, 0.71]
+    ],
+    "note": "Relative isometric elbow-extension torque vs elbow flexion (0° = straight), peak about 55°: the paper's mean cubic fit, normalised, inside the measured 20–116° (held flat beyond). Measured with the upper arm raised 90° to the side, so the long head's length differs from overhead or arm-at-side positions. Peak torque default: the paper's mean over all participants (58 Nm; men 77 Nm, women 36 Nm).",
+    "source": "Pinter IJ, Bobbert MF, van Soest AJ, Smeets JBJ (2010). Isometric torque–angle relationships of the elbow flexors and extensors in the transverse plane. J Electromyogr Kinesiol 20:923–931. doi:10.1016/j.jelekin.2010.05.001"
   },
   "postures": {
     "standing": [

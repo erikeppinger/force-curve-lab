@@ -11,18 +11,18 @@
     "proximal": 0.3,
     "distal": 0.33,
     "names": ["Upper arm", "Forearm"],
-    "massFractions": [0.028, 0.022],
-    "comFractions": [0.436, 0.682],
-    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end (forearm includes the hand). Approximate textbook anthropometry.",
-    "massSource": "TODO: check against a published anthropometric table (e.g. Dempster's segment parameters as tabulated by Winter)",
+    "massFractions": [0.0271, 0.0223],
+    "comFractions": [0.577, 0.534],
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end, from de Leva's adjusted Zatsiorsky-Seluyanov table (young adult males). The forearm segment includes the hand (combined centre of mass along elbow → grip).",
+    "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
     "note": "Shoulder→elbow and elbow→grip centre in metres, typical adult."
   },
-  "defaults": {"loadKg": 10, "peakTorqueNm": 60, "variant": "dumbbell", "bodyMassKg": 75},
+  "defaults": {"loadKg": 10, "peakTorqueNm": 65, "variant": "dumbbell", "bodyMassKg": 75},
   "strengthCurve": {
     "label": "Elbow flexor strength",
-    "points": [[0, 0.62], [20, 0.72], [45, 0.88], [70, 0.98], [90, 1.0], [110, 0.92], [130, 0.72], [145, 0.55]],
-    "note": "Relative isometric elbow-flexion torque vs angle (peak ≈ 90°). Approximate textbook shape.",
-    "source": "TODO: verify against published isokinetic/isometric elbow-flexion torque–angle data"
+    "points": [[32, 0.52], [45, 0.61], [60, 0.76], [75, 0.9], [90, 0.99], [95, 1.0], [105, 0.97], [120, 0.78]],
+    "note": "Relative isometric elbow-flexion torque vs elbow flexion (0° = straight), peak about 95°: the paper's mean cubic fit, normalised, inside the measured 32–120° (held flat beyond). Measured with the upper arm raised 90° and horizontally adducted 20°, not hanging as in a standing curl. Peak torque default: the paper's mean over all participants (65 Nm; men 85 Nm, women 48 Nm).",
+    "source": "Pinter IJ, Bobbert MF, van Soest AJ, Smeets JBJ (2010). Isometric torque–angle relationships of the elbow flexors and extensors in the transverse plane. J Electromyogr Kinesiol 20:923–931. doi:10.1016/j.jelekin.2010.05.001"
   },
   "postures": {
     "standing": [

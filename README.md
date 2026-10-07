@@ -76,7 +76,9 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] 3D squat (stance, toe angle, knee tracking, least-effort sideways floor push)
 - [x] 3D bench press (grip width, elbows vs hands, shoulder and elbow components)
 - [ ] 3D overhead press and rows; moving shoulder blades in the bench
-- [ ] Literature sources for strength curves, muscle weights and cam profiles; optionally precomputed OpenSim results as JSON
+- [x] Literature sources for the strength curves, peak strengths and limb masses (see `docs/model-limits.md`)
+- [ ] Literature for muscle activation weights, machine cam profiles and hip rotation strength; optionally precomputed OpenSim results as JSON
+- [ ] Bench press arm model checked against Mausehund et al. 2022: elbow placement and shoulder-blade movement
 - [x] Back-view body map
 - [ ] Vendor the wger SVGs locally for offline use; look up wger exercise ids for the new exercises
 - [ ] Translations (DE)

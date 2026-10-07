@@ -12,20 +12,20 @@
     "proximal": 0.43,
     "distal": 0.43,
     "names": ["Thigh", "Lower leg"],
-    "massFractions": [0.1, 0.061],
-    "comFractions": [0.433, 0.606],
-    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end. Approximate textbook anthropometry. The lower leg includes the foot.",
-    "massSource": "TODO: check against a published anthropometric table (e.g. Dempster's segment parameters as tabulated by Winter)",
+    "massFractions": [0.1416, 0.057],
+    "comFractions": [0.41, 0.604],
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end, from de Leva's adjusted Zatsiorsky-Seluyanov table (young adult males). The lower leg includes the foot (combined centre of mass along knee → ankle; the foot's own position is approximated).",
+    "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
     "note": "Hip→knee and knee→ankle in metres, typical adult.",
     "massLabel": "leg"
   },
-  "defaults": {"loadKg": 10, "peakTorqueNm": 150, "variant": "cable", "bodyMassKg": 75},
+  "defaults": {"loadKg": 5, "peakTorqueNm": 200, "variant": "cable", "bodyMassKg": 75},
   "ui": {"load": [0, 60, 0.5], "strength": [60, 300]},
   "strengthCurve": {
     "label": "Hip extensor strength",
-    "points": [[-25, 0.6], [0, 0.75], [45, 0.95], [90, 1.0]],
-    "note": "Relative hip-extension torque, assumed strongest with the hip bent and weakest behind the body. Approximate shape.",
-    "source": "TODO: verify against published torque–angle data"
+    "points": [[-25, 0.26], [0, 0.63], [25, 0.89], [50, 1.0], [74, 0.94]],
+    "note": "Relative isometric hip-extension torque vs hip flexion, peak about 53°, measured standing with the knee slightly bent (tested −29° to 74°; deeper hip flexion is held flat at the 74° value, which is extrapolation). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m).",
+    "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
   },
   "postures": {
     "standing": [
@@ -92,7 +92,7 @@
       "posture": "standing",
       "load": {"type": "cable", "pulley": {"x": 0.5, "y": -0.85}},
       "adjustablePulley": true,
-      "defaultLoadKg": 10,
+      "defaultLoadKg": 5,
       "notes": "Standing on the other leg, cable from a low pulley in front. Use the range from about 30° to −25°; the cable pulls the leg forward all the way, and the leg's own weight helps on the way back."
     },
     {
@@ -104,7 +104,7 @@
       "gravity": {"x": 1, "y": 0},
       "viewLabel": "Side view (on hands and knees)",
       "load": {"type": "gravity"},
-      "defaultLoadKg": 5,
+      "defaultLoadKg": 4,
       "notes": "On hands and knees with the knee bent 90°. Lifting the bent leg works against the leg's own weight too; torque peaks around 45°, when the whole leg is furthest from the hip horizontally."
     },
     {
@@ -121,7 +121,7 @@
           "source": "TODO: replace with a measured profile for a real machine"
         }
       },
-      "defaultLoadKg": 20,
+      "defaultLoadKg": 10,
       "notes": "Pad behind the thigh above the knee. Illustrative cam that keeps the load on through hip extension."
     }
   ],

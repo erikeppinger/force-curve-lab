@@ -12,20 +12,20 @@
     "proximal": 0.43,
     "distal": 0.43,
     "names": ["Thigh", "Lower leg"],
-    "massFractions": [0.1, 0.061],
-    "comFractions": [0.433, 0.606],
-    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end. Approximate textbook anthropometry. The lower leg includes the foot.",
-    "massSource": "TODO: check against a published anthropometric table (e.g. Dempster's segment parameters as tabulated by Winter)",
+    "massFractions": [0.1416, 0.057],
+    "comFractions": [0.41, 0.604],
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end, from de Leva's adjusted Zatsiorsky-Seluyanov table (young adult males). The lower leg includes the foot (combined centre of mass along knee → ankle; the foot's own position is approximated).",
+    "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
     "note": "Hip→knee and knee→ankle in metres, typical adult.",
     "massLabel": "lower leg"
   },
-  "defaults": {"loadKg": 25, "peakTorqueNm": 120, "variant": "lying", "bodyMassKg": 75},
+  "defaults": {"loadKg": 15, "peakTorqueNm": 110, "variant": "lying", "bodyMassKg": 75},
   "ui": {"load": [0, 100, 1], "strength": [40, 250]},
   "strengthCurve": {
     "label": "Knee flexor strength",
-    "points": [[0, 1.0], [30, 0.95], [60, 0.85], [90, 0.7], [120, 0.55]],
-    "note": "Relative knee-flexion torque vs knee angle, assumed strongest with the knee straight. One curve for every variant, although the hamstrings are longer (stronger) seated with the hip bent. Approximate shape.",
-    "source": "TODO: verify against published torque–angle data"
+    "points": [[0, 0.9], [15, 0.97], [30, 1.0], [45, 0.97], [60, 0.9], [75, 0.78], [90, 0.61], [103, 0.45]],
+    "note": "Relative isometric knee-flexion torque vs knee flexion, peak about 30°, measured seated with the hip flexed about 70° (tested 0–103°). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m). The seated test position matches the seated leg curl best; lying, the hamstrings are shorter and somewhat weaker (not modelled).",
+    "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
   },
   "postures": {
     "prone": [
@@ -99,7 +99,7 @@
           "source": "TODO: replace with a measured profile for a real machine"
         }
       },
-      "defaultLoadKg": 25,
+      "defaultLoadKg": 15,
       "notes": "Face down with the hip straight. The pad is behind the ankle; lifting the lower leg's weight also adds torque until it passes vertical (90°)."
     },
     {
@@ -117,7 +117,7 @@
           "source": "TODO: replace with a measured profile for a real machine"
         }
       },
-      "defaultLoadKg": 25,
+      "defaultLoadKg": 15,
       "notes": "Hip bent 90°, so the hamstrings work from a longer length. Here the lower leg's weight helps the curl. The extra strength from the longer hamstrings is not modelled."
     },
     {
@@ -127,7 +127,7 @@
       "posture": "standing",
       "proximalAngle": 0,
       "load": {"type": "gravity"},
-      "defaultLoadKg": 5,
+      "defaultLoadKg": 4,
       "notes": "Torque = (m·L + lower-leg weight)·g·sin(knee angle): nothing at the start, largest with the lower leg horizontal at 90°."
     }
   ],

@@ -5,23 +5,23 @@
   "movingJoint": "distal",
   "view": "side",
   "angleLabel": "Ankle angle",
-  "angleOffset": 90,
+  "angleOffset": 60.3,
   "angleSense": -1,
   "angleRange": [-20, 40],
-  "angleNote": "Plantarflexion: 0° = foot at right angles to the shin, negative = heel below the step (stretch), 40° = up on the toes. Knee at the origin.",
+  "angleNote": "Plantarflexion: 0° = foot flat (at right angles to the shin), negative = heel below the step (stretch), 40° = up on the toes. Knee at the origin.",
   "segments": {
     "proximal": 0.43,
-    "distal": 0.14,
+    "distal": 0.161,
     "names": ["Lower leg", "Foot"],
-    "note": "Knee→ankle, and ankle→ball of the foot (the point the floor pushes on), in metres. Closed chain: the floor carries the foot's own weight, so no limb weight is added."
+    "note": "Knee→ankle, and ankle→ball of the foot (0.161 m: 14 cm in front of and 8 cm below the ankle joint) in metres. Closed chain: the floor carries the foot's own weight, so no limb weight is added."
   },
   "defaults": {"loadKg": 10, "peakTorqueNm": 150, "variant": "single-leg", "bodyMassKg": 75},
   "ui": {"load": [0, 120, 1], "strength": [50, 300]},
   "strengthCurve": {
     "label": "Plantarflexor strength",
-    "points": [[-20, 1.0], [0, 0.9], [20, 0.7], [40, 0.45]],
-    "note": "Relative plantarflexion torque, assumed strongest with the calf stretched and weakest high on the toes. Approximate shape.",
-    "source": "TODO: verify against published torque–angle data"
+    "points": [[-28, 0.99], [-20, 1.0], [-10, 0.95], [0, 0.84], [10, 0.69], [20, 0.49], [34, 0.18]],
+    "note": "Relative isometric plantarflexion torque vs plantarflexion (negative = dorsiflexed), peak about 23° of dorsiflexion, measured with the knee bent 50° (tested 29° dorsiflexion to 34° plantarflexion). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m). Measured with the knee bent, where the gastrocnemius is slack; standing (knee straight) the plantarflexors are somewhat stronger (not modelled). Peak default raised to 150 Nm above Anderson's knee-bent mean (119 Nm): standing with the knee straight, the gastrocnemius adds torque, by an amount not taken from a source here (TODO). Because of the knee-bent test position this curve probably understates strength high on the toes, so standing calf-raise efforts there are overstated.",
+    "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
   },
   "postures": {
     "standing": [
@@ -65,12 +65,12 @@
     {
       "name": "Stretch",
       "range": [-20, 0],
-      "text": "Heel below the step. The ball of the foot is furthest in front of the ankle, so the moment arm is at its largest."
+      "text": "Heel below the step: the ball of the foot is furthest in front of the ankle, so the moment arm is largest."
     },
     {
       "name": "Mid-range",
       "range": [0, 20],
-      "text": "Moment arm = foot lever × cos(angle): it shrinks slowly as you rise."
+      "text": "Rising onto the toes turns the ankle→ball lever more vertical, so its horizontal reach (the moment arm) shrinks."
     },
     {
       "name": "Top",
@@ -85,8 +85,8 @@
       "equipment": "Dumbbell, on a step",
       "posture": "standing",
       "load": {"type": "reaction", "bodyWeight": 1},
-      "defaultLoadKg": 10,
-      "notes": "Closed chain: the floor pushes up on the ball of the foot with your whole body weight plus the dumbbell. Torque = (body + m)·g·foot lever·cos(angle)."
+      "defaultLoadKg": 0,
+      "notes": "Closed chain: the floor pushes up on the ball of the foot with your whole body weight plus the dumbbell. Torque = (body + m)·g × the horizontal distance from the ankle to the ball of the foot."
     },
     {
       "id": "two-leg",
@@ -94,7 +94,7 @@
       "equipment": "Machine / Smith, on a step",
       "posture": "standing",
       "load": {"type": "reaction", "bodyWeight": 0.5},
-      "defaultLoadKg": 30,
+      "defaultLoadKg": 20,
       "notes": "Each leg carries half your body weight plus half the load (the load slider is per leg)."
     },
     {
@@ -103,7 +103,7 @@
       "equipment": "Machine",
       "posture": "seated",
       "load": {"type": "reaction", "bodyWeight": 0},
-      "defaultLoadKg": 30,
+      "defaultLoadKg": 25,
       "muscleModifiers": {"gastrocnemius": 0.5},
       "notes": "The load sits on the knees, so body weight isn't lifted. With the knee bent the gastrocnemius is slack; the 0.5 factor on it is an estimate, not a measured value."
     }

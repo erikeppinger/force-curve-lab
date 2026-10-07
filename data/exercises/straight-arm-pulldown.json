@@ -12,20 +12,20 @@
     "proximal": 0.3,
     "distal": 0.33,
     "names": ["Upper arm", "Forearm"],
-    "massFractions": [0.028, 0.022],
-    "comFractions": [0.436, 0.682],
+    "massFractions": [0.0271, 0.0223],
+    "comFractions": [0.577, 0.534],
     "massLabel": "arm",
-    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end (forearm includes the hand). Approximate textbook anthropometry.",
-    "massSource": "TODO: check against a published anthropometric table (e.g. Dempster's segment parameters as tabulated by Winter)",
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end, from de Leva's adjusted Zatsiorsky-Seluyanov table (young adult males). The forearm segment includes the hand (combined centre of mass along elbow → grip).",
+    "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
     "note": "Shoulder→elbow and elbow→grip centre in metres. The arm is modelled straight."
   },
-  "defaults": {"loadKg": 10, "peakTorqueNm": 70, "variant": "cable", "bodyMassKg": 75},
+  "defaults": {"loadKg": 10, "peakTorqueNm": 93, "variant": "cable", "bodyMassKg": 75},
   "ui": {"load": [1, 50, 0.5], "strength": [30, 150]},
   "strengthCurve": {
     "label": "Shoulder extensor strength",
-    "points": [[0, 0.55], [45, 0.75], [90, 0.95], [135, 1.0], [170, 0.95]],
-    "note": "Relative shoulder-extension torque, assumed strongest with the arm overhead (lats stretched). Approximate shape.",
-    "source": "TODO: verify against published torque–angle data"
+    "points": [[0, 0.85], [45, 0.97], [65, 1.0], [90, 0.98], [135, 0.94], [180, 0.76]],
+    "note": "Relative shoulder-extension strength vs shoulder flexion: nearly flat, peaking around 65–100°. Clarke et al. (64 men, via Kulig et al.) measured 347 N at 65° and 262 N at 180°, varying by only 25.5 N between 45° and 135°; two other studies agree. The 0° value is an estimate (the curves rise from there). Mayer et al. place the isometric peak at 53–91°. Peak torque default: Mayer's isometric shoulder extension, men, 93 ± 24 Nm.",
+    "source": "Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (Clarke et al. data); Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25. doi:10.1055/s-2007-1021105"
   },
   "postures": {
     "standing": [

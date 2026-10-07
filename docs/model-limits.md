@@ -163,3 +163,52 @@ Limits:
 
 - The **split squat, RDL and hip thrust** are still side-view only; stance width matters less there but could use the same tools.
 - **Overhead press, rows and pull-ups** would follow the bench's arm model with different contacts.
+
+## Sources for the curated numbers
+
+Every strength curve, peak strength and limb mass now carries its source in the exercise file. Where a source only gives part of the answer, the note says which part is an estimate. The papers were read in full; the one conference abstract is marked as such.
+
+| What | Source | What it gives |
+|---|---|---|
+| Hip extension, knee extension and flexion, plantarflexion | Anderson, Madigan & Nussbaum 2007 (*J Biomech*) | Full isometric curves (cosine model, young men), peak torques, tested ranges |
+| Knee extension (cross-check) | Lindahl et al. 1972 (*Acta Orthop Scand*) | Same shape: peak near 50°, about 50% at 10° |
+| Elbow flexion and extension | Pinter et al. 2010 (*J Electromyogr Kinesiol*) | Full curves (cubic fits), peak torques; arm raised 90° |
+| Shoulder flexion, extension, abduction, rotation | Mayer et al. 1994 (*Int J Sports Med*) | Isometric peak torques (men) and angle of peak |
+| Shoulder flexion, extension, abduction, horizontal adduction | Kulig, Andrews & Hay 1984 (*Exerc Sport Sci Rev*) | Curve shapes from the studies it reviews; shoulder extension numbers (Clarke et al.) |
+| Shoulder abduction | Haidar et al. 2009 (conference abstract) | Relative strength at 0, 30, 60, 90° |
+| Hip abduction | Neumann et al. 1988 (*Phys Ther*) | Torques at −10° to 40° |
+| Hip adduction / abduction (3D lifts) | Welsh et al. 2020 (*Int J Sports Phys Ther*) | Isometric torques at 10° of abduction |
+| Limb masses and centres of mass | de Leva 1996 (*J Biomech*) | Young adult males |
+| Bench press sideways bar force and joint moments | Mausehund et al. 2022 (*J Strength Cond Res*) | Measured lateral forces, moment arms and moments by grip |
+
+### What changed, and what it shows
+
+- **Several guessed curves had the wrong shape.**
+  - **Knee extension** is very weak near a straight knee (about 15% of peak at 0°, 46% at 15°). Leg-extension lockout and the top of a squat are genuinely weak positions.
+  - **Hip extension** peaks at about 53° of hip flexion, not deep in flexion. Deeper than the tested 74° the curve is held flat, which is extrapolation.
+  - **Elbow extension** peaks at about 55°, not 90°.
+  - **Shoulder extension** is nearly flat and peaks around 65°, not overhead.
+- **Thigh mass is 14% of body mass, not 10%.** That makes the leg's own weight matter more in leg extensions, leg curls and hip abduction.
+- **The calf raise had a geometry error, now fixed.** The ankle-to-ball lever slopes down from the ankle, so its reach shrinks faster as you rise onto the toes.
+- **Sources disagree on shoulder abduction near the start.** Haidar et al. find 0° the weakest position; Clarke et al. find it the strongest. The curve follows Haidar (the only numbers at these angles) and says so.
+- **Test postures differ from the exercises.** Plantarflexion was measured with the knee bent (gastrocnemius slack), so standing calf raises high on the toes look harder than they are. Elbow curves were measured with the arm raised 90°. These are the two-joint-muscle effects on the roadmap.
+- **Default loads were lowered** where the measured curves made the old defaults fail mid-range. Several defaults still pass 100% right at an end of the range (lockouts, hip hyperextension, the deepest squat). That's where the measured strength really is lowest.
+
+### Checking the bench press against measurements
+
+Mausehund et al. measured what the 3D bench model predicts:
+
+| | Measured (medium grip) | Model |
+|---|---|---|
+| Lateral / vertical bar force | 0.17 (wide 0.38, narrow ≈ 0) | Least effort predicts 0.26 (wide 0.41, narrow 0.02) |
+| Elbow moment arm | 7 cm mean, 9 cm peak | 15–20 cm |
+| Grip-width trend | Narrower: more elbow moment; wider: more shoulder moment | Same trend with no sideways force; the elbow trend reverses with the measured forces |
+
+The least-effort estimate of the sideways bar force is close to the measurement. The elbow is not: the model's elbow sits too far from the bar, roughly doubling the elbow torque, because its elbow placement rule and fixed shoulders don't match real pressing. The sideways force therefore defaults to zero, and the measured values are shown on the slider. Fixing the arm model, using the measured forearm angles and shoulder-blade movement, is the next step for the bench.
+
+### Still without a source
+
+- Muscle activation weights (62 values; the bench grip-width effects are now backed by Mausehund et al. qualitatively).
+- Machine cam profiles.
+- Hip rotation strength in the 3D lifts, and the peak horizontal-adduction torque.
+- How much the two-joint muscles change strength with the other joint's angle.

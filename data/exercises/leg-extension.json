@@ -13,20 +13,20 @@
     "proximal": 0.43,
     "distal": 0.43,
     "names": ["Thigh", "Lower leg"],
-    "massFractions": [0.1, 0.061],
-    "comFractions": [0.433, 0.606],
-    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end. Approximate textbook anthropometry. The lower leg includes the foot.",
-    "massSource": "TODO: check against a published anthropometric table (e.g. Dempster's segment parameters as tabulated by Winter)",
+    "massFractions": [0.1416, 0.057],
+    "comFractions": [0.41, 0.604],
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end, from de Leva's adjusted Zatsiorsky-Seluyanov table (young adult males). The lower leg includes the foot (combined centre of mass along knee → ankle; the foot's own position is approximated).",
+    "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
     "note": "Hip→knee and knee→ankle in metres, typical adult.",
     "massLabel": "lower leg"
   },
-  "defaults": {"loadKg": 30, "peakTorqueNm": 220, "variant": "machine", "bodyMassKg": 75},
+  "defaults": {"loadKg": 10, "peakTorqueNm": 200, "variant": "machine", "bodyMassKg": 75},
   "ui": {"load": [0, 100, 1], "strength": [80, 350]},
   "strengthCurve": {
     "label": "Knee extensor strength",
-    "points": [[0, 0.55], [30, 0.8], [60, 1.0], [90, 0.95]],
-    "note": "Relative isometric knee-extension torque vs knee angle, assumed weakest near full extension and strongest around 60°. Approximate shape.",
-    "source": "TODO: verify against published torque–angle data"
+    "points": [[0, 0.14], [15, 0.46], [30, 0.72], [45, 0.91], [60, 0.99], [75, 0.98], [90, 0.85], [103, 0.67]],
+    "note": "Relative isometric knee-extension torque vs knee flexion: weakest near full extension, peak about 65° (Anderson, tested 0–103°). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Lindahl et al. found the same shape (peak near 50°, about 50% of peak at 10°). Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m).",
+    "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022; Lindahl O, Movin A, Ringqvist I (1969/1972). Isometric knee extension strength as a function of joint angle, muscle length and motor unit activity. Acta Orthop Scand 43:138–147"
   },
   "postures": {
     "seated": [
@@ -90,7 +90,7 @@
           "source": "TODO: replace with a measured profile for a real machine"
         }
       },
-      "defaultLoadKg": 30,
+      "defaultLoadKg": 10,
       "notes": "Pad on the shin near the ankle. This illustrative cam eases off near lockout, where the quads are weakest. The lower leg's own weight adds torque too."
     },
     {
@@ -100,7 +100,7 @@
       "posture": "seated",
       "proximalAngle": 90,
       "load": {"type": "gravity"},
-      "defaultLoadKg": 5,
+      "defaultLoadKg": 3,
       "notes": "Gravity: torque = (m·L + lower-leg weight)·g·cos(knee angle). Zero with the lower leg hanging, largest at lockout."
     }
   ],

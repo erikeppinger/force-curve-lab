@@ -56,5 +56,5 @@ test("Bayesian cable curl keeps tension in the stretched position", () => {
 
 test("effort is torque divided by angle-specific capacity", () => {
   const r = analyze(ex, v("dumbbell"), 90, opts);
-  close(r.effort, r.jointTorque / 60);
+  close(r.effort, r.jointTorque / (interp(ex.strengthCurve.points, 90) * 60));
 });

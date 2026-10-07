@@ -64,14 +64,19 @@ const variantOf = (ex) => (id) => ex.variants.find((x) => x.id === id);
   const v = variantOf(ex);
   const Lf = ex.segments.distal;
 
-  test("single-leg calf raise: (body + m)·g·foot lever·cos(angle)", () => {
-    for (const a of [-20, 0, 20, 40]) close(analyze(ex, v("single-leg"), a, opts).jointTorque, (BODY + 10) * G * Lf * cos(a));
-    close(analyze(ex, v("single-leg"), 0, opts).momentArm, Lf);
+  // The ankle→ball lever slopes down from the ankle: at plantarflexion θ its horizontal reach is
+  // Lf·sin(offset − θ), where offset is the lever's angle from the shin at neutral (≈ 60°).
+  const reach = (a) => Lf * Math.sin(((ex.angleOffset - a) * Math.PI) / 180);
+
+  test("single-leg calf raise: (body + m)·g × the ankle→ball lever's horizontal reach", () => {
+    for (const a of [-20, 0, 20, 40]) close(analyze(ex, v("single-leg"), a, opts).jointTorque, (BODY + 10) * G * reach(a));
+    close(analyze(ex, v("single-leg"), 0, opts).momentArm, 0.14, 1e-3); // 14 cm in front of the ankle at neutral
+    assert.ok(reach(30) < 0.6 * reach(0), "high on the toes the lever is much shorter");
   });
 
   test("two-leg calf raise carries half the body weight per leg; seated carries none", () => {
-    close(analyze(ex, v("two-leg"), 0, opts).jointTorque, (BODY / 2 + 10) * G * Lf);
-    close(analyze(ex, v("seated"), 0, opts).jointTorque, 10 * G * Lf);
+    close(analyze(ex, v("two-leg"), 0, opts).jointTorque, (BODY / 2 + 10) * G * reach(0));
+    close(analyze(ex, v("seated"), 0, opts).jointTorque, 10 * G * reach(0));
   });
 
   test("seated calf raise halves the gastrocnemius estimate", () => {
