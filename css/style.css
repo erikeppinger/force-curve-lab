@@ -262,3 +262,10 @@ footer { color: var(--muted); font-size: 0.8rem; padding-bottom: 24px; }
   .wger-row { flex-direction: column; }
   .readouts dd { font-size: 1rem; }
 }
+
+/* References */
+.ref-list { padding-left: 1.2em; margin: 6px 0 10px; }
+.ref-list li { margin: 0 0 8px; overflow-wrap: anywhere; }
+.ref-list small { display: block; color: var(--muted, inherit); opacity: 0.8; }
+.references details summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+.references h4 { margin: 12px 0 4px; font-size: 0.95rem; }

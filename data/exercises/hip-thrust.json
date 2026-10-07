@@ -58,7 +58,7 @@
       "strength": {
         "points": [[0, 1.0], [160, 1.0]],
         "note": "Hip adductor (positive) and abductor (negative) peak torque per leg, taken as constant across the range: Welsh et al.'s isometric means at 10° of hip abduction (trained recreational hockey players, hip straight): adductors 247 Nm, abductors 130 Nm. Abductor strength falls as the hip abducts (Neumann et al.; Welsh et al.), which isn't modelled here.",
-        "source": "Welsh P, et al. (2020). The influence of hip joint angle on the ratio between adduction and abduction torque in experienced, recreational male ice hockey players. Int J Sports Phys Ther 15(1):22–33"
+        "source": "Welsh P, Howitt S, Howarth SJ (2020). The influence of hip joint angle on the ratio between adduction and abduction torque in experienced, recreational male ice hockey players. Int J Sports Phys Ther 15(1):22–33. doi:10.26603/ijspt20200022"
       }
     },
     {

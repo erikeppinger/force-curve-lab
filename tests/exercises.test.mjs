@@ -144,3 +144,23 @@ test("limb weight adds nothing when gravity is perpendicular to the plane of mot
     assert.equal(analyze(ex, v, 30, opts(ex)).limbTorque, 0);
   }
 });
+
+test("references: every cited paper is listed, and every listed paper is cited", () => {
+  const refs = JSON.parse(readFileSync(new URL("../data/references.json", import.meta.url)));
+  const sources = [];
+  const walk = (o) => {
+    if (Array.isArray(o)) o.forEach(walk);
+    else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) (k === "source" || k === "massSource") && typeof v === "string" ? sources.push(v) : walk(v);
+  };
+  for (const id of ids) walk(load(id));
+  walk(JSON.parse(readFileSync(new URL("../data/body.json", import.meta.url))));
+  // A cited paper = a source segment with a year in brackets.
+  const cited = sources.flatMap((s) => s.split(/;\s*/)).filter((seg) => /\((19|20)\d\d/.test(seg));
+  for (const seg of cited) assert.ok(refs.references.some((r) => seg.includes(r.match)), `not in references.json: ${seg.slice(0, 80)}`);
+  for (const r of refs.references) {
+    assert.ok(sources.some((s) => s.includes(r.match)), `${r.key} is listed but never cited`);
+    assert.ok(r.citation && r.usedFor && r.group, r.key);
+    if (r.url) assert.match(r.url, /^https:\/\//);
+  }
+  assert.equal(new Set(refs.references.map((r) => r.key)).size, refs.references.length);
+});

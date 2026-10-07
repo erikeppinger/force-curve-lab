@@ -86,6 +86,7 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] Pull-ups, chin-ups and lat pulldowns: grip width and grip, body lean, elbow strength by arm angle and grip
 - [ ] Moving shoulder blades in the bench, press and rows
 - [x] Literature sources for the strength curves, peak strengths and limb masses (see `docs/model-limits.md`)
+- [x] References section in the app: the current exercise's papers, plus all 24 papers and resources with links and what each is used for (`data/references.json`)
 - [ ] Literature for muscle activation weights, machine cam profiles and hip rotation strength; optionally precomputed OpenSim results as JSON
 - [x] Back-view body map
 - [ ] Vendor the wger SVGs locally for offline use; wger exercise ids: 8 set (7 from the starter CSV's media URLs, still to confirm), the rest still missing

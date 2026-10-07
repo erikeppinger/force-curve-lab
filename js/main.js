@@ -222,6 +222,7 @@ function setExercise(id, h = {}) {
   $("muscle-list").replaceChildren();
   buildBodyMap();
   loadWger();
+  renderReferences();
 }
 
 // ---------- render ----------
@@ -474,10 +475,58 @@ function bind() {
   $("figure").addEventListener("pointercancel", end);
 }
 
+// ---------- references ----------
+/** All `source` strings in an exercise (or any JSON value), for matching against references. */
+function sourcesOf(o, out = []) {
+  if (Array.isArray(o)) o.forEach((x) => sourcesOf(x, out));
+  else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) (k === "source" || k === "massSource") && typeof v === "string" ? out.push(v) : sourcesOf(v, out);
+  return out;
+}
+const usesRef = (ex, ref) => sourcesOf(ex).some((s) => s.includes(ref.match));
+
+/** One reference as a list item: citation (with link), what it's used for, and optionally where. Text only. */
+function refItem(ref, usedIn) {
+  const li = document.createElement("li");
+  li.append(ref.citation);
+  if (ref.url) {
+    li.append(" ");
+    li.append(Object.assign(document.createElement("a"), { href: ref.url, target: "_blank", rel: "noopener", textContent: ref.url.replace("https://doi.org/", "doi:") }));
+  }
+  li.append(Object.assign(document.createElement("small"), { textContent: ref.usedFor + (usedIn ? ` Used in: ${usedIn}.` : "") }));
+  return li;
+}
+
+function renderReferences() {
+  const R = state.references;
+  if (!R) return;
+  const ex = state.exercise;
+  const mine = R.references.filter((r) => usesRef(ex, r) || (ex.model === "multi" && r.key === "de Leva 1996"));
+  $("ref-current").replaceChildren(...(mine.length ? mine.map((r) => refItem(r)) : [Object.assign(document.createElement("li"), { textContent: "No published source for this exercise's numbers yet: they are estimates." })]));
+  if ($("ref-all").childElementCount) return; // the full list doesn't change with the exercise
+  $("ref-count").textContent = R.references.length;
+  const groups = [...new Set(R.references.map((r) => r.group))];
+  const names = (r) => Object.values(state.catalog).filter((e) => usesRef(e, r)).map((e) => e.name).join(", ");
+  $("ref-all").replaceChildren(
+    ...groups.flatMap((g) => [Object.assign(document.createElement("h4"), { textContent: g }),
+      Object.assign(document.createElement("ul"), { className: "ref-list" })]),
+    Object.assign(document.createElement("h4"), { textContent: "Resources" }),
+    Object.assign(document.createElement("ul"), { className: "ref-list" }));
+  const lists = $("ref-all").querySelectorAll("ul");
+  groups.forEach((g, i) => lists[i].append(...R.references.filter((r) => r.group === g).map((r) => refItem(r, r.key === "de Leva 1996" ? "all multi-joint lifts and limb weights" : names(r)))));
+  lists[groups.length].append(...R.resources.map((x) => {
+    const li = document.createElement("li");
+    li.append(Object.assign(document.createElement("a"), { href: x.url, target: "_blank", rel: "noopener", textContent: x.name }), ` (${x.licence})`);
+    li.append(Object.assign(document.createElement("small"), { textContent: x.usedFor }));
+    return li;
+  }));
+}
+
 async function init() {
   const h = readHash();
-  const [all, body] = await Promise.all([Promise.all(EXERCISES.map(loadExercise)), fetch("data/body.json").then((r) => r.json())]);
+  const [all, body, refs] = await Promise.all([Promise.all(EXERCISES.map(loadExercise)), fetch("data/body.json").then((r) => r.json()),
+    fetch("data/references.json").then((r) => r.json()).catch(() => null)]);
   state.body = body;
+  state.references = refs;
   for (const ex of all) state.catalog[ex.id] = ex;
   const sel = $("exercise");
   sel.replaceChildren();
