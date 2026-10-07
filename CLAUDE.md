@@ -4,16 +4,18 @@ Static teaching site (GitHub Pages). Vanilla ES modules. **No build step, no npm
 
 ## Layout
 - `index.html`, `css/style.css`: one page; light and dark mode via CSS variables
-- `js/physics.js`: pure statics (`pose`, `loadForce`, `limbWeights`, `analyze`, `sampleCurve`). No DOM. Imported by the tests. Every exercise is a two-segment chain (base → mid → tip); `analyze` returns `jointTorque` (= `loadTorque` + `limbTorque`) about the moving joint, positive when it resists the lift.
-- `js/multijoint.js`: multi-joint lifts. A solver per lift family turns the driver value into a posture (balance, rail, bar path, contacts), then `jointTorque` sums the moments on one side of each joint. Shared anthropometry in `data/body.json`
-- `js/multijoint3d.js`: 3D statics (vectors, joint moments split into anatomical components) and the 3D leg press, squat and bench press. Right limb analysed, left mirrored. Forces statics can't decide (sideways floor push) use static optimisation or a visible slider, never a hidden guess
+- `js/physics.js`: pure statics for single-joint exercises (`pose`, `loadForce`, `limbWeights`, `analyze`, `sampleCurve`). No DOM. Imported by the tests. Every exercise is a two-segment chain (base → mid → tip); `analyze` returns `jointTorque` (= `loadTorque` + `limbTorque`) about the moving joint, positive when it resists the lift. Load types: gravity, cable, machine (cam), reaction (closed chain), band. A variant's `strengthScale` (factor or points) corrects strength for posture or grip.
+- `js/multijoint.js`: multi-joint lifts. A solver per lift family turns the driver value into a posture (balance, rail, bar path, contacts), then `jointTorque` sums the moments on one side of each joint. Side-view solvers: `standing` (squat / hinge / deadlift / bent-over row via `load: "row"`), `split`, `hipThrust`, `seatedRow`. `analyzeMulti` applies strength curves, a joint's `negative` curve for the opposite direction, and `jointScale` corrections (variant- or exercise-level). Shared anthropometry in `data/body.json`
+- `js/multijoint3d.js`: 3D statics (vectors, joint moments split into anatomical components). Solvers: `legPress3d`, `squat3d`, `hinge3d` (RDL), `split3d`, `hipThrust3d` (legs share `legFromFloor`); `bench3d`, `press3d`, `row3d`, `pull3d` (arms). Right limb analysed, left mirrored. Forces statics can't decide (sideways floor push, bar spread) use static optimisation (`leastEffort`) or a visible slider, never a hidden guess. `jointScaleAt`: posture corrections by factor, points (own or another joint's angle via `by`, one torque `direction`), or a shoulder × elbow `grid`.
 - `js/view3d.js`: hand-rolled orthographic 3D view in SVG with drag-to-turn and camera presets
-- `js/muscles.js`: activation estimate from the physics result
+- `js/muscles.js`: activation estimate from the physics result (a muscle may follow several joint components via `joints`)
 - `js/figure.js`, `js/chart.js`: hand-rolled SVG rendering. The figure draws `postures` and muscle `draw` specs from the JSON, rotated so the variant's gravity points down
 - `js/wger.js`: optional wger.de API calls; must fail silently
-- `data/exercises/*.json`: all exercise content (chain, variants, strength curve, muscles, postures, phases)
-- `docs/model-limits.md`: what the single-joint model can't do (multi-joint lifts) and what it approximates
+- `data/exercises/*.json`: all exercise content (chain, variants, strength curve, muscles, postures, phases, `placement` sliders)
+- `data/references.json`: every paper cited in a `source` field, shown in the app's References section
+- `docs/model-limits.md`: what the model approximates, per lift, and how each was checked against measurements; `docs/reading-list.md`: papers still to get
 - `tests/*.test.mjs`: `npm test` (node --test)
+- Uploaded papers are read locally and removed from the repo afterwards (copyright); never commit PDFs
 
 ## Conventions
 - Coordinates: base-joint origin, metres, in the exercise's frame: `side` (x forward, y towards the head), `front` (x out to the side, y towards the head), `top` (x out to the side, y forward). Gravity is per variant in that frame. Angles in degrees; positive joint torque = resists the lift.
