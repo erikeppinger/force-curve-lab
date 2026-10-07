@@ -264,7 +264,11 @@
       "notes": "Same foot position as the middle preset, but the knees drift 10° inside the line over the toes: the knee's sideways (valgus) moment rises, which ligaments rather than muscles have to carry."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Leg Press", "note": "TODO: look up the wger exercise id"},
+  "wger": {
+    "exerciseId": 371,
+    "name": "Leg Press",
+    "note": "Id taken from the exercise's media URL in the wger starter library CSV (wger.de/media/exercise-video/371/…); not checked against the API from here. Check at https://wger.de/en/exercise/371/view/"
+  },
   "placement": [
     {
       "key": "footHeight",

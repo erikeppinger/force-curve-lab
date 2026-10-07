@@ -87,7 +87,7 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] Literature sources for the strength curves, peak strengths and limb masses (see `docs/model-limits.md`)
 - [ ] Literature for muscle activation weights, machine cam profiles and hip rotation strength; optionally precomputed OpenSim results as JSON
 - [x] Back-view body map
-- [ ] Vendor the wger SVGs locally for offline use; look up wger exercise ids for the new exercises
+- [ ] Vendor the wger SVGs locally for offline use; wger exercise ids: 8 set (7 from the starter CSV's media URLs, still to confirm), the rest still missing
 - [ ] Translations (DE)
 
 ## Licences and credits

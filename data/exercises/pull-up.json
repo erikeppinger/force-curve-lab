@@ -257,5 +257,9 @@
       "auto": "Under the bar (auto)"
     }
   ],
-  "wger": {"exerciseId": null, "name": "Pull-ups", "note": "TODO: look up the wger exercise id"}
+  "wger": {
+    "exerciseId": 475,
+    "name": "Pull-ups",
+    "note": "Id taken from the exercise's media URL in the wger starter library CSV (wger.de/media/exercise-video/475/…); not checked against the API from here. Check at https://wger.de/en/exercise/475/view/"
+  }
 }

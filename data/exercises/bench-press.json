@@ -203,7 +203,11 @@
       "notes": "Bench tilted 30°: the bar touches the upper chest and presses vertically over the shoulders. Elbows as close under the bar as the arm allows. Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Bench Press", "note": "TODO: look up the wger exercise id"},
+  "wger": {
+    "exerciseId": 73,
+    "name": "Bench Press",
+    "note": "Id taken from the exercise's media URL in the wger starter library CSV (wger.de/media/exercise-video/73/…); not checked against the API from here. Check at https://wger.de/en/exercise/73/view/"
+  },
   "placement": [
     {
       "key": "gripHalf",

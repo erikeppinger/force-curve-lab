@@ -108,5 +108,9 @@
       "notes": "The load sits on the knees, so body weight isn't lifted. With the knee bent the gastrocnemius is slack; the 0.5 factor on it is an estimate, not a measured value."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Standing Calf Raises", "note": "TODO: look up the wger exercise id"}
+  "wger": {
+    "exerciseId": 622,
+    "name": "Standing Calf Raises",
+    "note": "Id taken from the exercise's media URL in the wger starter library CSV (wger.de/media/exercise-video/622/…); not checked against the API from here. Check at https://wger.de/en/exercise/622/view/"
+  }
 }

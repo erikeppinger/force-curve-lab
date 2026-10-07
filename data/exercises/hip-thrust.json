@@ -265,7 +265,11 @@
       "notes": "Feet wide and turned out: the knees bend less in the side view and the quadriceps' share drops; the feet push slightly inwards against the floor (least-effort estimate)."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Hip Thrust", "note": "TODO: look up the wger exercise id"},
+  "wger": {
+    "exerciseId": 294,
+    "name": "Hip Thrust",
+    "note": "Id taken from the exercise's media URL in the wger starter library CSV (wger.de/media/exercise-video/294/…); not checked against the API from here. Check at https://wger.de/en/exercise/294/view/"
+  },
   "momentArmNote": "Moment arm = the joint's 3D distance from the floor's push line under that foot; it feeds every component of that joint's torque.",
   "placement": [
     {

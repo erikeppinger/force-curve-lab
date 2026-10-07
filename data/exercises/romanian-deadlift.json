@@ -253,7 +253,11 @@
       "notes": "Feet wide and turned out. Hip extension stays about the same, but the feet now push outwards against the floor (least-effort estimate), which brings in the hip's sideways muscles. With the sideways push set to zero the adductors would have to hold the stance instead."
     }
   ],
-  "wger": {"exerciseId": null, "name": "Romanian Deadlift", "note": "TODO: look up the wger exercise id"},
+  "wger": {
+    "exerciseId": 507,
+    "name": "Romanian Deadlift",
+    "note": "Id taken from the exercise's media URL in the wger starter library CSV (wger.de/media/exercise-video/507/…); not checked against the API from here. Check at https://wger.de/en/exercise/507/view/"
+  },
   "momentArmNote": "Moment arm = the joint's 3D distance from the floor's push line under that foot; it feeds every component of that joint's torque.",
   "placement": [
     {
