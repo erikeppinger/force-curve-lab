@@ -40,6 +40,8 @@ Seen in search results; the sites are blocked from the build environment, so non
 - Provins KA, Salter N: elbow-flexion strength by forearm position.
 - Rasch PJ: elbow-flexion strength by forearm position.
 
+- **EMG datasets** (to be fetched with the papers): PolyF-EMG, 18 people, knee extension, barbell and band bench press (<https://ieee-dataport.org/documents/ployf-emg-comprehensive-multi-muscle-surface-electromyography-dataset-fatigue-analysis>, doi:10.21227/ccze-7z50); EMAHA-DB2, two weight-training activities, isotonic and isometric (<https://ieee-dataport.org/documents/electromyography-analysis-human-activities-database-2>, doi:10.21227/0e4c-zc53). Raw signals, so they could give relative muscle shares for the leg extension and bench press. Read locally like the papers; commit only derived numbers with a citation unless the licence allows more.
+
 ## Checked and unavailable
 
 - Hip rate of torque development and peak torque dataset (MMU e-space, doi:10.23634/MMU.00634821; "Handheld dynamometry validity and reliability of measuring hip joint rate of torque development and peak torque"): taken down from the repository page.
