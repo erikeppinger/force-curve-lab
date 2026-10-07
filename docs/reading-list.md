@@ -34,9 +34,12 @@ Seen in search results; the sites are blocked from the build environment, so non
 - **Chen J, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183.** 962 passive, isometric and isokinetic datasets from the literature. Could check or replace the leg strength curves and give strength vs a second joint's angle. Preprint: <https://www.biorxiv.org/content/10.1101/2024.06.22.600197>; author copy: <https://www.hs.mh.tum.de/fileadmin/w00bbr/nd/pdf/Chen_JBiomech_2025.pdf>. Check whether the collected data are published with it, and under which licence.
 - **Muscle moment arm–joint angle relations in the hip, knee, and ankle: a visualization of datasets** (same group, open access): <https://pmc.ncbi.nlm.nih.gov/articles/PMC12283864/>. Moment arms per muscle would let the muscle weights follow the joint angle instead of being flat guesses.
 - **OpenSim full-body model** (Rajagopal et al. 2016): <https://simtk.org/home/full_body>. Precomputing moment arms or muscle forces offline and storing them as JSON keeps the site build-free. Check the model's licence first.
-- **Hip rate of torque development and peak torque**, six hip movements, 30 people: <https://e-space.mmu.ac.uk/634821/> (doi:10.23634/MMU.00634821). Could cross-check the hip abduction, adduction and rotation peaks.
 
 ## Classic strength-curve sources (not found online)
 
 - Provins KA, Salter N: elbow-flexion strength by forearm position.
 - Rasch PJ: elbow-flexion strength by forearm position.
+
+## Checked and unavailable
+
+- Hip rate of torque development and peak torque dataset (MMU e-space, doi:10.23634/MMU.00634821; "Handheld dynamometry validity and reliability of measuring hip joint rate of torque development and peak torque"): taken down from the repository page.
