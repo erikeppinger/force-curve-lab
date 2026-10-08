@@ -255,6 +255,14 @@
       "group": "Muscle activity",
       "citation": "Murray WM, Delp SL, Buchanan TS (1995). Variation of muscle moment arms with elbow and forearm position. J Biomech 28(5):513–525.",
       "usedFor": "Biceps curl: how the biceps', brachialis' and brachioradialis' moment arms change with elbow angle, which sets the shape of their muscle weights."
+    },
+    {
+      "key": "Folland 2008",
+      "match": "Folland J, Morris B",
+      "group": "Exercise biomechanics",
+      "citation": "Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169.",
+      "url": "https://doi.org/10.1080/02640410701370663",
+      "usedFor": "Leg extension: measured resistance profiles of knee-extension machines (mean of eight, and the two extremes) in place of an illustrative cam."
     }
   ],
   "resources": [

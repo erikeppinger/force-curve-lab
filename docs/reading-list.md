@@ -18,7 +18,7 @@ Citations checked on 2026-10-09 against the reference lists of the papers alread
 | 8 | Waters RL et al. (1974). The relative strength of the hamstrings during hip extension. J Bone Joint Surg Am 56(8):1592–1597 | Title, journal and pages confirmed (Rajagopal et al. 2016, ref. 61); co-authors listed only as "et al." | Hip-extension strength vs knee angle |
 | 9 | Danneskiold-Samsøe B, Bartels EM, Bülow PM, Lund H, Stockmarr A, Holm CC, Wätjen I, Appleyard M, Bliddal H (2009). Isokinetic and isometric muscle strength in a healthy population with special reference to age and gender. Acta Physiol 197:1–68 (supplement). doi:10.1111/j.1748-1716.2009.02022.x | Confirmed (Chen & Franklin preprint, references) | Hip adduction (and other) strength norms, general population |
 | 10 | Provins KA, Salter N (1955). Maximum torque exerted about the elbow joint. J Appl Physiol 7(4):393–398 | Confirmed (Guenzkofer et al. 2012, references) | Elbow strength by forearm position |
-| 11 | Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169 | Seen in search results | Measured machine cam profiles |
+| 11 | Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169 | **Read and cited** (leg extension) | Measured machine cam profiles |
 | 12 | Isometric hip extension at 15° vs 90° of knee bend (Japanese Journal of Physical Fitness and Sports Medicine) | Link only: <https://jlc.jst.go.jp/DN/JLC/20011214456?from=WPRIM> | Hip-extension strength vs knee angle |
 | 13 | Sprinters and hurdlers, hip extension with the knee at 30° vs about 90° | Link only: <https://lida.sport-iat.de/ta/Record/4080023?lng=en> | Hip-extension strength vs knee angle |
 | 14 | Rasch PJ: elbow-flexion strength by forearm position | Not found in any read paper; year and title unknown | Elbow strength by forearm position |
@@ -47,7 +47,7 @@ The hamstrings' share at the hip (deadlift, RDL, hip thrust, split squat). Still
 
 ### Machine cam profiles
 
-- Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. Eight knee-extension machines from six makers, resistive torque measured at five knee angles. Would replace the illustrative leg-extension cam with measured ones (makers likely anonymised).
+- Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. Eight knee-extension machines from six makers, resistive torque measured at five knee angles. **Read and cited:** the leg extension now uses its measured profiles (makers are named in the paper).
 
 ### Hip adduction strength, general population
 

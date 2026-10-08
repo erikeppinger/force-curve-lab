@@ -46,7 +46,7 @@
       "wgerId": 10,
       "role": "Prime mover",
       "driver": "jointEffort",
-      "weight": [[0, 1.0], [90, 1.0]],
+      "weight": [[0, 1], [90, 1]],
       "note": "Vastus lateralis, medialis and intermedius: cross the knee only.",
       "source": "TODO: check against EMG literature",
       "draw": {"seg": "proximal", "along": [0.15, 0.4], "offset": 0.045, "w": 0.065, "layer": 0}
@@ -80,7 +80,7 @@
   "variants": [
     {
       "id": "machine",
-      "name": "Leg extension machine",
+      "name": "Leg extension machine (typical cam)",
       "equipment": "Machine",
       "posture": "seated",
       "proximalAngle": 90,
@@ -88,13 +88,49 @@
         "type": "machine",
         "padDistance": 0.38,
         "camProfile": {
-          "points": [[0, 0.24], [45, 0.3], [90, 0.3]],
-          "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
-          "source": "TODO: replace with a measured profile for a real machine"
+          "points": [[20, 0.2676], [40, 0.2817], [60, 0.2799], [80, 0.2712], [100, 0.2478]],
+          "note": "Effective radius in metres: joint torque per unit of stack weight. Shape: the mean of eight knee-extension machines from six makers, as % of its peak torque at knee angles 20–100° (Fig. 2B, read off; agrees with Table I within about 2 points), held flat below 20°. Scale: 0.30 m at the peak, nominal; the machines' absolute torque for a similar stack load differed widely (their Fig. 2A), so stack kg don't compare between machines or with free weights.",
+          "source": "Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. doi:10.1080/02640410701370663"
         }
       },
       "defaultLoadKg": 10,
-      "notes": "Pad on the shin near the ankle. This illustrative cam eases off near lockout, where the quads are weakest. The lower leg's own weight adds torque too."
+      "notes": "Pad on the shin near the ankle. The mean of eight measured machines stays within about 80–95% of its peak resistance across the range, while the quadriceps drop to about 40% of their peak near lockout (Folland & Morris: 75% at 100°, 40% at 20° of knee bend). So no machine matched the muscles: the effort still rises sharply towards lockout. The lower leg's own weight adds torque too."
+    },
+    {
+      "id": "machine-falling",
+      "name": "Machine: cam falling with knee bend (Strive S106, 2008)",
+      "equipment": "Machine",
+      "posture": "seated",
+      "proximalAngle": 90,
+      "load": {
+        "type": "machine",
+        "padDistance": 0.38,
+        "camProfile": {
+          "points": [[20, 0.3], [40, 0.2631], [60, 0.2178], [80, 0.1908], [100, 0.1599]],
+          "note": "Effective radius in metres: joint torque per unit of stack weight. Shape: the Strive S106 leg extension as measured in 2008, as % of its peak torque at knee angles 20–100° (Fig. 2B, read off; agrees with Table I within about 2 points), held flat below 20°. Scale: 0.30 m at the peak, nominal; the machines' absolute torque for a similar stack load differed widely (their Fig. 2A), so stack kg don't compare between machines or with free weights.",
+          "source": "Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. doi:10.1080/02640410701370663"
+        }
+      },
+      "defaultLoadKg": 10,
+      "notes": "Resistance highest at lockout and falling as the knee bends (54% of peak at 100°): the opposite of the quadriceps' strength curve, so it is hardest exactly where the muscles are weakest. The machine as measured by Folland & Morris in 2008; current models may differ."
+    },
+    {
+      "id": "machine-rising",
+      "name": "Machine: cam rising with knee bend (Technogym Rehabilitation, 2008)",
+      "equipment": "Machine",
+      "posture": "seated",
+      "proximalAngle": 90,
+      "load": {
+        "type": "machine",
+        "padDistance": 0.38,
+        "camProfile": {
+          "points": [[20, 0.2373], [40, 0.2517], [60, 0.2748], [80, 0.2964], [100, 0.2913]],
+          "note": "Effective radius in metres: joint torque per unit of stack weight. Shape: the Technogym Rehabilitation leg extension as measured in 2008, as % of its peak torque at knee angles 20–100° (Fig. 2B, read off; agrees with Table I within about 2 points), held flat below 20°. Scale: 0.30 m at the peak, nominal; the machines' absolute torque for a similar stack load differed widely (their Fig. 2A), so stack kg don't compare between machines or with free weights.",
+          "source": "Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. doi:10.1080/02640410701370663"
+        }
+      },
+      "defaultLoadKg": 10,
+      "notes": "Resistance lowest near lockout (79% of peak at 20°) and highest with the knee bent: the closest to the muscles' ascending side, but still much flatter than their drop to 40% at lockout. The machine as measured by Folland & Morris in 2008; current models may differ."
     },
     {
       "id": "ankle-weight",
