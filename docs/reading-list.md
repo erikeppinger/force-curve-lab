@@ -8,10 +8,7 @@ Papers identified but not here yet. Citations were seen elsewhere, so check the 
 
 | # | Paper | Why |
 |---|---|---|
-| 1 | Escamilla RF, Francisco AC, Fleisig GS, Barrentine SW, Welch CM, Kayes AV, Speer KP, Andrews JR (2000). A three-dimensional biomechanical analysis of sumo and conventional style deadlifts. Med Sci Sports Exerc 32(7):1265–1275. doi:10.1097/00005768-200007000-00013 (only the abstract read) | Deadlift: hip, knee and ankle angles at lift-off for both styles (sets the knee bend per hip bend), and their joint moments to check the model against |
-| 2 | Delp SL, Hess WE, Hungerford DS, Jones LC (1999). Variation of rotation moment arms with hip flexion. J Biomech 32:493–501 | Seated abduction/adduction machines: which muscles abduct with the hip flexed |
-| 3 | Dostal WF, Soderberg GL, Andrews JG (1986). Actions of hip muscles. Phys Ther 66:351–361 | Hip muscles' moment arms and actions in different positions (gluteus medius vs maximus) |
-| 4 | Ferrer-Uris B et al. (2023), PeerJ: forearm muscle activation (FDP, FDS, FCR) in half crimp vs sloper dead-hangs (cited by StrengthClimbing) | Edge lift: check the FDP/FDS split |
+| – | Nothing outstanding: the last four (Escamilla 2000, Delp 1999, Dostal 1986, Ferrer-Uris 2023) are here and read. | |
 
 ## To find (no paper identified yet)
 
@@ -33,7 +30,8 @@ Papers identified but not here yet. Citations were seen elsewhere, so check the 
 
 Read and in the app (cited in the exercise files and References) or read and set aside:
 
-- **In the app:** Ramsay et al. 2009 (curl muscle levels), Lieber et al. 1992 (forearm and finger muscle sizes), Delp et al. 1996 (wrist strength), Gonzalez et al. 1997 (wrist muscle shares), Lin et al. 1989 (pulley positions, finger bone lengths), Lin et al. 1990 (pulley breaking loads), Danneskiold-Samsøe et al. 2009 (hip abduction/adduction norms), Provins & Salter 1955 (cross-check), Folland & Morris 2008 (machine cams), Yamamoto et al. 2015 (hip extension by knee angle), Braman et al. 2009 (shoulder-blade rhythm), Latz et al. 2019 (knuckle ranges), Tsunoda et al. 1993 and O'Connell et al. 2021 (curl cross-checks), Chen & Franklin 2025 (cross-checks; calf strength with the knee straight).
+- **In the app:** Escamilla et al. 2000 (deadlift stances; knee angles and moments compared), Ferrer-Uris et al. 2023 (edge lift FDP/FDS direction check), Ramsay et al. 2009 (curl muscle levels), Lieber et al. 1992 (forearm and finger muscle sizes), Delp et al. 1996 (wrist strength), Gonzalez et al. 1997 (wrist muscle shares), Lin et al. 1989 (pulley positions, finger bone lengths), Lin et al. 1990 (pulley breaking loads), Danneskiold-Samsøe et al. 2009 (hip abduction/adduction norms), Provins & Salter 1955 (cross-check), Folland & Morris 2008 (machine cams), Yamamoto et al. 2015 (hip extension by knee angle), Braman et al. 2009 (shoulder-blade rhythm), Latz et al. 2019 (knuckle ranges), Tsunoda et al. 1993 and O'Connell et al. 2021 (curl cross-checks), Chen & Franklin 2025 (cross-checks; calf strength with the knee straight).
+- **Read, for the hip machines (not used yet):** Dostal et al. 1986 (hip muscles' moment-arm components; with the hip flexed 90° the gluteus medius and minimus turn into internal rotators and lose abduction, most external rotators become strong abductors, TFL and piriformis keep abducting throughout; their gluteus maximus model isn't valid beyond about 5° of flexion), Delp et al. 1999 (rotation moment arms at 0–90° of flexion: 15 of 18 compartments shift towards internal rotation).
 - **Read, for later:** Holzbaur et al. 2005 (the OpenSim arm model; kept in `new` for the OpenSim step), Rajagopal et al. 2016 (the OpenSim leg model).
 - **Read, not used:** An et al. 1979, Rispler et al. 1996, Bianchi et al. 2007 (background); Youm et al. 1979 and Wu et al. 2009 (fetched by mistake); Rasch & Morehouse 1957 (a training study, not item 10); Cook et al. 2007 (goniometer vs motion capture, no knuckle positions).
 
