@@ -17,7 +17,7 @@
     "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
     "note": "Elbow→wrist and wrist→grip centre (bar in the fingers, about at the knuckles) in metres, typical adult. Estimates (TODO: anthropometric source)."
   },
-  "defaults": { "loadKg": 8, "peakTorqueNm": 12, "variant": "seated-dumbbell", "bodyMassKg": 75 },
+  "defaults": { "loadKg": 8, "peakTorqueNm": 12, "variant": "seated-dumbbell", "bodyMassKg": 75, "zoom": true },
   "ui": { "load": [1, 30, 0.5], "strength": [4, 25] },
   "strengthCurve": {
     "label": "Wrist flexor strength",

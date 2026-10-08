@@ -14,7 +14,7 @@ Exercises (2–5 equipment variants each):
 
 For each exercise variant it shows:
 
-- **Side, front or top view.** Animated limb in the right posture (standing, seated, lying, kneeling), load, force direction, line of action and the **moment arm**.
+- **Side, front or top view.** Animated limb in the right posture (standing, seated, lying, kneeling), load, force direction, line of action and the **moment arm**. Single-joint lifts can zoom to the moving joint (on by default for the wrist curls).
 - **Resistance vs. strength.** The load's torque at the joint compared with the muscles' strength at each angle.
 - **Effort curve.** Torque ÷ strength across the range of motion. Its peak is the sticking point.
 - **Muscles involved.** Estimated relative activation per muscle, shown as bars and on the wger muscle map, plus **close-ups** of the body regions where the overview is too coarse: forearm and hand, shoulder (three deltoid heads, rotator cuff, trapezius parts), hip and thigh (quadriceps and hamstring heads, gluteals, deep rotators). Where the model only knows a group (e.g. "quadriceps"), every head shows the group's value, hatched.
@@ -102,7 +102,8 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] More close-ups: shoulder (three deltoid heads, rotator cuff), hip and thigh (quadriceps and hamstring heads, gluteals, deep rotators)
 - [x] Placement sliders (edge lift, 3D lifts) saved in shareable links
 - [x] Curl muscle weights over the elbow angle from measured moment arms (Murray et al. 1995); levels still estimates
-- [ ] Translations (DE)
+- [x] Zoom to the moving joint in the side view (single-joint lifts)
+- [ ] Translations (DE), lowest priority: all at once later
 
 ## Licences and credits
 

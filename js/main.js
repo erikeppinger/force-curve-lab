@@ -1,7 +1,7 @@
 import { analyze, sampleCurve } from "./physics.js";
 import { muscleActivation } from "./muscles.js";
 import { renderChart } from "./chart.js";
-import { renderFigure, figureBounds, viewTitle, renderMultiFigure, multiBounds } from "./figure.js";
+import { renderFigure, figureBounds, zoomBounds, viewTitle, renderMultiFigure, multiBounds } from "./figure.js";
 import { analyzeMulti, sampleMulti } from "./multijoint.js";
 import { CAMERAS, scene3d, bounds3d, renderView3d } from "./view3d.js";
 import { fetchExercise, descriptionParagraphs, bodyBackground, muscleOverlay, isBackMuscle } from "./wger.js";
@@ -110,6 +110,12 @@ function setVariant(id, pulley, load, placement) {
   $("variant-equipment").textContent = v.equipment;
   $("figure-title").textContent = viewTitle(state.exercise, v);
   $("load-label").textContent = state.exercise.model === "finger" ? "Block (one hand)" : v.load?.type === "reaction" ? "Added load" : "Load";
+}
+
+function setZoom(on) {
+  state.zoom = on;
+  $("zoom-toggle").setAttribute("aria-pressed", String(on));
+  $("zoom-toggle").textContent = on ? "Show the whole body" : "Zoom to the joint";
 }
 
 /** Foot-placement sliders (3D lifts): start from the variant's preset. */
@@ -271,6 +277,9 @@ function setExercise(id, h = {}) {
   $("strength-out").textContent = pct ? "100%" : `${state.peakTorqueNm} Nm`;
   $("readouts").hidden = multi || finger;
   $("view-buttons").hidden = ex.view !== "3d";
+  // Zoom for single-joint lifts; on by default where the moving segment is small (e.g. the hand).
+  $("zoom-buttons").hidden = Boolean(ex.model);
+  setZoom(!ex.model && (ex.defaults.zoom ?? false));
   $("figure").classList.toggle("draggable", ex.view === "3d");
   $("joint-table").hidden = !(multi || finger);
   $("joint-table").tHead.rows[0].cells[0].textContent = finger ? "Structure" : "Joint";
@@ -506,7 +515,8 @@ function render() {
   const act = muscleActivation(ex, v, r, state.angle);
   const { main, cmp, bounds } = curves();
 
-  renderFigure($("figure"), { exercise: ex, variant: v, result: r, activation: act, pulley: state.pulley, bounds });
+  const frame = state.zoom ? zoomBounds(ex, v, main.map((s) => s.pose)) : bounds;
+  renderFigure($("figure"), { exercise: ex, variant: v, result: r, activation: act, pulley: state.pulley, bounds: frame });
 
   const bands = ex.phases.map((p) => ({ from: p.range[0], to: p.range[1], label: p.name }));
   const strength = main.map((s) => [s.angle, s.capacity]);
@@ -609,6 +619,7 @@ function bind() {
   });
   $("angle").addEventListener("input", (e) => { setPlaying(false); state.angle = +e.target.value; render(); });
   $("play").addEventListener("click", () => setPlaying(!state.playing));
+  $("zoom-toggle").addEventListener("click", () => { setZoom(!state.zoom); render(); });
   for (const axis of ["x", "y"]) {
     $(`pulley-${axis}`).addEventListener("input", (e) => { state.pulley[axis] = +e.target.value; writeHash(); renderSoon(); });
   }
