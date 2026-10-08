@@ -399,6 +399,7 @@ function setExercise(id, h = {}) {
   const pct = pctStrength(ex);
   $("strength-label").textContent = finger ? "Strength (% of typical maximum fingertip force)" : multi ? "Strength (% of typical, all joints)" : `Strength (peak ${ex.joint.toLowerCase()} torque)`;
   $("strength-info").textContent = strengthInfo(ex);
+  $("model-link").href = ex.model === "finger" ? "docs/edge-lift-model.html" : `docs/model.html?ex=${ex.id}`;
   $("bodymass-info").textContent = "Body mass sets the weight of the body segments (arm, leg, trunk) from typical body proportions. Limbs that move with the load add their own weight to the joint torque, and in standing lifts the body's weight also rests on the legs. It doesn't change strength: use the strength slider for that.";
   $("pulley-x-label").textContent = view === "side" ? "Pulley forward / back" : "Pulley side to side";
   $("pulley-y-label").textContent = view === "top" ? "Pulley forward / back" : "Pulley height";
@@ -850,13 +851,16 @@ function bind() {
   });
   showTheme();
   for (const b of document.querySelectorAll("[data-edge-view]")) b.addEventListener("click", () => { state.edgeView = b.dataset.edgeView; render(); });
-  // Info buttons: show or hide the explanation next to a control.
+// Info buttons: the explanation floats next to the button on hover or keyboard focus; a tap
+  // (touch screens) pins it open until the next tap anywhere.
   for (const b of document.querySelectorAll(".info-btn")) b.addEventListener("click", (e) => {
     e.preventDefault(); // inside a <label>: don't move focus to the slider
+    e.stopPropagation();
     const open = b.getAttribute("aria-expanded") !== "true";
+    for (const o of document.querySelectorAll(".info-btn")) o.setAttribute("aria-expanded", "false");
     b.setAttribute("aria-expanded", String(open));
-    $(b.getAttribute("aria-controls")).hidden = !open;
   });
+  document.addEventListener("click", () => { for (const o of document.querySelectorAll(".info-btn")) o.setAttribute("aria-expanded", "false"); });
   $("hand-reset").addEventListener("click", () => { setHand(undefined); writeHash(); render(); });
   $("placement-reset").addEventListener("click", () => { setPlacement(variant()); writeHash(); render(); });
   for (const b of $("view-buttons").querySelectorAll("button")) {

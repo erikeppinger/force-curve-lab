@@ -146,7 +146,10 @@ label output { color: var(--text); font-weight: 600; }
 .label-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .info-btn { width: 24px; height: 24px; min-height: 24px; padding: 0; border-radius: 50%; background: transparent; color: var(--accent); border: 1.5px solid var(--accent); font: italic 700 0.8rem/1 Georgia, serif; }
 .info-btn[aria-expanded="true"] { background: var(--accent); color: #fff; }
-.info-text { display: block; font-size: 0.8rem; color: var(--text); background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; line-height: 1.45; }
+.info { position: relative; display: inline-flex; }
+.info-text { display: none; position: absolute; z-index: 20; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); width: min(320px, 86vw); font-size: 0.8rem; font-weight: 400; color: var(--text); background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; line-height: 1.45; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); }
+.info-btn:hover + .info-text, .info-btn:focus-visible + .info-text, .info-btn[aria-expanded="true"] + .info-text { display: block; }
+.model-link { margin: 2px 0 10px; font-size: 0.9rem; color: var(--muted); }
 select, button {
   font: inherit;
   color: var(--text);
