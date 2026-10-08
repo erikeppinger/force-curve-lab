@@ -59,9 +59,9 @@ function readHash() {
     ? Object.fromEntries(p.get("pl").split(",").map((kv) => kv.split(":"))
       .filter(([k, v]) => k && v && (v === "auto" || !Number.isNaN(+v))).map(([k, v]) => [k, v === "auto" ? v : +v]))
     : undefined;
-  // Own finger lengths: hand=16 numbers in mm (metacarpal, proximal, middle, distal per finger).
+  // Own hand: hand=16 numbers in mm (knuckle back, proximal, middle, distal per finger).
   const hand = p.has("hand") ? p.get("hand").split(",").map(Number) : undefined;
-  return { ex: p.get("ex"), variant: p.get("v"), compare: p.get("cmp"), load: num("kg"), px: num("px"), py: num("py"), placement, hand: hand?.length === 16 && hand.every((x) => x > 0) ? hand : undefined };
+  return { ex: p.get("ex"), variant: p.get("v"), compare: p.get("cmp"), load: num("kg"), px: num("px"), py: num("py"), placement, hand: hand?.length === 16 && hand.every((x) => Number.isFinite(x)) ? hand : undefined };
 }
 function writeHash() {
   const p = new URLSearchParams({ ex: state.exercise.id, v: state.variantId, kg: state.loadKg });
@@ -153,12 +153,15 @@ function setPlacement(v, override = {}) {
 }
 
 // ---------- edge lift: the user's own finger lengths ----------
-const BONES = ["metacarpal", "proximal", "middle", "distal"];
-/** The current finger lengths (own or typical) as a flat list in the hash order. */
-const handList = () => {
+const BONES = ["knuckleBack", "proximal", "middle", "distal"];
+const BONE_RANGE = { knuckleBack: [-10, 30], proximal: [10, 80], middle: [8, 60], distal: [8, 40] }; // mm
+/** The typical hand from the data: knuckle line and phalanx lengths per finger (m). */
+const typicalHand = () => {
   const S = state.exercise.fingers;
-  return S.order.flatMap((id) => BONES.map((b) => (state.hand ?? S.lengths)[id][b]));
+  return Object.fromEntries(S.order.map((id) => [id, { knuckleBack: S.knuckleBack?.[id] ?? 0, proximal: S.lengths[id].proximal, middle: S.lengths[id].middle, distal: S.lengths[id].distal }]));
 };
+/** The current hand (own or typical) as a flat list in the hash order. */
+const handList = () => state.exercise.fingers.order.flatMap((id) => BONES.map((b) => (state.hand ?? typicalHand())[id][b]));
 /** Fill the "Your hand" table; list = 16 lengths in mm from the URL, or undefined. */
 function setHand(list) {
   const S = state.exercise.fingers;
@@ -172,15 +175,18 @@ function setHand(list) {
     tr.append(th);
     for (const b of BONES) {
       const td = document.createElement("td");
+      const [lo, hi] = BONE_RANGE[b];
+      const current = () => +(((state.hand ?? typicalHand())[id][b]) * 1000).toFixed(1);
       const input = Object.assign(document.createElement("input"), {
-        type: "number", min: 5, max: 120, step: 0.5, inputMode: "decimal",
-        value: +(((state.hand ?? S.lengths)[id][b]) * 1000).toFixed(1),
+        type: "number", min: lo, max: hi, step: 0.5, inputMode: "decimal", value: current(),
+        // The middle finger's knuckle is the reference for the knuckle line.
+        disabled: b === "knuckleBack" && id === "middle",
       });
-      input.setAttribute("aria-label", `${S.labels[id]} ${b} (mm)`);
+      input.setAttribute("aria-label", `${S.labels[id]} ${b === "knuckleBack" ? "knuckle set back" : `${b} phalanx`} (mm)`);
       input.addEventListener("change", () => {
         const mm = +input.value;
-        if (!(mm >= 5 && mm <= 120)) { input.value = +(((state.hand ?? S.lengths)[id][b]) * 1000).toFixed(1); return; }
-        state.hand = state.hand ?? structuredClone(S.lengths);
+        if (!(mm >= lo && mm <= hi)) { input.value = current(); return; }
+        state.hand = state.hand ?? typicalHand();
         state.hand[id][b] = mm / 1000;
         writeHash();
         render();
@@ -594,7 +600,12 @@ function renderFinger() {
   const fitText = fit ? `An edge that fits ${state.hand ? "your" : "a typical"} hand in this grip exactly sits, compared with under the middle finger, ${["index", "ring", "little"].map((id) => `${id} ${fit[id].lift >= 0 ? "+" : "−"}${Math.abs(fit[id].lift * 1000).toFixed(1)} mm`).join(", ")} (+ = closer to the knuckles; Auto on the edge sliders uses it).` : null;
   const info = [{ text: `The detailed finger (index) carries ${((F / (state.loadKg * 9.81)) * 100).toFixed(0)}% of the block${v.params.fingerShare === "auto" && state.placement?.fingerShare === "auto" ? " (its least-effort share)" : ""}. FDP:FDS = ${Number.isFinite(r.ratio) ? r.ratio.toFixed(2) : "FDP only"}.` }];
   if (!r.indexReaches && state.placement?.fingerShare === "auto") info.push({ warn: true, text: "In the four-finger model the index doesn't reach the edge in this grip; the detailed finger is shown at 25% for comparison." });
-  if (r.set && Math.abs(r.set.deviationDeg) >= 1) info.push({ text: `The hand tilts ${Math.abs(r.set.deviationDeg).toFixed(0)}° towards the ${r.set.deviationDeg > 0 ? "little finger (ulnar)" : "thumb (radial)"} to bring the fingers onto the edge.` });
+  if (r.set) {
+    const turns = [];
+    if (Math.abs(r.set.deviationDeg) >= 1) turns.push(`tilts ${Math.abs(r.set.deviationDeg).toFixed(0)}° towards the ${r.set.deviationDeg > 0 ? "little finger" : "thumb"} (wrist deviation or the arm leaning)`);
+    if (Math.abs(r.set.rollDeg) >= 1) turns.push(`rolls ${Math.abs(r.set.rollDeg).toFixed(0)}° about its long axis (forearm rotation), moving the ${r.set.rollDeg > 0 ? "index" : "little-finger"} side's pads towards the palm`);
+    if (turns.length) info.push({ text: `To bring the fingers onto the edge the hand ${turns.join(" and ")}.` });
+  }
   if (r.set && Math.abs(r.set.wristSide) > 0.05) info.push({ text: `The load centre sits ${Math.abs(r.set.loadCentre * 1000).toFixed(0)} mm towards the ${r.set.wristSide > 0 ? "thumb" : "little-finger"} side of the wrist: the wrist holds ${Math.abs(r.set.wristSide).toFixed(1)} Nm sideways.` });
   if (fitText) info.push({ text: fitText });
   // The block at which this finger reaches its typical maximum (grip, finger share and strength as set).

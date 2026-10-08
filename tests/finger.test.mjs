@@ -147,7 +147,7 @@ test("four fingers: shares add up to the block, forces and the wrist's sideways 
     }
     const m = set.fingers.reduce((s, f) => s + f.force * f.zWorld, 0);
     assert.ok(Math.abs(set.wristSide - m) < 1e-9);
-    assert.ok(set.deviationDeg >= -15 && set.deviationDeg <= 25);
+    assert.ok(set.deviationDeg >= -25 && set.deviationDeg <= 30);
   }
 });
 
@@ -189,12 +189,14 @@ test("fitted edge: with every edge offset on Auto, each finger keeps the grip's 
 test("fitted edge: identical fingers need a straight edge; a shorter little finger needs it closer", () => {
   const v = ex.variants.find((x) => x.id === "half-crimp");
   const m = ex.fingers.lengths.middle;
-  const same = idealEdge(ex, v.params, 90, { index: m, middle: m, ring: m, little: m });
+  const mm = { ...m, knuckleBack: 0 };
+  const same = idealEdge(ex, v.params, 90, { index: mm, middle: mm, ring: mm, little: mm });
   for (const id of ex.fingers.order) { close(same[id].lift, 0, 1e-12); close(same[id].depth, 0, 1e-12); }
   // Half crimp (MCP 0, PIP 90°, DIP 0): the proximal phalanx hangs along the pull and the rest lies
-  // across it, so the lift is the difference in metacarpal + proximal length (to first order).
+  // across it, so the lift is how far the knuckle sits back plus the difference in proximal length
+  // (to first order).
   const fit = idealEdge(ex, v.params, 90);
   const L = ex.fingers.lengths;
-  const expect = (L.middle.metacarpal + L.middle.proximal) - (L.little.metacarpal + L.little.proximal);
+  const expect = ex.fingers.knuckleBack.little + L.middle.proximal - L.little.proximal;
   assert.ok(Math.abs(fit.little.lift - expect) < 0.004, `${fit.little.lift} vs ${expect}`);
 });

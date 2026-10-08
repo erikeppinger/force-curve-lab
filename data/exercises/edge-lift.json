@@ -44,9 +44,11 @@
       "ring": {"metacarpal": 0.06227, "proximal": 0.04116, "middle": 0.02604, "distal": 0.01848},
       "little": {"metacarpal": 0.05395, "proximal": 0.03284, "middle": 0.01857, "distal": 0.01685}
     },
-    "lengthsNote": "Bone lengths in metres (means of 10 hands). The metacarpal length is taken as the wrist-to-knuckle distance, so the knuckles sit at different heights (the little finger's highest).",
+    "lengthsNote": "Bone lengths in metres (means of 10 hands). The phalanges are used as measured; the knuckle line comes from knuckleBack, not from the metacarpal lengths.",
     "lengthsSource": "Lin GT, Amadio PC, An KN, Cooney WP (1989). Functional anatomy of the human digital flexor pulley system. J Hand Surg Am 14(6):949–956 (Table I: bone lengths of 10 hands; Table III: A2 length as a share of the proximal phalanx)",
     "knuckleSide": {"index": 0.03, "middle": 0.01, "ring": -0.01, "little": -0.03},
+    "knuckleBack": {"index": 0.003, "middle": 0, "ring": 0.003, "little": 0.008},
+    "knuckleBackNote": "How far each knuckle (MCP joint) sits back towards the wrist from the middle finger's, in metres, with the fingers in line with the hand. Sets the knuckle line; the wrist-to-knuckle distance is the middle metacarpal's length minus this. The metacarpal bone lengths alone would put the little finger's knuckle 12 mm back and the index's 3 mm ahead of the middle's, but the metacarpal bases don't sit level in the wrist. Estimate (TODO: measured knuckle positions, e.g. from a musculoskeletal hand model); users can enter their own.",
     "cmcFlexMax": {"index": 0, "middle": 0, "ring": 10, "little": 20},
     "cmcFlexMaxNote": "How far each metacarpal can bend forward at the base of the hand (degrees) to help a short finger reach: index and middle are nearly rigid, ring and little more mobile (cupping the palm). Estimates (TODO: anatomical source).",
     "knuckleSideNote": "Sideways position of each knuckle from the middle of the wrist, in metres (thumb side positive): about 2 cm apart. Estimate (TODO).",
