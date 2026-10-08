@@ -351,6 +351,16 @@
       "url": "https://wger.de",
       "licence": "CC-BY-SA 3.0",
       "usedFor": "Exercise descriptions, images and the muscle-map SVGs, loaded at runtime with attribution; the exercise list this project started from (wger starter library)."
+    },
+    {
+      "name": "StrengthClimbing: The complete guide to arm-lifting finger strength training",
+      "url": "https://strengthclimbing.com/the-complete-guide-to-arm-lifting-finger-strength-training/",
+      "usedFor": "Edge lift: lifting technique (straight arm, short static hold, grip choices, level vs tilted edge) and typical loads; practitioner guide, not peer-reviewed."
+    },
+    {
+      "name": "StrengthClimbing: Dr. Tyler Nelson's active finger strength training protocols",
+      "url": "https://strengthclimbing.com/dr-tyler-nelsons-new-active-finger-strength-training-protocols/",
+      "usedFor": "Edge lift: training context (active vs passive finger loading, transfer to edge sizes); no joint mechanics."
     }
   ]
 }

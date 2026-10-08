@@ -1,6 +1,7 @@
 {
   "id": "edge-lift",
   "name": "Edge lift (one arm, loading pin)",
+  "technique": "Technique as taught for arm-lifting (block pulls): arm straight and resting against the front of the hip, back straight, the lift driven by straightening the knees, no shrug or row (a loading pin that is too long forces a shrug). Lift, hold the block about 2–3 seconds (peak finger force builds in about 1–1.5 s), set it down. The fingers keep their grip throughout; in a half crimp an index finger straightening out of its ~90° bend is the cue to stop the set. A cord through both sides of the block keeps the edge level, as modelled here; a cord through one side tilts it like an incut, which this model doesn't cover. Strong climbers lift far more than the 100% strength default (taken from recreational climbers): use the strength slider. Source: StrengthClimbing's arm-lifting guide (see References, resources).",
   "model": "finger",
   "joint": "Finger flexion",
   "view": "side",
@@ -68,7 +69,7 @@
       "name": "Half crimp",
       "equipment": "Edge block on a loading pin",
       "params": { "mcp": 0, "dip": 0, "pip": 90, "contactFromDip": 0.00985, "fingerShare": 0.25, "dipPassiveShare": 0, "maxFingertipN": 82 },
-      "notes": "Middle joint at about 90°, fingertip in line with the middle phalanx, no thumb. Estimated posture (neither paper measured this grip); the maximum force is taken from the crimp.",
+      "notes": "Middle joint at about 90°, fingertip in line with the middle phalanx, no thumb. Estimated posture (neither paper measured this grip); the maximum force is taken from the crimp. A grip between half crimp and open hand with all four fingers is often recommended for off-the-wall strength training (Tyler Nelson, via StrengthClimbing); in the 'chisel' variant the index finger stays straight and carries less.",
       "source": "Posture: estimate (TODO); maximum fingertip force (all four fingers on the hold, crimp, 82 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
     },
     {

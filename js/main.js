@@ -257,6 +257,8 @@ function setExercise(id, h = {}) {
   $("exercise").value = id;
   $("exercise-name").textContent = ex.name;
   $("angle-note").textContent = ex.angleNote;
+  $("exercise-technique").hidden = !ex.technique;
+  $("exercise-technique").textContent = ex.technique ?? "";
   $("angle-label").textContent = ex.angleLabel;
   const multi = ex.model === "multi";
   const finger = ex.model === "finger";
