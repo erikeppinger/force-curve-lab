@@ -366,6 +366,14 @@
       "citation": "Tsunoda N, O'Hagan F, Sale DG, MacDougall JD (1993). Elbow flexion strength curves in untrained men and women and male bodybuilders. Eur J Appl Physiol 66:235–239.",
       "url": "https://doi.org/10.1007/BF00235099",
       "usedFor": "Biceps curl: cross-check of the elbow-flexion strength curve's peak angle and size."
+    },
+    {
+      "key": "Lieber 1992",
+      "match": "Lieber RL, Jacobson MD",
+      "group": "Body data",
+      "citation": "Lieber RL, Jacobson MD, Fazeli BM, Abrams RA, Botte MJ (1992). Architecture of selected muscles of the arm and forearm: anatomy and implications for tendon transfer. J Hand Surg Am 17(5):787–798.",
+      "url": "https://doi.org/10.1016/0363-5023(92)90444-T",
+      "usedFor": "Edge lift: FDP and FDS muscle size per finger, which sets how the block splits between the fingers (least effort)."
     }
   ],
   "resources": [

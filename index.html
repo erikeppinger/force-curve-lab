@@ -82,6 +82,14 @@
         <thead><tr><th scope="col">Joint</th><th scope="col">Torque</th><th scope="col">Moment arm</th><th scope="col">Effort</th></tr></thead>
         <tbody></tbody>
       </table>
+      <div id="finger-set" class="finger-set" hidden>
+        <h4>All four fingers on the edge</h4>
+        <table id="finger-table" class="joint-table">
+          <thead><tr><th scope="col">Finger</th><th scope="col">Share</th><th scope="col">Knuckle / PIP / tip</th><th scope="col">FDP / FDS</th><th scope="col">A2 / A4 of limit</th><th scope="col">Effort</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p class="hint">Fingertips line up on the edge; each finger keeps close to the grip's PIP and fingertip angles and takes up its length at the knuckle (ring and little finger also by cupping the palm). The block is shared for least effort. A finger that can't reach without a contorted posture stays off the edge. Physics only: see the notes for the assumptions.</p>
+      </div>
       <p id="ro-limb" class="hint" hidden></p>
       <p id="ro-warning" class="warning" hidden>Load exceeds strength at this angle — this is where the lift would fail.</p>
       <div class="phase">

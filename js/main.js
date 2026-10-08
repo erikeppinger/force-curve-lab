@@ -455,6 +455,28 @@ function renderMulti() {
   renderMuscles(act);
 }
 
+/** Edge lift: the four-finger table (shares, postures, tendons, pulleys, effort). */
+function renderFingerSet(set) {
+  $("finger-set").hidden = !set;
+  if (!set) return;
+  const pct = (x) => `${Math.round(x * 100)}%`;
+  $("finger-table").tBodies[0].replaceChildren(...set.fingers.map((f) => {
+    const tr = document.createElement("tr");
+    const cells = f.touches
+      ? [f.label, pct(f.share), `${Math.round(f.pose.mcpDeg)}° / ${Math.round(f.pose.pipDeg)}° / ${Math.round(f.pose.dipDeg)}°${f.pose.cmcDeg ? ` (cupped ${Math.round(f.pose.cmcDeg)}°)` : ""}`,
+        `${f.res.tendons.fdp.toFixed(0)} / ${f.res.tendons.fds.toFixed(0)} N`, `${pct(f.res.pulleys.a2Share)} / ${pct(f.res.pulleys.a4Share)}`, pct(f.effort)]
+      : [f.label, "—", "doesn't reach the edge", "", "", ""];
+    cells.forEach((t, i) => {
+      const td = document.createElement(i ? "td" : "th");
+      td.textContent = t;
+      if (i === 0) td.scope = "row";
+      if (i === 5 && f.effort > 1) td.className = "over";
+      tr.append(td);
+    });
+    return tr;
+  }));
+}
+
 /** Edge lift: finger figure, tendon and pulley charts, and a table of the structures' loads. */
 function renderFinger() {
   const ex = state.exercise;
@@ -516,7 +538,10 @@ function renderFinger() {
   }));
   $("ro-warning").hidden = !(r.effort > 1);
   $("ro-warning").textContent = "More than this finger's typical maximum: the grip would open here.";
-  const info = [{ text: `This finger carries ${((F / (state.loadKg * 9.81)) * 100).toFixed(0)}% of the block (slider below). FDP:FDS = ${Number.isFinite(r.ratio) ? r.ratio.toFixed(2) : "FDP only"}.` }];
+  renderFingerSet(r.set);
+  const info = [{ text: `The detailed finger (index) carries ${((F / (state.loadKg * 9.81)) * 100).toFixed(0)}% of the block${v.params.fingerShare === "auto" && state.placement?.fingerShare === "auto" ? " (its least-effort share)" : ""}. FDP:FDS = ${Number.isFinite(r.ratio) ? r.ratio.toFixed(2) : "FDP only"}.` }];
+  if (!r.indexReaches && state.placement?.fingerShare === "auto") info.push({ warn: true, text: "In the four-finger model the index doesn't reach the edge in this grip; the detailed finger is shown at 25% for comparison." });
+  if (r.set && Math.abs(r.set.wristSide) > 0.05) info.push({ text: `The uneven split tips the hand: the wrist holds ${Math.abs(r.set.wristSide).toFixed(1)} Nm towards the ${r.set.wristSide > 0 ? "thumb" : "little-finger"} side.` });
   // The block at which this finger reaches its typical maximum (grip, finger share and strength as set).
   info.push({ text: `Maximum block for this grip and share: about ${Math.round(r.maxBlockKg)} kg.` });
   if (r.passive > 0) info.push({ text: `The bent-back fingertip joint carries ${r.passive.toFixed(2)} Nm passively.` });

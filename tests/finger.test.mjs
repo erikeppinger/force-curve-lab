@@ -33,7 +33,7 @@ test("load: fingertip force = block × g × finger share, on a line through the 
 
 test("hand-computed: PIP 90°, fingertip in line, pull along the metacarpal", () => {
   const d = 0.008;
-  const p = { ...v("half-crimp").params, mcp: 0, dip: 0, contactFromDip: d };
+  const p = { ...v("half-crimp").params, mcp: 0, dip: 0, contactFromDip: d, fingerShare: 0.25 };
   const r = analyzeFinger(along, { ...v("half-crimp"), params: p }, 90, { loadKg: 10 });
   const F = 10 * G * p.fingerShare;
   close(r.moments.dip, F * d, 1e-6);
@@ -98,7 +98,8 @@ test("edge-lift data: grips, sources and phases", () => {
   assert.equal(ex.model, "finger");
   for (const variant of ex.variants) {
     const p = variant.params;
-    for (const k of ["mcp", "dip", "pip", "fingerShare", "maxFingertipN", "contactFromDip"]) assert.ok(Number.isFinite(p[k]), `${variant.id}: ${k}`);
+    for (const k of ["mcp", "dip", "pip", "maxFingertipN", "contactFromDip"]) assert.ok(Number.isFinite(p[k]), `${variant.id}: ${k}`);
+    assert.ok(p.fingerShare === "auto" || Number.isFinite(p.fingerShare), `${variant.id}: fingerShare`);
     assert.ok(variant.notes && variant.source, variant.id);
   }
   for (const k of ["lengths", "momentArms", "bowstring", "contact", "referenceTension"]) {
@@ -109,7 +110,7 @@ test("edge-lift data: grips, sources and phases", () => {
   const [lo, hi] = ex.angleRange;
   assert.equal(ex.phases[0].range[0], lo);
   assert.equal(ex.phases.at(-1).range[1], hi);
-  for (const s of ex.placement) assert.ok(ex.variants.every((x) => Number.isFinite(x.params[s.key])), s.key);
+  for (const s of ex.placement) assert.ok(ex.variants.every((x) => Number.isFinite(x.params[s.key]) || (s.auto && x.params[s.key] === "auto")), s.key);
 });
 
 test("maximum block: the grip's maximum fingertip force × strength ÷ (g × finger share)", () => {
