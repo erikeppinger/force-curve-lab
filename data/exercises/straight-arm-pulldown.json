@@ -70,7 +70,7 @@
     },
     {
       "id": "triceps-long",
-      "region": "shoulder",
+      "region": "upperarm",
       "name": "Triceps (long head)",
       "wgerId": 5,
       "role": "Synergist",

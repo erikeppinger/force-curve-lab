@@ -111,6 +111,8 @@
     },
     {
       "id": "biceps",
+      "region": "upperarm",
+      "regionPath": ["biceps-long", "biceps-short", "brachialis"],
       "name": "Biceps, brachialis, brachioradialis",
       "wgerId": 1,
       "role": "Prime mover",

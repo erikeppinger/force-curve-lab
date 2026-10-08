@@ -1,0 +1,59 @@
+{
+  "id": "trunk",
+  "name": "Trunk",
+  "note": "Schematic trunk from the lower ribs to the pelvis, not to scale. Positions follow standard anatomy atlases (e.g. Gray's Anatomy, 1918, public domain); shapes are simplified for teaching.",
+  "viewBox": [0, 0, 200, 300],
+  "muscles": {
+    "rectus-abdominis": {"name": "Rectus abdominis", "abbr": "RA", "action": "Bends the trunk forwards; stops the pelvis tipping forwards"},
+    "external-oblique": {"name": "External oblique", "abbr": "EO", "action": "Bends and twists the trunk; braces it"},
+    "psoas": {"name": "Psoas major", "abbr": "PS", "action": "Bends the hip (with the iliacus); steadies the lumbar spine"},
+    "iliocostalis": {"name": "Iliocostalis (erector spinae)", "abbr": "IC", "action": "Extends the back; outer column"},
+    "longissimus": {"name": "Longissimus (erector spinae)", "abbr": "LO", "action": "Extends the back; middle column, the largest"},
+    "spinalis": {"name": "Spinalis (erector spinae)", "abbr": "SP", "action": "Extends the back; inner column, next to the spine"}
+  },
+  "views": [
+    {
+      "id": "front",
+      "title": "Front",
+      "caption": "Trunk from the front, lower ribs to pelvis.",
+      "outline": [
+        "M20,0 L180,0 Q190,120 176,210 Q170,260 150,300 L50,300 Q30,260 24,210 Q10,120 20,0 Z"
+      ],
+      "muscles": [
+        {"id": "external-oblique", "d": "M24,80 L72,100 L74,250 Q40,240 30,210 Q16,150 24,80 Z", "label": [46, 170], "labelAngle": -80},
+        {"id": "external-oblique", "d": "M176,80 L128,100 L126,250 Q160,240 170,210 Q184,150 176,80 Z", "label": [154, 170], "labelAngle": 80},
+        {"id": "rectus-abdominis", "d": "M78,40 L122,40 L120,276 Q100,284 80,276 Z", "label": [100, 150], "labelAngle": -90}
+      ]
+    },
+    {
+      "id": "front-deep",
+      "title": "Front, deep layer",
+      "caption": "Abdominal wall and organs removed: the psoas on each side of the lumbar spine, running down to the thigh.",
+      "outline": [
+        "M20,0 L180,0 Q190,120 176,210 Q170,260 150,300 L50,300 Q30,260 24,210 Q10,120 20,0 Z"
+      ],
+      "bones": [[[100, 60], [100, 230], 16]],
+      "muscles": [
+        {"id": "psoas", "from": [90, 70], "to": [60, 300], "belly": [0, 0.9], "w": 26, "bend": -4},
+        {"id": "psoas", "from": [110, 70], "to": [140, 300], "belly": [0, 0.9], "w": 26, "bend": 4}
+      ]
+    },
+    {
+      "id": "back",
+      "title": "Back",
+      "caption": "Lower back from behind: the three columns of the erector spinae on each side of the spine.",
+      "outline": [
+        "M20,0 L180,0 Q190,120 176,210 Q170,260 150,300 L50,300 Q30,260 24,210 Q10,120 20,0 Z"
+      ],
+      "bones": [[[100, 0], [100, 290], 6]],
+      "muscles": [
+        {"id": "iliocostalis", "from": [60, 0], "to": [72, 292], "belly": [0, 0.95], "w": 24, "bend": -4},
+        {"id": "iliocostalis", "from": [140, 0], "to": [128, 292], "belly": [0, 0.95], "w": 24, "bend": 4},
+        {"id": "longissimus", "from": [82, 0], "to": [88, 292], "belly": [0, 0.95], "w": 20},
+        {"id": "longissimus", "from": [118, 0], "to": [112, 292], "belly": [0, 0.95], "w": 20},
+        {"id": "spinalis", "from": [95, 0], "to": [96, 210], "belly": [0, 1], "w": 9},
+        {"id": "spinalis", "from": [105, 0], "to": [104, 210], "belly": [0, 1], "w": 9}
+      ]
+    }
+  ]
+}

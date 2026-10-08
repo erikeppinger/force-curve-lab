@@ -189,6 +189,8 @@ async function buildDetail() {
   const box = $("detail-views");
   box.replaceChildren();
   for (const region of regions) {
+    // Several regions (compound lifts): a heading row per region keeps the views apart.
+    if (regions.length > 1) box.append(Object.assign(document.createElement("h4"), { className: "detail-region-head", textContent: region.name }));
     for (const view of viewsFor(region, ex)) {
       const fig = document.createElement("figure");
       const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -196,7 +198,7 @@ async function buildDetail() {
       svg.setAttribute("aria-label", `${region.name}: ${view.title}`);
       const cap = document.createElement("figcaption");
       cap.innerHTML = "<strong></strong> <span></span>";
-      cap.querySelector("strong").textContent = `${regions.length > 1 ? `${region.name}: ` : ""}${view.title}.`;
+      cap.querySelector("strong").textContent = `${view.title}.`;
       cap.querySelector("span").textContent = view.caption;
       fig.append(svg, cap);
       box.append(fig);

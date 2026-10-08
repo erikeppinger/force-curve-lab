@@ -203,6 +203,8 @@
     },
     {
       "id": "erector-spinae",
+      "region": "trunk",
+      "regionPath": ["iliocostalis", "longissimus", "spinalis"],
       "name": "Erector spinae",
       "wgerId": null,
       "role": "Stabiliser",

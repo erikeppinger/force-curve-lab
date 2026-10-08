@@ -120,8 +120,8 @@
     },
     {
       "id": "triceps",
-      "region": "shoulder",
-      "regionPath": ["triceps-long", "triceps-lateral"],
+      "region": "upperarm",
+      "regionPath": ["triceps-long", "triceps-lateral", "triceps-medial"],
       "name": "Triceps",
       "wgerId": 5,
       "role": "Prime mover",

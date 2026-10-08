@@ -36,6 +36,8 @@
   "muscles": [
     {
       "id": "biceps",
+      "region": "upperarm",
+      "regionPath": ["biceps-long", "biceps-short"],
       "name": "Biceps brachii",
       "wgerId": 1,
       "role": "Prime mover",
@@ -49,6 +51,7 @@
     },
     {
       "id": "brachialis",
+      "region": "upperarm",
       "name": "Brachialis",
       "wgerId": 13,
       "role": "Prime mover",

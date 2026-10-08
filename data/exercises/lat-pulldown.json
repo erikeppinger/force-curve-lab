@@ -130,6 +130,8 @@
     },
     {
       "id": "biceps",
+      "region": "upperarm",
+      "regionPath": ["biceps-long", "biceps-short", "brachialis"],
       "name": "Biceps, brachialis, brachioradialis",
       "wgerId": 1,
       "role": "Prime mover",
@@ -196,6 +198,8 @@
     },
     {
       "id": "hip-flexors",
+      "region": "trunk",
+      "regionPath": ["rectus-abdominis", "external-oblique", "psoas"],
       "name": "Hip flexors and abdominals",
       "wgerId": null,
       "role": "Stabiliser",

@@ -74,6 +74,8 @@
     },
     {
       "id": "biceps",
+      "region": "upperarm",
+      "regionPath": "biceps-short",
       "name": "Biceps brachii (short head)",
       "wgerId": 1,
       "role": "Stabiliser",
