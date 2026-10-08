@@ -269,6 +269,14 @@ function setHand(list) {
   }));
 }
 
+/** What the strength setting means for this exercise, and why it matters (the "i" next to it). */
+function strengthInfo(ex) {
+  const why = "Why it matters: effort = the load's torque ÷ strength at that angle, so strength decides how hard the same load feels, where it fails (the sticking point is where effort peaks) and how much load is possible. It doesn't move the resistance curve: a stronger lifter has the same hardest point, just further from the limit.";
+  if (ex.model === "finger") return `100% = typical maximum finger forces measured in recreational climbers (the reference tendon tensions and fingertip forces in the sources). The percentage scales every finger's maximum together. Strong climbers are often well above 100%. ${why}`;
+  if (ex.model === "multi") return `100% = typical peak torques of each joint (hip, knee, ankle, shoulder, elbow …) for young adults, from the studies listed under References; each joint keeps its own strength curve over its angle. The percentage scales them all together. ${why}`;
+  return `The most torque the muscles doing this lift can produce about the ${ex.joint.toLowerCase().replace(/ (flexion|extension|abduction|adduction|horizontal adduction).*$/, "")} at their strongest angle, in newton-metres; the default is a typical untrained to recreationally trained adult from the strength study in References. Over the range it follows the strength curve (the dotted line in the chart): muscles are weaker at some angles than others. ${why}`;
+}
+
 /** Does the body-mass setting change anything (limb weight, or body weight on the floor)? */
 const usesBodyMass = (ex) => ex.model === "finger" || (ex.model === "multi" || Boolean(ex.segments.massFractions) || ex.variants.some((v) => v.load.bodyWeight > 0));
 const isMulti = () => state.exercise.model === "multi";
@@ -390,6 +398,8 @@ function setExercise(id, h = {}) {
   const finger = ex.model === "finger";
   const pct = pctStrength(ex);
   $("strength-label").textContent = finger ? "Strength (% of typical maximum fingertip force)" : multi ? "Strength (% of typical, all joints)" : `Strength (peak ${ex.joint.toLowerCase()} torque)`;
+  $("strength-info").textContent = strengthInfo(ex);
+  $("bodymass-info").textContent = "Body mass sets the weight of the body segments (arm, leg, trunk) from typical body proportions. Limbs that move with the load add their own weight to the joint torque, and in standing lifts the body's weight also rests on the legs. It doesn't change strength: use the strength slider for that.";
   $("pulley-x-label").textContent = view === "side" ? "Pulley forward / back" : "Pulley side to side";
   $("pulley-y-label").textContent = view === "top" ? "Pulley forward / back" : "Pulley height";
   fillSelect($("variant"), ex.variants);
@@ -409,7 +419,8 @@ function setExercise(id, h = {}) {
   $("readouts").hidden = multi || finger;
   // The edge lift is a static hold: no lifting animation, the slider compares holds.
   $("play").hidden = finger;
-  if (finger && state.playing) { state.playing = false; $("play").textContent = "Play"; $("play").setAttribute("aria-pressed", "false"); }
+  // A new exercise starts paused (an animation running on the previous one doesn't carry over).
+  if (state.playing) { state.playing = false; $("play").textContent = "Play"; $("play").setAttribute("aria-pressed", "false"); }
   $("view-buttons").hidden = ex.view !== "3d";
   // Zoom for single-joint lifts; on by default where the moving segment is small (e.g. the hand).
   $("zoom-buttons").hidden = Boolean(ex.model);
@@ -607,7 +618,7 @@ function renderFingerSet(set) {
 const EDGE_VIEWS = {
   fingers: { label: "The four fingers on the edge, side view: tendons, pulleys and each finger's share of the block", hint: "Each finger in its own posture on the edge (wrist straight above its pad). Tendons drawn thicker the harder they pull (FDP purple, FDS blue); pulleys coloured from green to red by their share of the cadaver breaking load; arrows: each finger's share of the block." },
   hand: { label: "The hand from the front on the edge: each finger's share, the hand's tilt and the wrist's sideways load", hint: "Palm towards you, index finger on the left. Under each finger: its share of the block (arrow) and its effort; dashed = off the edge. The edge's shape under each finger follows the bars in the controls; the curved arrow at the wrist is its sideways load." },
-  arm: { label: "The arm holding the block, from the front and from the side, with shoulder and elbow loads", hint: "Arm straight from shoulder to grip, block hanging from the hand. Turned out or forward, the block acts on a lever at the shoulder and elbow (joints coloured by effort)." },
+  arm: { label: "The arm holding the block, from the front and from the side, with shoulder and elbow loads", hint: "As taught: the straight arm rests on the front of the hip and the block hangs between the legs, so the shoulder and elbow are only pulled. Turned out or forward from there (sliders), the block acts on a lever at the shoulder and elbow (joints coloured by effort)." },
 };
 
 /** Edge lift: summary strip, the selected view (fingers, hand, arm), tables and per-finger charts. */
@@ -839,6 +850,13 @@ function bind() {
   });
   showTheme();
   for (const b of document.querySelectorAll("[data-edge-view]")) b.addEventListener("click", () => { state.edgeView = b.dataset.edgeView; render(); });
+  // Info buttons: show or hide the explanation next to a control.
+  for (const b of document.querySelectorAll(".info-btn")) b.addEventListener("click", (e) => {
+    e.preventDefault(); // inside a <label>: don't move focus to the slider
+    const open = b.getAttribute("aria-expanded") !== "true";
+    b.setAttribute("aria-expanded", String(open));
+    $(b.getAttribute("aria-controls")).hidden = !open;
+  });
   $("hand-reset").addEventListener("click", () => { setHand(undefined); writeHash(); render(); });
   $("placement-reset").addEventListener("click", () => { setPlacement(variant()); writeHash(); render(); });
   for (const b of $("view-buttons").querySelectorAll("button")) {

@@ -266,25 +266,34 @@ export function renderArmView(svg, { arm, P, loadKg }) {
     el("rect", { x: ox + 8, y: 8, width: W / 2 - 16, height: H - 16, rx: 14, class: "ef-panel" }, g);
     const T = (x, y, s, cls, anchor = "middle") => { const t = el("text", { x, y, class: `ef-label ${cls}`, "text-anchor": anchor }, g); t.textContent = s; return t; };
     T(ox + W / 4, 36, title, "ef-name");
-    const cx = ox + W / 4 - 30;
-    const sh = { x: cx + (side === "front" ? 30 : 6), y: 110 };
-    const up = 70, fore = 66, t = rad(angleDeg);
+    // As taught: the straight arm rests on the front of the hip and the block hangs in front of the
+    // body between the legs. The model's arm angles are measured from there (0° = resting); the
+    // resting arm's own small slant is carried by the hip, not the shoulder.
+    const cx = ox + W / 4;
+    const front = side === "front";
+    const sh = { x: cx + (front ? 26 : 2), y: 110 };
+    const up = 70, fore = 66;
+    const rest = front ? -Math.asin(26 / (up + fore)) : rad(8); // hand at the midline / just in front of the thigh
+    const t = rest + rad(angleDeg);
     const elb = { x: sh.x + up * Math.sin(t), y: sh.y + up * Math.cos(t) };
     const hand = { x: elb.x + fore * Math.sin(t), y: elb.y + fore * Math.cos(t) };
     const ln = (a, b, cls, w, extra = {}) => el("line", { x1: a.x, y1: a.y, x2: b.x, y2: b.y, class: cls, "stroke-width": w, ...extra }, g);
     const limb = (a, b, w) => { ln(a, b, "ef-edge", w + 3); ln(a, b, "ef-skin", w); };
-    // Body: head, trunk, legs (front: both legs; side: one).
+    // Body: head, trunk, legs (front: apart, the other arm at the side; side: one leg).
     const hip = { x: cx, y: 230 };
+    if (front) {
+      limb({ x: cx - 13, y: 232 }, { x: cx - 36, y: 330 }, 22);
+      limb({ x: cx + 13, y: 232 }, { x: cx + 36, y: 330 }, 22);
+      limb({ x: cx - 27, y: 112 }, { x: cx - 32, y: 222 }, 15);
+    } else limb(hip, { x: cx + 2, y: 330 }, 26);
     limb({ x: cx, y: 105 }, hip, 46);
     el("circle", { cx, cy: 72, r: 20, class: "ef-skin ef-head" }, g);
-    if (side === "front") { limb({ x: cx - 12, y: 236 }, { x: cx - 14, y: 322 }, 22); limb({ x: cx + 12, y: 236 }, { x: cx + 14, y: 322 }, 22); limb({ x: cx - 30, y: 112 }, { x: cx - 34, y: 220 }, 15); }
-    else limb(hip, { x: cx + 2, y: 322 }, 24);
     // Arm, hand and block on its pin.
     limb(sh, elb, 17);
     limb(elb, hand, 15);
-    ln(hand, { x: hand.x, y: hand.y + 34 }, "ef-pin", 3);
-    el("rect", { x: hand.x - 18, y: hand.y + 34, width: 36, height: 26, rx: 4, class: "ef-weight" }, g);
-    T(hand.x, hand.y + 52, `${Math.round(loadKg)} kg`, "ef-onweight");
+    ln(hand, { x: hand.x, y: hand.y + 30 }, "ef-pin", 3);
+    el("rect", { x: hand.x - 18, y: hand.y + 30, width: 36, height: 26, rx: 4, class: "ef-weight" }, g);
+    T(hand.x, hand.y + 48, `${Math.round(loadKg)} kg`, "ef-onweight");
     // Lever: the load line against the shoulder.
     if (Math.abs(angleDeg) > 0.5) {
       ln(sh, { x: sh.x, y: hand.y + 20 }, "ef-lever", 1.5);
@@ -297,7 +306,7 @@ export function renderArmView(svg, { arm, P, loadKg }) {
     };
     joint(sh, effort.shoulder, `shoulder ${torque.shoulder.toFixed(0)} Nm · ${pct(effort.shoulder)}`);
     joint(elb, effort.elbow, `elbow ${torque.elbow.toFixed(0)} Nm · ${pct(effort.elbow)}`);
-    T(ox + W / 4, H - 22, `arm ${angleDeg.toFixed(0)}° ${side === "front" ? "out to the side" : "forward"}`, "ef-small");
+    T(ox + W / 4, H - 18, Math.abs(angleDeg) < 0.5 ? (front ? "arm resting on the hip, block between the legs" : "arm resting on the front of the thigh") : `arm ${angleDeg.toFixed(0)}° ${front ? "out to the side" : "forward"} of resting`, "ef-small");
   };
   const e = arm.effort;
   panel(0, "From the front", P.armSide ?? 0, "front", { shoulder: arm.shoulderSide, elbow: arm.elbow }, { shoulder: e.shoulderSide, elbow: e.elbow });
