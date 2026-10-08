@@ -288,9 +288,10 @@ function setExercise(id, h = {}) {
   $("joint-table").tHead.rows[0].cells[0].textContent = finger ? "Structure" : "Joint";
   $("joint-table").tHead.rows[0].cells[1].textContent = finger ? "Force" : "Torque";
   $("joint-table").tHead.rows[0].cells[2].textContent = finger ? "× fingertip" : "Moment arm";
+  $("joint-table").tHead.rows[0].cells[3].textContent = finger ? "Of the limit" : "Effort";
   $("torque-title").textContent = finger ? "Tendon forces" : "Resistance vs strength";
   $("effort-title").textContent = finger ? "Pulley loads" : "Effort across the range";
-  $("effort-hint").textContent = finger ? "Force on the A2 and A4 pulleys as the middle joint (PIP) bends. Pulley injuries happen here." : "Joint torque ÷ strength at each angle. The peak is the sticking point.";
+  $("effort-hint").textContent = finger ? "Force on the A2 and A4 pulleys as the middle joint (PIP) bends. Dotted: their breaking loads in cadaver tests (Lin et al. 1990), a guide to scale, not a safety limit." : "Joint torque ÷ strength at each angle. The peak is the sticking point.";
   buildLegend(ex);
   const [lo, hi] = ex.angleRange;
   state.angle = Math.min(hi, Math.max(lo, state.angle));
@@ -471,6 +472,10 @@ function renderFinger() {
   const pulleys = [
     ...(cmp ? [lines(cmp, (s) => s.pulleys.a2, "f-a2 dash"), lines(cmp, (s) => s.pulleys.a4, "f-a4 dash")] : []),
     lines(main, (s) => s.pulleys.a2, "f-a2"), lines(main, (s) => s.pulleys.a4, "f-a4"),
+    // Breaking loads (cadaver, Lin et al. 1990) as dotted lines.
+    ...(ex.finger.pulleyStrength ? [
+      lines(main, () => ex.finger.pulleyStrength.a2, "f-a2 cap"), lines(main, () => ex.finger.pulleyStrength.a4, "f-a4 cap"),
+    ] : []),
   ];
   renderChart($("effort-chart"), {
     xRange: ex.angleRange, series: pulleys, bands, marker: state.angle,
@@ -483,8 +488,8 @@ function renderFinger() {
     ["f-tip", "Fingertip", F, null, r.effort],
     ["f-fdp", "FDP tendon", r.tendons.fdp, r.tendons.fdp / F, null],
     ["f-fds", "FDS tendon", r.tendons.fds, r.tendons.fds / F, null],
-    ["f-a2", "A2 pulley", r.pulleys.a2, r.pulleys.a2 / F, null],
-    ["f-a4", "A4 pulley", r.pulleys.a4, r.pulleys.a4 / F, null],
+    ["f-a2", "A2 pulley", r.pulleys.a2, r.pulleys.a2 / F, r.pulleys.a2Share],
+    ["f-a4", "A4 pulley", r.pulleys.a4, r.pulleys.a4 / F, r.pulleys.a4Share],
   ];
   $("joint-table").tBodies[0].replaceChildren(...rows.map(([cls, name, force, ratio, effort]) => {
     const tr = document.createElement("tr");

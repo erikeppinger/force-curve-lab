@@ -97,7 +97,12 @@ export function analyzeFinger(ex, v, pipDeg, { loadKg, strengthPct = 100, placem
     angle: pipDeg, pose: p, tilt: handTilt(p), force, fingertipN: F,
     moments: { dip: mDip, pip: mPip, mcp: mMcp }, passive,
     tendons: { fdp, fds }, pipExtensor, mcpRest, momentArms: r,
-    pulleys: { a2: fA2, a4: fA4, a2Point: a2, a4Point: a4 },
+    pulleys: {
+      a2: fA2, a4: fA4, a2Point: a2, a4Point: a4,
+      // Share of the pulley's breaking load (cadaver test, Lin et al. 1990), if the data has it.
+      a2Share: f.pulleyStrength ? fA2 / f.pulleyStrength.a2 : null,
+      a4Share: f.pulleyStrength ? fA4 / f.pulleyStrength.a4 : null,
+    },
     capacity, effort: F / capacity,
     maxBlockKg: capacity / (G * P.fingerShare), // block at which this finger reaches its maximum
     ratio: fds > 0 ? fdp / fds : Infinity,

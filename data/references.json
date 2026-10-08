@@ -287,6 +287,22 @@
       "citation": "Park S, Lim W (2023). Comparison of muscle activity of hamstrings as knee flexors and hip extensors and effect of tibial and hip rotation on the contribution of hamstrings. J Bodyw Mov Ther 34:1–5.",
       "url": "https://doi.org/10.1016/j.jbmt.2023.04.029",
       "usedFor": "Hamstrings: inner vs outer hamstrings in knee flexion and hip extension, and the shift towards the biceps femoris with the hip turned out (context for the per-head splits)."
+    },
+    {
+      "key": "Lin 1989",
+      "match": "Lin GT, Amadio PC",
+      "group": "Body data",
+      "citation": "Lin GT, Amadio PC, An KN, Cooney WP (1989). Functional anatomy of the human digital flexor pulley system. J Hand Surg Am 14(6):949–956.",
+      "url": "https://doi.org/10.1016/S0363-5023(89)80043-7",
+      "usedFor": "Edge lift: length and position of the A2 and A4 pulleys."
+    },
+    {
+      "key": "Lin 1990",
+      "match": "Lin GT, Cooney WP",
+      "group": "Body data",
+      "citation": "Lin GT, Cooney WP, Amadio PC, An KN (1990). Mechanical properties of human pulleys. J Hand Surg Br 15(4):429–434.",
+      "url": "https://doi.org/10.1016/0266-7681(90)90085-I",
+      "usedFor": "Edge lift: breaking loads of the A2 and A4 pulleys (cadaver), shown against the model’s pulley loads."
     }
   ],
   "resources": [
