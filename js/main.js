@@ -487,6 +487,30 @@ function curves() {
   return curveCache;
 }
 
+/** A tap or drag on a chart: move to that angle (or, in the edge lift's timeline, that moment). */
+function scrubAngle(x) {
+  setPlaying(false);
+  state.angle = Math.round(x * 2) / 2;
+  $("angle").value = state.angle;
+  renderSoon();
+}
+function scrubLift(t) {
+  if (state.playing) setPlaying(false);
+  state.liftT = t;
+  render();
+}
+
+/** Keep the floating control bar in step with the main slider and Play button. */
+function syncDock() {
+  const a = $("angle"), d = $("dock-angle");
+  [d.min, d.max, d.step] = [a.min, a.max, a.step];
+  d.value = a.value;
+  $("dock-label").textContent = $("angle-label").textContent;
+  $("dock-out").textContent = $("angle-out").textContent;
+  $("dock-play").textContent = $("play").textContent;
+  $("dock-play").hidden = $("play").hidden;
+}
+
 /** Render now with the curves possibly held, then once more 150 ms after the slider stops. */
 let soonTimer = null;
 function renderSoon() {
@@ -551,12 +575,12 @@ function renderMulti() {
   const caps = series(main, "capacity", "cap").filter((s) => !ex.joints.find((j) => s.className.startsWith(`joint-${j.id} `))?.negative);
   const torque = [...caps, ...(cmp ? series(cmp, "torque", "dash") : []), ...series(main, "torque", "")];
   const all = torque.flatMap((s) => s.points.map((p) => p[1]));
-  renderChart($("torque-chart"), {
+  renderChart($("torque-chart"), { onScrub: scrubAngle,
     xRange: ex.angleRange, series: torque, bands, marker: state.angle, yMin: Math.min(0, ...all), xUnit: unit,
     xLabel: ex.angleLabel, yLabel: "Torque per leg / arm (Nm)", yFormat: (x) => x.toFixed(0),
   });
   const effort = [...(cmp ? series(cmp, "effort", "dash", 100) : []), ...series(main, "effort", "", 100)];
-  renderChart($("effort-chart"), {
+  renderChart($("effort-chart"), { onScrub: scrubAngle,
     xRange: ex.angleRange, yMax: Math.max(100, ...effort.flatMap((s) => s.points.map((p) => p[1]))), xUnit: unit,
     series: effort, bands, marker: state.angle, xLabel: ex.angleLabel, yLabel: "Effort (% of max)", yFormat: (x) => `${x.toFixed(0)}%`,
   });
@@ -696,11 +720,11 @@ function renderFinger() {
   // Charts: FDP tension and A2 load per finger over the hold position.
   const bands = ex.phases.map((p) => ({ from: p.range[0], to: p.range[1], label: p.name }));
   const perFinger = (samples, get, dash) => ex.fingers.order.map((id) => ({ points: samples.map((s) => [s.angle, get(s.fingers[id])]), className: `fi-${id}${dash ? " dash" : ""}` }));
-  renderChart($("torque-chart"), {
+  renderChart($("torque-chart"), { onScrub: scrubAngle,
     xRange: ex.angleRange, series: [...(cmp ? perFinger(cmp, (f) => f.fdp, true) : []), ...perFinger(main, (f) => f.fdp)], bands, marker: state.angle,
     xLabel: ex.angleLabel, yLabel: "FDP tension (N)", yFormat: (x) => x.toFixed(0),
   });
-  renderChart($("effort-chart"), {
+  renderChart($("effort-chart"), { onScrub: scrubAngle,
     xRange: ex.angleRange, series: [...(cmp ? perFinger(cmp, (f) => f.a2 * 100, true) : []), ...perFinger(main, (f) => f.a2 * 100)], bands, marker: state.angle,
     xLabel: ex.angleLabel, yLabel: "A2 load (% of breaking)", yFormat: (x) => `${x.toFixed(0)}%`,
   });
@@ -708,7 +732,7 @@ function renderFinger() {
   // The lift over time, with where Play is now (or the middle of the hold when paused).
   const ts = [];
   for (let t = 0; t <= lift.duration + 1e-9; t += 0.02) ts.push([t, lift.at(Math.min(t, lift.duration - 1e-6)).F]);
-  renderChart($("lift-chart"), {
+  renderChart($("lift-chart"), { onScrub: scrubLift,
     xRange: [0, lift.duration], xUnit: " s", xStep: 1, bands: lift.bands, marker: state.liftT ?? lift.holdAt,
     series: [{ points: ts, className: "fi-middle" }, { points: [[0, lift.mg], [lift.duration, lift.mg]], className: "cap lift-weight" }],
     yMax: lift.peakF * 1.15, xLabel: "Time (s)", yLabel: "Force on the hand (N)", yFormat: (x) => x.toFixed(0),
@@ -733,6 +757,10 @@ function renderFinger() {
 }
 
 function render() {
+  renderView();
+  syncDock();
+}
+function renderView() {
   if (isFinger()) return renderFinger();
   if (isMulti()) return renderMulti();
   const ex = state.exercise;
@@ -751,7 +779,7 @@ function render() {
     ...(cmp ? [{ points: cmp.map((s) => [s.angle, Math.max(0, s.jointTorque)]), className: "compare" }] : []),
     { points: main.map((s) => [s.angle, Math.max(0, s.jointTorque)]), className: "primary" },
   ];
-  renderChart($("torque-chart"), {
+  renderChart($("torque-chart"), { onScrub: scrubAngle,
     xRange: ex.angleRange, series: torqueSeries, bands, marker: state.angle,
     xLabel: ex.angleLabel, yLabel: "Torque (Nm)", yFormat: (v) => v.toFixed(0),
   });
@@ -759,7 +787,7 @@ function render() {
     ...(cmp ? [{ points: cmp.map((s) => [s.angle, s.effort * 100]), className: "compare" }] : []),
     { points: main.map((s) => [s.angle, s.effort * 100]), className: "primary" },
   ];
-  renderChart($("effort-chart"), {
+  renderChart($("effort-chart"), { onScrub: scrubAngle,
     xRange: ex.angleRange, yMax: Math.max(100, ...effortSeries.flatMap((s) => s.points.map((p) => p[1]))),
     series: effortSeries, bands, marker: state.angle,
     xLabel: ex.angleLabel, yLabel: "Effort (% of max)", yFormat: (v) => `${v.toFixed(0)}%`,
@@ -884,6 +912,50 @@ function bind() {
     b.setAttribute("aria-expanded", String(open));
   });
   document.addEventListener("click", () => { for (const o of document.querySelectorAll(".info-btn")) o.setAttribute("aria-expanded", "false"); });
+  // Floating control bar: appears once the main slider has scrolled off the top of the screen.
+  $("dock-angle").addEventListener("input", (e) => { $("angle").value = e.target.value; $("angle").dispatchEvent(new Event("input")); });
+  $("dock-play").addEventListener("click", () => $("play").click());
+  new IntersectionObserver(([e]) => {
+    $("dock").hidden = e.isIntersecting || e.boundingClientRect.top > 0;
+    document.body.classList.toggle("dock-on", !$("dock").hidden);
+  }).observe(document.querySelector(".angle-row"));
+
+  // Foldable sections: open on wide screens, folded on narrow ones (or with the stacked layout);
+  // a choice made here is kept while the page is open.
+  const narrow = () => document.documentElement.dataset.layout === "stacked" || (document.documentElement.dataset.layout !== "side" && matchMedia("(max-width: 899px)").matches);
+  const folds = [...document.querySelectorAll("[data-fold]")];
+  const chosen = {};
+  for (const box of folds) {
+    let head = box.querySelector(":scope > h3, :scope > h4");
+    if (!head) {
+      head = Object.assign(document.createElement("h4"), { textContent: box.dataset.foldLabel ?? "" });
+      box.prepend(head);
+    }
+    head.classList.add("fold-head");
+    const btn = Object.assign(document.createElement("button"), { type: "button", className: "fold-toggle" });
+    btn.append(...head.childNodes);
+    head.append(btn);
+    btn.addEventListener("click", () => { chosen[box.dataset.fold] = !box.classList.contains("folded"); applyFold(box); });
+  }
+  const applyFold = (box) => {
+    const shut = chosen[box.dataset.fold] ?? narrow();
+    box.classList.toggle("folded", shut);
+    box.querySelector(".fold-toggle").setAttribute("aria-expanded", String(!shut));
+  };
+  const applyFolds = () => folds.forEach(applyFold);
+  applyFolds();
+  matchMedia("(max-width: 899px)").addEventListener("change", applyFolds);
+
+  // Layout: Auto (figure beside the curves on wide screens), side by side, or stacked.
+  const layoutButtons = [...document.querySelectorAll("[data-layout-set]")];
+  const showLayout = () => { const l = document.documentElement.dataset.layout ?? "auto"; for (const b of layoutButtons) b.setAttribute("aria-pressed", String(b.dataset.layoutSet === l)); };
+  for (const b of layoutButtons) b.addEventListener("click", () => {
+    const l = b.dataset.layoutSet;
+    if (l === "auto") delete document.documentElement.dataset.layout; else document.documentElement.dataset.layout = l;
+    try { if (l === "auto") localStorage.removeItem("layout"); else localStorage.setItem("layout", l); } catch (e) { /* storage blocked */ }
+    showLayout(); applyFolds(); render();
+  });
+  showLayout();
   $("hand-reset").addEventListener("click", () => { setHand(undefined); writeHash(); render(); });
   $("placement-reset").addEventListener("click", () => { setPlacement(variant()); writeHash(); render(); });
   for (const b of $("view-buttons").querySelectorAll("button")) {
