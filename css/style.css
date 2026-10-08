@@ -145,6 +145,9 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .moment-arm { stroke: var(--compare); stroke-dasharray: 6 4; }
 #figure .force { stroke: var(--accent); }
 #figure .arrowhead { fill: var(--accent); }
+#figure .hand-outline { stroke: var(--card); stroke-linecap: round; stroke-linejoin: round; }
+#figure .hand-fingers { stroke: var(--body); stroke-linecap: round; stroke-linejoin: round; }
+#figure .hand-label { font-size: 14px; font-weight: 600; }
 #figure .fig-label { fill: var(--text); font-size: 15px; font-weight: 600; paint-order: stroke; stroke: var(--card); stroke-width: 4px; }
 #figure .force-label { fill: var(--accent); }
 #figure .body.back { opacity: 0.55; }
