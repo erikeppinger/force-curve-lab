@@ -1,0 +1,83 @@
+{
+  "id": "thigh",
+  "name": "Hip and thigh",
+  "note": "Schematic right hip and thigh, not to scale: fan-shaped gluteal muscles as outlines, the others as bellies with tendons. Positions follow standard anatomy atlases (e.g. Gray's Anatomy, 1918, public domain); shapes are simplified for teaching.",
+  "viewBox": [0, 0, 200, 400],
+  "muscles": {
+    "rectus-femoris": {"name": "Rectus femoris", "abbr": "RF", "action": "Straightens the knee and bends the hip (crosses both)"},
+    "vastus-lateralis": {"name": "Vastus lateralis", "abbr": "VL", "action": "Straightens the knee (largest quadriceps head)"},
+    "vastus-medialis": {"name": "Vastus medialis", "abbr": "VM", "action": "Straightens the knee (the vastus intermedius lies underneath)"},
+    "sartorius": {"name": "Sartorius", "abbr": "SAR", "action": "Bends hip and knee, turns the thigh out"},
+    "iliopsoas": {"name": "Iliopsoas", "abbr": "IP", "action": "Bends the hip (strongest hip flexor)"},
+    "tfl": {"name": "Tensor fasciae latae", "abbr": "TFL", "action": "Abducts and bends the hip; tightens the IT band"},
+    "adductor-longus": {"name": "Adductor longus (with brevis)", "abbr": "AL", "action": "Brings the thigh in (adduction)"},
+    "gracilis": {"name": "Gracilis", "abbr": "GR", "action": "Brings the thigh in; bends the knee"},
+    "adductor-magnus": {"name": "Adductor magnus", "abbr": "AM", "action": "Brings the thigh in; its rear part extends the hip"},
+    "biceps-femoris": {"name": "Biceps femoris", "abbr": "BF", "action": "Bends the knee, extends the hip (outer hamstring)"},
+    "semitendinosus": {"name": "Semitendinosus", "abbr": "ST", "action": "Bends the knee, extends the hip (inner hamstring)"},
+    "semimembranosus": {"name": "Semimembranosus", "abbr": "SM", "action": "Bends the knee, extends the hip (inner hamstring, underneath)"},
+    "gluteus-maximus": {"name": "Gluteus maximus", "abbr": "GMax", "action": "Extends the hip; turns the thigh out"},
+    "gluteus-medius": {"name": "Gluteus medius", "abbr": "GMed", "action": "Abducts the hip; holds the pelvis level on one leg"},
+    "gluteus-minimus": {"name": "Gluteus minimus", "abbr": "GMin", "action": "Abducts the hip, under the gluteus medius"},
+    "piriformis": {"name": "Piriformis", "abbr": "PIR", "action": "Turns the thigh out"},
+    "deep-rotators": {"name": "Gemelli and obturator internus", "abbr": "GOI", "action": "Turn the thigh out"},
+    "quadratus-femoris": {"name": "Quadratus femoris", "abbr": "QF", "action": "Turns the thigh out"}
+  },
+  "views": [
+    {
+      "id": "front",
+      "title": "Front",
+      "caption": "Right thigh from the front: hip at the top, outer side on the left.",
+      "outline": [
+        "M18,0 L182,0 L168,60 Q160,220 140,380 L60,380 Q36,220 30,60 Z",
+        "M85,352 a15,18 0 1 0 30,0 a15,18 0 1 0 -30,0 Z"
+      ],
+      "bones": [[[60, 30], [98, 370], 8]],
+      "muscles": [
+        {"id": "sartorius", "from": [36, 30], "to": [150, 372], "belly": [0.05, 0.95], "w": 14, "bend": 18, "labelAt": 0.62},
+        {"id": "iliopsoas", "from": [118, 0], "to": [96, 95], "belly": [0, 1], "w": 26},
+        {"id": "tfl", "from": [30, 10], "to": [40, 110], "belly": [0, 0.9], "w": 24, "tendons": [[52, 372]]},
+        {"id": "vastus-lateralis", "from": [42, 80], "to": [84, 360], "belly": [0.02, 0.88], "w": 44, "bend": -6},
+        {"id": "vastus-medialis", "from": [138, 170], "to": [108, 352], "belly": [0.15, 1], "w": 38, "bend": 8},
+        {"id": "rectus-femoris", "from": [92, 30], "to": [98, 345], "belly": [0.12, 0.85], "w": 34},
+        {"id": "adductor-longus", "from": [140, 30], "to": [128, 210], "belly": [0, 0.95], "w": 30},
+        {"id": "gracilis", "from": [162, 30], "to": [146, 385], "belly": [0, 0.8], "w": 14}
+      ]
+    },
+    {
+      "id": "back",
+      "title": "Back",
+      "caption": "Right hip and thigh from behind: outer side on the right.",
+      "outline": [
+        "M18,0 L182,0 L170,60 Q164,220 140,380 L60,380 Q40,220 32,60 Z"
+      ],
+      "bones": [[[140, 60], [102, 370], 8]],
+      "muscles": [
+        {"id": "adductor-magnus", "from": [62, 70], "to": [48, 330], "belly": [0.05, 0.9], "w": 42, "bend": -4},
+        {"id": "semimembranosus", "from": [92, 160], "to": [62, 368], "belly": [0.05, 0.9], "w": 30},
+        {"id": "semitendinosus", "from": [98, 140], "to": [70, 378], "belly": [0.05, 0.7], "w": 24},
+        {"id": "biceps-femoris", "from": [104, 140], "to": [150, 375], "belly": [0.05, 0.85], "w": 34, "bend": 4},
+        {"id": "gluteus-medius", "d": "M110,0 L182,0 L174,58 L150,70 Z", "label": [160, 26]},
+        {"id": "gluteus-maximus", "d": "M20,8 L120,0 Q172,40 170,110 L150,140 Q90,130 40,80 Z", "label": [104, 70], "labelAngle": 24}
+      ]
+    },
+    {
+      "id": "hip-deep",
+      "title": "Back of the hip, deep layer",
+      "caption": "Gluteus maximus removed: the small gluteals and the deep rotators that turn the thigh out.",
+      "viewBox": [0, 0, 200, 210],
+      "outline": [
+        "M18,0 L182,0 L176,60 Q172,140 160,210 L40,210 Q30,120 22,60 Z"
+      ],
+      "bones": [[[30, 60], [50, 170], 8], [[160, 90], [150, 210], 10]],
+      "muscles": [
+        {"id": "gluteus-minimus", "d": "M86,32 L172,72 L168,100 Z", "label": [146, 78], "labelAngle": 24},
+        {"id": "gluteus-medius", "d": "M70,0 L182,0 L172,70 Q120,45 70,0 Z", "label": [132, 24]},
+        {"id": "piriformis", "from": [40, 90], "to": [165, 104], "belly": [0, 0.85], "w": 18},
+        {"id": "deep-rotators", "from": [52, 120], "to": [165, 116], "belly": [0, 0.85], "w": 12},
+        {"id": "quadratus-femoris", "from": [62, 142], "to": [160, 138], "belly": [0, 0.95], "w": 16},
+        {"id": "adductor-magnus", "from": [62, 168], "to": [56, 260], "belly": [0, 1], "w": 40}
+      ]
+    }
+  ]
+}

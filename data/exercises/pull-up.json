@@ -83,6 +83,8 @@
   "muscles": [
     {
       "id": "latissimus-dorsi",
+      "region": "shoulder",
+      "regionPath": "latissimus",
       "name": "Latissimus dorsi",
       "wgerId": 12,
       "role": "Prime mover",
@@ -96,6 +98,7 @@
     },
     {
       "id": "teres-major",
+      "region": "shoulder",
       "name": "Teres major",
       "wgerId": null,
       "role": "Synergist",
@@ -121,6 +124,7 @@
     },
     {
       "id": "posterior-deltoid",
+      "region": "shoulder",
       "name": "Posterior deltoid",
       "wgerId": null,
       "role": "Synergist",
@@ -134,6 +138,8 @@
     },
     {
       "id": "rotator-cuff-ext",
+      "region": "shoulder",
+      "regionPath": ["infraspinatus", "teres-minor"],
       "name": "Infraspinatus, teres minor",
       "wgerId": null,
       "role": "Stabiliser",
@@ -146,6 +152,7 @@
     },
     {
       "id": "subscapularis",
+      "region": "shoulder",
       "name": "Subscapularis",
       "wgerId": null,
       "role": "Stabiliser",
@@ -158,6 +165,8 @@
     },
     {
       "id": "lower-traps",
+      "region": "shoulder",
+      "regionPath": ["lower-trapezius", "rhomboids"],
       "name": "Lower trapezius, rhomboids",
       "wgerId": null,
       "role": "Synergist",

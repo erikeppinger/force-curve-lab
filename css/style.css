@@ -279,9 +279,8 @@ input[type="range"]:disabled { opacity: 0.4; }
 @keyframes picked { from { background: color-mix(in srgb, var(--muscle-on) 22%, transparent); } to { background: transparent; } }
 
 /* Close-up of one body region (js/regions.js) */
-.muscle-detail { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border); }
-.muscle-detail h4 { margin: 0 0 8px; }
-.detail-views { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.muscle-detail { grid-column: 1 / -1; }
+.detail-views { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 230px)); gap: 16px; justify-content: start; }
 .detail-views figure { margin: 0; }
 .detail-views svg { width: 100%; height: auto; display: block; max-height: 420px; }
 .detail-views figcaption { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }

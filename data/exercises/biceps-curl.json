@@ -76,6 +76,7 @@
     },
     {
       "id": "anterior-deltoid",
+      "region": "shoulder",
       "name": "Anterior deltoid",
       "wgerId": 2,
       "role": "Stabiliser",

@@ -141,6 +141,8 @@
   "muscles": [
     {
       "id": "latissimus-dorsi",
+      "region": "shoulder",
+      "regionPath": "latissimus",
       "name": "Latissimus dorsi",
       "wgerId": 12,
       "role": "Prime mover",
@@ -154,6 +156,7 @@
     },
     {
       "id": "posterior-deltoid",
+      "region": "shoulder",
       "name": "Posterior deltoid",
       "wgerId": null,
       "role": "Synergist",
@@ -180,6 +183,8 @@
     },
     {
       "id": "mid-back",
+      "region": "shoulder",
+      "regionPath": ["rhomboids", "middle-trapezius"],
       "name": "Rhomboids, middle trapezius",
       "wgerId": null,
       "role": "Synergist",
@@ -202,6 +207,8 @@
     },
     {
       "id": "hamstrings",
+      "region": "thigh",
+      "regionPath": ["biceps-femoris", "semitendinosus", "semimembranosus"],
       "name": "Hamstrings",
       "wgerId": 11,
       "role": "Prime mover",
@@ -213,6 +220,7 @@
     },
     {
       "id": "gluteus-maximus",
+      "region": "thigh",
       "name": "Gluteus maximus",
       "wgerId": 8,
       "role": "Prime mover",
@@ -224,6 +232,8 @@
     },
     {
       "id": "rotator-cuff-ext",
+      "region": "shoulder",
+      "regionPath": ["infraspinatus", "teres-minor"],
       "name": "Infraspinatus, teres minor",
       "wgerId": null,
       "role": "Stabiliser",
@@ -236,6 +246,7 @@
     },
     {
       "id": "subscapularis",
+      "region": "shoulder",
       "name": "Subscapularis",
       "wgerId": null,
       "role": "Stabiliser",

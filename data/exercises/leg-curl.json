@@ -51,6 +51,8 @@
   "muscles": [
     {
       "id": "hamstrings",
+      "region": "thigh",
+      "regionPath": ["biceps-femoris", "semitendinosus", "semimembranosus"],
       "name": "Hamstrings",
       "wgerId": 11,
       "role": "Prime mover",

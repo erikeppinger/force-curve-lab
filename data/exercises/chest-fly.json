@@ -49,6 +49,8 @@
   "muscles": [
     {
       "id": "pectoralis",
+      "region": "shoulder",
+      "regionPath": ["pec-clavicular", "pec-sternal"],
       "name": "Pectoralis major",
       "wgerId": 4,
       "role": "Prime mover",
@@ -60,6 +62,7 @@
     },
     {
       "id": "anterior-deltoid",
+      "region": "shoulder",
       "name": "Anterior deltoid",
       "wgerId": 2,
       "role": "Synergist",

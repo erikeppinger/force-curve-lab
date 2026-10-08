@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { analyze, sampleCurve, G } from "../js/physics.js";
 import { muscleActivation } from "../js/muscles.js";
-import { bellyPath, regionsOf, viewsFor } from "../js/regions.js";
+import { bellyPath, regionsOf, viewsFor, pathsOf, regionValues } from "../js/regions.js";
 
 const load = (p) => JSON.parse(readFileSync(new URL(`../data/${p}.json`, import.meta.url)));
 const close = (a, b, eps = 1e-9) => assert.ok(Math.abs(a - b) < eps, `${a} ≉ ${b}`);
@@ -62,6 +62,11 @@ for (const id of regionIds) {
       assert.ok(view.title && view.caption && view.outline.length, view.id);
       for (const m of view.muscles) {
         assert.ok(region.muscles[m.id], `${view.id}: ${m.id} not in the region's muscle list`);
+        if (m.d) {
+          assert.match(m.d, /^M[\d.,\s LQCZz-]+$/, `${view.id}: ${m.id} outline`);
+          assert.ok(m.label?.length === 2, `${view.id}: ${m.id} label position`);
+          continue;
+        }
         assert.ok(m.belly[0] >= 0 && m.belly[0] < m.belly[1] && m.belly[1] <= 1, `${view.id}: ${m.id} belly`);
         assert.ok(m.w > 0);
         assert.doesNotMatch(bellyPath(m), /NaN/);
@@ -77,7 +82,7 @@ test("every muscle tagged with a region is drawn in at least one of its views", 
       assert.ok(regionIds.includes(rid), `${exId}: unknown region ${rid}`);
       const region = load(`regions/${rid}`);
       const drawn = new Set(region.views.flatMap((vw) => vw.muscles.map((m) => m.id)));
-      for (const m of ex.muscles.filter((x) => x.region === rid)) assert.ok(drawn.has(m.regionPath ?? m.id), `${exId}: ${m.id}`);
+      for (const m of ex.muscles.filter((x) => x.region === rid)) for (const p of pathsOf(m)) assert.ok(drawn.has(p), `${exId}: ${m.id} → ${p}`);
     }
   }
 });
@@ -88,4 +93,26 @@ test("close-ups pick the views that show the exercise's muscles", () => {
   assert.deepEqual(views("wrist-curl"), ["flexor-superficial", "flexor-deep"]);
   assert.deepEqual(views("reverse-wrist-curl"), ["extensor"]);
   assert.deepEqual(views("biceps-curl"), ["flexor-superficial", "extensor"]);
+});
+
+test("group muscles colour every head with the group's value and mark it as a group", () => {
+  const act = [
+    { id: "quadriceps", name: "Quadriceps", region: "thigh", regionPath: ["rectus-femoris", "vastus-lateralis", "vastus-medialis"], value: 0.6 },
+    { id: "rectus-femoris", name: "Rectus femoris", region: "thigh", value: 0.8 },
+    { id: "lower-traps", name: "Lower trapezius, rhomboids", region: "shoulder", regionPath: ["lower-trapezius", "rhomboids"], value: null },
+  ];
+  const v = regionValues(act);
+  assert.deepEqual(v.get("vastus-lateralis"), { value: 0.6, group: "Quadriceps", muscleId: "quadriceps" });
+  // A muscle of its own with a larger value wins its drawing.
+  assert.deepEqual(v.get("rectus-femoris"), { value: 0.8, group: null, muscleId: "rectus-femoris" });
+  assert.equal(v.get("rhomboids").value, null);
+});
+
+test("close-ups for the lifts: leg extension resolves rectus femoris vs vasti; a squat shows all three thigh views", () => {
+  const thigh = load("regions/thigh");
+  const views = (exId) => viewsFor(thigh, load(`exercises/${exId}`)).map((x) => x.id);
+  assert.deepEqual(views("leg-extension"), ["front"]);
+  assert.deepEqual(views("squat"), ["front", "back", "hip-deep"]);
+  const shoulder = load("regions/shoulder");
+  assert.ok(viewsFor(shoulder, load("exercises/lateral-raise")).some((x) => x.id === "back-deep"), "supraspinatus");
 });

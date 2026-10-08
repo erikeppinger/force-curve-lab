@@ -43,6 +43,7 @@
   "muscles": [
     {
       "id": "anterior-deltoid",
+      "region": "shoulder",
       "name": "Anterior deltoid",
       "wgerId": 2,
       "role": "Prime mover",
@@ -54,6 +55,7 @@
     },
     {
       "id": "pec-clavicular",
+      "region": "shoulder",
       "name": "Pectoralis major (clavicular head)",
       "wgerId": 4,
       "role": "Synergist",
@@ -65,6 +67,7 @@
     },
     {
       "id": "lateral-deltoid",
+      "region": "shoulder",
       "name": "Lateral deltoid",
       "wgerId": null,
       "role": "Synergist",
@@ -76,6 +79,7 @@
     },
     {
       "id": "upper-trapezius",
+      "region": "shoulder",
       "name": "Upper trapezius",
       "wgerId": 9,
       "role": "Synergist",

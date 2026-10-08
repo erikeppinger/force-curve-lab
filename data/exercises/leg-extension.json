@@ -40,6 +40,8 @@
   "muscles": [
     {
       "id": "vasti",
+      "region": "thigh",
+      "regionPath": ["vastus-lateralis", "vastus-medialis"],
       "name": "Vasti (quadriceps)",
       "wgerId": 10,
       "role": "Prime mover",
@@ -51,6 +53,7 @@
     },
     {
       "id": "rectus-femoris",
+      "region": "thigh",
       "name": "Rectus femoris (quadriceps)",
       "wgerId": 10,
       "role": "Prime mover",

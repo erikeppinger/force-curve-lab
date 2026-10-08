@@ -5,7 +5,7 @@ import { renderFigure, figureBounds, viewTitle, renderMultiFigure, multiBounds }
 import { analyzeMulti, sampleMulti } from "./multijoint.js";
 import { CAMERAS, scene3d, bounds3d, renderView3d } from "./view3d.js";
 import { fetchExercise, descriptionParagraphs, bodyBackground, muscleOverlay, isBackMuscle } from "./wger.js";
-import { loadRegion, regionsOf, viewsFor, renderRegionView } from "./regions.js";
+import { loadRegion, regionsOf, viewsFor, renderRegionView, regionValues } from "./regions.js";
 import { analyzeFinger, sampleFinger } from "./finger.js";
 import { renderFingerFigure, fingerBounds } from "./fingerfig.js";
 
@@ -51,7 +51,12 @@ const opts = (v) => ({
 function readHash() {
   const p = new URLSearchParams(location.hash.slice(1));
   const num = (k) => (p.has(k) && !Number.isNaN(+p.get(k)) ? +p.get(k) : undefined);
-  return { ex: p.get("ex"), variant: p.get("v"), compare: p.get("cmp"), load: num("kg"), px: num("px"), py: num("py") };
+  // Placement sliders: pl=key:value,key:value (a number or "auto").
+  const placement = p.has("pl")
+    ? Object.fromEntries(p.get("pl").split(",").map((kv) => kv.split(":"))
+      .filter(([k, v]) => k && v && (v === "auto" || !Number.isNaN(+v))).map(([k, v]) => [k, v === "auto" ? v : +v]))
+    : undefined;
+  return { ex: p.get("ex"), variant: p.get("v"), compare: p.get("cmp"), load: num("kg"), px: num("px"), py: num("py"), placement };
 }
 function writeHash() {
   const p = new URLSearchParams({ ex: state.exercise.id, v: state.variantId, kg: state.loadKg });
@@ -60,6 +65,9 @@ function writeHash() {
     p.set("px", state.pulley.x.toFixed(2));
     p.set("py", state.pulley.y.toFixed(2));
   }
+  // Only placement values that differ from the variant's preset, so plain links stay short.
+  const changed = Object.entries(state.placement ?? {}).filter(([k, v]) => v !== variant().params?.[k]);
+  if (changed.length) p.set("pl", changed.map(([k, v]) => `${k}:${v === "auto" ? v : +(+v).toFixed(4)}`).join(","));
   history.replaceState(null, "", `#${p}`);
 }
 
@@ -75,7 +83,7 @@ function fillSelect(sel, items, includeNone) {
   for (const v of items) sel.add(new Option(v.name, v.id));
 }
 
-function setVariant(id, pulley, load) {
+function setVariant(id, pulley, load, placement) {
   state.variantId = id;
   const v = variant();
   // Machines, cables and ankle weights need very different loads: use the variant's default.
@@ -93,7 +101,7 @@ function setVariant(id, pulley, load) {
     $("pulley-x").value = state.pulley.x;
     $("pulley-y").value = state.pulley.y;
   }
-  setPlacement(v);
+  setPlacement(v, placement);
   if (state.exercise.model === "finger" && !state.playing) {
     state.angle = v.params.pip;
     $("angle").value = state.angle;
@@ -105,23 +113,23 @@ function setVariant(id, pulley, load) {
 }
 
 /** Foot-placement sliders (3D lifts): start from the variant's preset. */
-function setPlacement(v) {
+function setPlacement(v, override = {}) {
   const spec = state.exercise.placement;
   $("placement-controls").hidden = !spec;
   if (!spec) { state.placement = null; return; }
-  state.placement = Object.fromEntries(spec.map((s) => [s.key, v.params[s.key]]));
+  state.placement = Object.fromEntries(spec.map((s) => [s.key, override[s.key] ?? v.params[s.key]]));
   $("placement-sliders").replaceChildren(...spec.map((s) => {
     const label = document.createElement("label");
     const out = document.createElement("output");
     const isAuto = () => state.placement[s.key] === "auto";
     const input = Object.assign(document.createElement("input"), { type: "range", min: s.min, max: s.max, step: s.step, value: isAuto() ? 0 : state.placement[s.key] });
     const show = () => { out.textContent = isAuto() ? "auto" : `${Math.round(state.placement[s.key] * s.scale)} ${s.unit}`; input.disabled = isAuto(); };
-    input.addEventListener("input", () => { state.placement[s.key] = +input.value; show(); renderSoon(); });
+    input.addEventListener("input", () => { state.placement[s.key] = +input.value; show(); writeHash(); renderSoon(); });
     label.append(`${s.label} `, out, input);
     if (s.auto) {
       // A value the model can pick itself (e.g. the least-effort sideways floor push).
       const box = Object.assign(document.createElement("input"), { type: "checkbox", checked: isAuto() });
-      box.addEventListener("change", () => { state.placement[s.key] = box.checked ? "auto" : +input.value; show(); render(); });
+      box.addEventListener("change", () => { state.placement[s.key] = box.checked ? "auto" : +input.value; show(); writeHash(); render(); });
       const auto = Object.assign(document.createElement("span"), { className: "auto-toggle" });
       auto.append(box, ` ${s.auto}`);
       label.append(auto);
@@ -182,7 +190,7 @@ async function buildDetail() {
       svg.setAttribute("aria-label", `${region.name}: ${view.title}`);
       const cap = document.createElement("figcaption");
       cap.innerHTML = "<strong></strong> <span></span>";
-      cap.querySelector("strong").textContent = view.title + ".";
+      cap.querySelector("strong").textContent = `${regions.length > 1 ? `${region.name}: ` : ""}${view.title}.`;
       cap.querySelector("span").textContent = view.caption;
       fig.append(svg, cap);
       box.append(fig);
@@ -195,8 +203,8 @@ async function buildDetail() {
 }
 
 /** Tapping a muscle in a close-up points at its bar in the list. */
-function pickMuscle(pathId) {
-  const i = state.exercise.muscles.findIndex((m) => (m.regionPath ?? m.id) === pathId);
+function pickMuscle(muscleId) {
+  const i = state.exercise.muscles.findIndex((m) => m.id === muscleId);
   const li = $("muscle-list").children[i];
   if (!li) return;
   li.classList.remove("picked");
@@ -277,7 +285,7 @@ function setExercise(id, h = {}) {
   $("angle").min = lo; $("angle").max = hi; $("angle").value = state.angle;
 
   const vId = ex.variants.some((v) => v.id === h.variant) ? h.variant : ex.defaults.variant;
-  setVariant(vId, h.px != null && h.py != null ? { x: h.px, y: h.py } : undefined, h.load);
+  setVariant(vId, h.px != null && h.py != null ? { x: h.px, y: h.py } : undefined, h.load, h.variant === vId ? h.placement : undefined);
   state.compareId = ex.variants.some((v) => v.id === h.compare) ? h.compare : "";
   $("compare").value = state.compareId;
 
@@ -558,7 +566,7 @@ function renderMuscles(act) {
     img.style.opacity = (0.12 + 0.88 * (m?.value ?? 0)).toFixed(3);
   }
   if (detail.length) {
-    const values = new Map(act.filter((m) => m.region).map((m) => [m.regionPath ?? m.id, m.value]));
+    const values = regionValues(act);
     for (const d of detail) renderRegionView(d.svg, d.region, d.view, values, pickMuscle);
   }
 }
@@ -612,7 +620,7 @@ function bind() {
     writeHash();
     render();
   });
-  $("placement-reset").addEventListener("click", () => { setPlacement(variant()); render(); });
+  $("placement-reset").addEventListener("click", () => { setPlacement(variant()); writeHash(); render(); });
   for (const b of $("view-buttons").querySelectorAll("button")) {
     b.addEventListener("click", () => { state.cam = { ...CAMERAS[b.dataset.cam] }; render(); });
   }

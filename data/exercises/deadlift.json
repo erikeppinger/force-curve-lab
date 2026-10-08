@@ -75,6 +75,8 @@
   "muscles": [
     {
       "id": "hamstrings",
+      "region": "thigh",
+      "regionPath": ["biceps-femoris", "semitendinosus", "semimembranosus"],
       "name": "Hamstrings",
       "wgerId": 11,
       "role": "Prime mover",
@@ -87,6 +89,7 @@
     },
     {
       "id": "gluteus-maximus",
+      "region": "thigh",
       "name": "Gluteus maximus",
       "wgerId": 8,
       "role": "Prime mover",
@@ -99,6 +102,8 @@
     },
     {
       "id": "quadriceps",
+      "region": "thigh",
+      "regionPath": ["rectus-femoris", "vastus-lateralis", "vastus-medialis"],
       "name": "Quadriceps",
       "wgerId": 10,
       "role": "Prime mover",
@@ -111,6 +116,7 @@
     },
     {
       "id": "adductor-magnus",
+      "region": "thigh",
       "name": "Adductor magnus",
       "wgerId": null,
       "role": "Synergist",

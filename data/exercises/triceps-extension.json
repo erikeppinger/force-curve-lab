@@ -56,6 +56,7 @@
   "muscles": [
     {
       "id": "triceps-long",
+      "region": "shoulder",
       "name": "Triceps (long head)",
       "wgerId": 5,
       "role": "Prime mover",
@@ -67,6 +68,8 @@
     },
     {
       "id": "triceps-lateral-medial",
+      "region": "shoulder",
+      "regionPath": "triceps-lateral",
       "name": "Triceps (lateral and medial heads)",
       "wgerId": 5,
       "role": "Prime mover",

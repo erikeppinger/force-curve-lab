@@ -42,6 +42,7 @@
   "muscles": [
     {
       "id": "gluteus-medius",
+      "region": "thigh",
       "name": "Gluteus medius",
       "wgerId": null,
       "role": "Prime mover",
@@ -53,6 +54,7 @@
     },
     {
       "id": "gluteus-minimus",
+      "region": "thigh",
       "name": "Gluteus minimus",
       "wgerId": null,
       "role": "Synergist",
@@ -63,6 +65,7 @@
     },
     {
       "id": "tfl",
+      "region": "thigh",
       "name": "Tensor fasciae latae",
       "wgerId": null,
       "role": "Synergist",
@@ -74,6 +77,7 @@
     },
     {
       "id": "gluteus-maximus",
+      "region": "thigh",
       "name": "Gluteus maximus (upper fibres)",
       "wgerId": 8,
       "role": "Synergist",

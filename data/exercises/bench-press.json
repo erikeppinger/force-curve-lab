@@ -92,6 +92,8 @@
   "muscles": [
     {
       "id": "pectoralis",
+      "region": "shoulder",
+      "regionPath": ["pec-clavicular", "pec-sternal"],
       "name": "Pectoralis major",
       "wgerId": 4,
       "role": "Prime mover",
@@ -104,6 +106,7 @@
     },
     {
       "id": "anterior-deltoid",
+      "region": "shoulder",
       "name": "Anterior deltoid",
       "wgerId": 2,
       "role": "Prime mover",
@@ -117,6 +120,8 @@
     },
     {
       "id": "triceps",
+      "region": "shoulder",
+      "regionPath": ["triceps-long", "triceps-lateral"],
       "name": "Triceps",
       "wgerId": 5,
       "role": "Prime mover",
@@ -130,6 +135,8 @@
     },
     {
       "id": "rotator-cuff-ext",
+      "region": "shoulder",
+      "regionPath": ["infraspinatus", "teres-minor"],
       "name": "Infraspinatus, teres minor",
       "wgerId": null,
       "role": "Stabiliser",
@@ -142,6 +149,7 @@
     },
     {
       "id": "subscapularis",
+      "region": "shoulder",
       "name": "Subscapularis",
       "wgerId": null,
       "role": "Stabiliser",

@@ -17,10 +17,10 @@ For each exercise variant it shows:
 - **Side, front or top view.** Animated limb in the right posture (standing, seated, lying, kneeling), load, force direction, line of action and the **moment arm**.
 - **Resistance vs. strength.** The load's torque at the joint compared with the muscles' strength at each angle.
 - **Effort curve.** Torque ÷ strength across the range of motion. Its peak is the sticking point.
-- **Muscles involved.** Estimated relative activation per muscle, shown as bars and on the wger muscle map, plus a **close-up** of the body region where the overview is too coarse (so far the forearm and hand, with each wrist and finger muscle coloured on its own).
+- **Muscles involved.** Estimated relative activation per muscle, shown as bars and on the wger muscle map, plus **close-ups** of the body regions where the overview is too coarse: forearm and hand, shoulder (three deltoid heads, rotator cuff, trapezius parts), hip and thigh (quadriceps and hamstring heads, gluteals, deep rotators). Where the model only knows a group (e.g. "quadriceps"), every head shows the group's value, hatched.
 - **Compare mode.** Overlay any two variants, e.g. a dumbbell curl against a Bayesian cable curl.
 
-It's a static site with no build step and no dependencies, and it works on phones. Shareable links keep the current state in the URL hash, e.g. `#v=cable-bayesian&cmp=dumbbell&kg=10`.
+It's a static site with no build step and no dependencies, and it works on phones. Shareable links keep the current state in the URL hash, e.g. `#v=cable-bayesian&cmp=dumbbell&kg=10`; placement sliders that differ from the variant's preset are kept too (`pl=key:value,…`).
 
 ## Run locally
 
@@ -98,7 +98,8 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] Wrist curl (seated, behind the back, cable, finger roll) and reverse wrist curl
 - [x] Edge lift (one arm hanging, block on a loading pin; open hand / half crimp / full crimp): finger chain with FDS and FDP tendon forces and A2/A4 pulley loads (Vigouroux 2006, Schweizer 2001, An 1983)
 - [ ] Edge lift: middle-finger geometry, measured half crimp, pressure centre on deep edges, load split between fingers
-- [ ] More close-ups: shoulder (three deltoid heads, rotator cuff), thigh (quadriceps and hamstring heads)
+- [x] More close-ups: shoulder (three deltoid heads, rotator cuff), hip and thigh (quadriceps and hamstring heads, gluteals, deep rotators)
+- [x] Placement sliders (edge lift, 3D lifts) saved in shareable links
 - [x] Curl muscle weights over the elbow angle from measured moment arms (Murray et al. 1995); levels still estimates
 - [ ] Translations (DE)
 

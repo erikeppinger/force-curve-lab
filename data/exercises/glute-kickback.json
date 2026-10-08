@@ -44,6 +44,7 @@
   "muscles": [
     {
       "id": "gluteus-maximus",
+      "region": "thigh",
       "name": "Gluteus maximus",
       "wgerId": 8,
       "role": "Prime mover",
@@ -55,6 +56,8 @@
     },
     {
       "id": "hamstrings",
+      "region": "thigh",
+      "regionPath": ["biceps-femoris", "semitendinosus", "semimembranosus"],
       "name": "Hamstrings",
       "wgerId": 11,
       "role": "Synergist",
@@ -66,6 +69,7 @@
     },
     {
       "id": "adductor-magnus",
+      "region": "thigh",
       "name": "Adductor magnus",
       "wgerId": null,
       "role": "Synergist",

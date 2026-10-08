@@ -46,6 +46,7 @@
   "muscles": [
     {
       "id": "latissimus",
+      "region": "shoulder",
       "name": "Latissimus dorsi",
       "wgerId": 12,
       "role": "Prime mover",
@@ -57,6 +58,7 @@
     },
     {
       "id": "teres-major",
+      "region": "shoulder",
       "name": "Teres major",
       "wgerId": null,
       "role": "Synergist",
@@ -68,6 +70,7 @@
     },
     {
       "id": "triceps-long",
+      "region": "shoulder",
       "name": "Triceps (long head)",
       "wgerId": 5,
       "role": "Synergist",
@@ -79,6 +82,7 @@
     },
     {
       "id": "pec-sternal",
+      "region": "shoulder",
       "name": "Pectoralis major (sternal head)",
       "wgerId": 4,
       "role": "Synergist",

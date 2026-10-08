@@ -105,12 +105,13 @@
         </div>
         <ul id="muscle-list" class="muscle-list"></ul>
       </div>
-      <div id="muscle-detail" class="muscle-detail" hidden>
-        <h4>Close-up: <span id="detail-region"></span></h4>
-        <div id="detail-views" class="detail-views"></div>
-        <p class="hint">Tap a muscle for its name and role. Grey: not part of this exercise. Hatched: involved, but the model can't split it from its neighbours. Schematic drawing, not to scale.</p>
-      </div>
       <p class="hint">Estimated relative activation at the current angle (illustrative model, not EMG). Muscle map © wger.de, CC-BY-SA.</p>
+    </section>
+
+    <section id="muscle-detail" class="card muscle-detail" aria-label="Muscle close-up" hidden>
+      <h3>Close-up: <span id="detail-region"></span></h3>
+      <div id="detail-views" class="detail-views"></div>
+      <p class="hint">Tap a muscle for its name and role. Grey: not part of this exercise. Hatched: the value belongs to a whole group (e.g. all quadriceps heads share one), or the muscle is involved but not modelled. Schematic drawings, not to scale.</p>
     </section>
 
     <section class="card notes" aria-label="About this variant">

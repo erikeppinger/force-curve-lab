@@ -120,6 +120,7 @@
   "muscles": [
     {
       "id": "gluteus-maximus",
+      "region": "thigh",
       "name": "Gluteus maximus",
       "wgerId": 8,
       "role": "Prime mover",
@@ -133,6 +134,8 @@
     },
     {
       "id": "hamstrings",
+      "region": "thigh",
+      "regionPath": ["biceps-femoris", "semitendinosus", "semimembranosus"],
       "name": "Hamstrings",
       "wgerId": 11,
       "role": "Synergist",
@@ -146,6 +149,7 @@
     },
     {
       "id": "adductor-magnus",
+      "region": "thigh",
       "name": "Adductor magnus",
       "wgerId": null,
       "role": "Synergist",
@@ -157,6 +161,8 @@
     },
     {
       "id": "quadriceps",
+      "region": "thigh",
+      "regionPath": ["rectus-femoris", "vastus-lateralis", "vastus-medialis"],
       "name": "Quadriceps",
       "wgerId": 10,
       "role": "Prime mover",
@@ -170,6 +176,8 @@
     },
     {
       "id": "adductors",
+      "region": "thigh",
+      "regionPath": ["adductor-longus", "gracilis"],
       "name": "Adductors (longus, brevis, gracilis)",
       "wgerId": null,
       "role": "Stabiliser",
@@ -183,6 +191,7 @@
     },
     {
       "id": "gluteus-medius",
+      "region": "thigh",
       "name": "Gluteus medius and minimus",
       "wgerId": null,
       "role": "Stabiliser",
@@ -196,6 +205,8 @@
     },
     {
       "id": "external-rotators",
+      "region": "thigh",
+      "regionPath": ["piriformis", "deep-rotators", "quadratus-femoris"],
       "name": "Deep hip external rotators",
       "wgerId": null,
       "role": "Stabiliser",
