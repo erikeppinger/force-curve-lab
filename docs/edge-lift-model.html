@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edge Lift Model</title>
+<meta name="description" content="How the Force Curve Lab edge-lift model works: finger statics, pulley loads, the four-finger split and the arm, with every assumption and source.">
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1d2330; --muted: #5b6475; --border: #dde1e8;
+    --accent: #2f6fdb; --est: #9a5b00; --est-bg: #fff4e0; --code-bg: #eef1f6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12151b; --card: #1a1f27; --text: #e6e9ef; --muted: #9aa3b2; --border: #2c3340;
+      --accent: #6b9cf0; --est: #f0b45a; --est-bg: #2e2516; --code-bg: #232a35;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12151b; --card: #1a1f27; --text: #e6e9ef; --muted: #9aa3b2; --border: #2c3340;
+    --accent: #6b9cf0; --est: #f0b45a; --est-bg: #2e2516; --code-bg: #232a35;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 820px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.8rem; line-height: 1.25; margin: 8px 0 4px; }
+  h2 { font-size: 1.3rem; margin: 36px 0 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h3 { font-size: 1.05rem; margin: 24px 0 6px; }
+  p, li { max-width: 72ch; }
+  a { color: var(--accent); }
+  .lede { color: var(--muted); font-size: 1.05rem; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin: 14px 0; }
+  .eq { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; background: var(--code-bg); border-radius: 6px; padding: 8px 12px; overflow-x: auto; white-space: pre; font-size: 0.92rem; }
+  code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; background: var(--code-bg); border-radius: 4px; padding: 0 4px; font-size: 0.92em; }
+  .est { background: var(--est-bg); color: var(--est); border-radius: 4px; padding: 0 5px; font-size: 0.82em; font-weight: 600; white-space: nowrap; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.92rem; margin: 8px 0; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  .table-wrap { overflow-x: auto; }
+  .muted { color: var(--muted); }
+  nav.toc { font-size: 0.95rem; }
+  nav.toc ol { margin: 4px 0; padding-left: 22px; }
+  .back { font-size: 0.95rem; }
+</style>
+</head>
+<body>
+<main>
+<p class="back"><a href="../#ex=edge-lift">← Back to the edge lift in Force Curve Lab</a></p>
+<h1>How the edge-lift model works</h1>
+<p class="lede">The edge-lift page estimates the loads on the fingers, the flexor tendons, the A2 and A4 pulleys, the shoulder and the elbow while you hold a block on a 20–25 mm edge with one hand. It is a statics model built from published anatomy and climbing studies. This page lists every step and every assumption so it can be checked.</p>
+
+<div class="card">
+  <strong>What it is and isn't.</strong> A teaching tool that turns geometry into forces with plain statics. Each number is either measured in a cited study or marked <span class="est">estimate</span>. The single-finger tendon and pulley results were checked against one published study (see <a href="#check">the check</a>). The split between the four fingers is a model prediction: I haven't found measurements to compare it with. It isn't medical or training advice.
+</div>
+
+<nav class="toc card" aria-label="Contents">
+  <strong>Contents</strong>
+  <ol>
+    <li><a href="#setup">The set-up being modelled</a></li>
+    <li><a href="#finger">One finger: tendons and pulleys</a></li>
+    <li><a href="#check">Check against Vigouroux et al. (2006)</a></li>
+    <li><a href="#four">All four fingers on the edge</a></li>
+    <li><a href="#split">How the block is shared between the fingers</a></li>
+    <li><a href="#arm">Shoulder and elbow</a></li>
+    <li><a href="#effort">Effort and strength</a></li>
+    <li><a href="#limits">Known limits</a></li>
+    <li><a href="#questions">Open questions</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ol>
+</nav>
+
+<h2 id="setup">1. The set-up being modelled</h2>
+<p>One arm lifts a block hanging from a loading pin. The fingers hold an edge of the block, and the arm hangs straight against the front of the hip. The lift is driven by the legs, as taught in StrengthClimbing's arm-lifting guide. The fingers hold one posture throughout, so the model treats the lift as a <strong>static hold</strong>. The PIP slider doesn't animate a lift: it compares holds at different middle-joint angles. Three grips are provided:</p>
+<div class="table-wrap"><table>
+  <thead><tr><th>Grip</th><th>MCP</th><th>PIP</th><th>DIP</th><th>Posture source</th></tr></thead>
+  <tbody>
+    <tr><td>Open hand (drag)</td><td>−21°</td><td>25.9°</td><td>38.8°</td><td>Vigouroux et al. 2006, "slope" grip</td></tr>
+    <tr><td>Half crimp</td><td>0°</td><td>90°</td><td>0°</td><td><span class="est">estimate</span>: neither study measured it</td></tr>
+    <tr><td>Full crimp</td><td>−2.6°</td><td>106.5°</td><td>−22.6° (bent back)</td><td>Vigouroux et al. 2006, "crimp" grip</td></tr>
+  </tbody>
+</table></div>
+<p>The block's weight pulls on the finger pads. The hand hangs so this pull passes straight under the wrist, which then needs no flexion or extension moment. The pull's direction in each finger's frame therefore follows from where the pad sits relative to the wrist.</p>
+
+<h2 id="finger">2. One finger: tendons and pulleys</h2>
+<p>Each finger is a planar chain: wrist → MCP → PIP → DIP → fingertip. The detailed finger in the main figure is the index finger, with bone lengths and tendon moment arms from An et al. (1983). The edge presses on the distal phalanx at a point set by a slider. The default is half the distal phalanx, the value Vigouroux et al. assumed for their 1 cm hold. On a 20–25 mm edge the true pressure centre hasn't been measured <span class="est">estimate</span>.</p>
+<p>For a pad force <b>F</b>, the moment that the flexors must supply at each joint is the moment of F about that joint:</p>
+<div class="eq">M_joint = −(r_contact − r_joint) × F        (positive = the load opens the joint)</div>
+<h3>Tendon tensions, joint by joint</h3>
+<ul>
+  <li><strong>DIP: FDP only.</strong> The FDP is the only muscle that flexes the DIP, so <code>FDP = (M_DIP − passive) / r_FDP,DIP</code>. In the full crimp the DIP is bent back, and the joint carries part of the moment passively: 22% in Vigouroux et al.'s climbers. The other grips use 0.</li>
+  <li><strong>PIP: FDS takes the rest.</strong> <code>FDS = (M_PIP − FDP · r_FDP,PIP) / r_FDS,PIP</code>. If the FDP alone over-flexes the PIP (FDS &lt; 0), FDS is set to 0, and the extensor mechanism's counter-moment is reported instead.</li>
+  <li><strong>MCP: the remainder.</strong> Whatever the two long flexors don't balance at the MCP is reported as a moment for the intrinsic muscles or the extensors. It isn't split into muscles.</li>
+</ul>
+<p>This "one muscle per joint, in order" solution is unique, so no optimisation is involved for a single finger. There is no co-contraction: the flexors do only what statics requires.</p>
+<h3>Bowstringing over the PIP</h3>
+<p>Under load the flexor tendons lift away from the PIP as it bends. Schweizer (2001) measured the extra distance: FDP 0.2 mm in the slope grip (PIP 0–10°) and 4.3 mm in the crimp (PIP 90°), FDS 1.75 mm in the crimp. The model adds this distance to An et al.'s unloaded PIP moment arms, linearly between those angles and held flat beyond 90° <span class="est">estimate</span>. Without this correction the full crimp's FDP:FDS ratio comes out at about 0.5, the wrong way round compared with Vigouroux et al.</p>
+<h3>Pulley loads</h3>
+<p>The tendons run in straight lines between the pulleys (bowstring geometry along the bone axes, with no tendon thickness). Each pulley carries the vector sum of the pulls of the tendons that change direction at it:</p>
+<div class="eq">A2 = FDP·|u_out − u_in| + FDS·|u_out − u_in|     (FDP: towards A4; FDS: towards its insertion)
+A4 = FDP·|u_A2 + u_insertion|</div>
+<ul>
+  <li><strong>Where A2 sits:</strong> centred on the proximal phalanx, with its length (40.7% of the phalanx for the index finger) from Lin et al. (1989).</li>
+  <li><strong>Where A4 sits:</strong> at the middle of the middle phalanx.</li>
+  <li><strong>Tendon insertions:</strong> FDS 35% along the middle phalanx, FDP 30% along the distal phalanx <span class="est">estimate</span>.</li>
+  <li><strong>Breaking loads, for scale:</strong> the cadaver values from Lin et al. (1990), e.g. index finger A2 432 N and A4 202 N. They were measured with a hook pulling straight across the pulley in cadaver hands, so they show the order of magnitude, not a safety limit for a trained climber.</li>
+</ul>
+
+<h2 id="check">3. Check against Vigouroux et al. (2006)</h2>
+<p>I reproduced Vigouroux et al.'s set-up in the model: their full-crimp posture, a 1 cm hold, the pull along the metacarpal, and their fingertip force. They estimated the tendon and pulley forces by optimisation over six muscles, so this checks the statics, not a direct measurement.</p>
+<div class="table-wrap"><table>
+  <thead><tr><th>Full crimp</th><th>Vigouroux et al.</th><th>This model</th></tr></thead>
+  <tbody>
+    <tr><td>FDP : FDS</td><td>1.75</td><td>1.31</td></tr>
+    <tr><td>A2 ÷ fingertip force</td><td>2.7×</td><td>2.5×</td></tr>
+    <tr><td>A4 ÷ fingertip force</td><td>2.4×</td><td>1.5×</td></tr>
+  </tbody>
+</table></div>
+<p>An automated test keeps the model inside a band around these values. Their slope grip can't be compared, because its PIP moment shows that their pull ran across the finger, unlike a block hanging under the wrist. A4 comes out lower than theirs, probably because the A4 position and the FDP insertion are estimates.</p>
+
+<h2 id="four">4. All four fingers on the edge</h2>
+<p>The four-finger table and the hand figure solve all four fingers on the same edge. Only the geometry differs between the fingers:</p>
+<ul>
+  <li><strong>Bone lengths per finger:</strong> metacarpal and three phalanges from Lin et al. (1989), means of 10 hands. The phalanges are used as measured.</li>
+  <li><strong>Knuckle line:</strong> how far each knuckle sits back towards the wrist from the middle finger's: index 3 mm, ring 3 mm, little 8 mm <span class="est">estimate</span>. The metacarpal bone lengths alone would put the little knuckle 12 mm back and the index knuckle ahead of the middle one, but the metacarpal bases don't sit level in the wrist. Users can enter their own knuckle line and phalanx lengths ("Your hand").</li>
+  <li><strong>Moment arms:</strong> An et al.'s index-finger values scaled by each finger's proximal-phalanx length <span class="est">estimate</span>.</li>
+  <li><strong>Pulleys:</strong> each finger's A2 length from Lin et al. (1989), and its breaking loads from Lin et al. (1990).</li>
+  <li><strong>Knuckle range:</strong> each finger's active MCP range with the wrist neutral from Latz et al. (2019), e.g. middle finger −25.9° to 79.5°, little finger −31.3° to 84.0°. The search keeps every finger inside it.</li>
+  <li><strong>Knuckle spacing:</strong> the knuckles sit 2 cm apart sideways <span class="est">estimate</span>.</li>
+</ul>
+<h3>How the fingers reach a common edge</h3>
+<p>The fingers differ in length, so they can't all keep the grip's exact posture and still touch one straight edge. The model searches for the hand posture that changes the grip least.</p>
+<ul>
+  <li>Each fingertip touches the edge. A pad may sit up to 6 mm deeper or shallower on the edge than the middle finger's <span class="est">estimate</span>.</li>
+  <li>Each finger stays close to the grip's PIP and DIP angles. Most of the length difference is taken up at the knuckle: a longer finger flexes its MCP more.</li>
+  <li>The ring and little metacarpals may flex forward at the base of the hand ("cupping"), up to 10° and 20° <span class="est">estimate</span>.</li>
+  <li>The whole hand may tilt sideways (−25° towards the thumb to +30° towards the little finger). This lowers the knuckles on one side, and can come from wrist deviation or from the arm leaning.</li>
+  <li>The hand may roll about its long axis (forearm pronation/supination, ±30°). This moves one side's pads towards the palm, so fingers that bend their knuckles by different amounts still meet a straight edge.</li>
+</ul>
+<p>The search minimises a weighted sum of squared angle changes from the grip:</p>
+<div class="eq">cost = Σ_fingers [ 0.1·ΔMCP² + 1·ΔPIP² + 1·ΔDIP² + 0.5·cupping² + 1·(depth offset in mm)² ] + 0.2·tilt² + 0.05·roll²</div>
+<p>The weights are <span class="est">estimates</span>. They encode the idea that a grip "lives" in the PIP and DIP angles while the knuckle adjusts freely. The search runs over the edge's position under the hand, the hand's tilt and its roll, and each finger's joints are solved by two-link reach.</p>
+<p>A finger whose posture cost would exceed 900 (about a 30° change of the PIP) stays off the edge. Between 450 and 900 its weight in the load split fades to zero, so a finger that only just reaches carries little. That way a millimetre of edge shape doesn't switch it fully on or off.</p>
+<h3>Edge shape and the edge that fits a hand</h3>
+<ul>
+  <li><strong>Tilt along the edge's length:</strong> e.g. a block hanging off-centre.</li>
+  <li><strong>Height under each finger:</strong> the edge under the index, ring and little finger can sit closer to the knuckles or further away than under the middle finger (one slider each). Shaped lifting blocks, with a bump under the longer fingers, are this case.</li>
+</ul>
+<p>The model also computes the <strong>edge that fits a hand exactly</strong> in a grip. Every finger is placed in the grip's own angles, with no knuckle adjustment, no cupping and the hand straight, and the hand hangs with the wrist above the middle finger's pad. Each pad's height along the pull, relative to the middle finger's, is then the bump that finger needs, and its position across the pull is the depth difference. "Auto" on the edge sliders uses this profile.</p>
+<p>In the half crimp (MCP 0°, PIP 90°, DIP 0°) the proximal phalanx hangs along the pull and the middle and distal phalanges lie across it. So to first order a finger's bump is its difference in <em>knuckle position + proximal phalanx</em> length from the middle finger. For the typical hand that is about +6 mm for the index, +6 mm for the ring and +19 mm for the little finger, closer to the knuckles than under the middle finger. How far a knuckle sits back counts as much as the proximal phalanx. With such an edge all four fingers keep the grip's exact angles.</p>
+<p>A tilted hand only takes the in-plane part of the pull (cos of the tilt) through its flexor chain. The small sideways part is reported but not analysed.</p>
+
+<h2 id="split">5. How the block is shared between the fingers</h2>
+<p>Statics alone doesn't decide how the block splits between four fingers (the problem is indeterminate). The model uses the common least-effort assumption from static optimisation. For finger <i>i</i> with share <i>s<sub>i</sub></i> (Σ s = 1), the per-newton tendon tensions <i>a<sub>i</sub></i> (FDP) and <i>b<sub>i</sub></i> (FDS) come from the statics above. The model then minimises:</p>
+<div class="eq">J = Σ_i [ (a_i·s_i / Tp_i)² + (b_i·s_i / Ts_i)² ]  +  λ · Σ_pairs(middle, ring, little) (σ_i − σ_j)²
+σ_i = a_i·s_i / Tp_i,     λ = q / (1 − q)</div>
+<ul>
+  <li><strong>Tp, Ts:</strong> each muscle's reference (maximal) tension. Vigouroux et al.'s maximal FDP and FDS tensions are scaled per finger by the physiological cross-sectional areas measured by Lieber et al. (1992).</li>
+  <li><strong>The quadriga term:</strong> the second term models the FDP slips of the middle, ring and little fingers, which share one muscle belly. It pulls them towards the same relative tension.</li>
+  <li><strong>The link strength q:</strong> set with a slider. 0 means independent slips; 100% means one belly, with every touching slip at the same share of its strength. How tightly the slips are linked on an edge isn't measured, so the default of 50% is a middle guess <span class="est">estimate</span>.</li>
+  <li><strong>The index FDP</strong> is treated as independent.</li>
+</ul>
+<p>J is quadratic in the shares, so the minimum under Σ s = 1 has a closed form (<code>s ∝ H⁻¹·1</code>). Any finger that would get a negative share is removed, and the system is solved again.</p>
+<p>The wrist's sideways moment is the sum of each pad's vertical pull times its sideways distance from the middle of the wrist, including the shift from the hand's tilt. The page reports it as the wrist's radial or ulnar load.</p>
+<p class="muted">Example, flat edge, default settings: the half crimp splits about 21 / 30 / 20 / 28% (index / middle / ring / little) and the full crimp 32 / 39 / 22 / 7%, with the hand tilted about 6° towards the thumb and rolled a few degrees. In the open hand a typical hand can't get both the index and the little finger onto a straight edge without contorting one of them, and the model switches between the two as the PIP changes (see the limits).</p>
+
+<h2 id="arm">6. Shoulder and elbow</h2>
+<p>The arm is a straight line from the shoulder to the grip, with the block hanging under the hand.</p>
+<ul>
+  <li><strong>Arm hanging straight down</strong> (the taught position): the pull runs through the elbow and shoulder, which are only pulled apart.</li>
+  <li><strong>Arm turned forward or out to the side</strong> (two sliders): the block and the arm's own weight act on a lever.</li>
+</ul>
+<div class="eq">shoulder torque = (W · arm length + arm weight moment) · sin(angle)
+elbow torque    = (W · forearm length + forearm weight moment) · sin(angle)</div>
+<p>Forward and sideways angles combine as offsets (a small-angle approximation). Segment lengths and masses come from the app's shared body data. Strength references:</p>
+<ul>
+  <li><strong>Shoulder flexion:</strong> 68 Nm, with the front-raise strength curve.</li>
+  <li><strong>Shoulder abduction:</strong> 47 Nm, weakest with the arm down (62% of peak).</li>
+  <li><strong>Elbow flexors, arm straight:</strong> 34 Nm. This is an upper bound on effort: a locked straight elbow also resists over-straightening passively.</li>
+</ul>
+<p>For example, 30 kg with the arm 20° forward gives about 67 Nm at the shoulder, close to typical maximal shoulder-flexion strength. The page shows this in the body sketch.</p>
+
+<h2 id="effort">7. Effort and strength</h2>
+<ul>
+  <li><strong>Detailed finger:</strong> effort = fingertip force ÷ (the grip's maximal fingertip force × the strength slider). The maximal forces are from Schweizer (2001), all four fingers on the hold: crimp 82 N, slope grip 78 N, from recreational climbers. Strong climbers will be far above 100%.</li>
+  <li><strong>Four-finger table:</strong> effort = the larger of the finger's FDP and FDS tension ÷ its reference tension.</li>
+  <li><strong>Pulleys:</strong> shown as a share of the cadaver breaking load.</li>
+</ul>
+
+<h2 id="limits">8. Known limits</h2>
+<ul>
+  <li><strong>The little finger</strong> can take a large share when it touches (up to about 30%). Lieber et al. measured its FDP about as large as the middle finger's, and the model sees its weakness only through its small FDS. Climbers usually find the little finger the weakest.</li>
+  <li><strong>Open hand on a straight edge:</strong> nearly straight fingers can't absorb their length differences at the knuckle, so either the index or the little finger stays off, and which one flips with small changes. Real hands probably also shift where each pad presses, which the model doesn't search.</li>
+  <li><strong>The block's own balance</strong> under the hand isn't solved: it hangs level or at the set tilt.</li>
+  <li><strong>Pressure centre on the pad:</strong> it's a slider and it matters. Pressing closer to the DIP shifts work from the FDP to the FDS.</li>
+  <li><strong>Half crimp posture:</strong> PIP 90°, DIP straight is an estimate, and it borrows the crimp's maximal force.</li>
+  <li><strong>Moment arms:</strong> averaged over each joint's range and scaled from one finger. Pulley positions and tendon insertions are partly estimated, so pulley loads are the least certain output. The A3 pulley and the thumb over the index in the full crimp aren't modelled.</li>
+  <li><strong>No co-contraction</strong> and no intrinsic-muscle forces (only the leftover MCP moment).</li>
+  <li><strong>No dynamics:</strong> the hold is static. The 1–1.5 s rise to peak force at the start of a lift isn't modelled.</li>
+</ul>
+
+<h2 id="questions">9. Open questions</h2>
+<p>These are the places where data or expert judgement would improve the model most:</p>
+<ol>
+  <li>Where the pressure centre sits on the distal phalanx on a 20–25 mm edge in each grip.</li>
+  <li>A measured half-crimp posture (MCP, PIP, DIP) for off-the-wall lifting.</li>
+  <li>Measured per-finger force shares on an edge in each grip, to test the least-effort split and the quadriga setting.</li>
+  <li>How freely the hand tilts sideways under load, and how much the ring and little metacarpals cup.</li>
+  <li>Whether lifting blocks with shaped edges (e.g. a bump under the longer fingers) measurably even out the finger loads, and how well bone lengths measured on the surface of the hand predict the fitting profile.</li>
+</ol>
+
+<h2 id="sources">10. Sources</h2>
+<ul>
+  <li>An KN, Ueba Y, Chao EY, Cooney WP, Linscheid RL (1983). Tendon excursion and moment arm of index finger muscles. <i>J Biomech</i> 16(6):419–425. doi:10.1016/0021-9290(83)90074-X</li>
+  <li>Lieber RL, Jacobson MD, Fazeli BM, Abrams RA, Botte MJ (1992). Architecture of selected muscles of the arm and forearm: anatomy and implications for tendon transfer. <i>J Hand Surg Am</i> 17(5):787–798.</li>
+  <li>Latz D, Koukos C, Boeckers P, Jungbluth P, Schiffner E, Kaufmann R, Gehrmann SV (2019). Influence of wrist position on the metacarpophalangeal joint motion of the index through small finger. <i>Hand</i> 14(2):259–263. doi:10.1177/1558944717736823</li>
+  <li>Lin GT, Amadio PC, An KN, Cooney WP (1989). Functional anatomy of the human digital flexor pulley system. <i>J Hand Surg Am</i> 14(6):949–956. doi:10.1016/S0363-5023(89)80043-7</li>
+  <li>Lin GT, Cooney WP, Amadio PC, An KN (1990). Mechanical properties of human pulleys. <i>J Hand Surg Br</i> 15(4):429–434.</li>
+  <li>Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. <i>J Biomech</i> 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6</li>
+  <li>Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. <i>J Biomech</i> 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027</li>
+  <li>Technique description (practitioner guides, not peer-reviewed): StrengthClimbing, <a href="https://strengthclimbing.com/the-complete-guide-to-arm-lifting-finger-strength-training/">The complete guide to arm-lifting finger strength training</a> and <a href="https://strengthclimbing.com/dr-tyler-nelsons-new-active-finger-strength-training-protocols/">Dr. Tyler Nelson's active finger strength training protocols</a>.</li>
+  <li>Arm strength references are listed with the app's other references (Mayer et al. 1994; Kulig et al. 1984; Haidar et al. 2009; Pinter et al. 2010).</li>
+</ul>
+<p class="muted">The source code and data files are open: <code>js/finger.js</code> (statics and the four-finger search), <code>data/exercises/edge-lift.json</code> (every number with its note and source), and <code>docs/model-limits.md</code>.</p>
+<p class="back"><a href="../#ex=edge-lift">← Back to the edge lift</a></p>
+</main>
+</body>
+</html>
