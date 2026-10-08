@@ -327,6 +327,14 @@
       "citation": "Ramsay JW, Hunter BV, Gonzalez RV (2009). Muscle moment arm and normalized moment contributions as reference data for musculoskeletal elbow and wrist joint models. J Biomech 42(4):463–473.",
       "url": "https://doi.org/10.1016/j.jbiomech.2008.11.035",
       "usedFor": "Biceps curl: the levels of the biceps', brachialis' and brachioradialis' weights (normalized potential moments in elbow flexion)."
+    },
+    {
+      "key": "Yamamoto 2015",
+      "match": "Yamamoto Y, Kato H",
+      "group": "Two-joint muscles and grip",
+      "citation": "Yamamoto Y, Kato H, Fukuda T, Tsuga Y, Miyakawa S (2015). Effect of knee flexion angles during maximum isometric hip extension. Jpn J Phys Fitness Sports Med 64(3):289–294.",
+      "url": "https://doi.org/10.7600/jspfsm.64.289",
+      "usedFor": "Multi-joint lifts: hip-extension strength with the knee bent 90° vs nearly straight (82%), the hamstrings' two-joint effect at the hip."
     }
   ],
   "resources": [

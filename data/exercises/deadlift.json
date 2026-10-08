@@ -57,6 +57,13 @@
     }
   ],
   "jointScale": {
+    "hip": {
+      "by": "knee",
+      "direction": "positive",
+      "points": [[15, 1], [90, 0.82]],
+      "note": "Two-joint hamstrings: hip-extension strength by knee flexion, relative to the base curve's test (standing, knee slightly bent ≈ 15°). Yamamoto et al. measured 93 Nm with the knee bent 15° and 76 Nm at 90° (82%), with 2–3× more hamstring EMG at 15° and slightly more gluteus maximus at 90°. Measured prone with the hip straight, applied at every hip angle; held flat beyond the two knee angles. Other datasets found smaller (Chen & Franklin's collection: nearly flat) or larger (29–42%) differences.",
+      "source": "Yamamoto Y, Kato H, Fukuda T, Tsuga Y, Miyakawa S (2015). Effect of knee flexion angles during maximum isometric hip extension. Jpn J Phys Fitness Sports Med 64(3):289–294. doi:10.7600/jspfsm.64.289 (Fig. 2, read off: 93 Nm at 15° vs 76 Nm at 90° of knee flexion; 10 men, prone, hip straight)"
+    },
     "ankle": {
       "by": "knee",
       "direction": "positive",

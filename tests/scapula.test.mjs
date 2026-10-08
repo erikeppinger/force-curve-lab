@@ -1,5 +1,5 @@
 // Shoulder-blade sliders: bench (pulled back, up/down), rows (reach forward → squeeze back),
-// pull-ups and pulldowns (raised overhead → pulled down).
+// pull-ups and pulldowns (raised overhead → pulled down); also the hip-by-knee strength scale.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -76,4 +76,20 @@ test("pull-ups: pulling the shoulder blades down by the top shortens the elbow's
   // At the start (arms straight, shoulder blades raised) nothing changes: the hands just start higher.
   const b0 = run("pull-up", vid, 0), p0 = run("pull-up", vid, 0, { scapTravel: 0.06 });
   for (const j of b0.joints) assert.ok(Math.abs(j.torque - p0.joints.find((k) => k.id === j.id).torque) < 1e-6, j.id);
+});
+
+test("hip-extension strength by knee angle (Yamamoto et al.): 82% with the knee bent 90°, unchanged near straight", () => {
+  for (const id of ["squat", "romanian-deadlift", "hip-thrust"]) {
+    const ex = load(id);
+    const v = ex.variants[0];
+    const plain = { ...ex, jointScale: Object.fromEntries(Object.entries(ex.jointScale).filter(([k]) => k !== "hip")) };
+    for (const x of [0, 50, 100]) {
+      const o = { loadKg: 60, bodyMassKg: 75, body, placement: v.params };
+      const a = analyzeMulti(ex, v, x, o), b = analyzeMulti(plain, v, x, o);
+      const hip = (r) => r.joints.find((j) => j.id === "hip");
+      const knee = a.joints.find((j) => j.id === "knee").angle;
+      const expect = knee <= 15 ? 1 : knee >= 90 ? 0.82 : 1 - (0.18 * (knee - 15)) / 75;
+      if (hip(a).torque > 0) close(hip(a).capacity / hip(b).capacity, expect, 1e-6);
+    }
+  }
 });

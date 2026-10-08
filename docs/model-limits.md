@@ -463,7 +463,7 @@ Chen & Franklin (2025, read as the CC BY 4.0 preprint) collected several hundred
 
 Other points from the same paper:
 - **Anderson et al. 2007 is the model's main leg source, and Chen & Franklin left it out.** Its fitted angle–velocity surface smooths the peaks, and its young men's plantarflexion peak (95 Nm, about 0.7 Nm per kg·m) is barely enough for walking. The model's peaks taken from Anderson (200 Nm hip and knee extension, 110 Nm knee flexion, 119 Nm plantarflexion, the knee-bent mean rather than the fitted value) all land inside Chen & Franklin's ranges above, so the sizes check out. The curve shapes are still Anderson's smooth fits, which may flatten real peaks.
-- **Hip extension hardly changes with knee angle** in the three datasets they found (hip at 0–45°): the curves in their Figure 5 are nearly flat from 0° to 90° of knee bend. Two other studies on the reading list report 30–40% more with the knee nearly straight, so this stays open.
+- **Hip extension hardly changes with knee angle** in the three datasets they found (hip at 0–45°): the curves in their Figure 5 are nearly flat from 0° to 90° of knee bend. Two other studies report more with the knee nearly straight: Yamamoto et al. 2015 (read: 93 vs 76 Nm, knee at 15° vs 90°, prone, 10 men) and a sprinter study (29–42%, not obtainable). The app now uses Yamamoto et al.'s 82% at 90° of knee bend as a hip-extension correction in all multi-joint lifts; it was measured with the hip straight, while lifts work with the hip bent.
 - **Lowering vs lifting:** measured joint torque rarely goes above 125% of isometric in eccentric tests, and rarely below 25% even at high concentric speeds. The app uses isometric strength in both phases, so effort while lowering is overstated by up to about a fifth.
 - **Hip rotators change role as the hip bends.** The gluteus maximus and medius rotate the thigh outwards with the hip straight and turn into internal rotators when it is deeply bent (Chen & Franklin's moment-arm review, citing Delp et al. 1999). The model's "external rotators" keep the same weight at every hip angle, which overstates them at the bottom of a deep squat or leg press.
 
@@ -473,5 +473,5 @@ Rajagopal et al. 2016 (the OpenSim full-body model) gives each leg muscle's forc
 
 - Muscle activation weights (62 values; the bench grip-width effects are now backed by Mausehund et al. qualitatively).
 - Machine cam profiles.
-- Hip-extension strength vs knee angle (the hamstrings' share at the hip): Chen & Franklin's data say little change, two other studies say 30–40%; see the reading list.
+- Hip-extension strength vs knee angle: now from one study (Yamamoto et al. 2015, 82% at 90° of knee bend, hip straight); how it changes with the hip bent isn't measured.
 - Hip adduction peak for untrained lifters (the current value is from trained hockey players).
