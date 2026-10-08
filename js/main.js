@@ -6,7 +6,7 @@ import { analyzeMulti, sampleMulti } from "./multijoint.js";
 import { CAMERAS, scene3d, bounds3d, renderView3d } from "./view3d.js";
 import { fetchExercise, descriptionParagraphs, bodyBackground, muscleOverlay, isBackMuscle } from "./wger.js";
 import { loadRegion, regionsOf, viewsFor, renderRegionView, regionValues } from "./regions.js";
-import { analyzeFinger, sampleFinger } from "./finger.js";
+import { analyzeFinger, sampleFinger, idealEdge } from "./finger.js";
 import { renderHandFront, renderArmFigure } from "./handfig.js";
 import { renderFingerFigure, fingerBounds } from "./fingerfig.js";
 
@@ -130,7 +130,9 @@ function setPlacement(v, override = {}) {
   $("placement-controls").hidden = !spec;
   if (!spec) { state.placement = null; return; }
   state.placement = Object.fromEntries(spec.map((s) => [s.key, override[s.key] ?? v.params[s.key]]));
-  $("placement-sliders").replaceChildren(...spec.map((s) => {
+  const edgeSpecs = spec.filter((s) => s.widget === "edge");
+  $("placement-sliders").replaceChildren(...spec.flatMap((s) => {
+    if (s.widget === "edge") return s === edgeSpecs[0] ? [edgeBars(edgeSpecs)] : [];
     const label = document.createElement("label");
     const out = document.createElement("output");
     const isAuto = () => state.placement[s.key] === "auto";
@@ -150,6 +152,75 @@ function setPlacement(v, override = {}) {
     show();
     return label;
   }));
+}
+
+/**
+ * Edge lift: the edge height under each finger as four vertical bars side by side over a sketch of
+ * the fingers (index left). Up = closer to the knuckles. "Fits this hand" sets all four to the
+ * profile that keeps every finger in the grip's own angles (shown, not editable, while on).
+ */
+function edgeBars(specs) {
+  const box = Object.assign(document.createElement("div"), { className: "edge-bars" });
+  const head = Object.assign(document.createElement("div"), { className: "edge-bars-head", textContent: "Edge height under each finger (up = closer to the knuckles)" });
+  const grid = Object.assign(document.createElement("div"), { className: "edge-bars-grid" });
+  const sketch = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  sketch.setAttribute("class", "edge-bars-sketch");
+  sketch.setAttribute("viewBox", "0 0 400 200");
+  sketch.setAttribute("preserveAspectRatio", "none");
+  sketch.setAttribute("aria-hidden", "true");
+  grid.append(sketch);
+  const isAuto = () => specs.every((s) => state.placement[s.key] === "auto");
+  const fitted = () => {
+    const v = variant();
+    const fit = idealEdge(state.exercise, { ...v.params, ...state.placement }, state.angle, state.hand);
+    return Object.fromEntries(specs.map((s) => [s.key, fit[s.label.toLowerCase()].lift]));
+  };
+  const cols = specs.map((s) => {
+    const col = Object.assign(document.createElement("label"), { className: "edge-bar" });
+    const name = Object.assign(document.createElement("span"), { className: "edge-bar-name", textContent: s.label });
+    const out = document.createElement("output");
+    const input = Object.assign(document.createElement("input"), { type: "range", min: s.min, max: s.max, step: s.step });
+    input.setAttribute("aria-label", `Edge under the ${s.label.toLowerCase()} finger (mm, up = closer to the knuckles)`);
+    input.addEventListener("input", () => { state.placement[s.key] = +input.value; show(); writeHash(); renderSoon(); });
+    col.append(input, name, out);
+    return { s, input, out, col };
+  });
+  // Finger sketch behind the bars: each finger hangs from its knuckle (typical or own hand).
+  const drawSketch = () => {
+    const S = state.exercise.fingers;
+    const hand = state.hand;
+    const parts = S.order.map((id, i) => {
+      const L = { ...S.lengths[id], ...(hand?.[id] ?? {}) };
+      const back = hand?.[id]?.knuckleBack ?? S.knuckleBack?.[id] ?? 0;
+      const x = 50 + i * 100, top = 10 + back * 2000, len = (L.proximal + L.middle + L.distal) * 2000;
+      return `<rect x="${x - 20}" y="${top}" width="40" height="${len}" rx="20" class="edge-finger"/>`;
+    });
+    sketch.innerHTML = parts.join("");
+  };
+  const show = () => {
+    const auto = isAuto();
+    const fit = auto ? fitted() : null;
+    for (const { s, input, out } of cols) {
+      const val = auto ? fit[s.key] : state.placement[s.key] === "auto" ? 0 : state.placement[s.key];
+      input.value = val;
+      input.disabled = auto;
+      out.textContent = `${val > 0.00005 ? "+" : val < -0.00005 ? "−" : ""}${Math.abs(val * 1000).toFixed(1)} mm`;
+    }
+    drawSketch();
+  };
+  const autoBox = Object.assign(document.createElement("input"), { type: "checkbox", checked: isAuto() });
+  autoBox.addEventListener("change", () => {
+    for (const { s } of cols) state.placement[s.key] = autoBox.checked ? "auto" : 0;
+    show(); writeHash(); render();
+  });
+  const auto = Object.assign(document.createElement("label"), { className: "auto-toggle" });
+  auto.append(autoBox, " Fits this hand (every finger in the grip's own angles)");
+  const hint = Object.assign(document.createElement("small"), { className: "slider-hint", textContent: "All at 0 = a straight edge. Only the differences between the fingers matter. Shaped blocks raise or lower the edge under some fingers; the fitted profile shows what a hand of these lengths would need." });
+  grid.append(...cols.map((c) => c.col));
+  box.append(head, grid, auto, hint);
+  box.refresh = show;
+  show();
+  return box;
 }
 
 // ---------- edge lift: the user's own finger lengths ----------
@@ -596,6 +667,7 @@ function renderFinger() {
   $("ro-warning").hidden = !(r.effort > 1);
   $("ro-warning").textContent = "More than this finger's typical maximum: the grip would open here.";
   renderFingerSet(r.set);
+  document.querySelector(".edge-bars")?.refresh?.();
   const P = { ...v.params, ...state.placement };
   renderHandFront($("hand-figure"), { set: r.set, exercise: ex, P });
   renderArmFigure($("arm-figure"), { arm: r.arm, P });

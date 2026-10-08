@@ -350,6 +350,16 @@ input[type="range"]:disabled { opacity: 0.4; }
 .finger-set h4 { margin: 0 0 4px; }
 #finger-table td, #finger-table th { font-size: 0.85rem; padding: 5px 6px; }
 #finger-table tbody th { border-left-color: var(--j-knee); }
+.edge-bars { grid-column: 1 / -1; max-width: 460px; }
+.edge-bars-head { font-weight: 600; margin-bottom: 6px; }
+.edge-bars > label.auto-toggle { flex-direction: row; margin-top: 6px; }
+.edge-bars-grid { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.edge-bars-sketch { position: absolute; left: 0; right: 0; top: 0; height: 150px; width: 100%; pointer-events: none; }
+.edge-finger { fill: var(--body); stroke: var(--body-edge); stroke-width: 2; opacity: 0.6; }
+.edge-bar { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.85rem; }
+.edge-bar input[type="range"] { writing-mode: vertical-lr; direction: rtl; width: 32px; height: 150px; min-height: 0; margin: 0; }
+.edge-bar-name { font-weight: 600; }
+.edge-bar output { font-variant-numeric: tabular-nums; color: var(--muted); }
 .slider-hint { display: block; font-size: 0.75rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
 .detail-region-head { grid-column: 1 / -1; margin: 6px 0 -4px; font-size: 0.9rem; color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
 .detail-views figure { margin: 0; }
