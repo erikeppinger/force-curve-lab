@@ -5,16 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Force Curve Lab</title>
   <meta name="description" content="Interactive teaching tool: resistance curves, strength curves and muscle involvement for strength exercises across equipment variants.">
-  <script>try { const t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}</script>
+  <script>try { const t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; const l = localStorage.getItem("layout"); if (l === "side" || l === "stacked") document.documentElement.dataset.layout = l; } catch (e) {}</script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <header class="site-header">
     <h1>Force Curve Lab</h1>
-    <div class="theme-switch" role="group" aria-label="Colour theme">
-      <button type="button" data-theme-set="auto">Auto</button>
-      <button type="button" data-theme-set="light">Light</button>
-      <button type="button" data-theme-set="dark">Dark</button>
+    <div class="header-switches">
+      <div class="theme-switch" role="group" aria-label="Colour theme">
+        <button type="button" data-theme-set="auto">Auto</button>
+        <button type="button" data-theme-set="light">Light</button>
+        <button type="button" data-theme-set="dark">Dark</button>
+      </div>
+      <div class="theme-switch" role="group" aria-label="Page layout">
+        <button type="button" data-layout-set="auto" title="Figure beside the curves on wide screens, one column on narrow ones">Auto</button>
+        <button type="button" data-layout-set="side" title="Figure stays beside the curves while you scroll">Side by side</button>
+        <button type="button" data-layout-set="stacked" title="One column, sections fold">Stacked</button>
+      </div>
     </div>
     <p class="tagline">How equipment and positioning change where an exercise is hard and which muscles do the work.</p>
   </header>
@@ -22,6 +29,7 @@
   <main>
     <section class="card controls" aria-label="Controls">
       <h2 id="exercise-name">…</h2>
+      <p class="model-link"><a id="model-link" href="docs/model.html">How the model works</a> · what was computed, the assumptions and the sources</p>
       <div class="control-grid">
         <label>Exercise
           <select id="exercise"></select>
@@ -35,10 +43,10 @@
         <label><span id="load-label">Load</span> <output id="load-out"></output>
           <input id="load" type="range" min="1" max="30" step="0.5">
         </label>
-        <label><span id="strength-label">Strength (peak torque)</span> <output id="strength-out"></output>
+        <label><span class="label-row"><span id="strength-label">Strength (peak torque)</span> <output id="strength-out"></output> <span class="info"><button type="button" class="info-btn" aria-expanded="false" aria-controls="strength-info" aria-label="What does strength mean here?">i</button><span id="strength-info" class="info-text" role="tooltip"></span></span></span>
           <input id="strength" type="range" min="25" max="110" step="1">
         </label>
-        <label id="bodymass-control">Body mass <output id="bodymass-out"></output>
+        <label id="bodymass-control"><span class="label-row">Body mass <output id="bodymass-out"></output> <span class="info"><button type="button" class="info-btn" aria-expanded="false" aria-controls="bodymass-info" aria-label="What does body mass change?">i</button><span id="bodymass-info" class="info-text" role="tooltip"></span></span></span>
           <input id="bodymass" type="range" min="40" max="140" step="1">
         </label>
       </div>
@@ -51,7 +59,7 @@
         </label>
         <button id="pulley-reset" type="button" class="secondary">Reset pulley</button>
       </div>
-      <div id="placement-controls" class="control-grid pulley" hidden>
+      <div id="placement-controls" class="control-grid pulley" data-fold="placement" data-fold-label="Positioning and set-up" hidden>
         <div id="placement-sliders" class="placement-sliders"></div>
         <button id="placement-reset" type="button" class="secondary">Reset to preset</button>
       </div>
@@ -79,7 +87,14 @@
         <button type="button" class="secondary" data-cam="front">Front</button>
         <button type="button" class="secondary" data-cam="top">Top</button>
       </div>
+      <div id="edge-summary" class="edge-summary" hidden></div>
+      <div id="edge-tabs" class="view-buttons edge-tabs" role="tablist" aria-label="Edge lift view" hidden>
+        <button type="button" class="secondary" role="tab" data-edge-view="fingers">Fingers</button>
+        <button type="button" class="secondary" role="tab" data-edge-view="hand">Hand</button>
+        <button type="button" class="secondary" role="tab" data-edge-view="arm">Arm</button>
+      </div>
       <svg id="figure" role="img" aria-label="The arm, load, force direction and moment arm"></svg>
+      <p id="edge-view-hint" class="hint" hidden></p>
       <dl class="readouts" id="readouts">
         <div><dt>Joint torque</dt><dd id="ro-torque"></dd></div>
         <div><dt>Moment arm</dt><dd id="ro-arm"></dd></div>
@@ -89,9 +104,8 @@
         <thead><tr><th scope="col">Joint</th><th scope="col">Torque</th><th scope="col">Moment arm</th><th scope="col">Effort</th></tr></thead>
         <tbody></tbody>
       </table>
-      <div id="finger-set" class="finger-set" hidden>
-        <h4>All four fingers on the edge</h4>
-        <svg id="hand-figure" class="mini-fig" role="img" aria-label="The hand from the front: all four fingers on the edge, coloured by effort, with each finger's share of the block"></svg>
+      <div id="finger-set" class="finger-set" data-fold="fingers" hidden>
+        <h4>Finger by finger</h4>
         <table id="finger-table" class="joint-table">
           <thead><tr><th scope="col">Finger</th><th scope="col">Share</th><th scope="col">Knuckle / PIP / tip</th><th scope="col">FDP / FDS</th><th scope="col">A2 / A4 of limit</th><th scope="col">Effort</th></tr></thead>
           <tbody></tbody>
@@ -99,15 +113,13 @@
         <p class="hint">Fingertips line up on the edge (pads a few mm deeper or shallower); each finger keeps close to the grip's PIP and fingertip angles and takes up its length at the knuckle, the ring and little finger also by cupping the palm, and the hand tilts sideways (wrist or arm) and rolls (forearm rotation) if that helps. The block is shared for least effort. A finger that can't reach without a contorted posture stays off the edge. Physics only: see <a href="docs/edge-lift-model.html">how the model works</a>.</p>
         <details id="hand-panel" class="hand-panel">
           <summary>Your hand: finger bone lengths</summary>
-          <p class="hint">Typical lengths (mean of 10 hands, Lin et al. 1989) in mm, joint centre to joint centre. Enter your own to see how your fingers meet the edge and which edge profile fits you. A rough way to measure: bend the joints to 90° and measure on the back of the hand from knuckle to knuckle (this slightly overestimates). "Knuckle back" is how far each knuckle sits back towards the wrist from the middle finger's, with the fingers straight in line with the hand (a ruler across the knuckles shows it; the typical values are estimates). The detailed single-finger view above keeps the measured index finger of An et al.</p>
+          <p class="hint">Typical lengths (mean of 10 hands, Lin et al. 1989) in mm, joint centre to joint centre. Enter your own to see how your fingers meet the edge and which edge profile fits you. A rough way to measure: bend the joints to 90° and measure on the back of the hand from knuckle to knuckle (this slightly overestimates). "Knuckle back" is how far each knuckle sits back towards the wrist from the middle finger's, with the fingers straight in line with the hand (a ruler across the knuckles shows it; the typical values are estimates).</p>
           <div class="table-wrap"><table id="hand-table" class="joint-table">
             <thead><tr><th scope="col">Finger</th><th scope="col">Knuckle back</th><th scope="col">Proximal</th><th scope="col">Middle</th><th scope="col">Distal</th></tr></thead>
             <tbody></tbody>
           </table></div>
           <button id="hand-reset" type="button" class="secondary">Reset to typical</button>
         </details>
-        <h4>Shoulder and elbow</h4>
-        <svg id="arm-figure" class="mini-fig" role="img" aria-label="The arm holding the block from the front and from the side, with shoulder and elbow torques"></svg>
       </div>
       <p id="ro-limb" class="hint" hidden></p>
       <p id="ro-warning" class="warning" hidden>Load exceeds strength at this angle — this is where the lift would fail.</p>
@@ -121,12 +133,17 @@
       <h3 id="torque-title">Resistance vs strength</h3>
       <ul class="legend" id="torque-legend"></ul>
       <svg id="torque-chart" role="img" aria-label="Load torque and strength over the range of motion"></svg>
+      <div id="lift-chart-box" hidden>
+        <h3>Force on the hand over one lift</h3>
+        <p class="hint">Play runs one lift: the pull builds while the block still rests on the floor, the block comes off the floor (force above its weight while it speeds up), is held (exactly its weight), set down (the force dips, then peaks as it is slowed) and released. The fingers, wrist, elbow and shoulder all carry this same pull. Dashed: the block's weight.</p>
+        <svg id="lift-chart" role="img" aria-label="Force on the hand over the time of one lift"></svg>
+      </div>
       <h3 id="effort-title">Effort across the range</h3>
       <p class="hint" id="effort-hint">Joint torque ÷ strength at each angle. The peak is the sticking point.</p>
       <svg id="effort-chart" role="img" aria-label="Effort as percent of maximum over the range of motion"></svg>
     </section>
 
-    <section class="card muscles" id="muscles-card" aria-label="Muscles">
+    <section class="card muscles" id="muscles-card" aria-label="Muscles" data-fold="muscles">
       <h3>Muscles involved</h3>
       <div class="muscle-layout">
         <div class="bodymaps">
@@ -138,13 +155,13 @@
       <p class="hint">Estimated relative activation at the current angle (illustrative model, not EMG). Muscle map © wger.de, CC-BY-SA.</p>
     </section>
 
-    <section id="muscle-detail" class="card muscle-detail" aria-label="Muscle close-up" hidden>
+    <section id="muscle-detail" class="card muscle-detail" aria-label="Muscle close-up" data-fold="closeup" hidden>
       <h3>Close-up: <span id="detail-region"></span></h3>
       <div id="detail-views" class="detail-views"></div>
       <p class="hint">Tap a muscle for its name and role. Grey: not part of this exercise. Hatched: the value belongs to a whole group (e.g. all quadriceps heads share one), or the muscle is involved but not modelled. Schematic drawings, not to scale.</p>
     </section>
 
-    <section class="card notes" aria-label="About this variant">
+    <section class="card notes" aria-label="About this variant" data-fold="notes">
       <h3>About this variant</h3>
       <p id="variant-notes"></p>
       <p id="exercise-technique" class="hint" hidden></p>
@@ -158,7 +175,7 @@
       </div>
     </section>
 
-    <section class="card references" id="references-card" aria-label="References">
+    <section class="card references" id="references-card" aria-label="References" data-fold="references">
       <h3>References</h3>
       <p class="hint">Papers behind this exercise's strength curves, body data and corrections. Every curated number also carries its own note and source in the exercise file; numbers without one are marked as estimates.</p>
       <ul id="ref-current" class="ref-list"></ul>
@@ -168,6 +185,13 @@
       </details>
     </section>
   </main>
+
+  <div id="dock" class="dock" hidden>
+    <button id="dock-play" type="button">Play</button>
+    <label class="grow"><span id="dock-label">Angle</span> <output id="dock-out"></output>
+      <input id="dock-angle" type="range" step="0.5" aria-label="Position in the lift">
+    </label>
+  </div>
 
   <footer>
     <p>Educational model: idealised 2D statics (no acceleration, friction or pulley ratios). Strength curves are approximate shapes; muscle activation values are illustrative estimates. Exercise descriptions and muscle images from <a href="https://wger.de" target="_blank" rel="noopener">wger.de</a> (CC-BY-SA). Code: MIT. Content: CC BY 4.0.</p>

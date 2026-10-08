@@ -21,7 +21,7 @@ function niceMax(v) {
  * bands:  [{ from, to, label }] shaded x-ranges (e.g. exercise phases)
  * marker: x position of the current-angle line
  */
-export function renderChart(svg, { xRange, yMax, yMin = 0, series, bands = [], marker, xLabel, yLabel, yFormat = (v) => v, xUnit = "°" }) {
+export function renderChart(svg, { xRange, yMax, yMin = 0, series, bands = [], marker, xLabel, yLabel, yFormat = (v) => v, xUnit = "°", xStep: xStepIn, onScrub }) {
   // viewBox follows the rendered width (360–600) so labels stay legible on phones.
   const W = Math.round(Math.max(360, Math.min(600, svg.clientWidth || 600)));
   const H = Math.round(Math.max(220, W * 0.42));
@@ -49,7 +49,7 @@ export function renderChart(svg, { xRange, yMax, yMin = 0, series, bands = [], m
     el("line", { x1: M.l, x2: W - M.r, y1: Y(v), y2: Y(v), class: "grid" }, svg);
     el("text", { x: M.l - 6, y: Y(v) + 4, class: "tick", "text-anchor": "end" }, svg).textContent = yFormat(v);
   }
-  const xStep = xUnit === "%" ? 25 : 30;
+  const xStep = xStepIn ?? (xUnit === "%" ? 25 : 30);
   for (let x = Math.ceil(x0 / xStep) * xStep; x <= x1; x += xStep) {
     el("text", { x: X(x), y: H - M.b + 16, class: "tick", "text-anchor": "middle" }, svg).textContent = `${x}${xUnit}`;
   }
@@ -64,5 +64,20 @@ export function renderChart(svg, { xRange, yMax, yMin = 0, series, bands = [], m
 
   if (marker != null) {
     el("line", { x1: X(marker), x2: X(marker), y1: M.t, y2: H - M.b, class: "marker" }, svg);
+  }
+  // Tap or drag sideways on the chart to move the marker (vertical swipes still scroll the page).
+  svg.classList.toggle("scrub", Boolean(onScrub));
+  if (onScrub) {
+    const toX = (e) => {
+      const r = svg.getBoundingClientRect();
+      const px = ((e.clientX - r.left) / r.width) * W;
+      return Math.min(x1, Math.max(x0, x0 + ((px - M.l) / (W - M.l - M.r)) * (x1 - x0)));
+    };
+    // The pressed state lives on the element: the chart re-renders (and re-binds) while dragging.
+    svg.onpointerdown = (e) => { svg.dataset.scrubbing = "1"; try { svg.setPointerCapture(e.pointerId); } catch { /* synthetic or lost pointer */ } onScrub(toX(e)); };
+    svg.onpointermove = (e) => { if (svg.dataset.scrubbing) onScrub(toX(e)); };
+    svg.onpointerup = svg.onpointercancel = () => { delete svg.dataset.scrubbing; };
+  } else {
+    svg.onpointerdown = svg.onpointermove = svg.onpointerup = svg.onpointercancel = null;
   }
 }

@@ -4,7 +4,7 @@ Papers found but not yet read. Each was seen in search results only: check the n
 
 ## To fetch (checklist)
 
-Updated 2026-10-09 after the third batch. **Read** = in the app (cited in the exercise files and References); **not obtainable** = not available through the user's institution.
+Updated after the break test (open items 15–20). **Read** = in the app (cited in the exercise files and References); **not obtainable** = not available through the user's institution.
 
 | # | Paper | Status | For |
 |---|---|---|---|
@@ -24,6 +24,11 @@ Updated 2026-10-09 after the third batch. **Read** = in the app (cited in the ex
 | 14 | Rasch PJ: elbow-flexion strength by forearm position | **Still unknown:** the fetched Rasch & Morehouse 1957 is a training study (static vs dynamic exercise), not this | Elbow strength by grip |
 | 15 | Ferrer-Uris B et al. (2023), PeerJ: forearm muscle activation (FDP, FDS, FCR) in half crimp vs sloper dead-hangs | **New, to fetch** (cited by StrengthClimbing); citation details unchecked | Edge lift: check the FDP/FDS split |
 | 16 | Escamilla RF et al. (2000). A three-dimensional biomechanical analysis of sumo and conventional style deadlifts. Med Sci Sports Exerc 32(7):1265–1275. doi:10.1097/00005768-200007000-00013 | **To fetch** (only the abstract read) | Deadlift: hip, knee and ankle angles at lift-off for both styles (sets the knee bend per hip bend), and their joint moments to check the model against |
+| 17 | Braman JP et al. (2009), J Shoulder Elbow Surg 18(6):960–967 | **Read** (PMC full text): shoulder-blade rhythm, cited in the four arm-raising exercises | Scapulohumeral rhythm |
+| 18 | Latz D et al. (2019), Hand 14(2):259–263 | **Read:** each finger's active knuckle range, the four-finger search's limits | Edge lift |
+| 19 | Pull-up / chin-up kinematics: trunk lean and elbow path through the pull, wide pull-up vs chin-up | **To find** (no candidate checked); the model now picks the swing and leg position for least effort, which fixes the chin-up vs pull-up order. Measured lean and swing would check it | Pull-ups |
+| 20 | Plantarflexion strength vs ankle angle with the knee straight, over the full range to about 35° | **Partly done:** read off Chen & Franklin's Fig. 11 (knee extended datasets). One study with tabulated values would replace the figure reading | Calf raise |
+| 21 | Knuckle (MCP head) positions relative to the wrist, per finger; e.g. the geometry of a musculoskeletal hand model (Mirakhorlo et al. 2018 was suggested in a search; unread) | **To find** | Edge lift: the knuckle line is an estimate |
 
 Also read in this batch: Tsunoda et al. 1993 and O'Connell et al. 2021 (curl cross-checks, cited), Bianchi et al. 2007 (ultrasound of the finger flexor system; background, not used).
 
@@ -73,12 +78,12 @@ Added 2026-10-08 for the forearm close-up, the wrist curls and the edge lift. Fi
 - Holzbaur KRS, Murray WM, Delp SL (2005). A model of the upper extremity for simulating musculoskeletal surgery and analyzing neuromuscular control. Ann Biomed Eng 33(6):829–840. doi:10.1007/s10439-005-3320-7. **For:** an OpenSim arm model with the wrist and finger muscles. Could go through the same offline OpenSim step as the Rajagopal leg model (check whether opensim-org/opensim-models on GitHub has it, as it had Rajagopal).
 
 Still to find (no candidate checked):
-- How the load splits between the four fingers on an edge, per grip type.
-- Middle- and ring-finger bone lengths and moment arms (the edge lift uses the index finger's).
+- Measured per-finger force shares on an edge, per grip type (to test the least-effort split and the quadriga setting).
 - Where the pressure centre sits on the finger pad on a 20–25 mm edge.
-- Positions of the A2 and A4 pulleys and the FDS/FDP insertions along the phalanges: Lin GT, Amadio PC, An KN, Cooney WP (1989). Functional anatomy of the human digital flexor pulley system. J Hand Surg Am 14:949–956 (confirmed in Schweizer's references).
-- How much the pulleys can take: Lin GT, Cooney WP, Amadio PC, An KN (1990). Mechanical properties of human pulleys. J Hand Surg Br 15:429–434 (confirmed in Schweizer's and Vigouroux et al.'s references; Vigouroux et al. note the A4 is close to its maximal resistance in the crimp). Would let the edge lift show the pulley loads against their breaking strength.
 - A measured half-crimp posture.
+- Per-finger moment arms (the four fingers scale the index finger's by size).
+
+Done since: bone lengths per finger and pulley positions (Lin et al. 1989), pulley breaking loads (Lin et al. 1990), muscle sizes per finger (Lieber et al. 1992), knuckle ranges (Latz et al. 2019).
 - EMG of the forearm muscles in wrist curls, for the `weight` tables (the same gap as *Muscle activation weights* above).
 
 ## Read
@@ -89,6 +94,15 @@ Still to find (no candidate checked):
 
 - **Chen & Franklin 2025, joint moments** (preprint, CC BY 4.0) and **Chen & Franklin 2025, moment arms** (Ann Biomed Eng 53:1757–1776, open access): read; used as a cross-check (`docs/model-limits.md`). Their raw data are still to get: moment arms at <https://doi.org/10.6084/m9.figshare.26018563>; the joint-moment data link is in the published J Biomech version (the preprint says "link-to-add"). Both are MATLAB `.mat` files.
 - **Rajagopal et al. 2016** (OpenSim full-body model): read. Muscle forces and moment arms need the model files and an offline run.
+
+## OpenSim: the next step
+
+Where things stand, so the OpenSim work starts clean:
+
+- **Leg model (Rajagopal et al. 2016), read.** `tools/opensim_export.py` exports, for every right-leg muscle crossing the hip, knee or ankle, its parameters and its moment arms and active/passive force on a hip × knee and a knee × ankle grid, as JSON (`data/opensim/rajagopal-right-leg.json`, not yet produced). Tested only against a stand-in module; the first real run may need a fix, and its `check:` lines print three known moment arms to compare with the paper.
+- **What it would replace:** the flat `TODO` muscle weights of the leg exercises (moment arm × force capacity per posture, as the curls and wrist curls already do from papers), and a cross-check of the leg strength curves. Two-joint muscles (hamstrings, rectus femoris, gastrocnemius) would get weights that depend on both joints.
+- **Arm and hand (Holzbaur et al. 2005), read:** the same step for the shoulder, elbow, wrist and finger muscles (curls, presses, rows, wrist curls; the edge lift's per-finger moment arms).
+- **Open items the model can't settle by itself:** the reading-list items above (pull-up kinematics, knee-straight calf strength, per-finger edge shares) need measurements, not a musculoskeletal model.
 
 ## To grab: Rajagopal model files
 

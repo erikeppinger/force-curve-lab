@@ -6,11 +6,11 @@ Exercises (2–5 equipment variants each):
 
 - **Arms and shoulders:** biceps curl, triceps extension, wrist curl and reverse wrist curl, lateral raise, front raise, chest fly, straight-arm pulldown / pullover
 - **Legs:** leg extension, leg curl, calf raise, hip abduction, glute kickback
-- **Grip:** edge lift (one arm, block on a loading pin): open hand, half crimp and full crimp, with the FDP and FDS tendon forces and the A2/A4 pulley loads from a finger model.
-- **Multi-joint:** squat, Romanian deadlift, deadlift (conventional and trap bar), split squat / lunge, leg press, hip thrust, bench press, overhead press, bent-over row, seated cable row, chest-supported row, lat pulldown, pull-up and chin-up. These show hip, knee and ankle torques and effort together.
-- **3D:** the leg press, squat, Romanian deadlift, split squat, hip thrust, bench press, overhead press and the rows have placement controls (foot height, stance width, toe angle, knee tracking; grip width and elbow position), sideways and rotation components at the hip, knee, shoulder and elbow, and a drag-to-turn 3D view.
+- **Grip:** edge lift (one arm, block on a loading pin): open hand, half crimp and full crimp. All four fingers on the edge (bone lengths per finger, or your own), the edge's shape under each finger, how the block splits between them for least effort, FDP and FDS tendon forces and A2/A4 pulley loads per finger, the wrist's sideways load, shoulder and elbow loads, and Play: the force over one lift (lift-off, hold, set-down).
+- **Multi-joint:** squat, Romanian deadlift, deadlift (conventional, sumo and trap bar), split squat / lunge, leg press, hip thrust, bench press, overhead press, bent-over row, seated cable row, chest-supported row, lat pulldown, pull-up and chin-up. These show hip, knee and ankle torques and effort together.
+- **3D:** the leg press, squat, Romanian deadlift, deadlift, split squat, hip thrust, bench press, overhead press and the rows have placement controls (foot height, stance width, toe angle, knee tracking; grip width and elbow position), sideways and rotation components at the hip, knee, shoulder and elbow, and a drag-to-turn 3D view.
 
-[`docs/model-limits.md`](docs/model-limits.md) explains how both models work and what they still approximate.
+Each exercise links to **How the model works** ([`docs/model.html`](docs/model.html), built from the exercise's data file; the edge lift has its own [`docs/edge-lift-model.html`](docs/edge-lift-model.html)): what was computed, the assumptions and the sources. [`docs/model-limits.md`](docs/model-limits.md) explains what the models still approximate and how they were checked.
 
 For each exercise variant it shows:
 
@@ -19,6 +19,7 @@ For each exercise variant it shows:
 - **Effort curve.** Torque ÷ strength across the range of motion. Its peak is the sticking point.
 - **Muscles involved.** Estimated relative activation per muscle, shown as bars and on the wger muscle map, plus **close-ups** of the body regions where the overview is too coarse: forearm and hand, shoulder (three deltoid heads, rotator cuff, trapezius parts), hip and thigh (quadriceps and hamstring heads, gluteals, deep rotators), lower leg (gastrocnemius heads, soleus), upper arm (biceps and triceps heads, brachialis) and trunk (erector spinae columns, abdominals, psoas). Where the model only knows a group (e.g. "quadriceps"), every head shows the group's value, hatched.
 - **Compare mode.** Overlay any two variants, e.g. a dumbbell curl against a Bayesian cable curl.
+- **Reading while it plays.** A control bar floats at the bottom once the slider scrolls away; tap or drag on a chart to jump to that angle; on wide screens the figure stays beside the curves (header switch: Auto / Side by side / Stacked); on phones the secondary sections fold. Light and dark themes; (i) buttons explain strength and body mass.
 
 It's a static site with no build step and no dependencies, and it works on phones. Shareable links keep the current state in the URL hash, e.g. `#v=cable-bayesian&cmp=dumbbell&kg=10`; placement sliders that differ from the variant's preset are kept too (`pl=key:value,…`).
 
@@ -43,7 +44,7 @@ Push to GitHub, then go to **Settings → Pages → Deploy from a branch → `ma
 | Strength curve | Relative torque–angle table × the user's peak torque | `strengthCurve` in exercise JSON |
 | Multi-joint lifts | A solver finds the posture from the lift's constraint (centre of mass over the mid-foot, sled rail, bar path, bench and floor contacts); each joint's torque is the moment of all forces on one side of it | `js/multijoint.js`, `data/body.json` |
 | Muscle activation | Demand (effort, or stabilising torque) × the muscle's angle-dependent weight × variant modifier | `js/muscles.js`, `muscles` in JSON |
-| Edge lift | Finger statics: joint moments from the pad force, FDP from the DIP, FDS from the PIP, pulley loads from the tendons' bend; checked against Vigouroux et al. 2006 | `js/finger.js`, `js/fingerfig.js` |
+| Edge lift | Finger statics: joint moments from the pad force, FDP from the DIP, FDS from the PIP, pulley loads from the tendons' bend (checked against Vigouroux et al. 2006); four fingers placed on the edge by a reach search, the block split for least effort; the force over one lift from m·(g + a) | `js/finger.js`, `js/edgefig.js` |
 | Close-ups | Schematic region drawings stored as data (each muscle a belly from origin to insertion, with tendons), coloured with the same activation values | `js/regions.js`, `data/regions/*.json` |
 | Exercise text and images | Fetched live from the [wger API](https://wger.de/api/v2/) and optional (the tool still works offline) | `js/wger.js` |
 
@@ -99,11 +100,13 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] Wrist curl (seated, behind the back, cable, finger roll) and reverse wrist curl
 - [x] Edge lift (one arm hanging, block on a loading pin; open hand / half crimp / full crimp): finger chain with FDS and FDP tendon forces and A2/A4 pulley loads (Vigouroux 2006, Schweizer 2001, An 1983)
 - [x] Hamstring heads split by measured shares in the Romanian deadlift (Ono 2011) and leg curl (Messer 2018); other group muscles stay hatched
-- [ ] Edge lift: middle-finger geometry, measured half crimp, pressure centre on deep edges, load split between fingers
+- [x] Edge lift: four fingers (Lin 1989 bone lengths, Lieber 1992 muscle sizes, Latz 2019 knuckle ranges), edge shape per finger, least-effort split with the quadriga link, hand tilt and roll, own finger lengths, shoulder/elbow loads, Play over one lift
+- [ ] Edge lift: measured half crimp, pressure centre on deep edges, measured per-finger split, measured knuckle positions
 - [x] More close-ups: shoulder (three deltoid heads, rotator cuff), hip and thigh (quadriceps and hamstring heads, gluteals, deep rotators), lower leg (gastrocnemius, soleus), upper arm, trunk
 - [x] Placement sliders (edge lift, 3D lifts) saved in shareable links
 - [x] Curl muscle weights over the elbow angle from measured moment arms (Murray et al. 1995); levels still estimates
 - [x] Zoom to the moving joint in the side view (single-joint lifts)
+- [ ] OpenSim: leg-muscle moment arms and force capacity from the Rajagopal model (`tools/opensim_export.py`), then the arm/hand model (Holzbaur 2005); see the reading list
 - [ ] Translations (DE), lowest priority: all at once later
 
 ## Licences and credits

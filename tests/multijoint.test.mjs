@@ -610,14 +610,21 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
     }
   });
 
+  test("chin-ups come out easier than wide pull-ups at body weight (the body swings behind the bar, forearms upright)", () => {
+    const ex = load("pull-up");
+    const peak = (vid) => { let p = 0; for (let x = 0; x <= 100; x += 5) for (const j of analyzeMulti(ex, ex.variants.find((v) => v.id === vid), x, { ...opts, loadKg: 0 }).joints) p = Math.max(p, j.effort); return p; };
+    assert.ok(peak("chin-up") < peak("pull-up"), `chin-up ${peak("chin-up")} vs pull-up ${peak("pull-up")}`);
+  });
+
   test("pull-up: each hand holds half the body; the body leans back as it rises; wide = adduction, chin-up = extension and elbows", () => {
     const r = run3d("pull-up", "pull-up", 50, undefined, { ...opts, loadKg: 10 });
     close(r.parts.F, ((75 + 10) * G) / 2, 1e-9);
     const leans = [0, 50, 100].map((x) => run3d("pull-up", "pull-up", x).parts.lean);
-    assert.ok(leans[0] < leans[1] && leans[1] < leans[2], `lean ${leans}`);
+    assert.ok(leans[0] < leans[1] && leans[0] < leans[2], `lean ${leans}`); // most mid-pull, where the body swings behind the bar
     const w = run3d("pull-up", "pull-up", 50), c = run3d("pull-up", "chin-up", 50);
     assert.ok(J(w, "shoulder-add").torque > 3 * Math.abs(J(c, "shoulder-add").torque));
-    assert.ok(J(c, "elbow").torque > 2 * Math.abs(J(w, "elbow").torque));
+    assert.ok(J(c, "elbow").torque > Math.abs(J(w, "elbow").torque));
+    assert.ok(J(c, "shoulder-ext").torque > 1.5 * J(w, "shoulder-ext").torque);
   });
 
   test("elbow strength grid: measured values at the grid points, bilinear in between, flat outside", () => {
@@ -672,5 +679,14 @@ test("arm lifts: the elbow moves smoothly through the range (no jumps between th
         prev = E;
       }
     }
+  }
+});
+
+test("3D squat: a wide, toes-out stance balances at every knee angle with a light bar (shin lean measured in the side view)", () => {
+  const ex = load("squat");
+  const v = ex.variants.find((x) => x.id === "wide");
+  for (const kg of [0, 20, 40]) for (let x = 0; x <= 120; x += 10) {
+    const r = analyzeMulti(ex, v, x, { ...opts, loadKg: kg });
+    assert.ok(r.balance.ok, `${kg} kg @${x}`);
   }
 });

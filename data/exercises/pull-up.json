@@ -22,7 +22,7 @@
       "peakTorqueNm": 93,
       "negative": {"action": "Shoulder flexion", "peakTorqueNm": 68},
       "strength": {
-        "points": [[0, 1.0], [180, 1.0]],
+        "points": [[0, 1], [180, 1]],
         "note": "Shoulder extension (positive) and flexion (negative) peak torque per arm, taken as constant: Mayer's isometric means for men (93 and 68 Nm). Kulig et al. describe extension strength as rising then falling with the arm's angle, but give no numbers to scale it.",
         "source": "Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25, Table 2 (men, dominant side, isometric); Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (shapes)"
       }
@@ -35,7 +35,7 @@
       "peakTorqueNm": 72,
       "negative": {"action": "Shoulder abduction", "peakTorqueNm": 47},
       "strength": {
-        "points": [[0, 1.0], [180, 1.0]],
+        "points": [[0, 1], [180, 1]],
         "note": "Shoulder adduction (positive: lats, with the hands wide) and abduction (negative) peak torque per arm, taken as constant: Mayer's isometric means for men (72 and 47 Nm). Clarke et al. (64 men, via Kulig et al.) found adduction strongest with the arm out at 90–110° and nearly symmetric from 25° to 180°; the size of the change isn't given as numbers here.",
         "source": "Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25, Table 2 (men, dominant side, isometric); Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (shapes)"
       }
@@ -48,7 +48,7 @@
       "peakTorqueNm": 30,
       "negative": {"action": "Internal rotation", "peakTorqueNm": 43},
       "strength": {
-        "points": [[-60, 1.0], [180, 1.0]],
+        "points": [[-60, 1], [180, 1]],
         "note": "Shoulder external (positive) and internal (negative) rotation peak torque per arm, taken as constant: Mayer's isometric means for men (30 and 43 Nm).",
         "source": "Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25, Table 2 (men, dominant side, isometric)"
       }
@@ -61,7 +61,7 @@
       "peakTorqueNm": 85,
       "negative": {"action": "Elbow extension", "peakTorqueNm": 77},
       "strength": {
-        "points": [[32, 0.52], [45, 0.61], [60, 0.76], [75, 0.9], [90, 0.99], [95, 1.0], [105, 0.97], [120, 0.78]],
+        "points": [[32, 0.52], [45, 0.61], [60, 0.76], [75, 0.9], [90, 0.99], [95, 1], [105, 0.97], [120, 0.78]],
         "note": "Relative isometric elbow-flexion torque vs elbow flexion (0° = straight), peak about 95°: the paper's mean cubic fit, normalised, inside the measured 32–120° (held flat beyond). Measured with the upper arm raised 90° and horizontally adducted 20°, not hanging as in a standing curl. Peak per arm: the paper's male means (flexion 85 Nm, extension 77 Nm). Variants correct it for the arm being overhead and the grip (Guenzkofer et al., see each variant).",
         "source": "Pinter IJ, Bobbert MF, van Soest AJ, Smeets JBJ (2010). Isometric torque–angle relationships of the elbow flexors and extensors in the transverse plane. J Electromyogr Kinesiol 20:923–931. doi:10.1016/j.jelekin.2010.05.001"
       }
@@ -74,9 +74,28 @@
       "passive": true,
       "negative": {"action": "Hand pushed outwards"},
       "strength": {
-        "points": [[-60, 1.0], [180, 1.0]],
+        "points": [[-60, 1], [180, 1]],
         "note": "No muscle capacity: the elbow's sideways moment is carried mostly by ligaments and the joint surfaces, so it is shown as torque only.",
         "source": "Not applicable: carried by ligaments and joint surfaces, so no muscle strength is used"
+      }
+    },
+    {
+      "id": "hip",
+      "name": "Hip (legs held forward)",
+      "action": "Hip extension",
+      "angleLabel": "hip flexion",
+      "peakTorqueNm": 200,
+      "strength": {
+        "points": [[-25, 0.26], [0, 0.63], [25, 0.89], [50, 1], [74, 0.94]],
+        "note": "Relative isometric hip-extension torque vs hip flexion, peak about 53°, measured standing with the knee slightly bent (tested −29° to 74°; deeper hip flexion is held flat at the 74° value, which is extrapolation). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m).",
+        "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
+      },
+      "negative": {
+        "action": "Hip flexion",
+        "peakTorqueNm": 142,
+        "points": [[-25, 0.99], [0, 0.99], [25, 0.89], [50, 0.7], [74, 0.44]],
+        "note": "Hip flexion (negative torque: the hip flexors hold the legs forward of the trunk when the body pikes). Relative curve = cos(C2·(θ − C3)) with Anderson et al.'s 18–25-year-old male means (C2 0.738, C3 −0.214 rad: peak at 12° of hip extension), inside the tested range and held flat beyond it; peak 142 Nm from C1 = 0.113 × body weight × height (73 kg, 1.75 m).",
+        "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
       }
     }
   ],
@@ -90,7 +109,7 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "joints": ["shoulder-ext", "shoulder-add"],
-      "weight": [[0, 1.0], [180, 1.0]],
+      "weight": [[0, 1], [180, 1]],
       "sign": 1,
       "note": "Pulls the arm down: adduction with a wide grip, extension with a close grip. It takes the larger of the two demands.",
       "source": "TODO: check against EMG literature",
@@ -118,7 +137,7 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "joint": "elbow",
-      "weight": [[0, 1.0], [150, 1.0]],
+      "weight": [[0, 1], [150, 1]],
       "sign": 1,
       "note": "Elbow flexors: work while the forearm is tilted away from the line of the pull. With the elbows under the bar (wide grip) they do little; with a close grip they do much more.",
       "source": "TODO: check against EMG literature",
@@ -147,7 +166,7 @@
       "role": "Stabiliser",
       "driver": "jointEffort",
       "joint": "shoulder-rotation",
-      "weight": [[-60, 1.0], [180, 1.0]],
+      "weight": [[-60, 1], [180, 1]],
       "note": "External rotators of the rotator cuff: hold the upper arm from turning inwards.",
       "source": "TODO: check against EMG literature",
       "sign": 1
@@ -160,7 +179,7 @@
       "role": "Stabiliser",
       "driver": "jointEffort",
       "joint": "shoulder-rotation",
-      "weight": [[-60, 1.0], [180, 1.0]],
+      "weight": [[-60, 1], [180, 1]],
       "note": "Internal rotator of the rotator cuff: holds the upper arm from turning outwards.",
       "source": "TODO: check against EMG literature",
       "sign": -1
@@ -173,9 +192,22 @@
       "wgerId": null,
       "role": "Synergist",
       "driver": "none",
-      "weight": [[0, 1.0], [180, 1.0]],
+      "weight": [[0, 1], [180, 1]],
       "note": "Pull the shoulder blades down and together. Not estimated: the model has no shoulder blade.",
       "source": "Not modelled"
+    },
+    {
+      "id": "hip-flexors",
+      "region": "thigh",
+      "regionPath": "iliopsoas",
+      "name": "Hip flexors (iliopsoas)",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "sign": -1,
+      "weight": [[0, 1], [60, 1]],
+      "note": "Hold the legs forward of the trunk. Bringing the legs forward lets the trunk lean back so the shoulders sit behind the bar and the forearms stand upright; the model picks how far for least effort (hip flexors included)."
     }
   ],
   "variants": [
@@ -183,7 +215,16 @@
       "id": "pull-up",
       "name": "Pull-up, wide grip, palms down",
       "equipment": "Bar",
-      "params": {"scapTravel": 0, "hang": true, "gripHalf": 0.4, "touchFront": 0.1, "touchUp": 0.05, "elbowOut": "auto"},
+      "params": {
+        "scapTravel": 0,
+        "hang": true,
+        "gripHalf": 0.4,
+        "touchFront": 0.1,
+        "touchUp": 0.05,
+        "elbowOut": "auto",
+        "pike": "auto",
+        "swing": "auto"
+      },
       "jointScale": {
         "elbow": {
           "grid": {
@@ -201,7 +242,16 @@
       "id": "chin-up",
       "name": "Chin-up, palms up",
       "equipment": "Bar",
-      "params": {"scapTravel": 0, "hang": true, "gripHalf": 0.2, "touchFront": 0.12, "touchUp": 0.05, "elbowOut": 0},
+      "params": {
+        "scapTravel": 0,
+        "hang": true,
+        "gripHalf": 0.2,
+        "touchFront": 0.12,
+        "touchUp": 0.05,
+        "elbowOut": 0,
+        "pike": "auto",
+        "swing": "auto"
+      },
       "jointScale": {
         "elbow": {
           "grid": {
@@ -219,7 +269,16 @@
       "id": "neutral",
       "name": "Neutral grip (parallel handles)",
       "equipment": "Parallel handles",
-      "params": {"scapTravel": 0, "hang": true, "gripHalf": 0.25, "touchFront": 0.12, "touchUp": 0.05, "elbowOut": 0},
+      "params": {
+        "scapTravel": 0,
+        "hang": true,
+        "gripHalf": 0.25,
+        "touchFront": 0.12,
+        "touchUp": 0.05,
+        "elbowOut": 0,
+        "pike": "auto",
+        "swing": "auto"
+      },
       "jointScale": {
         "elbow": {
           "grid": {
@@ -275,6 +334,28 @@
       "step": 0.005,
       "unit": "cm",
       "scale": 100
+    },
+    {
+      "key": "swing",
+      "label": "Body swinging behind the bar mid-pull",
+      "min": 0,
+      "max": 0.3,
+      "step": 0.01,
+      "unit": "cm",
+      "scale": 100,
+      "auto": "least effort",
+      "hint": "How far the hands move forward of the straight overhead-to-chest path halfway up, i.e. how far the body swings behind the bar. More keeps the forearms upright (less elbow work) but moves the load to the shoulder extensors."
+    },
+    {
+      "key": "pike",
+      "label": "Legs forward of the trunk",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "°",
+      "scale": 1,
+      "auto": "least effort",
+      "hint": "Hip flexion with straight legs. Bringing the legs forward lets the trunk lean back; the hip flexors hold the legs."
     }
   ],
   "wger": {

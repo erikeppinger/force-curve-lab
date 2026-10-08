@@ -63,6 +63,7 @@
     <li><a href="#split">How the block is shared between the fingers</a></li>
     <li><a href="#arm">Shoulder and elbow</a></li>
     <li><a href="#effort">Effort and strength</a></li>
+    <li><a href="#lift">One lift over time (Play)</a></li>
     <li><a href="#limits">Known limits</a></li>
     <li><a href="#questions">Open questions</a></li>
     <li><a href="#sources">Sources</a></li>
@@ -82,7 +83,7 @@
 <p>The block's weight pulls on the finger pads. The hand hangs so this pull passes straight under the wrist, which then needs no flexion or extension moment. The pull's direction in each finger's frame therefore follows from where the pad sits relative to the wrist.</p>
 
 <h2 id="finger">2. One finger: tendons and pulleys</h2>
-<p>Each finger is a planar chain: wrist → MCP → PIP → DIP → fingertip. The detailed finger in the main figure is the index finger, with bone lengths and tendon moment arms from An et al. (1983). The edge presses on the distal phalanx at a point set by a slider. The default is half the distal phalanx, the value Vigouroux et al. assumed for their 1 cm hold. On a 20–25 mm edge the true pressure centre hasn't been measured <span class="est">estimate</span>.</p>
+<p>Each finger is a planar chain: wrist → MCP → PIP → DIP → fingertip. The statics below were built and checked on the index finger, with bone lengths and tendon moment arms from An et al. (1983); the page applies them to all four fingers (section 4). The edge presses on the distal phalanx at a point set by a slider. The default is half the distal phalanx, the value Vigouroux et al. assumed for their 1 cm hold. On a 20–25 mm edge the true pressure centre hasn't been measured <span class="est">estimate</span>.</p>
 <p>For a pad force <b>F</b>, the moment that the flexors must supply at each joint is the moment of F about that joint:</p>
 <div class="eq">M_joint = −(r_contact − r_joint) × F        (positive = the load opens the joint)</div>
 <h3>Tendon tensions, joint by joint</h3>
@@ -181,12 +182,24 @@ elbow torque    = (W · forearm length + forearm weight moment) · sin(angle)</d
 
 <h2 id="effort">7. Effort and strength</h2>
 <ul>
-  <li><strong>Detailed finger:</strong> effort = fingertip force ÷ (the grip's maximal fingertip force × the strength slider). The maximal forces are from Schweizer (2001), all four fingers on the hold: crimp 82 N, slope grip 78 N, from recreational climbers. Strong climbers will be far above 100%.</li>
-  <li><strong>Four-finger table:</strong> effort = the larger of the finger's FDP and FDS tension ÷ its reference tension.</li>
+  <li><strong>Per finger:</strong> effort = the larger of the finger's FDP and FDS tension ÷ its reference tension (Vigouroux et al.'s maximal tensions, scaled by each muscle's size), ÷ the strength slider. 100% = typical recreational climbers; strong climbers will be far above it.</li>
+  <li><strong>Max block:</strong> the block at which the hardest-working finger reaches 100% while holding. Tensions scale with the block (the split doesn't), so it is the block ÷ that finger's effort.</li>
   <li><strong>Pulleys:</strong> shown as a share of the cadaver breaking load.</li>
 </ul>
 
-<h2 id="limits">8. Known limits</h2>
+<h2 id="lift">8. One lift over time (Play)</h2>
+<p>A static hold is only part of a lift. Play runs one lift and shows the force on the hand moment by moment, from Newton's second law: off the floor, the hand must pull with <code>F = m·(g + a)</code>, where <i>a</i> is the block's upward acceleration.</p>
+<ul>
+  <li><strong>Rest:</strong> the floor carries the block; no force.</li>
+  <li><strong>Pull:</strong> the force builds to the block's weight while the floor still carries the rest (1.2 s, after the 1–1.5 s in the StrengthClimbing guide).</li>
+  <li><strong>Lift-off:</strong> the block rises 5 cm <span class="est">estimate</span> along a minimum-jerk path (the standard model of a smooth movement): above its weight while it speeds up, slightly below while it slows down. The largest extra is <code>m · 5.77·h/T²</code>: at 30 kg, 5 cm in 0.6 s, about 8% over the weight; in 0.3 s about a third.</li>
+  <li><strong>Hold:</strong> exactly the block's weight (2.5 s; the guide recommends 2–3 s).</li>
+  <li><strong>Set-down:</strong> the force dips while the block starts down, then rises above its weight while it is slowed before touching.</li>
+  <li><strong>Release:</strong> the floor takes the block back.</li>
+</ul>
+<p>Every finger's tendons and pulleys, the wrist's sideways moment and the pull along the arm follow this force; the straight arm passes the same pull through wrist, elbow and shoulder. A test checks the peak against the hand formula and that the extra force averages to zero over the lift-off (the block starts and ends at rest).</p>
+
+<h2 id="limits">9. Known limits</h2>
 <ul>
   <li><strong>The little finger</strong> can take a large share when it touches (up to about 30%). Lieber et al. measured its FDP about as large as the middle finger's, and the model sees its weakness only through its small FDS. Climbers usually find the little finger the weakest.</li>
   <li><strong>Open hand on a straight edge:</strong> nearly straight fingers can't absorb their length differences at the knuckle, so either the index or the little finger stays off, and which one flips with small changes. Real hands probably also shift where each pad presses, which the model doesn't search.</li>
@@ -195,10 +208,11 @@ elbow torque    = (W · forearm length + forearm weight moment) · sin(angle)</d
   <li><strong>Half crimp posture:</strong> PIP 90°, DIP straight is an estimate, and it borrows the crimp's maximal force.</li>
   <li><strong>Moment arms:</strong> averaged over each joint's range and scaled from one finger. Pulley positions and tendon insertions are partly estimated, so pulley loads are the least certain output. The A3 pulley and the thumb over the index in the full crimp aren't modelled.</li>
   <li><strong>No co-contraction</strong> and no intrinsic-muscle forces (only the leftover MCP moment).</li>
-  <li><strong>No dynamics:</strong> the hold is static. The 1–1.5 s rise to peak force at the start of a lift isn't modelled.</li>
+  <li><strong>Dynamics only for the block:</strong> Play adds the block's acceleration; the arm's and body's own accelerations and any bounce or jerk beyond the smooth path aren't modelled.</li>
+  <li><strong>Very straight fingers:</strong> below about 10° at the PIP the index finger can't reach a straight edge in any grip; the hold slider goes down to 0° for comparison only.</li>
 </ul>
 
-<h2 id="questions">9. Open questions</h2>
+<h2 id="questions">10. Open questions</h2>
 <p>These are the places where data or expert judgement would improve the model most:</p>
 <ol>
   <li>Where the pressure centre sits on the distal phalanx on a 20–25 mm edge in each grip.</li>
@@ -208,7 +222,7 @@ elbow torque    = (W · forearm length + forearm weight moment) · sin(angle)</d
   <li>Whether lifting blocks with shaped edges (e.g. a bump under the longer fingers) measurably even out the finger loads, and how well bone lengths measured on the surface of the hand predict the fitting profile.</li>
 </ol>
 
-<h2 id="sources">10. Sources</h2>
+<h2 id="sources">11. Sources</h2>
 <ul>
   <li>An KN, Ueba Y, Chao EY, Cooney WP, Linscheid RL (1983). Tendon excursion and moment arm of index finger muscles. <i>J Biomech</i> 16(6):419–425. doi:10.1016/0021-9290(83)90074-X</li>
   <li>Lieber RL, Jacobson MD, Fazeli BM, Abrams RA, Botte MJ (1992). Architecture of selected muscles of the arm and forearm: anatomy and implications for tendon transfer. <i>J Hand Surg Am</i> 17(5):787–798.</li>

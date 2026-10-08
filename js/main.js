@@ -6,9 +6,8 @@ import { analyzeMulti, sampleMulti } from "./multijoint.js";
 import { CAMERAS, scene3d, bounds3d, renderView3d } from "./view3d.js";
 import { fetchExercise, descriptionParagraphs, bodyBackground, muscleOverlay, isBackMuscle } from "./wger.js";
 import { loadRegion, regionsOf, viewsFor, renderRegionView, regionValues } from "./regions.js";
-import { analyzeFinger, sampleFinger, idealEdge } from "./finger.js";
-import { renderHandFront, renderArmFigure } from "./handfig.js";
-import { renderFingerFigure, fingerBounds } from "./fingerfig.js";
+import { analyzeEdge, sampleEdge, idealEdge, liftProfile } from "./finger.js";
+import { renderFingersView, renderHandView, renderArmView } from "./edgefig.js";
 
 const EXERCISES = [
   "biceps-curl", "triceps-extension", "wrist-curl", "reverse-wrist-curl", "edge-lift", "lateral-raise", "front-raise", "chest-fly", "straight-arm-pulldown",
@@ -29,6 +28,8 @@ const state = {
   body: null,
   placement: null, // live foot placement for 3D lifts (main variant only)
   hand: null, // edge lift: the user's own finger bone lengths (m), or null for the typical hand
+  edgeView: "fingers", // edge lift: which figure (fingers | hand | arm)
+  liftT: null, // edge lift: time in the played lift (s); null = holding (the static view)
   cam: { ...CAMERAS["3d"] },
   angle: 90,
   pulley: null,
@@ -93,7 +94,8 @@ function setVariant(id, pulley, load, placement) {
   state.variantId = id;
   const v = variant();
   // Machines, cables and ankle weights need very different loads: use the variant's default.
-  const kg = load ?? v.defaultLoadKg;
+  // A load from a link is kept inside the slider's range.
+  const kg = load != null ? Math.min(+$("load").max, Math.max(+$("load").min, load)) : v.defaultLoadKg;
   if (kg != null) { state.loadKg = kg; $("load").value = kg; $("load-out").textContent = `${kg} kg`; }
   state.pulley = anchored(v) ? { ...(pulley ?? v.load.pulley) } : null;
   $("variant").value = id;
@@ -129,7 +131,9 @@ function setPlacement(v, override = {}) {
   const spec = state.exercise.placement;
   $("placement-controls").hidden = !spec;
   if (!spec) { state.placement = null; return; }
-  state.placement = Object.fromEntries(spec.map((s) => [s.key, override[s.key] ?? v.params[s.key]]));
+  // Values from a link: "auto" only where the slider offers it, numbers kept inside the slider's range.
+  const fromLink = (s) => { const x = override[s.key]; if (x === "auto") return s.auto ? x : undefined; return Number.isFinite(x) ? Math.min(s.max, Math.max(s.min, x)) : undefined; };
+  state.placement = Object.fromEntries(spec.map((s) => [s.key, fromLink(s) ?? v.params[s.key]]));
   const edgeSpecs = spec.filter((s) => s.widget === "edge");
   $("placement-sliders").replaceChildren(...spec.flatMap((s) => {
     if (s.widget === "edge") return s === edgeSpecs[0] ? [edgeBars(edgeSpecs)] : [];
@@ -238,6 +242,8 @@ function setHand(list) {
   const S = state.exercise.fingers;
   $("hand-panel").hidden = !S;
   if (!S) { state.hand = null; return; }
+  // Lengths from a link outside the table's ranges are ignored (typical hand instead).
+  if (list && !list.every((mm, i) => mm >= BONE_RANGE[BONES[i % 4]][0] && mm <= BONE_RANGE[BONES[i % 4]][1])) list = undefined;
   state.hand = list ? Object.fromEntries(S.order.map((id, i) => [id, Object.fromEntries(BONES.map((b, j) => [b, list[i * 4 + j] / 1000]))])) : null;
   if (list) $("hand-panel").open = true;
   $("hand-table").tBodies[0].replaceChildren(...S.order.map((id) => {
@@ -267,6 +273,14 @@ function setHand(list) {
     }
     return tr;
   }));
+}
+
+/** What the strength setting means for this exercise, and why it matters (the "i" next to it). */
+function strengthInfo(ex) {
+  const why = "Why it matters: effort = the load's torque ÷ strength at that angle, so strength decides how hard the same load feels, where it fails (the sticking point is where effort peaks) and how much load is possible. It doesn't move the resistance curve: a stronger lifter has the same hardest point, just further from the limit.";
+  if (ex.model === "finger") return `100% = typical maximum finger forces measured in recreational climbers (the reference tendon tensions and fingertip forces in the sources). The percentage scales every finger's maximum together. Strong climbers are often well above 100%. ${why}`;
+  if (ex.model === "multi") return `100% = typical peak torques of each joint (hip, knee, ankle, shoulder, elbow …) for young adults, from the studies listed under References; each joint keeps its own strength curve over its angle. The percentage scales them all together. ${why}`;
+  return `The most torque the muscles doing this lift can produce about the ${ex.joint.toLowerCase().replace(/ (flexion|extension|abduction|adduction|horizontal adduction).*$/, "")} at their strongest angle, in newton-metres; the default is a typical untrained to recreationally trained adult from the strength study in References. Over the range it follows the strength curve (the dotted line in the chart): muscles are weaker at some angles than others. ${why}`;
 }
 
 /** Does the body-mass setting change anything (limb weight, or body weight on the floor)? */
@@ -390,6 +404,9 @@ function setExercise(id, h = {}) {
   const finger = ex.model === "finger";
   const pct = pctStrength(ex);
   $("strength-label").textContent = finger ? "Strength (% of typical maximum fingertip force)" : multi ? "Strength (% of typical, all joints)" : `Strength (peak ${ex.joint.toLowerCase()} torque)`;
+  $("strength-info").textContent = strengthInfo(ex);
+  $("model-link").href = ex.model === "finger" ? "docs/edge-lift-model.html" : `docs/model.html?ex=${ex.id}`;
+  $("bodymass-info").textContent = "Body mass sets the weight of the body segments (arm, leg, trunk) from typical body proportions. Limbs that move with the load add their own weight to the joint torque, and in standing lifts the body's weight also rests on the legs. It doesn't change strength: use the strength slider for that.";
   $("pulley-x-label").textContent = view === "side" ? "Pulley forward / back" : "Pulley side to side";
   $("pulley-y-label").textContent = view === "top" ? "Pulley forward / back" : "Pulley height";
   fillSelect($("variant"), ex.variants);
@@ -408,22 +425,25 @@ function setExercise(id, h = {}) {
   $("strength-out").textContent = pct ? "100%" : `${state.peakTorqueNm} Nm`;
   $("readouts").hidden = multi || finger;
   // The edge lift is a static hold: no lifting animation, the slider compares holds.
-  $("play").hidden = finger;
-  if (finger && state.playing) { state.playing = false; $("play").textContent = "Play"; $("play").setAttribute("aria-pressed", "false"); }
+  $("play").hidden = false;
+  $("play").textContent = finger ? "Play a lift" : "Play";
+  $("lift-chart-box").hidden = !finger;
+  state.liftT = null;
+  // A new exercise starts paused (an animation running on the previous one doesn't carry over).
+  if (state.playing) { state.playing = false; $("play").textContent = "Play"; $("play").setAttribute("aria-pressed", "false"); }
   $("view-buttons").hidden = ex.view !== "3d";
   // Zoom for single-joint lifts; on by default where the moving segment is small (e.g. the hand).
   $("zoom-buttons").hidden = Boolean(ex.model);
   setZoom(!ex.model && (ex.defaults.zoom ?? false));
   $("figure").classList.toggle("draggable", ex.view === "3d");
-  $("joint-table").hidden = !(multi || finger);
+  $("joint-table").hidden = !multi; // the edge lift shows it in its Arm view
   $("finger-set").hidden = !finger; // shown again by renderFingerSet on the edge lift
-  $("joint-table").tHead.rows[0].cells[0].textContent = finger ? "Structure" : "Joint";
-  $("joint-table").tHead.rows[0].cells[1].textContent = finger ? "Force" : "Torque";
-  $("joint-table").tHead.rows[0].cells[2].textContent = finger ? "× fingertip" : "Moment arm";
-  $("joint-table").tHead.rows[0].cells[3].textContent = finger ? "Of the limit" : "Effort";
-  $("torque-title").textContent = finger ? "Tendon forces, hold by hold" : "Resistance vs strength";
-  $("effort-title").textContent = finger ? "Pulley loads" : "Effort across the range";
-  $("effort-hint").textContent = finger ? "Force on the A2 and A4 pulleys as the middle joint (PIP) bends. Dotted: their breaking loads in cadaver tests (Lin et al. 1990), a guide to scale, not a safety limit." : "Joint torque ÷ strength at each angle. The peak is the sticking point.";
+  $("edge-summary").hidden = !finger;
+  $("edge-tabs").hidden = !finger;
+  $("edge-view-hint").hidden = !finger;
+  $("torque-title").textContent = finger ? "Deep flexor (FDP) tension per finger, hold by hold" : "Resistance vs strength";
+  $("effort-title").textContent = finger ? "A2 pulley load per finger" : "Effort across the range";
+  $("effort-hint").textContent = finger ? "As a share of the A2 pulley's breaking load in cadaver tests (Lin et al. 1990, per finger): a guide to scale, not a safety limit. A finger off the edge shows 0." : "Joint torque ÷ strength at each angle. The peak is the sticking point.";
   buildLegend(ex);
   const [lo, hi] = ex.angleRange;
   state.angle = Math.min(hi, Math.max(lo, state.angle));
@@ -454,9 +474,9 @@ function curves() {
   const t0 = performance.now();
   const ex = state.exercise;
   if (ex.model === "finger") {
-    const main = sampleFinger(ex, variant(), opts(variant()));
-    const cmp = state.compareId ? sampleFinger(ex, variant(state.compareId), opts(variant(state.compareId))) : null;
-    curveCache = { key, same, main, cmp, bounds: fingerBounds(cmp ? [...main, ...cmp] : main), ms: performance.now() - t0 };
+    const main = sampleEdge(ex, variant(), opts(variant()));
+    const cmp = state.compareId ? sampleEdge(ex, variant(state.compareId), opts(variant(state.compareId))) : null;
+    curveCache = { key, same, main, cmp, bounds: null, ms: performance.now() - t0 };
     return curveCache;
   }
   if (ex.model === "multi") {
@@ -470,6 +490,30 @@ function curves() {
   const bounds = figureBounds(ex, variant(), main.map((s) => s.pose), state.pulley);
   curveCache = { key, same, main, cmp, bounds, ms: performance.now() - t0 };
   return curveCache;
+}
+
+/** A tap or drag on a chart: move to that angle (or, in the edge lift's timeline, that moment). */
+function scrubAngle(x) {
+  setPlaying(false);
+  state.angle = Math.round(x * 2) / 2;
+  $("angle").value = state.angle;
+  renderSoon();
+}
+function scrubLift(t) {
+  if (state.playing) setPlaying(false);
+  state.liftT = t;
+  render();
+}
+
+/** Keep the floating control bar in step with the main slider and Play button. */
+function syncDock() {
+  const a = $("angle"), d = $("dock-angle");
+  [d.min, d.max, d.step] = [a.min, a.max, a.step];
+  d.value = a.value;
+  $("dock-label").textContent = $("angle-label").textContent;
+  $("dock-out").textContent = $("angle-out").textContent;
+  $("dock-play").textContent = $("play").textContent;
+  $("dock-play").hidden = $("play").hidden;
 }
 
 /** Render now with the curves possibly held, then once more 150 ms after the slider stops. */
@@ -489,7 +533,7 @@ function phaseAt(angle) {
 /** Legend for the torque chart: one entry per joint for multi-joint lifts. */
 function buildLegend(ex) {
   const items = ex.model === "finger"
-    ? [["f-fdp", "FDP tendon"], ["f-fds", "FDS tendon"], ["f-a2", "A2 pulley (lower chart)"], ["f-a4", "A4 pulley (lower chart)"], ["dash", "Comparison (dashed)"]]
+    ? [...ex.fingers.order.map((id) => [`fi-${id}`, ex.fingers.labels[id]]), ["dash", "Comparison (dashed)"]]
     : ex.model === "multi"
     ? [...ex.joints.map((j) => [`joint-${j.id}`, j.negative ? `${j.action} (+) / ${j.negative.action.toLowerCase()} (−)` : `${j.name} (${j.action.toLowerCase()})`]),
       ["cap", "Strength (dotted)"], ["dash", "Comparison (dashed)"]]
@@ -536,12 +580,12 @@ function renderMulti() {
   const caps = series(main, "capacity", "cap").filter((s) => !ex.joints.find((j) => s.className.startsWith(`joint-${j.id} `))?.negative);
   const torque = [...caps, ...(cmp ? series(cmp, "torque", "dash") : []), ...series(main, "torque", "")];
   const all = torque.flatMap((s) => s.points.map((p) => p[1]));
-  renderChart($("torque-chart"), {
+  renderChart($("torque-chart"), { onScrub: scrubAngle,
     xRange: ex.angleRange, series: torque, bands, marker: state.angle, yMin: Math.min(0, ...all), xUnit: unit,
     xLabel: ex.angleLabel, yLabel: "Torque per leg / arm (Nm)", yFormat: (x) => x.toFixed(0),
   });
   const effort = [...(cmp ? series(cmp, "effort", "dash", 100) : []), ...series(main, "effort", "", 100)];
-  renderChart($("effort-chart"), {
+  renderChart($("effort-chart"), { onScrub: scrubAngle,
     xRange: ex.angleRange, yMax: Math.max(100, ...effort.flatMap((s) => s.points.map((p) => p[1]))), xUnit: unit,
     series: effort, bands, marker: state.angle, xLabel: ex.angleLabel, yLabel: "Effort (% of max)", yFormat: (x) => `${x.toFixed(0)}%`,
   });
@@ -605,89 +649,112 @@ function renderFingerSet(set) {
   }));
 }
 
-/** Edge lift: finger figure, tendon and pulley charts, and a table of the structures' loads. */
+const EDGE_VIEWS = {
+  fingers: { label: "The four fingers on the edge, side view: tendons, pulleys and each finger's share of the block", hint: "Each finger in its own posture on the edge (wrist straight above its pad). Tendons drawn thicker the harder they pull (FDP purple, FDS blue); pulleys coloured from green to red by their share of the cadaver breaking load; arrows: each finger's share of the block." },
+  hand: { label: "The hand from the front on the edge: each finger's share, the hand's tilt and the wrist's sideways load", hint: "Palm towards you, index finger on the left. Under each finger: its share of the block (arrow) and its effort; dashed = off the edge. The edge's shape under each finger follows the bars in the controls; the curved arrow at the wrist is its sideways load." },
+  arm: { label: "The arm holding the block, from the front and from the side, with shoulder and elbow loads", hint: "As taught: the straight arm rests on the front of the hip and the block hangs between the legs, so the shoulder and elbow are only pulled. Turned out or forward from there (sliders), the block acts on a lever at the shoulder and elbow (joints coloured by effort)." },
+};
+
+/** Edge lift: summary strip, the selected view (fingers, hand, arm), tables and per-finger charts. */
 function renderFinger() {
   const ex = state.exercise;
   const v = variant();
-  const r = analyzeFinger(ex, v, state.angle, opts(v));
+  // Play: the force on the hand at this moment of the lift (Newton: m·(g + a) off the floor).
+  const lift = liftProfile(state.loadKg, { liftTime: state.placement?.liftTime ?? 0.6 });
+  const now = state.liftT == null ? null : lift.at(state.liftT);
+  const effKg = now ? Math.max(1e-6, now.F / 9.81) : state.loadKg;
+  const r = analyzeEdge(ex, v, state.angle, { ...opts(v), loadKg: effKg });
   const act = muscleActivation(ex, v, r, state.angle);
-  const { main, cmp, bounds } = curves();
-  renderFingerFigure($("figure"), { exercise: ex, variant: v, result: r, bounds });
+  const { main, cmp } = curves();
+  const set = r.set;
+  const P = r.P;
 
-  const bands = ex.phases.map((p) => ({ from: p.range[0], to: p.range[1], label: p.name }));
-  const lines = (samples, get, cls) => ({ points: samples.map((s) => [s.angle, get(s)]), className: cls });
-  const tendons = [
-    ...(cmp ? [lines(cmp, (s) => s.tendons.fdp, "f-fdp dash"), lines(cmp, (s) => s.tendons.fds, "f-fds dash")] : []),
-    lines(main, (s) => s.tendons.fdp, "f-fdp"), lines(main, (s) => s.tendons.fds, "f-fds"),
-  ];
-  renderChart($("torque-chart"), {
-    xRange: ex.angleRange, series: tendons, bands, marker: state.angle,
-    xLabel: ex.angleLabel, yLabel: "Tendon tension (N)", yFormat: (x) => x.toFixed(0),
-  });
-  const pulleys = [
-    ...(cmp ? [lines(cmp, (s) => s.pulleys.a2, "f-a2 dash"), lines(cmp, (s) => s.pulleys.a4, "f-a4 dash")] : []),
-    lines(main, (s) => s.pulleys.a2, "f-a2"), lines(main, (s) => s.pulleys.a4, "f-a4"),
-    // Breaking loads (cadaver, Lin et al. 1990) as dotted lines.
-    ...(ex.finger.pulleyStrength ? [
-      lines(main, () => ex.finger.pulleyStrength.a2, "f-a2 cap"), lines(main, () => ex.finger.pulleyStrength.a4, "f-a4 cap"),
-    ] : []),
-  ];
-  renderChart($("effort-chart"), {
-    xRange: ex.angleRange, series: pulleys, bands, marker: state.angle,
-    xLabel: ex.angleLabel, yLabel: "Pulley load (N)", yFormat: (x) => x.toFixed(0),
-  });
+  // Summary strip
+  const card = (label, value, tone) => {
+    const d = Object.assign(document.createElement("div"), { className: `es-card${tone ? ` ${tone}` : ""}` });
+    d.append(Object.assign(document.createElement("span"), { className: "es-label", textContent: label }), Object.assign(document.createElement("strong"), { textContent: value }));
+    return d;
+  };
+  const armPeak = r.arm ? Math.max(r.arm.effort.shoulderForward, r.arm.effort.shoulderSide, r.arm.effort.elbow) : 0;
+  $("edge-summary").replaceChildren(
+    card("Block", `${state.loadKg} kg`),
+    ...(now ? [card(`Now: ${now.phase.toLowerCase()}`, `${Math.round(now.F)} N · ${(now.F / lift.mg).toFixed(2)}×`, now.F > lift.mg * 1.02 ? "warn" : "")] : []),
+    card("Max block", Number.isFinite(r.maxBlockKg) && effKg > 0.01 ? `≈ ${Math.round(r.maxBlockKg)} kg` : "—"),
+    card("Hardest finger", r.peak ? `${r.peak.label} ${Math.round(r.peak.effort * 100)}%` : "—", r.peak?.effort > 1 ? "over" : ""),
+    card("Highest pulley", r.pulleyPeak ? `${r.pulleyPeak.finger.label} ${r.pulleyPeak.pulley} ${Math.round(r.pulleyPeak.share * 100)}%` : "—", r.pulleyPeak?.share > 0.6 ? "warn" : ""),
+    card("Wrist sideways", `${Math.abs(set.wristSide).toFixed(1)} Nm`),
+    card("Shoulder / elbow", `${Math.round(armPeak * 100)}%`, armPeak > 1 ? "over" : ""),
+  );
 
-  $("angle-out").textContent = `${state.angle.toFixed(0)}°`;
-  const F = r.fingertipN;
-  const rows = [
-    ["f-tip", "Fingertip", F, null, r.effort],
-    ["f-fdp", "FDP tendon", r.tendons.fdp, r.tendons.fdp / F, null],
-    ["f-fds", "FDS tendon", r.tendons.fds, r.tendons.fds / F, null],
-    ["f-a2", "A2 pulley", r.pulleys.a2, r.pulleys.a2 / F, r.pulleys.a2Share],
-    ["f-a4", "A4 pulley", r.pulleys.a4, r.pulleys.a4 / F, r.pulleys.a4Share],
-    // The arm carrying the whole block (torques in Nm, effort against typical strength).
-    ...(r.arm ? [
-      ["f-arm", "Pull along the arm", r.arm.traction, null, null],
-      ["f-arm", "Shoulder (forward)", r.arm.shoulderForward, null, r.arm.effort.shoulderForward, "Nm"],
-      ["f-arm", "Shoulder (sideways)", r.arm.shoulderSide, null, r.arm.effort.shoulderSide, "Nm"],
-      ["f-arm", "Elbow (kept straight)", r.arm.elbow, null, r.arm.effort.elbow, "Nm"],
-    ] : []),
-  ];
-  $("joint-table").tBodies[0].replaceChildren(...rows.map(([cls, name, force, ratio, effort, unit = "N"]) => {
-    const tr = document.createElement("tr");
-    [name, `${force.toFixed(unit === "Nm" ? 1 : 0)} ${unit}`, ratio == null ? "—" : `${ratio.toFixed(1)}×`, effort == null ? "" : `${(effort * 100).toFixed(0)}%`].forEach((t, i) => {
-      const td = document.createElement(i ? "td" : "th");
-      td.textContent = t;
-      if (i === 0) { td.scope = "row"; td.className = `jt-${cls}`; }
-      if (i === 3 && effort > 1) td.className = "over";
-      tr.append(td);
-    });
-    return tr;
-  }));
-  $("ro-warning").hidden = !(r.effort > 1);
-  $("ro-warning").textContent = "More than this finger's typical maximum: the grip would open here.";
-  renderFingerSet(r.set);
-  document.querySelector(".edge-bars")?.refresh?.();
-  const P = { ...v.params, ...state.placement };
-  renderHandFront($("hand-figure"), { set: r.set, exercise: ex, P });
-  renderArmFigure($("arm-figure"), { arm: r.arm, P });
-  const fit = r.set?.ideal;
-  const fitText = fit ? `An edge that fits ${state.hand ? "your" : "a typical"} hand in this grip exactly sits, compared with under the middle finger, ${["index", "ring", "little"].map((id) => `${id} ${fit[id].lift >= 0 ? "+" : "−"}${Math.abs(fit[id].lift * 1000).toFixed(1)} mm`).join(", ")} (+ = closer to the knuckles; Auto on the edge sliders uses it).` : null;
-  const info = [{ text: `The detailed finger (index) carries ${((F / (state.loadKg * 9.81)) * 100).toFixed(0)}% of the block${v.params.fingerShare === "auto" && state.placement?.fingerShare === "auto" ? " (its least-effort share)" : ""}. FDP:FDS = ${Number.isFinite(r.ratio) ? r.ratio.toFixed(2) : "FDP only"}.` }];
-  if (!r.indexReaches && state.placement?.fingerShare === "auto") info.push({ warn: true, text: "In the four-finger model the index doesn't reach the edge in this grip; the detailed finger is shown at 25% for comparison." });
-  if (r.set) {
-    const turns = [];
-    if (Math.abs(r.set.deviationDeg) >= 1) turns.push(`tilts ${Math.abs(r.set.deviationDeg).toFixed(0)}° towards the ${r.set.deviationDeg > 0 ? "little finger" : "thumb"} (wrist deviation or the arm leaning)`);
-    if (Math.abs(r.set.rollDeg) >= 1) turns.push(`rolls ${Math.abs(r.set.rollDeg).toFixed(0)}° about its long axis (forearm rotation), moving the ${r.set.rollDeg > 0 ? "index" : "little-finger"} side's pads towards the palm`);
-    if (turns.length) info.push({ text: `To bring the fingers onto the edge the hand ${turns.join(" and ")}.` });
+  // View tabs and the figure
+  const view = EDGE_VIEWS[state.edgeView] ? state.edgeView : "fingers";
+  for (const b of document.querySelectorAll("[data-edge-view]")) b.setAttribute("aria-selected", String(b.dataset.edgeView === view));
+  $("figure").setAttribute("aria-label", EDGE_VIEWS[view].label);
+  $("edge-view-hint").textContent = EDGE_VIEWS[view].hint;
+  $("figure-title").textContent = { fingers: "Fingers, side view", hand: "Hand, front view", arm: "Arm and body" }[view];
+  if (view === "fingers") renderFingersView($("figure"), { set, exercise: ex, P, pipDeg: state.angle });
+  else if (view === "hand") renderHandView($("figure"), { set, P });
+  else renderArmView($("figure"), { arm: r.arm, P, loadKg: state.loadKg });
+
+  // Tables: per finger (fingers and hand views), the arm's joints (arm view).
+  renderFingerSet(view === "arm" ? null : set);
+  $("joint-table").hidden = view !== "arm" || !r.arm;
+  if (r.arm) {
+    const head = $("joint-table").tHead.rows[0].cells;
+    [head[0].textContent, head[1].textContent, head[2].textContent, head[3].textContent] = ["Joint", "Load", "", "Effort"];
+    const rows = [
+      ["Pull along the arm", `${r.arm.traction.toFixed(0)} N`, null],
+      ["Shoulder, forward", `${r.arm.shoulderForward.toFixed(1)} Nm`, r.arm.effort.shoulderForward],
+      ["Shoulder, sideways", `${r.arm.shoulderSide.toFixed(1)} Nm`, r.arm.effort.shoulderSide],
+      ["Elbow (kept straight)", `${r.arm.elbow.toFixed(1)} Nm`, r.arm.effort.elbow],
+    ];
+    $("joint-table").tBodies[0].replaceChildren(...rows.map(([name, load, effort]) => {
+      const tr = document.createElement("tr");
+      [name, load, "", effort == null ? "" : `${Math.round(effort * 100)}%`].forEach((t, i) => {
+        const td = document.createElement(i ? "td" : "th");
+        td.textContent = t;
+        if (i === 0) { td.scope = "row"; td.className = "jt-f-arm"; }
+        if (i === 3 && effort > 1) td.className = "over";
+        tr.append(td);
+      });
+      return tr;
+    }));
   }
-  if (r.set && Math.abs(r.set.wristSide) > 0.05) info.push({ text: `The load centre sits ${Math.abs(r.set.loadCentre * 1000).toFixed(0)} mm towards the ${r.set.wristSide > 0 ? "thumb" : "little-finger"} side of the wrist: the wrist holds ${Math.abs(r.set.wristSide).toFixed(1)} Nm sideways.` });
-  if (fitText) info.push({ text: fitText });
-  // The block at which this finger reaches its typical maximum (grip, finger share and strength as set).
-  info.push({ text: `Maximum block for this grip and share: about ${Math.round(r.maxBlockKg)} kg.` });
-  if (r.passive > 0) info.push({ text: `The bent-back fingertip joint carries ${r.passive.toFixed(2)} Nm passively.` });
-  if (r.pipExtensor > 0.01) info.push({ warn: true, text: `The FDP alone over-bends the middle joint: the extensor mechanism has to hold ${r.pipExtensor.toFixed(2)} Nm (not shown as a force).` });
-  if (Math.abs(r.mcpRest) > 0.05) info.push({ text: `Knuckle (MCP): ${r.mcpRest > 0 ? "the intrinsic hand muscles add" : "the extensors (or intrinsics) hold back"} ${Math.abs(r.mcpRest).toFixed(2)} Nm.` });
+  document.querySelector(".edge-bars")?.refresh?.();
+
+  // Charts: FDP tension and A2 load per finger over the hold position.
+  const bands = ex.phases.map((p) => ({ from: p.range[0], to: p.range[1], label: p.name }));
+  const perFinger = (samples, get, dash) => ex.fingers.order.map((id) => ({ points: samples.map((s) => [s.angle, get(s.fingers[id])]), className: `fi-${id}${dash ? " dash" : ""}` }));
+  renderChart($("torque-chart"), { onScrub: scrubAngle,
+    xRange: ex.angleRange, series: [...(cmp ? perFinger(cmp, (f) => f.fdp, true) : []), ...perFinger(main, (f) => f.fdp)], bands, marker: state.angle,
+    xLabel: ex.angleLabel, yLabel: "FDP tension (N)", yFormat: (x) => x.toFixed(0),
+  });
+  renderChart($("effort-chart"), { onScrub: scrubAngle,
+    xRange: ex.angleRange, series: [...(cmp ? perFinger(cmp, (f) => f.a2 * 100, true) : []), ...perFinger(main, (f) => f.a2 * 100)], bands, marker: state.angle,
+    xLabel: ex.angleLabel, yLabel: "A2 load (% of breaking)", yFormat: (x) => `${x.toFixed(0)}%`,
+  });
+  $("angle-out").textContent = `${state.angle.toFixed(0)}°`;
+  // The lift over time, with where Play is now (or the middle of the hold when paused).
+  const ts = [];
+  for (let t = 0; t <= lift.duration + 1e-9; t += 0.02) ts.push([t, lift.at(Math.min(t, lift.duration - 1e-6)).F]);
+  renderChart($("lift-chart"), { onScrub: scrubLift,
+    xRange: [0, lift.duration], xUnit: " s", xStep: 1, bands: lift.bands, marker: state.liftT ?? lift.holdAt,
+    series: [{ points: ts, className: "fi-middle" }, { points: [[0, lift.mg], [lift.duration, lift.mg]], className: "cap lift-weight" }],
+    yMax: lift.peakF * 1.15, xLabel: "Time (s)", yLabel: "Force on the hand (N)", yFormat: (x) => x.toFixed(0),
+  });
+
+  // Notes under the figure
+  $("ro-warning").hidden = !(r.peak?.effort > 1);
+  $("ro-warning").textContent = `More than the ${r.peak?.label.toLowerCase()} finger's typical maximum: the grip would open here.`;
+  const info = [];
+  const turns = [];
+  if (Math.abs(set.deviationDeg) >= 1) turns.push(`tilts ${Math.abs(set.deviationDeg).toFixed(0)}° towards the ${set.deviationDeg > 0 ? "little finger" : "thumb"} (wrist deviation or the arm leaning)`);
+  if (Math.abs(set.rollDeg) >= 1) turns.push(`rolls ${Math.abs(set.rollDeg).toFixed(0)}° about its long axis (forearm rotation)`);
+  if (turns.length) info.push({ text: `To bring the fingers onto the edge the hand ${turns.join(" and ")}.` });
+  if (Math.abs(set.wristSide) > 0.05) info.push({ text: `The load centre sits ${Math.abs(set.loadCentre * 1000).toFixed(0)} mm towards the ${set.wristSide > 0 ? "thumb" : "little-finger"} side of the wrist: the wrist holds ${Math.abs(set.wristSide).toFixed(1)} Nm sideways.` });
+  const fit = set.ideal;
+  if (fit) info.push({ text: `An edge that fits ${state.hand ? "your" : "a typical"} hand in this grip exactly sits, compared with under the middle finger, ${["index", "ring", "little"].map((id) => `${id} ${fit[id].lift >= 0 ? "+" : "−"}${Math.abs(fit[id].lift * 1000).toFixed(1)} mm`).join(", ")} (+ = closer to the knuckles).` });
+  if (Number.isFinite(r.maxBlockKg)) info.push({ text: `Max block: the load at which the hardest-working finger reaches its typical maximum while holding, with this grip, split and strength. Lifting off and setting down briefly asks up to ${(lift.peakF / lift.mg).toFixed(2)}× more (Play).` });
   $("ro-limb").hidden = false;
   $("ro-limb").replaceChildren(...info.map((i) => Object.assign(document.createElement("span"), { textContent: `${i.text} `, className: i.warn ? "warn" : "" })));
   renderPhase(ex);
@@ -695,6 +762,10 @@ function renderFinger() {
 }
 
 function render() {
+  renderView();
+  syncDock();
+}
+function renderView() {
   if (isFinger()) return renderFinger();
   if (isMulti()) return renderMulti();
   const ex = state.exercise;
@@ -713,7 +784,7 @@ function render() {
     ...(cmp ? [{ points: cmp.map((s) => [s.angle, Math.max(0, s.jointTorque)]), className: "compare" }] : []),
     { points: main.map((s) => [s.angle, Math.max(0, s.jointTorque)]), className: "primary" },
   ];
-  renderChart($("torque-chart"), {
+  renderChart($("torque-chart"), { onScrub: scrubAngle,
     xRange: ex.angleRange, series: torqueSeries, bands, marker: state.angle,
     xLabel: ex.angleLabel, yLabel: "Torque (Nm)", yFormat: (v) => v.toFixed(0),
   });
@@ -721,7 +792,7 @@ function render() {
     ...(cmp ? [{ points: cmp.map((s) => [s.angle, s.effort * 100]), className: "compare" }] : []),
     { points: main.map((s) => [s.angle, s.effort * 100]), className: "primary" },
   ];
-  renderChart($("effort-chart"), {
+  renderChart($("effort-chart"), { onScrub: scrubAngle,
     xRange: ex.angleRange, yMax: Math.max(100, ...effortSeries.flatMap((s) => s.points.map((p) => p[1]))),
     series: effortSeries, bands, marker: state.angle,
     xLabel: ex.angleLabel, yLabel: "Effort (% of max)", yFormat: (v) => `${v.toFixed(0)}%`,
@@ -775,6 +846,12 @@ function tick(t) {
   if (!state.playing) return;
   const dt = last ? (t - last) / 1000 : 0;
   last = t;
+  if (state.exercise.model === "finger") { // edge lift: time through one lift, looping
+    state.liftT = (state.liftT ?? 0) + dt;
+    render();
+    requestAnimationFrame(tick);
+    return;
+  }
   const [lo, hi] = state.exercise.angleRange;
   const speed = (hi - lo) / (state.direction > 0 ? 1.4 : 2.2); // lowering slower than lifting
   state.angle += state.direction * speed * dt;
@@ -786,7 +863,7 @@ function tick(t) {
 }
 function setPlaying(on) {
   state.playing = on;
-  $("play").textContent = on ? "Pause" : "Play";
+  $("play").textContent = on ? "Pause" : state.exercise?.model === "finger" ? "Play a lift" : "Play";
   $("play").setAttribute("aria-pressed", on);
   last = 0;
   if (on) requestAnimationFrame(tick);
@@ -829,6 +906,61 @@ function bind() {
     showTheme();
   });
   showTheme();
+  for (const b of document.querySelectorAll("[data-edge-view]")) b.addEventListener("click", () => { state.edgeView = b.dataset.edgeView; render(); });
+// Info buttons: the explanation floats next to the button on hover or keyboard focus; a tap
+  // (touch screens) pins it open until the next tap anywhere.
+  for (const b of document.querySelectorAll(".info-btn")) b.addEventListener("click", (e) => {
+    e.preventDefault(); // inside a <label>: don't move focus to the slider
+    e.stopPropagation();
+    const open = b.getAttribute("aria-expanded") !== "true";
+    for (const o of document.querySelectorAll(".info-btn")) o.setAttribute("aria-expanded", "false");
+    b.setAttribute("aria-expanded", String(open));
+  });
+  document.addEventListener("click", () => { for (const o of document.querySelectorAll(".info-btn")) o.setAttribute("aria-expanded", "false"); });
+  // Floating control bar: appears once the main slider has scrolled off the top of the screen.
+  $("dock-angle").addEventListener("input", (e) => { $("angle").value = e.target.value; $("angle").dispatchEvent(new Event("input")); });
+  $("dock-play").addEventListener("click", () => $("play").click());
+  new IntersectionObserver(([e]) => {
+    $("dock").hidden = e.isIntersecting || e.boundingClientRect.top > 0;
+    document.body.classList.toggle("dock-on", !$("dock").hidden);
+  }).observe(document.querySelector(".angle-row"));
+
+  // Foldable sections: open on wide screens, folded on narrow ones (or with the stacked layout);
+  // a choice made here is kept while the page is open.
+  const narrow = () => document.documentElement.dataset.layout === "stacked" || (document.documentElement.dataset.layout !== "side" && matchMedia("(max-width: 899px)").matches);
+  const folds = [...document.querySelectorAll("[data-fold]")];
+  const chosen = {};
+  for (const box of folds) {
+    let head = box.querySelector(":scope > h3, :scope > h4");
+    if (!head) {
+      head = Object.assign(document.createElement("h4"), { textContent: box.dataset.foldLabel ?? "" });
+      box.prepend(head);
+    }
+    head.classList.add("fold-head");
+    const btn = Object.assign(document.createElement("button"), { type: "button", className: "fold-toggle" });
+    btn.append(...head.childNodes);
+    head.append(btn);
+    btn.addEventListener("click", () => { chosen[box.dataset.fold] = !box.classList.contains("folded"); applyFold(box); });
+  }
+  const applyFold = (box) => {
+    const shut = chosen[box.dataset.fold] ?? narrow();
+    box.classList.toggle("folded", shut);
+    box.querySelector(".fold-toggle").setAttribute("aria-expanded", String(!shut));
+  };
+  const applyFolds = () => folds.forEach(applyFold);
+  applyFolds();
+  matchMedia("(max-width: 899px)").addEventListener("change", applyFolds);
+
+  // Layout: Auto (figure beside the curves on wide screens), side by side, or stacked.
+  const layoutButtons = [...document.querySelectorAll("[data-layout-set]")];
+  const showLayout = () => { const l = document.documentElement.dataset.layout ?? "auto"; for (const b of layoutButtons) b.setAttribute("aria-pressed", String(b.dataset.layoutSet === l)); };
+  for (const b of layoutButtons) b.addEventListener("click", () => {
+    const l = b.dataset.layoutSet;
+    if (l === "auto") delete document.documentElement.dataset.layout; else document.documentElement.dataset.layout = l;
+    try { if (l === "auto") localStorage.removeItem("layout"); else localStorage.setItem("layout", l); } catch (e) { /* storage blocked */ }
+    showLayout(); applyFolds(); render();
+  });
+  showLayout();
   $("hand-reset").addEventListener("click", () => { setHand(undefined); writeHash(); render(); });
   $("placement-reset").addEventListener("click", () => { setPlacement(variant()); writeHash(); render(); });
   for (const b of $("view-buttons").querySelectorAll("button")) {

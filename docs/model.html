@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How the Model Works</title>
+<meta name="description" content="How Force Curve Lab computes an exercise's resistance curve, joint loads, strength, effort and muscle involvement, with every assumption and source for the chosen exercise.">
+<script>try { const t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}</script>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1d2330; --muted: #5b6475; --border: #dde1e8;
+    --accent: #2f6fdb; --est: #9a5b00; --est-bg: #fff4e0; --code-bg: #eef1f6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12151b; --card: #1a1f27; --text: #e6e9ef; --muted: #9aa3b2; --border: #2c3340;
+      --accent: #6b9cf0; --est: #f0b45a; --est-bg: #2e2516; --code-bg: #232a35;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12151b; --card: #1a1f27; --text: #e6e9ef; --muted: #9aa3b2; --border: #2c3340;
+    --accent: #6b9cf0; --est: #f0b45a; --est-bg: #2e2516; --code-bg: #232a35;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 820px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.8rem; line-height: 1.25; margin: 8px 0 4px; }
+  h2 { font-size: 1.3rem; margin: 36px 0 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h3 { font-size: 1.05rem; margin: 22px 0 6px; }
+  p, li { max-width: 72ch; }
+  a { color: var(--accent); }
+  .lede { color: var(--muted); font-size: 1.05rem; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin: 14px 0; }
+  .eq { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; background: var(--code-bg); border-radius: 6px; padding: 8px 12px; overflow-x: auto; white-space: pre; font-size: 0.92rem; }
+  .src { color: var(--muted); font-size: 0.88rem; }
+  .est { background: var(--est-bg); color: var(--est); border-radius: 4px; padding: 0 5px; font-size: 0.82em; font-weight: 600; white-space: nowrap; }
+  .muted { color: var(--muted); }
+  select { font: inherit; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); max-width: 100%; }
+  dl.items dt { font-weight: 600; margin-top: 12px; }
+  dl.items dd { margin: 2px 0 0 0; }
+  .back { font-size: 0.95rem; }
+</style>
+</head>
+<body>
+<main>
+<p class="back"><a id="back" href="../">← Back to Force Curve Lab</a></p>
+<h1 id="title">How the model works</h1>
+<p class="lede">What the app computes for an exercise, step by step, and where every number comes from. The general method is the same for all exercises of a kind; the second half lists this exercise's own set-up, variants, strength data and sources, read straight from its data file.</p>
+<p><label>Exercise: <select id="pick" aria-label="Exercise"></select></label></p>
+
+<div class="card"><strong>What it is and isn't.</strong> A teaching tool built on statics: forces and torques in balance at each position of a slow lift, with published body and strength data. Values marked <span class="est">estimate</span> or "TODO" in the data aren't from a checked source. It shows <em>why</em> an exercise is hard where it is and how equipment and positioning change that; it doesn't measure a person, and it isn't medical or training advice.</div>
+
+<div id="method"></div>
+<div id="exercise"></div>
+
+<h2>Further detail</h2>
+<p>What each model approximates, what broke and was fixed, and how the results were checked against measurements: <a href="https://github.com/erikeppinger/force-curve-lab/blob/main/docs/model-limits.md">model limits</a> (on GitHub). The code and data are open: <a href="https://github.com/erikeppinger/force-curve-lab">github.com/erikeppinger/force-curve-lab</a>.</p>
+<p class="back"><a id="back2" href="../">← Back to Force Curve Lab</a></p>
+</main>
+
+<script type="module">
+// Rendered from the exercise data files; text only (no HTML from the data is interpreted).
+const EXERCISES = [
+  "biceps-curl", "triceps-extension", "wrist-curl", "reverse-wrist-curl", "edge-lift", "lateral-raise", "front-raise", "chest-fly", "straight-arm-pulldown",
+  "leg-extension", "leg-curl", "calf-raise", "hip-abduction", "glute-kickback",
+  "squat", "romanian-deadlift", "deadlift", "split-squat", "leg-press", "hip-thrust", "bench-press", "overhead-press", "bent-over-row", "seated-row", "lat-pulldown", "pull-up",
+];
+
+const h = (tag, props = {}, ...kids) => { const n = Object.assign(document.createElement(tag), props); n.append(...kids.filter((k) => k != null)); return n; };
+const para = (t, cls) => h("p", cls ? { className: cls } : {}, t);
+const ul = (items) => h("ul", {}, ...items.map((t) => (typeof t === "string" ? h("li", {}, t) : h("li", {}, ...t))));
+const strong = (t) => h("strong", {}, t);
+
+// ---------- The general method, per kind of model ----------
+const SINGLE = () => [
+  h("h2", {}, "1. The method: one joint moving"),
+  para("The limb is a chain of two segments (for example upper arm → forearm, or hip → knee → ankle). Only the exercise's joint moves; everything else is held still. For every angle of that joint the app works out:"),
+  ul([
+    [strong("The load's force and direction. "), "A free weight hangs straight down (in the variant's position: lying or kneeling turns gravity relative to the body). A cable pulls towards its pulley with the stack's weight. A machine's cam sets the torque directly from its profile. A band pulls harder the more it is stretched. In a closed chain (calf raise) the floor pushes back on the foot with your body weight."],
+    [strong("The torque at the joint. "), "Force × moment arm, the perpendicular distance from the joint to the force's line. The limb's own weight is added, from segment masses and centres of mass as fractions of body mass (de Leva 1996), which is why the body-mass slider matters."],
+    [strong("Strength at that angle. "), "The peak torque (strength slider) × a measured strength curve: muscles are stronger at some angles than others. Some variants correct it for posture or grip (a different angle at the other joint of a two-joint muscle, a palm-down grip)."],
+    [strong("Effort. "), "Torque ÷ strength. Where effort peaks is the sticking point; above 100% the lift fails there."],
+    [strong("Muscle involvement. "), "Each muscle's bar = effort × its weight at that angle: its share of the joint's work, from its size × moment arm where a source gives them. It is an estimate of demand, not a measurement of muscle activity (EMG)."],
+  ]),
+  h("div", { className: "eq" }, "torque = F · d + limb weight · its lever        effort = torque ÷ (peak torque · curve(angle))"),
+  h("h3", {}, "What this leaves out"),
+  ul([
+    "Speed and acceleration: each position is treated as a slow, controlled lift (statics), so momentum and the bounce out of a stretch aren't counted.",
+    "Other joints: anything that moves along (the shoulder blade in a raise, a knee bending in a kickback) is held still; the exercise notes say where this matters.",
+    "Individual differences: segment lengths, masses and strength are typical values; the sliders scale strength and body mass, not proportions.",
+  ]),
+];
+
+const SOLVERS = {
+  standing: "Both feet flat; the centre of mass of body + load stays over the mid-foot. A squat sets the shin angle from the knee angle and solves the trunk lean; a hinge sets the knee bend from the hip angle and solves the shin angle. Torques per leg.",
+  split: "Front foot flat, rear foot on a bench or the floor; the weight splits between them by where the centre of mass is. Torques for the front leg.",
+  hipThrust: "Shoulders on the bench, feet flat, bar on the hips; both contacts push straight up and the reactions come from moment balance.",
+  seatedRow: "Hips fixed on a seat (or the chest on a pad), trunk held at the variant's angle, hands pulling in a straight line from full reach to the belly; the cable pulls each hand towards the pulley with half the stack.",
+  legPress3d: "Hips fixed in the seat, feet on the plate moving along the sled's rail; the plate pushes along the rail. In 3D: stance width, toe angle and knee tracking change the hip's sideways and rotation loads and the knee's sideways load.",
+  squat3d: "In 3D: both feet flat at the set width and toe angle, knees tracking the toes (or in/out by slider), shin angle a fixed share of the knee angle, trunk lean solved for balance over the mid-foot. How hard the feet push sideways on the floor isn't fixed by statics: by default the least-effort value.",
+  hinge3d: "In 3D: knee bend in step with the hip bend, the shins tilting until the centre of mass is over the mid-foot, the bar hanging from straight arms (a straight bar must pass in front of the shins and thighs). Stance, toe angle, knee tracking and the floor's sideways push as for the squat.",
+  split3d: "In 3D: front and rear foot each at their own distance from the midline; the pelvis shifts sideways for balance and the front foot can push sideways on the floor (least effort by default).",
+  hipThrust3d: "In 3D: as the hip thrust, with stance width, toe angle, knee tracking and the floor's sideways push.",
+  bench3d: "In 3D: shoulders on the bench, both hands on the bar moving in a straight line from the touch point to lockout; the elbows sit as close under the bar as the arm allows (or flared by slider). Grip width decides whether the pecs or the triceps do more.",
+  press3d: "In 3D: the bar moves from the front of the shoulders to overhead; the elbows sit under the bar; the trunk stays upright (seated or standing).",
+  row3d: "In 3D: the hands pull in a straight line from hanging (or full reach to a cable) to the trunk; the elbows flare by slider; the trunk is held at the variant's angle, its balance over the mid-foot (bent-over) or held by a seat or pad.",
+  pull3d: "In 3D: the hands hold the bar (fixed for a pull-up, moving down for a pulldown); the body or bar moves in a straight line from straight arms to the bar at the chest; grip width and elbow position set how the shoulder's load splits between pulling down (adduction) and back (extension).",
+};
+
+const MULTI = (ex) => [
+  h("h2", {}, "1. The method: several joints moving together"),
+  para("In these lifts several joints move at once, tied together by a constraint: the feet stay flat and the body stays balanced, the hands stay on a bar, the hips stay on a seat. For each position of the lift (the slider: one joint's angle or how far the pull has gone):"),
+  ul([
+    [strong("A solver finds the posture "), "from the lift's constraint (below). The rules for how the other joints follow are reasonable shapes, not measurements; the balance condition is solid."],
+    [strong("Statics gives each joint's torque: "), "the moment of every force on one side of the joint (the side whose forces are all known), including the segments' own weights. Torques are per leg or per arm. In 3D a joint's torque splits into its anatomical parts (e.g. the hip: extension, sideways, rotation)."],
+    [strong("Each joint has its own strength curve, "), "and effort = torque ÷ strength per joint. The joint whose effort peaks first is where the lift fails. Where a two-joint muscle is involved, strength is corrected for the other joint's angle where a source allows."],
+    [strong("Muscle involvement "), "follows the effort of the joint (or joint component) each muscle works at, × its share of that joint's work. An estimate of demand, not EMG."],
+  ]),
+  h("h3", {}, "This lift's constraint"),
+  para(SOLVERS[ex.solver] ?? "See the exercise notes below."),
+  para("The tests check hand-computable cases (e.g. hip torque = Σ m·g·horizontal distance in front of the hip) and equilibrium: the same torque from both sides of a joint, and reactions that add up to the weight.", "muted"),
+  h("h3", {}, "What this leaves out"),
+  ul([
+    "Speed and acceleration: each position is a slow, controlled lift (statics).",
+    "The spine is one rigid trunk; the lower back's load is approximated by the hip's.",
+    "The shoulder blades and how individual lifters vary their posture; the posture rules are typical shapes.",
+  ]),
+];
+
+// ---------- This exercise, from its data ----------
+function sourceLine(s) { return s ? para(`Source: ${s}`, "src") : null; }
+
+function exerciseSection(ex, refs) {
+  const out = [h("h2", {}, `2. ${ex.name}: set-up, variants and data`)];
+  out.push(para(`Joint: ${ex.joint}. ${ex.angleNote ?? ""}`));
+  if (ex.jointNote) out.push(para(ex.jointNote, "muted"));
+  if (ex.jointNoteSource) out.push(sourceLine(ex.jointNoteSource));
+  if (ex.technique) out.push(para(ex.technique, "muted"));
+
+  out.push(h("h3", {}, "Variants"));
+  out.push(h("dl", { className: "items" }, ...ex.variants.flatMap((v) => [
+    h("dt", {}, `${v.name}${v.equipment ? ` (${v.equipment})` : ""}`),
+    h("dd", {}, v.notes ?? ""), ...(v.source ? [h("dd", { className: "src" }, `Source: ${v.source}`)] : []),
+    ...(v.strengthScale?.note ? [h("dd", { className: "src" }, `Strength in this posture: ${v.strengthScale.note}${v.strengthScale.source ? ` Source: ${v.strengthScale.source}` : ""}`)] : []),
+  ])));
+
+  out.push(h("h3", {}, "Strength"));
+  if (ex.strengthCurve) {
+    out.push(para(`${ex.strengthCurve.label ?? "Strength curve"}: default peak ${ex.defaults?.peakTorqueNm ?? "?"} Nm. ${ex.strengthCurve.note ?? ""}`));
+    out.push(sourceLine(ex.strengthCurve.source));
+  }
+  for (const j of ex.joints ?? []) {
+    if (!j.strength) continue;
+    out.push(para(`${j.name} (${j.action}), default peak ${j.peakTorqueNm} Nm: ${j.strength.note ?? ""}`));
+    out.push(sourceLine(j.strength.source));
+    if (j.negative?.note) { out.push(para(`${j.negative.action}, default peak ${j.negative.peakTorqueNm} Nm: ${j.negative.note}`)); out.push(sourceLine(j.negative.source)); }
+  }
+  for (const [id, s] of Object.entries(ex.jointScale ?? {})) {
+    if (s.note) { out.push(para(`Correction for ${id}: ${s.note}`, "muted")); out.push(sourceLine(s.source)); }
+  }
+  if (ex.finger) out.push(para("The edge lift has its own detailed description: see the link at the top.", "muted"));
+
+  if (ex.segments?.massNote) {
+    out.push(h("h3", {}, "Body segments"));
+    out.push(para(`${ex.segments.note ?? ""} ${ex.segments.massNote}`));
+    out.push(sourceLine(ex.segments.massSource));
+  }
+
+  out.push(h("h3", {}, "Muscles"));
+  out.push(h("dl", { className: "items" }, ...ex.muscles.flatMap((m) => [
+    h("dt", {}, `${m.name}${m.role ? ` — ${m.role}` : ""}`),
+    ...(m.note ? [h("dd", {}, m.note)] : []),
+    ...Object.entries(m).filter(([k, v]) => /source$/i.test(k) && typeof v === "string").map(([, v]) => h("dd", { className: "src" }, `Source: ${v}`)),
+  ])));
+
+  if (ex.phases?.length) {
+    out.push(h("h3", {}, "Phases"));
+    out.push(ul(ex.phases.map((p) => `${p.name} (${p.range[0]}–${p.range[1]}°): ${p.text}`)));
+  }
+
+  // References that this exercise cites (the same matching the app uses).
+  const all = [];
+  const walk = (o) => { if (Array.isArray(o)) o.forEach(walk); else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) (k === "source" || /Source$/.test(k)) && typeof v === "string" ? all.push(v) : walk(v); };
+  walk(ex);
+  const used = (refs?.references ?? []).filter((r) => all.some((s) => s.includes(r.match)));
+  out.push(h("h3", {}, "References"));
+  out.push(used.length ? ul(used.map((r) => [r.citation, ...(r.url ? [" ", h("a", { href: r.url }, "link")] : []), h("br"), h("span", { className: "src" }, r.usedFor ?? "")]))
+    : para("No published source for this exercise's numbers yet: they are estimates.", "muted"));
+  return out;
+}
+
+async function show(id) {
+  const [ex, refs] = await Promise.all([
+    fetch(`../data/exercises/${id}.json`).then((r) => r.json()),
+    fetch("../data/references.json").then((r) => r.json()).catch(() => null),
+  ]);
+  document.title = `${ex.name}: Model`;
+  $("title").textContent = `How the model works: ${ex.name}`;
+  for (const b of [$("back"), $("back2")]) b.href = `../#ex=${id}`;
+  if (ex.model === "finger") {
+    $("method").replaceChildren(h("h2", {}, "The edge lift"), h("p", {}, "The edge lift uses its own finger model, described in full on ", h("a", { href: "edge-lift-model.html" }, "How the edge-lift model works"), "."));
+  } else {
+    $("method").replaceChildren(...(ex.model === "multi" ? MULTI(ex) : SINGLE()));
+  }
+  $("exercise").replaceChildren(...exerciseSection(ex, refs).filter(Boolean));
+}
+const $ = (id) => document.getElementById(id);
+
+const start = new URLSearchParams(location.search).get("ex") || location.hash.slice(1) || "biceps-curl";
+const pick = $("pick");
+for (const id of EXERCISES) pick.add(new Option(id.replace(/-/g, " ").replace(/^./, (c) => c.toUpperCase()), id));
+pick.value = EXERCISES.includes(start) ? start : "biceps-curl";
+pick.addEventListener("change", () => { history.replaceState(null, "", `?ex=${pick.value}`); show(pick.value); });
+show(pick.value);
+</script>
+</body>
+</html>
