@@ -11,7 +11,7 @@ const load = (id) => JSON.parse(readFileSync(new URL(`../data/exercises/${id}.js
 const close = (a, b, eps = 1e-6) => assert.ok(Math.abs(a - b) < eps, `${a} ≉ ${b}`);
 const opts = { loadKg: 60, bodyMassKg: 75, body };
 // These lifts run in 3D in the app; the side-view tests below check their 2D solvers.
-const TWO_D = { "romanian-deadlift": "standing", "split-squat": "split", "hip-thrust": "hipThrust", "bent-over-row": "standing", "seated-row": "seatedRow" };
+const TWO_D = { "romanian-deadlift": "standing", deadlift: "standing", "split-squat": "split", "hip-thrust": "hipThrust", "bent-over-row": "standing", "seated-row": "seatedRow" };
 const ONLY_3D = ["hip-frontal", "hip-rotation", "knee-frontal", "shoulder-h", "shoulder-rotation", "elbow-side"];
 const load2d = (id) => { const ex = load(id); return TWO_D[id] ? { ...ex, solver: TWO_D[id], joints: ex.joints.filter((j) => !ONLY_3D.includes(j.id)) } : ex; };
 const run = (id, vid, x, o = opts) => {
@@ -474,7 +474,7 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
   const flat = { halfWidth: body.lengths.hipHalfWidth, toeOut: 0, kneeTrack: 0, sidePush: 0 };
 
   test("3D hinge and hip thrust reduce exactly to the side view with feet under the hips", () => {
-    for (const [id, vids, xs] of [["romanian-deadlift", ["barbell", "stiff-leg"], [10, 45, 80]], ["hip-thrust", ["barbell", "feet-far"], [10, 40]]]) {
+    for (const [id, vids, xs] of [["romanian-deadlift", ["barbell", "stiff-leg"], [10, 45, 80]], ["deadlift", ["conventional", "trap-bar"], [10, 60, 95, 130]], ["hip-thrust", ["barbell", "feet-far"], [10, 40]]]) {
       for (const vid of vids) {
         for (const x of xs) {
           const a = run(id, vid, x), b = run3d(id, vid, x, flat);

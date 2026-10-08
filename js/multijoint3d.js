@@ -617,11 +617,39 @@ function bisect(g, lo, hi, n = 60) {
   return { t: (lo + hi) / 2, ok };
 }
 
+const BAR_R = 0.015; // bar radius, as in the side view
+/**
+ * The bar from straight arms (length `arm`) hanging from the shoulders S, kept in front of the
+ * legs: the front of the shin (5 cm in front of the ankle–knee line) or thigh (7 cm in front of
+ * the knee–hip line) at the bar's height, in the side view. If hanging straight down would put the
+ * bar inside, the arms swing forward on their circle until it just touches. Same rule as the 2D
+ * hinge (multijoint.js hang/legFront).
+ */
+function hangClear(S, arm, A, K, H) {
+  const front = (y) => {
+    const at = (p, q, half) => p.x + ((q.x - p.x) * (y - p.y)) / (q.y - p.y || 1e-9) + half;
+    if (y <= A.y) return -Infinity;
+    if (y <= K.y) return at(A, K, 0.05 + BAR_R);
+    if (y <= H.y) return at(K, H, 0.07 + BAR_R);
+    return -Infinity;
+  };
+  let bar = v3(S.x, S.y - arm, 0);
+  for (let i = 0; i < 30; i++) {
+    const fx = front(bar.y);
+    if (bar.x >= fx - 1e-6) break;
+    const dx = Math.min(arm, fx - S.x);
+    bar = v3(S.x + dx, S.y - Math.sqrt(arm * arm - dx * dx), 0);
+  }
+  return bar;
+}
+
 /**
  * Hip hinge in 3D: Romanian / stiff-legged deadlift (driver: hip flexion). Both feet flat at
  * `halfWidth` from the midline, toes turned `toeOut`, knees `kneeTrack` out of the toe line.
  * Knee flexion = kneeBase + kneePerHip · hip flexion; the hips move back (the shins tilt) until
- * the centre of mass of body + load is over the mid-foot. The bar hangs under the shoulders.
+ * the centre of mass of body + load is over the mid-foot. The bar hangs under the shoulders, or
+ * with P.clearShins (a straight bar from the floor) the straight arms swing forward just enough
+ * for the bar to pass in front of the shins and thighs (side view: the bar spans both legs).
  * With the feet under the hips, toes forward and no sideways push it matches the side-view hinge.
  */
 export function hinge3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
@@ -646,7 +674,7 @@ export function hinge3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     const back = v3(Math.sin(tk), Math.cos(tk), 0);
     const pelvis = v3(H.x, H.y, 0);
     const S = add3(pelvis, back, L.trunk);
-    const bar = v3(S.x, S.y - (L.upperArm + L.forearm), 0);
+    const bar = P.clearShins ? hangClear(S, L.upperArm + L.forearm, A, K, H) : v3(S.x, S.y - (L.upperArm + L.forearm), 0);
     const trunkCom = add3(pelvis, back, c.headTrunk * L.trunk);
     const armCom = lerp3(S, bar, 0.45);
     const items = [[lerp3(K, H, c.thigh), 2 * m.thigh * kg], [lerp3(A, K, c.shank), 2 * m.shank * kg], [v3(balanceX, 0, 0), 2 * m.foot * kg],
