@@ -350,13 +350,13 @@
     },
     {
       "key": "spineFlex",
-      "label": "Back rounding (upper back bent forward)",
-      "min": 0,
+      "label": "Back rounded (+) / arched (−)",
+      "min": -20,
       "max": 40,
       "step": 1,
       "unit": "°",
       "scale": 1,
-      "hint": "The upper half of the trunk bends forward from the lower half: the shoulders drop and come forward, so the bar reaches the floor with less hip flexion. The hip angle shown stays the pelvis–thigh angle. How much lifters round isn't set from a source; the spine's own load isn't analysed (the hip's stands in for it)."
+      "hint": "The upper half of the trunk bends forward (+, rounded: the shoulders drop and come forward, so the bar reaches the floor with less hip flexion) or back (−, arched, as weightlifters often hold it: the shoulders rise and move back). The hip angle shown stays the pelvis–thigh angle. How much lifters round or arch isn't set from a source; the spine's own load isn't analysed (the hip's stands in for it)."
     }
   ]
 }
