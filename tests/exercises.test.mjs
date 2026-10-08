@@ -86,7 +86,8 @@ for (const id of single) {
       if (v.strengthScale) {
         const sc = v.strengthScale;
         assert.ok(sc.note && sc.source, `${v.id}: strength scale note and source`);
-        assert.ok(sc.points ? sorted(sc.points) && sc.points.every(([, f]) => f > 0.3 && f < 1.5) : sc.factor > 0.3 && sc.factor < 1.5, `${v.id}: strength scale`);
+        // Points may go higher: they reshape the curve (e.g. the knee-straight calf near the top of the raise).
+        assert.ok(sc.points ? sorted(sc.points) && sc.points.every(([, f]) => f > 0.3 && f < 3) : sc.factor > 0.3 && sc.factor < 1.5, `${v.id}: strength scale`);
       }
       if (v.load.type === "machine") {
         const cam = v.load.camProfile;

@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { analyze, interp, G } from "../js/physics.js";
+import { analyze, interp, G, strengthScaleAt } from "../js/physics.js";
 import { muscleActivation } from "../js/muscles.js";
 
 const load = (id) => JSON.parse(readFileSync(new URL(`../data/exercises/${id}.json`, import.meta.url)));
@@ -87,8 +87,17 @@ const variantOf = (ex) => (id) => ex.variants.find((x) => x.id === id);
     // Cresswell et al. Table 1: 134.9 Nm knee straight, 103.7 Nm at 90°, base curve at 50° (119.25 → 108.91 between 30° and 60°).
     const ref = 119.25 + (108.91 - 119.25) * (20 / 30);
     close(v("seated").strengthScale.factor, Math.round((103.7 / ref) * 100) / 100);
-    close(v("single-leg").strengthScale.factor, Math.round((134.91 / ref) * 100) / 100);
-    close(analyze(ex, v("single-leg"), 10, opts).capacity / analyze(ex, v("seated"), 10, opts).capacity, v("single-leg").strengthScale.factor / v("seated").strengthScale.factor);
+    // Knee straight: the same 1.2 at and below foot-flat (Cresswell et al. measured at 5° of dorsiflexion).
+    close(strengthScaleAt(v("single-leg"), -5), Math.round((134.91 / ref) * 100) / 100);
+    close(analyze(ex, v("single-leg"), -5, opts).capacity / analyze(ex, v("seated"), -5, opts).capacity, strengthScaleAt(v("single-leg"), -5) / v("seated").strengthScale.factor);
+  });
+
+  test("standing calf raise: with the knee straight, strength keeps about half its foot-flat value near the top (Chen & Franklin), so a body-weight raise stays possible", () => {
+    const at = (x) => analyze(ex, v("single-leg"), x, opts).capacity;
+    assert.ok(Math.abs(at(34) / at(0) - 0.45) < 0.03, `${at(34) / at(0)}`);
+    assert.ok(Math.abs(at(20) / at(0) - 0.7) < 0.03, `${at(20) / at(0)}`);
+    const noLoad = { ...opts, loadKg: 0 };
+    for (let x = -20; x <= 40; x += 2) assert.ok(analyze(ex, v("single-leg"), x, noLoad).effort < 1.05, `single-leg body weight @${x}`);
   });
 }
 

@@ -92,17 +92,19 @@ export function jointScaleAt(spec, s, joints = {}) {
  * the value in [lo, hi] (a friction limit) that minimises the sum of squared efforts of the
  * exercise's muscle groups. `jointsAt(value)` returns the solver's joint components.
  */
+/** Sum of squared efforts over an exercise's (active) joints, for joints as solvers return them. */
+export function effortCost(exercise, js, variant = {}) {
+  return exercise.joints.filter((j) => !j.passive).reduce((sum, j) => {
+    const t = js[j.id].torque;
+    const neg = t < 0 && j.negative;
+    const curve = neg && j.negative.points ? j.negative.points : j.strength.points;
+    const cap = interp(curve, js[j.id].angle) * (neg ? j.negative.peakTorqueNm : j.peakTorqueNm) * jointScaleAt(exercise.jointScale?.[j.id], js[j.id], js) * jointScaleAt(variant.jointScale?.[j.id], js[j.id], js);
+    return sum + (t < 0 && !j.negative ? 0 : (t / cap) ** 2);
+  }, 0);
+}
+
 export function leastEffort(exercise, jointsAt, lo = -0.6, hi = 0.6, variant = {}) {
-  const cost = (value) => {
-    const js = jointsAt(value);
-    return exercise.joints.filter((j) => !j.passive).reduce((sum, j) => {
-      const t = js[j.id].torque;
-      const neg = t < 0 && j.negative;
-      const curve = neg && j.negative.points ? j.negative.points : j.strength.points;
-      const cap = interp(curve, js[j.id].angle) * (neg ? j.negative.peakTorqueNm : j.peakTorqueNm) * jointScaleAt(exercise.jointScale?.[j.id], js[j.id], js) * jointScaleAt(variant.jointScale?.[j.id], js[j.id], js);
-      return sum + (t < 0 && !j.negative ? 0 : (t / cap) ** 2);
-    }, 0);
-  };
+  const cost = (value) => effortCost(exercise, jointsAt(value), variant);
   // Coarse scan first (the cost can have more than one dip, e.g. when the elbow follows the push),
   // then a ternary search around the best grid point.
   const N = 24, step = (hi - lo) / N;
@@ -1065,7 +1067,7 @@ export function pull3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const reach = (L.upperArm + L.forearm) * 0.985;
   const hipY = 0.5; // pulldown seat height
   const armKg = (m.upperArm + m.forearmHand) * kg;
-  const build = (lean, origin) => {
+  const build = (lean, origin, swing = 0) => {
     const up = v3(-Math.sin(lean), Math.cos(lean), 0), front = v3(Math.cos(lean), Math.sin(lean), 0);
     const pelvis = origin;
     const mid = add3(pelvis, up, L.trunk);
@@ -1076,24 +1078,34 @@ export function pull3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     const dz = P.gripHalf - L.shoulderHalfWidth;
     const start = add3(add3(add3(mid, up, travel / 2), Z, P.gripHalf), up, Math.sqrt(Math.max(0, reach * reach - dz * dz)));
     const end = add3(add3(add3(mid, Z, P.gripHalf), front, P.touchFront), up, P.touchUp);
-    const hand = lerp3(start, end, x / 100);
+    // Straight from overhead to the chest in the trunk's frame, bowed forward by `swing` (m) mid-pull:
+    // the body swinging behind the bar, as hanging lifters do.
+    const hand = add3(lerp3(start, end, x / 100), front, swing * Math.sin((Math.PI * x) / 100));
     return { up, front, pelvis, mid, S, start, end, hand };
   };
+  // Hanging: the legs may come forward of the trunk by `pike` (radians; hip flexion with straight
+  // legs). The body leans (about the hands) so the centre of mass hangs under the bar; bringing the
+  // legs forward lets the trunk lean back, the shoulders sit behind the bar and the forearms stand
+  // more upright, at the cost of the hip flexors holding the legs. P.pike = "auto" (default)
+  // picks the least-effort pike over every joint, hip included (static optimisation).
+  const legDir = (bb, pike) => add3(add3(v3(0, 0, 0), bb.up, -Math.cos(pike)), bb.front, Math.sin(pike));
+  const legsKg = 2 * (m.thigh + m.shank + m.foot) * kg;
+  const solve = (pike, swing = 0) => {
   let B, lean = rad(P.lean), F, pullDir, ok = true;
   if (P.hang) {
-    // Lean (about the hands) so that the centre of mass is under the bar. Legs hang straight.
+    // Lean (about the hands) so that the centre of mass is under the bar.
     F = ((kg + loadKg) * G) / 2;
     pullDir = UP;
     const comX = (bb) => {
-      const legsAt = add3(bb.pelvis, bb.up, -0.45 * (L.thigh + L.shank));
-      const items = [[add3(bb.pelvis, bb.up, c.headTrunk * L.trunk), m.headTrunk * kg], [legsAt, 2 * (m.thigh + m.shank + m.foot) * kg],
+      const legsAt = add3(bb.pelvis, legDir(bb, pike), 0.45 * (L.thigh + L.shank));
+      const items = [[add3(bb.pelvis, bb.up, c.headTrunk * L.trunk), m.headTrunk * kg], [legsAt, legsKg],
         [lerp3(bb.S, bb.hand, 0.45), 2 * armKg], [bb.pelvis, loadKg]];
       return items.reduce((t, [p, k]) => t + p.x * k, 0) / items.reduce((t, [, k]) => t + k, 0) - bb.hand.x;
     };
-    const sol = bisect((l) => comX(build(l, v3(0, 0, 0))), rad(-40), rad(60));
+    const sol = bisect((l) => comX(build(l, v3(0, 0, 0), swing)), rad(-40), rad(60));
     lean = sol.t; ok = sol.ok;
-    const b0 = build(lean, v3(0, 0, 0));
-    B = build(lean, v3(-b0.hand.x, 2.25 - b0.hand.y, 0)); // hands on the bar: 2.25 m up, over the origin
+    const b0 = build(lean, v3(0, 0, 0), swing);
+    B = build(lean, v3(-b0.hand.x, 2.25 - b0.hand.y, 0), swing); // hands on the bar: 2.25 m up, over the origin
   } else {
     F = (loadKg * G) / 2;
     B = build(lean, v3(0, hipY, 0));
@@ -1123,6 +1135,13 @@ export function pull3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     "elbow-side": { at: E, angle: angleBetween3(dU, dF), torque: dot3(Mel, eSide) },
   };
   const H = add3(pelvis, Z, L.hipHalfWidth);
+  if (P.hang) {
+    // One leg held forward of the trunk: its weight about the hip, held by the hip flexors (−).
+    const legAt = add3(H, legDir(B, pike), 0.45 * (L.thigh + L.shank));
+    const legW = (legsKg / 2) * G;
+    const Mh = -legW * (legAt.x - H.x); // legs in front of the hip: − (the hip flexors hold them)
+    joints.hip = { at: H, angle: deg(pike), torque: Mh };
+  }
   if (!P.hang) {
     const trunkW = weight(add3(pelvis, up, c.headTrunk * L.trunk), (m.headTrunk * kg) / 2);
     const above = [trunkW, upperW, foreW, onHand];
@@ -1134,7 +1153,7 @@ export function pull3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const scene = [];
   const head = add3(add3(pelvis, up, L.trunk), up, 0.22);
   if (P.hang) {
-    const K = add3(H, up, -L.thigh), A = add3(K, up, -L.shank);
+    const K = add3(H, legDir(B, pike), L.thigh), A = add3(K, legDir(B, pike), L.shank);
     scene.push(...legPrims(H, K, A, add3(A, front, -L.heel), add3(A, front, L.footFront)),
       L3(v3(hand.x, hand.y + 0.02, -0.7), v3(hand.x, hand.y + 0.02, 0.7), 0.035, "equipment"),
       L3(v3(hand.x, hand.y + 0.02, -0.7), v3(hand.x, 0, -0.7), 0.04, "equipment"), L3(v3(hand.x, hand.y + 0.02, 0.7), v3(hand.x, 0, 0.7), 0.04, "equipment"));
@@ -1161,7 +1180,20 @@ export function pull3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     scene,
     forces: [{ at: hand, dir: unit3(onHand.f) }, { at: mirror(hand), dir: mirror(unit3(onHand.f)) }],
     parts: { hand, S, E, lean: deg(lean), F },
-    info: [{ text: `Trunk leaning back ${Math.round(-deg(Math.asin(up.x)))}°${P.hang ? " (so the centre of mass hangs under the bar)" : ""}; upper arm raised ${Math.round(elev)}° from the side.` },
+    info: [{ text: `Trunk leaning back ${Math.round(-deg(Math.asin(up.x)))}°${P.hang ? ` (so the centre of mass hangs under the bar), legs ${Math.round(deg(pike))}° forward of the trunk${(P.pike ?? "auto") === "auto" ? " (least effort)" : ""}` : ""}; upper arm raised ${Math.round(elev)}° from the side.` },
+      ...(P.hang && swing > 0.005 ? [{ text: `The body swings ${Math.round(swing * 100)} cm behind the bar mid-pull${(P.swing ?? "auto") === "auto" ? " (least effort)" : ""}, keeping the forearms more upright.` }] : []),
       ...(ok ? [] : [{ warn: true, text: "No lean puts the centre of mass under the bar here." }])],
   };
+  };
+  if (!P.hang) return solve(0, 0);
+  // Hanging: how far the legs come forward and how far the body swings behind the bar are the
+  // lifter's choice; "auto" takes the least-effort pair (grid, then a finer grid around the best).
+  const autoPike = (P.pike ?? "auto") === "auto", autoSwing = (P.swing ?? "auto") === "auto";
+  const pikes = (lo, hi, n) => (autoPike ? Array.from({ length: n + 1 }, (_, i) => lo + ((hi - lo) * i) / n) : [rad(+P.pike || 0)]);
+  const swings = (lo, hi, n) => (autoSwing ? Array.from({ length: n + 1 }, (_, i) => lo + ((hi - lo) * i) / n) : [+P.swing || 0]);
+  let best = null;
+  const tryAll = (ps, ss) => { for (const pk of ps) for (const sw of ss) { const c = effortCost(ex, solve(pk, sw).joints, v); if (!best || c < best.c) best = { c, pk, sw }; } };
+  tryAll(pikes(0, rad(60), 4), swings(0, 0.3, 4));
+  tryAll(pikes(Math.max(0, best.pk - rad(10)), Math.min(rad(60), best.pk + rad(10)), 2), swings(Math.max(0, best.sw - 0.04), Math.min(0.3, best.sw + 0.04), 4));
+  return solve(best.pk, best.sw);
 }
