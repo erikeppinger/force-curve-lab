@@ -263,6 +263,30 @@
       "citation": "Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169.",
       "url": "https://doi.org/10.1080/02640410701370663",
       "usedFor": "Leg extension: measured resistance profiles of knee-extension machines (mean of eight, and the two extremes) in place of an illustrative cam."
+    },
+    {
+      "key": "Ono 2011",
+      "match": "Ono T, Higashihara A",
+      "group": "Muscle activity",
+      "citation": "Ono T, Higashihara A, Fukubayashi T (2011). Hamstring functions during hip-extension exercise assessed with electromyography and magnetic resonance imaging. Res Sports Med 19(1):42–52.",
+      "url": "https://doi.org/10.1080/15438627.2011.535769",
+      "usedFor": "Romanian deadlift: how the hamstrings' activity splits between biceps femoris, semitendinosus and semimembranosus (surface EMG, stiff-leg deadlift)."
+    },
+    {
+      "key": "Messer 2018",
+      "match": "Messer DJ, Bourne MN",
+      "group": "Muscle activity",
+      "citation": "Messer DJ, Bourne MN, Williams MD, Al Najjar A, Shield AJ (2018). Hamstring muscle use in women during hip extension and the Nordic hamstring exercise: a functional magnetic resonance imaging study. J Orthop Sports Phys Ther 48(8):607–612.",
+      "url": "https://doi.org/10.2519/jospt.2018.7748",
+      "usedFor": "Leg curl: how the hamstrings' activity splits between the heads in knee flexion (MRI, Nordic exercise); also a contrasting result for hip extension."
+    },
+    {
+      "key": "Park 2023",
+      "match": "Park S, Lim W",
+      "group": "Muscle activity",
+      "citation": "Park S, Lim W (2023). Comparison of muscle activity of hamstrings as knee flexors and hip extensors and effect of tibial and hip rotation on the contribution of hamstrings. J Bodyw Mov Ther 34:1–5.",
+      "url": "https://doi.org/10.1016/j.jbmt.2023.04.029",
+      "usedFor": "Hamstrings: inner vs outer hamstrings in knee flexion and hip extension, and the shift towards the biceps femoris with the hip turned out (context for the per-head splits)."
     }
   ],
   "resources": [

@@ -97,6 +97,7 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] Close-up of one body region next to the overview: forearm and hand (wrist curls; brachioradialis in the curls)
 - [x] Wrist curl (seated, behind the back, cable, finger roll) and reverse wrist curl
 - [x] Edge lift (one arm hanging, block on a loading pin; open hand / half crimp / full crimp): finger chain with FDS and FDP tendon forces and A2/A4 pulley loads (Vigouroux 2006, Schweizer 2001, An 1983)
+- [x] Hamstring heads split by measured shares in the Romanian deadlift (Ono 2011) and leg curl (Messer 2018); other group muscles stay hatched
 - [ ] Edge lift: middle-finger geometry, measured half crimp, pressure centre on deep edges, load split between fingers
 - [x] More close-ups: shoulder (three deltoid heads, rotator cuff), hip and thigh (quadriceps and hamstring heads, gluteals, deep rotators)
 - [x] Placement sliders (edge lift, 3D lifts) saved in shareable links

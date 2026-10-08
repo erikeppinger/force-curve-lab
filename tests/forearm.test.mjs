@@ -102,9 +102,9 @@ test("group muscles colour every head with the group's value and mark it as a gr
     { id: "lower-traps", name: "Lower trapezius, rhomboids", region: "shoulder", regionPath: ["lower-trapezius", "rhomboids"], value: null },
   ];
   const v = regionValues(act);
-  assert.deepEqual(v.get("vastus-lateralis"), { value: 0.6, group: "Quadriceps", muscleId: "quadriceps" });
+  assert.deepEqual(v.get("vastus-lateralis"), { value: 0.6, group: "Quadriceps", share: null, muscleId: "quadriceps" });
   // A muscle of its own with a larger value wins its drawing.
-  assert.deepEqual(v.get("rectus-femoris"), { value: 0.8, group: null, muscleId: "rectus-femoris" });
+  assert.deepEqual(v.get("rectus-femoris"), { value: 0.8, group: null, share: null, muscleId: "rectus-femoris" });
   assert.equal(v.get("rhomboids").value, null);
 });
 
@@ -115,4 +115,22 @@ test("close-ups for the lifts: leg extension resolves rectus femoris vs vasti; a
   assert.deepEqual(views("squat"), ["front", "back", "hip-deep"]);
   const shoulder = load("regions/shoulder");
   assert.ok(viewsFor(shoulder, load("exercises/lateral-raise")).some((x) => x.id === "back-deep"), "supraspinatus");
+});
+
+test("measured per-head shares split the hamstrings: RDL from Ono et al. (EMG), leg curl from Messer et al. (MRI)", () => {
+  const heads = (exId) => {
+    const ex = load(`exercises/${exId}`);
+    const m = ex.muscles.find((x) => x.id === "hamstrings");
+    assert.ok(m.regionSharesNote && m.regionSharesSource, exId);
+    const v = regionValues([{ ...m, value: 0.5 }]);
+    for (const p of pathsOf(m)) assert.equal(v.get(p).group, null, `${exId}: ${p} is no longer a hatched group`);
+    return Object.fromEntries(pathsOf(m).map((p) => [p, v.get(p).value]));
+  };
+  const rdl = heads("romanian-deadlift");
+  assert.ok(rdl["semitendinosus"] < rdl["biceps-femoris"] && rdl["semitendinosus"] < rdl["semimembranosus"]);
+  close(rdl["biceps-femoris"], 0.5);
+  close(rdl["semitendinosus"], 0.5 * 33 / 43.5, 0.01); // Ono Fig. 1, lifting phase
+  const curl = heads("leg-curl");
+  assert.ok(curl["semitendinosus"] > curl["semimembranosus"] && curl["semimembranosus"] > curl["biceps-femoris"]);
+  close(curl["semimembranosus"], 0.5 * 33.27 / 57.99, 0.01); // Messer Table, Nordic
 });

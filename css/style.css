@@ -280,7 +280,7 @@ input[type="range"]:disabled { opacity: 0.4; }
 
 /* Close-up of one body region (js/regions.js) */
 .muscle-detail { grid-column: 1 / -1; }
-.detail-views { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
+.detail-views { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(190px, 45%), 1fr)); gap: 14px; }
 .detail-views figure { max-width: 260px; }
 .detail-views figure { margin: 0; }
 .detail-views svg { width: 100%; height: auto; display: block; max-height: 420px; }

@@ -10,6 +10,7 @@
 //   abbreviation at `label` [x, y], turned by `labelAngle` degrees.
 //
 // An exercise muscle joins a close-up with `region` and draws on the paths in `regionPath`
+// (with optional measured `regionShares` per path: each head gets the group value × its share)
 // (one id or a list; default its own id). A muscle that covers several drawn muscles (e.g.
 // "quadriceps" → four heads) colours each with the group's value and hatches it: the model
 // doesn't resolve the heads.
@@ -44,9 +45,13 @@ export function regionValues(activation) {
   for (const m of activation.filter((x) => x.region)) {
     const paths = pathsOf(m);
     for (const p of paths) {
+      // Measured per-head shares (regionShares, relative to the most active head) split a group
+      // value between its heads; without them every head gets the group value, hatched.
+      const share = m.regionShares?.[p];
+      const value = m.value == null ? null : share != null ? m.value * share : m.value;
       const prev = out.get(p);
-      if (prev && (m.value ?? -1) <= (prev.value ?? -1)) continue;
-      out.set(p, { value: m.value, group: paths.length > 1 ? m.name : null, muscleId: m.id });
+      if (prev && (value ?? -1) <= (prev.value ?? -1)) continue;
+      out.set(p, { value, group: paths.length > 1 && share == null ? m.name : null, share: share ?? null, muscleId: m.id });
     }
   }
   return out;
@@ -126,6 +131,7 @@ export function renderRegionView(svg, region, view, values, onPick) {
     const state = !has ? "not part of this exercise"
       : v == null ? "involved, not resolved by the model"
       : hit.group ? `${Math.round(v * 100)}% for the whole ${hit.group.toLowerCase()} group (the model doesn't split it)`
+      : hit.share != null ? `${Math.round(v * 100)}% (this head's measured share of the group's activity)`
       : `${Math.round(v * 100)}%`;
     el("title", {}, g).textContent = `${info.name}: ${state}. ${info.action}.`;
     if (has && onPick) {
