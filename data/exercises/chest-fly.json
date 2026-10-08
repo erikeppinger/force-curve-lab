@@ -8,6 +8,7 @@
   "angleOffset": 90,
   "angleRange": [-20, 90],
   "angleNote": "Horizontal adduction: 0° = arms out to the sides in line with the shoulders, 90° = arms pointing straight forward. Negative = arms behind the shoulders (stretch). Top view: x out to the side, y forward.",
+  "jointNote": "Not truly one joint: as the arms come together the shoulder blades slide forward round the rib cage (protraction), and they draw back in the stretch. The model treats the arm as turning about one fixed shoulder point; how much of the motion the shoulder blade takes in a fly hasn't been checked here (TODO: source), and the shoulder-blade muscles (serratus anterior, rhomboids) aren't analysed.",
   "segments": {
     "proximal": 0.3,
     "distal": 0.33,

@@ -309,6 +309,9 @@ function setExercise(id, h = {}) {
   $("exercise").value = id;
   $("exercise-name").textContent = ex.name;
   $("angle-note").textContent = ex.angleNote;
+  // What the single joint leaves out (e.g. the shoulder blade moving with the arm).
+  $("joint-note").hidden = !ex.jointNote;
+  $("joint-note").textContent = ex.jointNote ?? "";
   $("exercise-technique").hidden = !ex.technique;
   $("exercise-technique").textContent = ex.technique ?? "";
   $("angle-label").textContent = ex.angleLabel;

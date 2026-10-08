@@ -261,13 +261,14 @@
         "kneeBase": 0,
         "kneePerHip": 0.7,
         "clearShins": true,
-        "halfWidth": 0.13,
-        "toeOut": 10,
+        "halfWidth": 0.16,
+        "toeOut": 14,
         "kneeTrack": 0,
         "sidePush": "auto"
       },
       "loadShape": "plate",
-      "notes": "The bar can't pass through the legs: where hanging straight down would put it inside the shins or thighs, the straight arms swing forward until the bar just touches them. Around the knees that pushes the bar out in front of the mid-foot, so the hips move back to keep the balance and the hip torque grows."
+      "notes": "The bar can't pass through the legs: where hanging straight down would put it inside the shins or thighs, the straight arms swing forward until the bar just touches them. Around the knees that pushes the bar out in front of the mid-foot, so the hips move back to keep the balance and the hip torque grows.",
+      "source": "Stance and toe angle: Escamilla RF, Francisco AC, Fleisig GS, Barrentine SW, Welch CM, Kayes AV, Speer KP, Andrews JR (2000). A three-dimensional biomechanical analysis of sumo and conventional style deadlifts. Med Sci Sports Exerc 32(7):1265–1275. doi:10.1097/00005768-200007000-00013 (abstract: stance 70 ± 11 vs 32 ± 8 cm, feet out 42 ± 8° vs 14 ± 6°, 12 + 12 national-level powerlifters)"
     },
     {
       "id": "sumo",
@@ -279,13 +280,14 @@
         "kneeBase": 0,
         "kneePerHip": 0.9,
         "clearShins": true,
-        "halfWidth": 0.36,
-        "toeOut": 40,
+        "halfWidth": 0.35,
+        "toeOut": 42,
         "kneeTrack": 0,
         "sidePush": "auto"
       },
       "loadShape": "plate",
-      "notes": "Feet wide and turned out, hands inside the knees. The wide stance lets the hips come closer to the bar, so the trunk is more upright and the knees bend more: work shifts from the hip extensors and back to the knees, and the floor's sideways push brings in the hip's sideways and rotating muscles. Stance, toe angle and knee bend are estimates (TODO: measured sumo postures, e.g. Escamilla et al. 2000)."
+      "notes": "Feet wide and turned out (stance and toe angle as measured in national-level sumo lifters), hands inside the knees. The wide stance lets the hips come closer to the bar, so the trunk is more upright and the knees bend more: in the model work shifts from the hip extensors to the knees, and the floor's sideways push brings in the hip's sideways and rotating muscles. Escamilla et al. found the sumo lifters' thighs 11–16° more horizontal and trunk and thighs 5–10° more upright, with different knee and ankle moments but no significant difference in hip moments; the knee bend per hip bend here is an estimate.",
+      "source": "Stance and toe angle: Escamilla RF, Francisco AC, Fleisig GS, Barrentine SW, Welch CM, Kayes AV, Speer KP, Andrews JR (2000). A three-dimensional biomechanical analysis of sumo and conventional style deadlifts. Med Sci Sports Exerc 32(7):1265–1275. doi:10.1097/00005768-200007000-00013 (abstract: stance 70 ± 11 vs 32 ± 8 cm, feet out 42 ± 8° vs 14 ± 6°, 12 + 12 national-level powerlifters)"
     },
     {
       "id": "trap-bar",

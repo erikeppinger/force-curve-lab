@@ -7,6 +7,8 @@
   "angleLabel": "Shoulder angle",
   "angleRange": [0, 90],
   "angleNote": "Shoulder flexion: 0° = arm by your side, 90° = arm pointing forward at shoulder height.",
+  "jointNote": "Not truly one joint: the shoulder blade turns upwards on the rib cage as the arm rises, so the angle here is the whole arm against the trunk. In 12 people reaching overhead, the shoulder joint itself moved about 2.3° for every 1° of shoulder-blade rotation on the way up (2.7 on the way down), and the first 30° came mostly from the shoulder joint (about 3.7 : 1); Inman's classic figure is 2 : 1. Above about 30° a good part of the raise is the shoulder blade turning. The model treats the arm as turning about one fixed shoulder point; the shoulder-blade muscles (trapezius, serratus anterior) that turn the blade aren't analysed.",
+  "jointNoteSource": "Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001",
   "segments": {
     "proximal": 0.3,
     "distal": 0.33,

@@ -297,6 +297,22 @@
       "usedFor": "Edge lift: length and position of the A2 and A4 pulleys."
     },
     {
+      "key": "Escamilla 2000",
+      "match": "Escamilla RF, Francisco AC",
+      "group": "Exercise biomechanics",
+      "citation": "Escamilla RF, Francisco AC, Fleisig GS, Barrentine SW, Welch CM, Kayes AV, Speer KP, Andrews JR (2000). A three-dimensional biomechanical analysis of sumo and conventional style deadlifts. Med Sci Sports Exerc 32(7):1265–1275.",
+      "url": "https://doi.org/10.1097/00005768-200007000-00013",
+      "usedFor": "Deadlift: stance width and toe angle of the conventional and sumo pulls (abstract), and the comparison of their joint moments."
+    },
+    {
+      "key": "Braman 2009",
+      "match": "Braman JP, Engel SC",
+      "group": "Body data",
+      "citation": "Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967.",
+      "url": "https://doi.org/10.1016/j.jse.2009.02.001",
+      "usedFor": "Shoulder raises and the straight-arm pulldown: how much of arm elevation is the shoulder blade turning (about 2.3 : 1 shoulder joint to shoulder blade when raising, 2.7 lowering; Inman's classic 2 : 1), noted as what the single-joint model leaves out."
+    },
+    {
       "key": "Latz 2019",
       "match": "Latz D, Koukos C",
       "group": "Body data",
