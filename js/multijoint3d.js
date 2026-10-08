@@ -675,15 +675,20 @@ export function hinge3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     const tk = thighLean + rad(x);
     const back = v3(Math.sin(tk), Math.cos(tk), 0);
     const pelvis = v3(H.x, H.y, 0);
-    const S = add3(pelvis, back, L.trunk);
+    // Back rounding (P.spineFlex, degrees): the lower half of the trunk follows the pelvis, the upper
+    // half bends forward by spineFlex, which lowers the shoulders and brings them forward.
+    const rnd = rad(P.spineFlex ?? 0);
+    const upperBack = v3(Math.sin(tk + rnd), Math.cos(tk + rnd), 0);
+    const midBack = add3(pelvis, back, L.trunk / 2);
+    const S = add3(midBack, upperBack, L.trunk / 2);
     const bar = P.clearShins ? hangClear(S, L.upperArm + L.forearm, A, K, H) : v3(S.x, S.y - (L.upperArm + L.forearm), 0);
-    const trunkCom = add3(pelvis, back, c.headTrunk * L.trunk);
+    const trunkCom = c.headTrunk <= 0.5 ? add3(pelvis, back, c.headTrunk * L.trunk) : add3(midBack, upperBack, (c.headTrunk - 0.5) * L.trunk);
     const armCom = lerp3(S, bar, 0.45);
     const items = [[lerp3(K, H, c.thigh), 2 * m.thigh * kg], [lerp3(A, K, c.shank), 2 * m.shank * kg], [v3(balanceX, 0, 0), 2 * m.foot * kg],
       [trunkCom, m.headTrunk * kg], [armCom, armsKg], [bar, loadKg]];
     const total = items.reduce((s, [, k]) => s + k, 0);
     const comX = items.reduce((s, [p, k]) => s + p.x * k, 0) / total;
-    return { H, K, back, pelvis, S, bar, comX, total };
+    return { H, K, back, upperBack, midBack, pelvis, S, bar, comX, total };
   };
   const bal = bisect((psi) => pose(psi).comX - balanceX, rad(-60), rad(40));
   const Q = pose(bal.t);
@@ -697,7 +702,7 @@ export function hinge3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     balance: { x: balanceX, com: Q.comX, ok: bal.ok },
     scene: [
       { kind: "poly", pts: [[-0.5, -0.6], [0.7, -0.6], [0.7, 0.6], [-0.5, 0.6]].map(([px, pz]) => v3(px, 0, pz)), cls: "floor3d" },
-      L3(Q.pelvis, Q.S, 0.3, "body"), dot(add3(Q.S, Q.back, 0.22), 0.11, "body"), L3(mirror(Q.H), Q.H, 0.16, "body"),
+      L3(Q.pelvis, Q.midBack, 0.3, "body"), L3(Q.midBack, Q.S, 0.3, "body"), dot(add3(Q.S, Q.upperBack, 0.22), 0.11, "body"), L3(mirror(Q.H), Q.H, 0.16, "body"),
       L3(mirror(shoulder), shoulder, 0.1, "body"), L3(mirror(shoulder), mirror(hand), 0.07, "body arm back"), L3(shoulder, hand, 0.07, "body arm"),
       ...legPrims(Q.H, Q.K, A, ...footPrims(A, f, L)),
       L3(add3(Q.bar, Z, -0.7), add3(Q.bar, Z, 0.7), 0.03, "equipment"), ...both(add3(Q.bar, Z, 0.62)).map((p) => dot(p, 0.13, "weight")),

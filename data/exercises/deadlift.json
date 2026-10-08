@@ -258,17 +258,18 @@
       "params": {
         "mode": "hinge",
         "load": "hang",
-        "kneeBase": -16.6,
-        "kneePerHip": 0.54,
+        "kneeBase": 0,
+        "kneePerHip": 0.7,
         "clearShins": true,
         "halfWidth": 0.16,
         "toeOut": 14,
         "kneeTrack": 0,
-        "sidePush": "auto"
+        "sidePush": "auto",
+        "spineFlex": 0
       },
       "loadShape": "plate",
-      "notes": "The bar can't pass through the legs: where hanging straight down would put it inside the shins or thighs, the straight arms swing forward until the bar just touches them. Around the knees that pushes the bar out in front of the mid-foot, so the hips move back to keep the balance and the hip torque grows. The knees follow the measured angles: from bending as the bar passes the knees to the lift-off angle (Escamilla et al.); the model's rigid trunk then needs more hip flexion to reach the floor than the lifters did (134° here vs 108° measured), because real lifters round the spine and reach with the shoulder blades.",
-      "source": "Stance, toe angle and knee bend: Escamilla RF, Francisco AC, Fleisig GS, Barrentine SW, Welch CM, Kayes AV, Speer KP, Andrews JR (2000). A three-dimensional biomechanical analysis of sumo and conventional style deadlifts. Med Sci Sports Exerc 32(7):1265–1275. doi:10.1097/00005768-200007000-00013 (Table 1: knee flexion 19° as the bar passes the knees at 66° of hip flexion, 56° at lift-off; Table 3: stance 32 ± 8 cm; feet out 14 ± 6°; 12 national-level powerlifters)"
+      "notes": "The bar can't pass through the legs: where hanging straight down would put it inside the shins or thighs, the straight arms swing forward until the bar just touches them. Around the knees that pushes the bar out in front of the mid-foot, so the hips move back to keep the balance and the hip torque grows. Knee bend: 0.7° per degree of hip flexion (estimate). Compared with Escamilla et al.'s national-level lifters at lift-off, the model bends the knees more (97° vs 56°) but reproduces the moment pattern they measured: the hip extensors do most of the work and the knee extensors help. Fitting the knee rule to their measured angles instead would push the hips far behind the ankles and turn the knee moment into flexion, because the straight trunk then has to reach the floor with hip flexion alone; their published segment angles also don't close with typical segment lengths (they would put the shoulders about 0.8 m above the bar). Rounding the back (slider) lowers the shoulders and lets the bar reach the floor with less hip flexion.",
+      "source": "Stance and toe angle: Escamilla RF, Francisco AC, Fleisig GS, Barrentine SW, Welch CM, Kayes AV, Speer KP, Andrews JR (2000). A three-dimensional biomechanical analysis of sumo and conventional style deadlifts. Med Sci Sports Exerc 32(7):1265–1275. doi:10.1097/00005768-200007000-00013 (Table 3: stance 32 ± 8 cm; Table 1: feet out 14 ± 6°; 12 national-level powerlifters); comparison of knee angles and joint moments at lift-off: the same paper (Tables 1 and 6)"
     },
     {
       "id": "sumo",
@@ -277,18 +278,18 @@
       "params": {
         "mode": "hinge",
         "load": "hang",
-        "kneeBase": -9.3,
-        "kneePerHip": 0.49,
+        "kneeBase": 0,
+        "kneePerHip": 0.9,
         "clearShins": true,
         "halfWidth": 0.35,
         "toeOut": 42,
         "kneeTrack": 0,
-        "sidePush": "auto"
+        "sidePush": "auto",
+        "spineFlex": 0
       },
       "loadShape": "plate",
-      "notes": "Feet wide and turned out (stance and toe angle as measured in national-level sumo lifters), hands inside the knees. The wide stance lets the hips come closer to the bar, so the trunk is more upright. Knee bend follows the measured angles (27° as the bar passes the knees, 54° at lift-off); the bar reaches the floor at 129° of hip flexion in the model. As Escamilla et al. found, the hip moment is about the same as in the conventional pull and the knee needs much more extensor moment (model at the floor: 1.8×; measured 3.1×); they measured an ankle dorsiflexor moment in the sumo group, where the model keeps a plantarflexor one.",
-      "source": "Stance, toe angle and knee bend: Escamilla RF, Francisco AC, Fleisig GS, Barrentine SW, Welch CM, Kayes AV, Speer KP, Andrews JR (2000). A three-dimensional biomechanical analysis of sumo and conventional style deadlifts. Med Sci Sports Exerc 32(7):1265–1275. doi:10.1097/00005768-200007000-00013 (Table 1: knee flexion 27° at the knees at 74° of hip flexion, 54° at lift-off; Table 3: stance 70 ± 11 cm; feet out 42 ± 8°)",
-      "angleRange": [0, 129]
+      "notes": "Feet wide and turned out (stance and toe angle as measured in national-level sumo lifters), hands inside the knees. The wide stance lets the hips come closer to the bar, so the trunk is more upright and the knees bend more (0.9° per degree of hip flexion, estimate). Compared with Escamilla et al. at lift-off: the knee extensors do much more than in the conventional pull, as measured (model at the floor: about 1.8×; measured 3.1×); the hip moment comes out lower than conventional (measured: about the same, not significantly different); and they measured an ankle dorsiflexor moment in the sumo group, where the model keeps a plantarflexor one. The model also bends the knees more than the lifters did (about 120° vs 54°).",
+      "source": "Stance and toe angle: Escamilla RF, Francisco AC, Fleisig GS, Barrentine SW, Welch CM, Kayes AV, Speer KP, Andrews JR (2000). A three-dimensional biomechanical analysis of sumo and conventional style deadlifts. Med Sci Sports Exerc 32(7):1265–1275. doi:10.1097/00005768-200007000-00013 (Table 3: stance 70 ± 11 cm; Table 1: feet out 42 ± 8°); comparison of knee angles and joint moments at lift-off: the same paper (Tables 1 and 6)"
     },
     {
       "id": "trap-bar",
@@ -302,7 +303,8 @@
         "halfWidth": 0.13,
         "toeOut": 10,
         "kneeTrack": 0,
-        "sidePush": "auto"
+        "sidePush": "auto",
+        "spineFlex": 0
       },
       "loadShape": "plate",
       "notes": "You stand inside the bar and the handles are beside the legs, so the load can hang straight under the shoulders all the way. With the shins out of the way you can sit deeper: more knee bend, a more upright trunk, and the work shifts from the hips to the knees."
@@ -374,6 +376,16 @@
       "unit": "%",
       "scale": 100,
       "auto": "Least effort (auto)"
+    },
+    {
+      "key": "spineFlex",
+      "label": "Back rounding (upper back bent forward)",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "°",
+      "scale": 1,
+      "hint": "The upper half of the trunk bends forward from the lower half: the shoulders drop and come forward, so the bar reaches the floor with less hip flexion. The hip angle shown stays the pelvis–thigh angle. How much lifters round isn't set from a source; the spine's own load isn't analysed (the hip's stands in for it)."
     }
   ]
 }
