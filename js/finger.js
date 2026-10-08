@@ -55,7 +55,39 @@ const pulleyLoad = (T, uFrom, uTo) => T * len(add(uTo, uFrom, -1));
  * Full analysis at one PIP angle. P = variant params merged with the placement sliders
  * (contactFromDip, fingerShare); opts: loadKg (whole block, one hand), strengthPct.
  */
-export function analyzeFinger(ex, v, pipDeg, { loadKg, strengthPct = 100, placement } = {}) {
+/**
+ * The arm holding the block: straight, hanging from the shoulder, turned forward (armForward)
+ * and out to the side (armSide) by the given angles (degrees). The block hangs from the hand.
+ * Returns the torques the shoulder (flexors, abductors) and the elbow must hold, and the pull
+ * along the arm. Small-angle composition: forward and sideways reach add as offsets.
+ */
+export function armLoads(ex, P, loadKg, { body, bodyMassKg = 75, strengthPct = 100 } = {}) {
+  const a = ex.arm;
+  if (!a || !body) return null;
+  const L = body.lengths, m = body.mass, c = body.com;
+  const W = loadKg * G;
+  const sf = Math.sin(rad(P.armForward ?? 0)), ss = Math.sin(rad(P.armSide ?? 0));
+  const tilt = Math.hypot(sf, ss); // sine of the arm's angle from vertical
+  const reach = L.upperArm + L.forearm; // shoulder → grip
+  // Arm weight: upper arm and forearm + hand at their centres of mass.
+  const armMoment = G * bodyMassKg * (m.upperArm * c.upperArm * L.upperArm + m.forearmHand * (L.upperArm + c.forearmHand * L.forearm));
+  const foreMoment = G * bodyMassKg * m.forearmHand * c.forearmHand * L.forearm;
+  const shoulderForward = (W * reach + armMoment) * sf;
+  const shoulderSide = (W * reach + armMoment) * ss;
+  const elbow = (W * L.forearm + foreMoment) * tilt;
+  const scale = strengthPct / 100;
+  const capFlex = a.shoulderFlexion.peakTorqueNm * interp(a.shoulderFlexion.points, P.armForward ?? 0) * scale;
+  const capAbd = a.shoulderAbduction.peakTorqueNm * interp(a.shoulderAbduction.points, P.armSide ?? 0) * scale;
+  const capElbow = a.elbowStraight.peakTorqueNm * scale;
+  const armWeight = G * bodyMassKg * (m.upperArm + m.forearmHand);
+  return {
+    traction: (W + armWeight) * Math.sqrt(Math.max(0, 1 - tilt * tilt)), // pull along the arm at the shoulder
+    shoulderForward, shoulderSide, elbow,
+    effort: { shoulderForward: shoulderForward / capFlex, shoulderSide: shoulderSide / capAbd, elbow: elbow / capElbow },
+  };
+}
+
+export function analyzeFinger(ex, v, pipDeg, { loadKg, strengthPct = 100, placement, body, bodyMassKg } = {}) {
   const f = ex.finger;
   const P = { ...v.params, ...placement };
   const p = fingerPose(f, P, pipDeg);
@@ -105,6 +137,7 @@ export function analyzeFinger(ex, v, pipDeg, { loadKg, strengthPct = 100, placem
     },
     capacity, effort: F / capacity,
     maxBlockKg: capacity / (G * P.fingerShare), // block at which this finger reaches its maximum
+    arm: armLoads(ex, P, loadKg, { body, bodyMassKg, strengthPct }),
     ratio: fds > 0 ? fdp / fds : Infinity,
   };
 }

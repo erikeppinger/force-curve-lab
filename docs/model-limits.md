@@ -318,6 +318,7 @@ On Vigouroux et al.'s own set-up (1 cm hold, pull along the metacarpal, their cr
 
 ### Still limited
 
+- **The arm carrying the block** is a straight line from shoulder to grip, turned forward and to the side by two sliders (small-angle approximation). Straight down it only transmits the pull; turned out, the shoulder holds the block on a lever (30 kg at 20° forward: about 67 Nm, near typical shoulder-flexion strength). The elbow's effort is an upper bound: a locked straight elbow also resists over-straightening passively.
 - **Where the edge presses is a slider.** Vigouroux et al. put the load at half the distal phalanx on a 1 cm hold. On a 20–25 mm edge the whole distal phalanx rests on it, but where the pressure centre sits hasn't been measured, and it matters: pressing closer to the DIP shifts the work from FDP to FDS.
 - **Index-finger geometry for "a finger".** The middle and ring fingers carry the most on an edge and are longer; tendon moment arms are averaged over each joint's range.
 - **The half crimp posture is an estimate** (PIP 90°, DIP straight); neither paper measured it. Its maximum force uses the crimp's.

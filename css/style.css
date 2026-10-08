@@ -226,6 +226,7 @@ input[type="range"]:disabled { opacity: 0.4; }
 .joint-table .jt-f-fdp { border-left-color: var(--j-hip); }
 .joint-table .jt-f-fds { border-left-color: var(--j-knee); }
 .joint-table .jt-f-a2 { border-left-color: var(--j-ankle); }
+.joint-table .jt-f-arm { border-left-color: var(--muted); }
 .joint-table .jt-f-a4 { border-left-color: var(--compare); }
 #figure .tendon { fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.9; }
 #figure .tendon-fdp { stroke: var(--j-hip); }

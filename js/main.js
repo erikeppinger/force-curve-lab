@@ -147,7 +147,7 @@ function setPlacement(v, override = {}) {
 }
 
 /** Does the body-mass setting change anything (limb weight, or body weight on the floor)? */
-const usesBodyMass = (ex) => ex.model !== "finger" && (ex.model === "multi" || Boolean(ex.segments.massFractions) || ex.variants.some((v) => v.load.bodyWeight > 0));
+const usesBodyMass = (ex) => ex.model === "finger" || (ex.model === "multi" || Boolean(ex.segments.massFractions) || ex.variants.some((v) => v.load.bodyWeight > 0));
 const isMulti = () => state.exercise.model === "multi";
 const isFinger = () => state.exercise.model === "finger";
 /** Strength as % of typical (multi-joint lifts, edge lift) instead of a peak torque in Nm. */
@@ -495,10 +495,17 @@ function renderFinger() {
     ["f-fds", "FDS tendon", r.tendons.fds, r.tendons.fds / F, null],
     ["f-a2", "A2 pulley", r.pulleys.a2, r.pulleys.a2 / F, r.pulleys.a2Share],
     ["f-a4", "A4 pulley", r.pulleys.a4, r.pulleys.a4 / F, r.pulleys.a4Share],
+    // The arm carrying the whole block (torques in Nm, effort against typical strength).
+    ...(r.arm ? [
+      ["f-arm", "Pull along the arm", r.arm.traction, null, null],
+      ["f-arm", "Shoulder (forward)", r.arm.shoulderForward, null, r.arm.effort.shoulderForward, "Nm"],
+      ["f-arm", "Shoulder (sideways)", r.arm.shoulderSide, null, r.arm.effort.shoulderSide, "Nm"],
+      ["f-arm", "Elbow (kept straight)", r.arm.elbow, null, r.arm.effort.elbow, "Nm"],
+    ] : []),
   ];
-  $("joint-table").tBodies[0].replaceChildren(...rows.map(([cls, name, force, ratio, effort]) => {
+  $("joint-table").tBodies[0].replaceChildren(...rows.map(([cls, name, force, ratio, effort, unit = "N"]) => {
     const tr = document.createElement("tr");
-    [name, `${force.toFixed(0)} N`, ratio == null ? "—" : `${ratio.toFixed(1)}×`, effort == null ? "" : `${(effort * 100).toFixed(0)}%`].forEach((t, i) => {
+    [name, `${force.toFixed(unit === "Nm" ? 1 : 0)} ${unit}`, ratio == null ? "—" : `${ratio.toFixed(1)}×`, effort == null ? "" : `${(effort * 100).toFixed(0)}%`].forEach((t, i) => {
       const td = document.createElement(i ? "td" : "th");
       td.textContent = t;
       if (i === 0) { td.scope = "row"; td.className = `jt-${cls}`; }

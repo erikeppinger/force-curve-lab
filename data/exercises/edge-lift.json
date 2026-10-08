@@ -34,9 +34,17 @@
     "referenceTensionNote": "Tendon tension at a maximal one-finger effort (highest group mean of the two grips: FDP in the crimp, FDS in the slope grip), used to scale the muscle bars.",
     "referenceTensionSource": "Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Table 3)"
   },
+  "arm": {
+    "note": "The arm holding the block: straight from shoulder to grip, the block hanging from the hand. Arm hanging straight down: the load line runs through elbow and shoulder, which are only pulled apart. Turned forward or out to the side: the block acts on a lever (arm length × sine of the angle), held by the shoulder flexors or abductors; the elbow, kept straight, is pushed towards over-straightening and held by the locked joint and the elbow flexors. Lengths and segment masses from the shared body data; forward and sideways reach combine as offsets (small-angle approximation).",
+    "shoulderFlexion": {"peakTorqueNm": 68, "points": [[0, 1], [45, 0.96], [90, 0.92]], "note": "As in the front raise.", "source": "Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (shape); Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25. doi:10.1055/s-2007-1021105 (peak torque)"},
+    "shoulderAbduction": {"peakTorqueNm": 47, "points": [[0, 0.62], [30, 1], [60, 0.86], [90, 0.76]], "note": "As in the lateral raise: weakest with the arm down (62%).", "source": "Haidar SG, Lloyd J, Cox D, Deshmukh S (2009). Shoulder abduction strength: is it affected by the degree of abduction? J Bone Joint Surg Br 91-B Suppl I:160 (conference abstract). doi:10.1302/0301-620X.91BSUPP_I.0910160c; Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Normal values of isokinetic maximum strength, the strength/velocity curve, and the angle at peak torque of all degrees of freedom in the shoulder. Int J Sports Med 15:S19–S25. doi:10.1055/s-2007-1021105; Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (Clarke et al., contrary finding at 0°)"},
+    "elbowStraight": {"peakTorqueNm": 34, "note": "Elbow flexors with the arm straight: the curl's peak (65 Nm) × its curve at the lowest measured angle (32°, 0.52), held flat to 0° (extrapolation). The locked elbow joint also resists over-straightening passively, so this effort is an upper bound.", "source": "Pinter IJ, Bobbert MF, van Soest AJ, Smeets JBJ (2010). Isometric torque–angle relationships of the elbow flexors and extensors in the transverse plane. J Electromyogr Kinesiol 20:923–931. doi:10.1016/j.jelekin.2010.05.001"}
+  },
   "placement": [
     { "key": "contactFromDip", "label": "Where the edge presses (from the fingertip joint)", "min": 0.002, "max": 0.019, "step": 0.0005, "unit": "mm", "scale": 1000, "hint": "Closer to the fingertip joint: more of the finger on the edge (a deeper edge). Further out: only the tip (a shallow edge). Where the pressure really centres isn't measured." },
-    { "key": "fingerShare", "label": "This finger's share of the load", "min": 0.1, "max": 0.5, "step": 0.01, "unit": "%", "scale": 100, "hint": "25% = all four fingers share equally, an assumption: how the load splits between fingers isn't measured yet." }
+    { "key": "fingerShare", "label": "This finger's share of the load", "min": 0.1, "max": 0.5, "step": 0.01, "unit": "%", "scale": 100, "hint": "25% = all four fingers share equally, an assumption: how the load splits between fingers isn't measured yet." },
+    { "key": "armForward", "label": "Arm forward of the body", "min": 0, "max": 60, "step": 1, "unit": "°", "scale": 1, "hint": "0° = arm hanging against the front of the hip, as taught. Turning it forward puts the block on a lever at the shoulder." },
+    { "key": "armSide", "label": "Arm out to the side", "min": 0, "max": 60, "step": 1, "unit": "°", "scale": 1, "hint": "Sideways the shoulder abductors hold the lever; they are weakest with the arm down." }
   ],
   "muscles": [
     {
@@ -60,7 +68,7 @@
       "id": "open-hand",
       "name": "Open hand (drag)",
       "equipment": "Edge block on a loading pin",
-      "params": { "mcp": -21, "dip": 38.8, "pip": 25.9, "contactFromDip": 0.00985, "fingerShare": 0.25, "dipPassiveShare": 0, "maxFingertipN": 78 },
+      "params": { "mcp": -21, "dip": 38.8, "pip": 25.9, "contactFromDip": 0.00985, "fingerShare": 0.25, "armForward": 0, "armSide": 0, "dipPassiveShare": 0, "maxFingertipN": 78 },
       "notes": "Fingertip bent, middle joint nearly straight (the 'slope' grip of Vigouroux et al.: DIP 38.8°, PIP 25.9°, MCP −21°). The tendons barely change direction at the pulleys, so A2 carries very little.",
       "source": "Posture: Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027; maximum fingertip force (all four fingers on the hold, slope grip, 78 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
     },
@@ -68,7 +76,7 @@
       "id": "half-crimp",
       "name": "Half crimp",
       "equipment": "Edge block on a loading pin",
-      "params": { "mcp": 0, "dip": 0, "pip": 90, "contactFromDip": 0.00985, "fingerShare": 0.25, "dipPassiveShare": 0, "maxFingertipN": 82 },
+      "params": { "mcp": 0, "dip": 0, "pip": 90, "contactFromDip": 0.00985, "fingerShare": 0.25, "armForward": 0, "armSide": 0, "dipPassiveShare": 0, "maxFingertipN": 82 },
       "notes": "Middle joint at about 90°, fingertip in line with the middle phalanx, no thumb. Estimated posture (neither paper measured this grip); the maximum force is taken from the crimp. A grip between half crimp and open hand with all four fingers is often recommended for off-the-wall strength training (Tyler Nelson, via StrengthClimbing); in the 'chisel' variant the index finger stays straight and carries less.",
       "source": "Posture: estimate (TODO); maximum fingertip force (all four fingers on the hold, crimp, 82 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
     },
@@ -76,7 +84,7 @@
       "id": "full-crimp",
       "name": "Full crimp",
       "equipment": "Edge block on a loading pin",
-      "params": { "mcp": -2.6, "dip": -22.6, "pip": 106.5, "contactFromDip": 0.00985, "fingerShare": 0.25, "dipPassiveShare": 0.222, "maxFingertipN": 82 },
+      "params": { "mcp": -2.6, "dip": -22.6, "pip": 106.5, "contactFromDip": 0.00985, "fingerShare": 0.25, "armForward": 0, "armSide": 0, "dipPassiveShare": 0.222, "maxFingertipN": 82 },
       "notes": "Middle joint past 90°, fingertip bent back (the 'crimp' of Vigouroux et al.: DIP −22.6°, PIP 106.5°, MCP −2.6°). With the fingertip bent back, the joint itself carries about a fifth of the DIP moment (22% in their climbers), which spares the FDP. The thumb wrapped over the index finger isn't modelled.",
       "source": "Posture and passive DIP moment: Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Table 2); maximum fingertip force (82 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
     }

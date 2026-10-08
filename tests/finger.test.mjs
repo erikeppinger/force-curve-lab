@@ -118,3 +118,17 @@ test("maximum block: the grip's maximum fingertip force × strength ÷ (g × fin
   // At that block the effort is exactly 100%.
   close(analyzeFinger(ex, v("full-crimp"), 100, { loadKg: r.maxBlockKg, strengthPct: 90, placement: { fingerShare: 0.3 } }).effort, 1, 1e-9);
 });
+
+test("arm: hanging straight carries the block as a pull only; turned out, the shoulder holds W·reach·sin(angle)", () => {
+  const body = JSON.parse(readFileSync(new URL("../data/body.json", import.meta.url)));
+  const L = body.lengths, m = body.mass, c = body.com;
+  const at = (fwd, side) => analyzeFinger(ex, v("half-crimp"), 90, { loadKg: 30, body, bodyMassKg: 75, placement: { armForward: fwd, armSide: side } }).arm;
+  const straight = at(0, 0);
+  close(straight.shoulderForward, 0); close(straight.shoulderSide, 0); close(straight.elbow, 0);
+  close(straight.traction, (30 + 75 * (m.upperArm + m.forearmHand)) * G, 1e-9);
+  const armMoment = G * 75 * (m.upperArm * c.upperArm * L.upperArm + m.forearmHand * (L.upperArm + c.forearmHand * L.forearm));
+  const fwd = at(20, 0);
+  close(fwd.shoulderForward, (30 * G * (L.upperArm + L.forearm) + armMoment) * Math.sin((20 * Math.PI) / 180), 1e-9);
+  close(fwd.shoulderSide, 0);
+  assert.ok(at(20, 0).effort.shoulderSide === 0 && at(0, 20).effort.shoulderSide > at(20, 0).effort.shoulderForward, "sideways is the weaker direction");
+});
