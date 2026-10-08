@@ -99,6 +99,7 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] Edge lift (one arm hanging, block on a loading pin; open hand / half crimp / full crimp): finger chain with FDS and FDP tendon forces and A2/A4 pulley loads (Vigouroux 2006, Schweizer 2001, An 1983)
 - [ ] Edge lift: middle-finger geometry, measured half crimp, pressure centre on deep edges, load split between fingers
 - [ ] More close-ups: shoulder (three deltoid heads, rotator cuff), thigh (quadriceps and hamstring heads)
+- [x] Curl muscle weights over the elbow angle from measured moment arms (Murray et al. 1995); levels still estimates
 - [ ] Translations (DE)
 
 ## Licences and credits

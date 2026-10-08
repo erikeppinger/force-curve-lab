@@ -53,7 +53,7 @@ Still to find (no candidate checked):
 
 ## Read
 
-- **Edge lift (2026-10-08):** Vigouroux et al. 2006, Schweizer 2001 and An et al. 1983 are read and cited (`data/exercises/edge-lift.json`). An et al. 1979 was read but not used: its tables are normalised 3D tendon positions, too detailed for the 2D finger model. Rispler et al. 1996 (pulley efficiency after sectioning) was read as background, not used. Murray, Delp and Buchanan 1995 (elbow moment arms by angle and forearm rotation) is read and waiting to be used for the curls' muscle weights.
+- **Edge lift (2026-10-08):** Vigouroux et al. 2006, Schweizer 2001 and An et al. 1983 are read and cited (`data/exercises/edge-lift.json`). An et al. 1979 was read but not used: its tables are normalised 3D tendon positions, too detailed for the 2D finger model. Rispler et al. 1996 (pulley efficiency after sectioning) was read as background, not used. Murray, Delp and Buchanan 1995 (elbow moment arms by angle and forearm rotation) is read and cited: it sets the shape of the curl's elbow-flexor weights.
 - Fetched by mistake, not needed: Youm et al. 1979 (forearm and elbow kinematics for prostheses), Wu et al. 2009 (thumb model).
 
 - **Chen & Franklin 2025, joint moments** (preprint, CC BY 4.0) and **Chen & Franklin 2025, moment arms** (Ann Biomed Eng 53:1757–1776, open access): read; used as a cross-check (`docs/model-limits.md`). Their raw data are still to get: moment arms at <https://doi.org/10.6084/m9.figshare.26018563>; the joint-moment data link is in the published J Biomech version (the preprint says "link-to-add"). Both are MATLAB `.mat` files.

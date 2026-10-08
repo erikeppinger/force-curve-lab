@@ -248,6 +248,13 @@
       "citation": "An KN, Ueba Y, Chao EY, Cooney WP, Linscheid RL (1983). Tendon excursion and moment arm of index finger muscles. J Biomech 16(6):419–425.",
       "url": "https://doi.org/10.1016/0021-9290(83)90074-X",
       "usedFor": "Edge lift: finger bone lengths and the FDP and FDS moment arms at the three finger joints."
+    },
+    {
+      "key": "Murray 1995",
+      "match": "Murray WM, Delp SL",
+      "group": "Muscle activity",
+      "citation": "Murray WM, Delp SL, Buchanan TS (1995). Variation of muscle moment arms with elbow and forearm position. J Biomech 28(5):513–525.",
+      "usedFor": "Biceps curl: how the biceps', brachialis' and brachioradialis' moment arms change with elbow angle, which sets the shape of their muscle weights."
     }
   ],
   "resources": [
