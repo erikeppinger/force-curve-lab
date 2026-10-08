@@ -79,7 +79,7 @@ for (const id of single) {
       assert.ok(m.note, `${m.id} note`);
       assert.ok(["jointEffort", "stabiliserDemand"].includes(m.driver), `${m.id} driver`);
       if (m.driver === "stabiliserDemand") assert.ok(ex.stabiliserCapacityNm > 0);
-      if (m.draw) assert.ok(m.draw.points || (["proximal", "distal"].includes(m.draw.seg) && m.draw.along.length === 2), `${m.id} draw`);
+      if (m.draw) assert.ok(m.draw.points || (["proximal", "distal"].includes(m.draw.seg) && (m.draw.along?.length === 2 || (m.draw.origin?.length === 2 && Number.isFinite(m.draw.insert)))), `${m.id} draw`);
     }
     for (const v of ex.variants) {
       for (const k of Object.keys(v.muscleModifiers ?? {})) assert.ok(ex.muscles.some((m) => m.id === k), `${v.id}: ${k}`);

@@ -176,7 +176,14 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
     const d = m.draw;
     let a, b;
     if (d.points) [a, b] = d.points.map(P);
-    else {
+    else if (d.origin) {
+      // Origin fixed on the body (body frame), insertion on the moving segment: the muscle stretches
+      // and swings with the limb instead of moving rigidly with it.
+      const [from, to] = segs[d.seg];
+      const u = unit({ x: to.x - from.x, y: to.y - from.y });
+      a = P(d.origin);
+      b = add(add(from, u, d.insert), { x: -u.y, y: u.x }, d.offset ?? 0);
+    } else {
       const [from, to] = segs[d.seg];
       const u = unit({ x: to.x - from.x, y: to.y - from.y });
       const n = { x: -u.y, y: u.x };

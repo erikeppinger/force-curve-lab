@@ -50,7 +50,7 @@
       "weight": [[0, 1.0], [45, 0.95]],
       "note": "Main hip abductor (no separate wger map).",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "proximal", "along": [-0.12, 0.08], "offset": 0.06, "w": 0.07, "layer": 0}
+      "draw": {"seg": "proximal", "origin": [0.03, 0.13], "insert": 0.03, "offset": 0.05, "w": 0.07, "layer": 0}
     },
     {
       "id": "gluteus-minimus",
