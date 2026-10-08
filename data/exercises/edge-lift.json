@@ -4,9 +4,9 @@
   "model": "finger",
   "joint": "Finger flexion",
   "view": "side",
-  "angleLabel": "PIP angle",
+  "angleLabel": "Hold position: PIP angle",
   "angleRange": [0, 110],
-  "angleNote": "Bend of the middle finger joint (PIP): 0° = straight, about 90° = half crimp, about 105° = full crimp. Each grip keeps its own fingertip (DIP) and knuckle (MCP) angle; the slider shows what happens as the PIP closes.",
+  "angleNote": "The edge lift is a static hold: the fingers keep one position while the block comes up, so nothing moves at the finger joints. The slider doesn't animate a lift; it compares holds with the middle joint (PIP) at different angles: 0° = straight, about 90° = half crimp, about 105° = full crimp. Each grip keeps its own fingertip (DIP) and knuckle (MCP) angles and starts at its measured position.",
   "defaults": { "loadKg": 20, "variant": "half-crimp", "bodyMassKg": 75 },
   "ui": { "load": [2, 80, 1] },
   "finger": {

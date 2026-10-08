@@ -279,6 +279,9 @@ function setExercise(id, h = {}) {
   $("strength").value = pct ? 100 : state.peakTorqueNm;
   $("strength-out").textContent = pct ? "100%" : `${state.peakTorqueNm} Nm`;
   $("readouts").hidden = multi || finger;
+  // The edge lift is a static hold: no lifting animation, the slider compares holds.
+  $("play").hidden = finger;
+  if (finger && state.playing) { state.playing = false; $("play").textContent = "Play"; $("play").setAttribute("aria-pressed", "false"); }
   $("view-buttons").hidden = ex.view !== "3d";
   // Zoom for single-joint lifts; on by default where the moving segment is small (e.g. the hand).
   $("zoom-buttons").hidden = Boolean(ex.model);
@@ -289,7 +292,7 @@ function setExercise(id, h = {}) {
   $("joint-table").tHead.rows[0].cells[1].textContent = finger ? "Force" : "Torque";
   $("joint-table").tHead.rows[0].cells[2].textContent = finger ? "× fingertip" : "Moment arm";
   $("joint-table").tHead.rows[0].cells[3].textContent = finger ? "Of the limit" : "Effort";
-  $("torque-title").textContent = finger ? "Tendon forces" : "Resistance vs strength";
+  $("torque-title").textContent = finger ? "Tendon forces, hold by hold" : "Resistance vs strength";
   $("effort-title").textContent = finger ? "Pulley loads" : "Effort across the range";
   $("effort-hint").textContent = finger ? "Force on the A2 and A4 pulleys as the middle joint (PIP) bends. Dotted: their breaking loads in cadaver tests (Lin et al. 1990), a guide to scale, not a safety limit." : "Joint torque ÷ strength at each angle. The peak is the sticking point.";
   buildLegend(ex);
