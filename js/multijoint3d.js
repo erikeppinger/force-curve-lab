@@ -382,12 +382,16 @@ export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const t = rad(P.incline ?? 0); // head end raised
   const rot = (p) => v3(p.x * Math.cos(t) + p.y * Math.sin(t), -p.x * Math.sin(t) + p.y * Math.cos(t), p.z);
   const mid = v3(0, 0.6, 0);
-  const S = add3(mid, Z, L.shoulderHalfWidth);
   const toFeet = rot(v3(1, 0, 0)), front = rot(UP);
+  // Shoulder blades (sliders, default 0): pulled back into the bench (scapRetract) and up towards
+  // the head (+) or down (−) (scapElevate). They move the shoulder joints; the chest, and so the
+  // bar's touch point, stays put. Lockout stays over the (moved) shoulders.
+  const midS = add3(add3(mid, front, -(P.scapRetract ?? 0)), toFeet, -(P.scapElevate ?? 0));
+  const S = add3(midS, Z, L.shoulderHalfWidth);
   const dz = P.gripHalf - L.shoulderHalfWidth;
   const reach = Math.sqrt(Math.max(0, (L.upperArm + L.forearm) ** 2 - dz * dz)) * 0.985;
   const touch = add3(mid, rot(v3(P.touch, P.chestDepth ?? L.chestDepth, 0)));
-  const lockout = add3(mid, UP, reach);
+  const lockout = add3(midS, UP, reach);
   const k = x / 100;
   const hand = v3(touch.x + (lockout.x - touch.x) * k, touch.y + (lockout.y - touch.y) * k, P.gripHalf);
   const Fv = (loadKg * G) / 2;
@@ -487,13 +491,16 @@ export function press3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const seated = P.stance === "seated";
   const hipY = seated ? 0.5 : L.ankleHeight + L.shank + L.thigh;
   const mid = v3(0, hipY + L.trunk, 0);
+  const k = x / 100;
+  // No shoulder-blade slider here: lifting the shoulder joints (a shrug) moves the whole hand path
+  // with them and leaves every torque unchanged; its real effect, the shoulder blade's upward
+  // rotation, needs a shoulder-blade model.
   const S = add3(mid, Z, L.shoulderHalfWidth);
   const FRONT = v3(1, 0, 0), DOWN = v3(0, -1, 0);
   const dz = P.gripHalf - L.shoulderHalfWidth;
   const reach = Math.sqrt(Math.max(0, (L.upperArm + L.forearm) ** 2 - dz * dz)) * 0.985;
   const start = add3(add3(mid, FRONT, P.touchFront), UP, P.touchUp);
   const lockout = add3(mid, UP, reach);
-  const k = x / 100;
   const hand = v3(start.x + (lockout.x - start.x) * k, start.y + (lockout.y - start.y) * k, P.gripHalf);
   // Of the two elbow positions that fit, take the one that puts the forearm closest to vertical
   // under the hand. Choosing the lower one instead flips sides where both are about level.
@@ -857,11 +864,12 @@ export function hipThrust3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement 
  * from the belly and is turned `flare` degrees outwards about the shoulder–hand line (0 = tucked,
  * in the side view's plane; 90 = straight out to the side).
  */
-function rowArm3d({ S, pelvis, back, belly, P, x, reachTo, L, m, c, kg }) {
+function rowArm3d({ S, S0 = S, pelvis, back, belly, P, x, reachTo, L, m, c, kg }) {
   const reach = (L.upperArm + L.forearm) * 0.995;
   const dz = P.gripHalf - S.z;
-  const toward = reachTo ? unit3(v3(reachTo.x - S.x, reachTo.y - S.y, 0)) : DOWN;
-  const start = add3(add3(S, Z, dz), toward, Math.sqrt(Math.max(0, reach * reach - dz * dz)));
+  // The hand's path starts from the shoulder's position at the start of the pull (S0).
+  const toward = reachTo ? unit3(v3(reachTo.x - S0.x, reachTo.y - S0.y, 0)) : DOWN;
+  const start = add3(add3(S0, Z, dz), toward, Math.sqrt(Math.max(0, reach * reach - dz * dz)));
   const end = add3(add3(add3(v3(pelvis.x, pelvis.y, P.gripHalf), back, P.touchAlong * L.trunk), belly, P.touchOut), v3(0, 0, 0));
   const hand = lerp3(start, end, x / 100);
   const E = placeMid(S, hand, L.upperArm, L.forearm, neg3(belly), P.flare ?? 0);
@@ -890,9 +898,14 @@ export function row3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const armsKg = 2 * (m.upperArm + m.forearmHand) * kg;
   const trunkAt = (pelvis, tk) => {
     const back = v3(Math.sin(tk), Math.cos(tk), 0), belly = v3(Math.cos(tk), -Math.sin(tk), 0);
-    const S = add3(add3(pelvis, back, L.trunk), Z, L.shoulderHalfWidth);
+    // Shoulder blades (slider scapTravel, default 0): reached forward (protracted, towards the
+    // belly side) by half the travel at the start, squeezed back by half at the end.
+    const base = add3(add3(pelvis, back, L.trunk), Z, L.shoulderHalfWidth);
+    const travel = P.scapTravel ?? 0;
+    const S0 = add3(base, belly, travel / 2);
+    const S = add3(base, belly, travel * (0.5 - x / 100));
     const pulley = cable ? v3(P.pulley.x, P.pulley.y, P.pulley.z ?? 0) : null;
-    const arm = rowArm3d({ S, pelvis, back, belly, P, x, reachTo: pulley, L, m, c, kg });
+    const arm = rowArm3d({ S, S0, pelvis, back, belly, P, x, reachTo: pulley, L, m, c, kg });
     const pull = cable ? unit3(sub3(pulley, arm.hand)) : DOWN;
     return { back, belly, S, arm, pull, onHand: { at: arm.hand, f: v3(pull.x * F, pull.y * F, pull.z * F) } };
   };

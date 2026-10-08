@@ -264,6 +264,7 @@
       "name": "Barbell row, trunk about 45°",
       "equipment": "Barbell",
       "params": {
+        "scapTravel": 0,
         "mode": "hinge",
         "load": "row",
         "hipFlex": 60,
@@ -281,6 +282,7 @@
       "name": "Trunk horizontal (Pendlay-style)",
       "equipment": "Barbell",
       "params": {
+        "scapTravel": 0,
         "mode": "hinge",
         "load": "row",
         "hipFlex": 90,
@@ -298,6 +300,7 @@
       "name": "More upright (Yates-style)",
       "equipment": "Barbell",
       "params": {
+        "scapTravel": 0,
         "mode": "hinge",
         "load": "row",
         "hipFlex": 30,
@@ -315,6 +318,7 @@
       "name": "Wide grip, elbows out",
       "equipment": "Barbell",
       "params": {
+        "scapTravel": 0,
         "mode": "hinge",
         "load": "row",
         "hipFlex": 60,
@@ -369,6 +373,15 @@
       "step": 5,
       "unit": "°",
       "scale": 1
+    },
+    {
+      "key": "scapTravel",
+      "label": "Shoulder blades: reach forward → squeeze back (travel)",
+      "min": 0,
+      "max": 0.08,
+      "step": 0.005,
+      "unit": "cm",
+      "scale": 100
     }
   ]
 }

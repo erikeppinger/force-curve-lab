@@ -179,35 +179,35 @@
       "id": "flat",
       "name": "Flat bench, medium grip",
       "equipment": "Barbell, flat bench",
-      "params": {"gripHalf": 0.35, "elbowOut": "auto", "touch": 0.16, "chestDepth": 0.2, "incline": 0, "barSpread": 0},
+      "params": {"scapRetract": 0, "scapElevate": 0, "gripHalf": 0.35, "elbowOut": "auto", "touch": 0.16, "chestDepth": 0.2, "incline": 0, "barSpread": 0},
       "notes": "Medium grip. Grip width from Mausehund et al.'s arm–bar angle at lockout (75°), converted with this model's arm length and shoulder width; touch point from their measured shoulder moment arm at the bottom; chest raised 20 cm above the shoulder joints for the arch (their arch angle was about 30°; the height is an estimate). Elbows as close under the bar as the arm allows (the shoulder joints stay put): this placement gives elbow moment arms close to the ones Mausehund et al. measured for the medium grip, too small for the wide grip and too large for the narrow one (see docs/model-limits.md). Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     },
     {
       "id": "wide",
       "name": "Wide grip",
       "equipment": "Barbell, flat bench",
-      "params": {"gripHalf": 0.45, "elbowOut": "auto", "touch": 0.13, "chestDepth": 0.2, "incline": 0, "barSpread": 0},
+      "params": {"scapRetract": 0, "scapElevate": 0, "gripHalf": 0.45, "elbowOut": "auto", "touch": 0.13, "chestDepth": 0.2, "incline": 0, "barSpread": 0},
       "notes": "Hands far out: the upper arms flare, the pecs (horizontal adduction) work much harder and the triceps less. The bar also travels less. Grip width from Mausehund et al.'s arm–bar angle at lockout (65°), converted with this model's arm length and shoulder width, touch point an estimate; chest raised 20 cm above the shoulder joints for the arch (their arch angle was about 30°; the height is an estimate). Elbows as close under the bar as the arm allows (the shoulder joints stay put): this placement gives elbow moment arms close to the ones Mausehund et al. measured for the medium grip, too small for the wide grip and too large for the narrow one (see docs/model-limits.md). Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     },
     {
       "id": "close",
       "name": "Close grip",
       "equipment": "Barbell, flat bench",
-      "params": {"gripHalf": 0.245, "elbowOut": "auto", "touch": 0.2, "chestDepth": 0.2, "incline": 0, "barSpread": 0},
+      "params": {"scapRetract": 0, "scapElevate": 0, "gripHalf": 0.245, "elbowOut": "auto", "touch": 0.2, "chestDepth": 0.2, "incline": 0, "barSpread": 0},
       "notes": "Hands about shoulder width, elbows tucked, bar lower on the chest: the triceps take over and the pecs' across-the-body work nearly vanishes. Grip width from Mausehund et al.'s arm–bar angle at lockout (85°), converted with this model's arm length and shoulder width; touch point from their measured shoulder moment arm at the bottom; chest raised 20 cm above the shoulder joints for the arch (their arch angle was about 30°; the height is an estimate). Elbows as close under the bar as the arm allows (the shoulder joints stay put): this placement gives elbow moment arms close to the ones Mausehund et al. measured for the medium grip, too small for the wide grip and too large for the narrow one (see docs/model-limits.md). Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     },
     {
       "id": "elbows-out",
       "name": "Medium grip, elbows flared past the hands",
       "equipment": "Barbell, flat bench",
-      "params": {"gripHalf": 0.35, "elbowOut": 0.06, "touch": 0.04, "chestDepth": 0.16, "incline": 0, "barSpread": 0},
+      "params": {"scapRetract": 0, "scapElevate": 0, "gripHalf": 0.35, "elbowOut": 0.06, "touch": 0.04, "chestDepth": 0.16, "incline": 0, "barSpread": 0},
       "notes": "Elbows pushed 6 cm outside the hands, no arch and the bar lowered high on the chest, near the neck: compare the rotation torque, the flare angle and the elbow's moment arm with the medium grip. Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     },
     {
       "id": "incline",
       "name": "Incline bench (30°), medium grip",
       "equipment": "Barbell, incline bench",
-      "params": {"gripHalf": 0.35, "elbowOut": "auto", "touch": 0.03, "incline": 30, "barSpread": 0},
+      "params": {"scapRetract": 0, "scapElevate": 0, "gripHalf": 0.35, "elbowOut": "auto", "touch": 0.03, "incline": 30, "barSpread": 0},
       "notes": "Bench tilted 30°: the bar touches the upper chest and presses vertically over the shoulders. Elbows as close under the bar as the arm allows. Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     }
   ],
@@ -254,6 +254,24 @@
       "unit": "%",
       "scale": 100,
       "auto": "Least effort (auto)"
+    },
+    {
+      "key": "scapRetract",
+      "label": "Shoulder blades pulled back into the bench",
+      "min": 0,
+      "max": 0.05,
+      "step": 0.005,
+      "unit": "cm",
+      "scale": 100
+    },
+    {
+      "key": "scapElevate",
+      "label": "Shoulder blades up (+) / down (−) along the body",
+      "min": -0.04,
+      "max": 0.04,
+      "step": 0.005,
+      "unit": "cm",
+      "scale": 100
     }
   ]
 }

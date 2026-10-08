@@ -94,7 +94,7 @@ The tests check the classic hand formulas (e.g. squat hip torque = Σ m·g·hori
 
 - **Posture rules are assumptions.** "Shin angle = a fixed fraction of knee angle" (squat), the knee-bend rate in the hinge, the fixed trunk lean in the split squat and the straight bar path in the bench are reasonable shapes, not measurements. Real lifters vary. The balance constraint is solid; the rest isn't.
 - **Contacts push straight up** (no friction) in the split squat and hip thrust, and the foot's push is taken at the mid-foot. That's what makes those lifts solvable. Real feet also push sideways and move their centre of pressure.
-- **Bench press shoulders don't move.** The shoulder joints are fixed on the bench; real shoulder blades retract and move. The default elbow placement (as close under the bar as the arm allows) brings the elbow moment arms near the measured ones, but not for every grip; see the 3D bench section.
+- **Bench press shoulders move only by slider.** By default the shoulder joints are fixed on the bench; two sliders move them (shoulder blades pulled back into the bench, and up or down along the body) as a straight shift of the joint, keeping the chest and touch point in place. How far lifters actually move them isn't sourced (`TODO`), so the default stays 0. The default elbow placement (as close under the bar as the arm allows) brings the elbow moment arms near the measured ones, but not for every grip; see the 3D bench section.
 - **Spine as one rigid trunk.** Erector-spinae load is approximated by the hip's effort.
 - **Strength per joint ignores the other joints.** Two-joint muscles (hamstrings, rectus femoris, gastrocnemius) aren't credited for their length at the other joint in the multi-joint lifts. The single-joint leg curl, biceps curl and triceps extension now are (see "Two-joint muscles and grip").
 - **Deadlift at the floor is past the measured hip strength.** Anderson's hip-extension curve was tested up to 74° of hip flexion; the deadlift starts near 135°, where the app holds the 74° value flat. The effort near the floor is an extrapolation, so its near-limit readings at a modest 50 kg say more about the strength curve than about real lifters. The bar path, the lats pulling the bar back and the shoulders sitting in front of the bar are not modelled; arms are straight lines from shoulder to bar.
@@ -176,7 +176,7 @@ What it shows:
 
 Limits:
 
-- **Fixed shoulder joints and a straight-line bar path.** Real shoulder blades retract and move, and real bar paths curve. With fixed shoulders the close grip can't get its elbows under the bar mid-press (moment arm too large), and the wide grip gets them closer than lifters do (too small). Holding the forearm vertical instead would need the shoulder joint to move 14–19 cm mid-press, which isn't plausible, so the real answer lies in shoulder-blade movement that this model doesn't have.
+- **Fixed shoulder joints and a straight-line bar path.** Real shoulder blades retract and move, and real bar paths curve. With fixed shoulders the close grip can't get its elbows under the bar mid-press (moment arm too large), and the wide grip gets them closer than lifters do (too small). Holding the forearm vertical instead would need the shoulder joint to move 14–19 cm mid-press, which isn't plausible, so the real answer lies in shoulder-blade movement. The shoulder-blade sliders now shift the joints: with the close grip, 3 cm back and 2 cm down cuts the shoulder-flexion torque at the bottom (about 66 → 60 Nm at 60 kg) and lengthens the elbow's moment arm there (6.6 → 10 cm), but barely changes mid-press, so the mid-press mismatch remains. The shoulder blade's tilt and rotation, which change the glenoid's direction, aren't modelled.
 - **Pulling the bar apart.** Like the squat's floor push, how hard the hands pull the bar apart (or squeeze it) isn't fixed by statics. A slider sets it, defaulting to zero; its "least effort" option lets the model choose. In wider grips that choice pulls hard (up to about 40% of the vertical force) and shifts work from the pecs to the triceps, likely more than lifters really do, so it isn't the default. Unlike the squat, where pushing straight up gave unrealistic numbers, zero here gives results that match coaching experience.
 
 ## 3D: overhead press
@@ -214,7 +214,7 @@ What it shows:
 
 Limits:
 
-- **Fixed trunk and shoulders.** Lifters lean back at the start and shrug the shoulder blades up at lockout. Neither is modelled, so the start torques and the overhead geometry are approximate.
+- **Fixed trunk and shoulders.** Lifters lean back at the start and shrug the shoulder blades up at lockout. Neither is modelled, so the start torques and the overhead geometry are approximate. A shrug can't be added as a simple slider: lifting the shoulder joints moves the whole hand path with them and leaves every torque unchanged. Its real effect is the shoulder blade's upward rotation (glenoid facing up, muscle lengths), which needs a shoulder-blade model.
 - **Straight bar path.** At the start the line passes the chin; real lifters tilt the head back or curve the path.
 - **Strength overhead is estimated.** Flexion strength is sourced up to 110° and abduction up to 90°. Beyond that, both are marked `TODO` (60% and 50% of peak at 180°). The adduction peak (90 Nm) is also an estimate.
 - **Shoulder blade muscles** (serratus anterior, trapezius) are listed but not estimated.
@@ -268,7 +268,7 @@ What it shows:
 Limits:
 
 - **Rear-delt strength:** Lategan 2002 (103 men, isokinetic 60°/s): horizontal abduction 93 Nm, adduction 92 Nm. These are taken as constant over the range, because no angle curve is available.
-- **Fixed shoulders:** the shoulder blades don't move, so the squeeze at the top isn't modelled.
+- **Shoulder blades by slider:** a travel slider moves the shoulder joint from reached forward at the start to squeezed back at the end (straight along the trunk's front–back axis). Squeezing 6 cm takes torque off the shoulder at the top (bent-over row at 60 kg: about 44 → 37 Nm) and puts more on the elbow (51 → 56 Nm). How far lifters move them isn't sourced (`TODO`); default 0. The muscles doing it (rhomboids, middle trapezius) still aren't estimated.
 - **Straight hand path:** real rows arc.
 
 ## 3D: pull-ups and lat pulldowns

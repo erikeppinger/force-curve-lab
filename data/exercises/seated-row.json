@@ -217,6 +217,7 @@
       "name": "Seated cable row, trunk upright",
       "equipment": "Cable, seat and foot plate",
       "params": {
+        "scapTravel": 0,
         "load": "cable",
         "hipHeight": 0.5,
         "trunkLean": 0,
@@ -233,6 +234,7 @@
       "name": "Leaning back 15°",
       "equipment": "Cable, seat and foot plate",
       "params": {
+        "scapTravel": 0,
         "load": "cable",
         "hipHeight": 0.5,
         "trunkLean": -15,
@@ -249,6 +251,7 @@
       "name": "Leaning forward 20°",
       "equipment": "Cable, seat and foot plate",
       "params": {
+        "scapTravel": 0,
         "load": "cable",
         "hipHeight": 0.5,
         "trunkLean": 20,
@@ -266,6 +269,7 @@
       "equipment": "Dumbbells, incline bench",
       "loadShape": "dumbbell",
       "params": {
+        "scapTravel": 0,
         "load": "hang",
         "chestPad": true,
         "hipHeight": 0.85,
@@ -282,6 +286,7 @@
       "name": "Wide bar, elbows out",
       "equipment": "Cable, long bar, seat and foot plate",
       "params": {
+        "scapTravel": 0,
         "load": "cable",
         "hipHeight": 0.5,
         "trunkLean": 0,
@@ -335,6 +340,15 @@
       "step": 5,
       "unit": "°",
       "scale": 1
+    },
+    {
+      "key": "scapTravel",
+      "label": "Shoulder blades: reach forward → squeeze back (travel)",
+      "min": 0,
+      "max": 0.08,
+      "step": 0.005,
+      "unit": "cm",
+      "scale": 100
     }
   ]
 }
