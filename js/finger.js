@@ -99,6 +99,7 @@ export function analyzeFinger(ex, v, pipDeg, { loadKg, strengthPct = 100, placem
     tendons: { fdp, fds }, pipExtensor, mcpRest, momentArms: r,
     pulleys: { a2: fA2, a4: fA4, a2Point: a2, a4Point: a4 },
     capacity, effort: F / capacity,
+    maxBlockKg: capacity / (G * P.fingerShare), // block at which this finger reaches its maximum
     ratio: fds > 0 ? fdp / fds : Infinity,
   };
 }

@@ -132,6 +132,7 @@ function setPlacement(v, override = {}) {
     const show = () => { out.textContent = isAuto() ? "auto" : `${Math.round(state.placement[s.key] * s.scale)} ${s.unit}`; input.disabled = isAuto(); };
     input.addEventListener("input", () => { state.placement[s.key] = +input.value; show(); writeHash(); renderSoon(); });
     label.append(`${s.label} `, out, input);
+    if (s.hint) label.append(Object.assign(document.createElement("small"), { className: "slider-hint", textContent: s.hint }));
     if (s.auto) {
       // A value the model can pick itself (e.g. the least-effort sideways floor push).
       const box = Object.assign(document.createElement("input"), { type: "checkbox", checked: isAuto() });
@@ -499,6 +500,8 @@ function renderFinger() {
   $("ro-warning").hidden = !(r.effort > 1);
   $("ro-warning").textContent = "More than this finger's typical maximum: the grip would open here.";
   const info = [{ text: `This finger carries ${((F / (state.loadKg * 9.81)) * 100).toFixed(0)}% of the block (slider below). FDP:FDS = ${Number.isFinite(r.ratio) ? r.ratio.toFixed(2) : "FDP only"}.` }];
+  // The block at which this finger reaches its typical maximum (grip, finger share and strength as set).
+  info.push({ text: `Maximum block for this grip and share: about ${Math.round(r.maxBlockKg)} kg.` });
   if (r.passive > 0) info.push({ text: `The bent-back fingertip joint carries ${r.passive.toFixed(2)} Nm passively.` });
   if (r.pipExtensor > 0.01) info.push({ warn: true, text: `The FDP alone over-bends the middle joint: the extensor mechanism has to hold ${r.pipExtensor.toFixed(2)} Nm (not shown as a force).` });
   if (Math.abs(r.mcpRest) > 0.05) info.push({ text: `Knuckle (MCP): ${r.mcpRest > 0 ? "the intrinsic hand muscles add" : "the extensors (or intrinsics) hold back"} ${Math.abs(r.mcpRest).toFixed(2)} Nm.` });

@@ -111,3 +111,10 @@ test("edge-lift data: grips, sources and phases", () => {
   assert.equal(ex.phases.at(-1).range[1], hi);
   for (const s of ex.placement) assert.ok(ex.variants.every((x) => Number.isFinite(x.params[s.key])), s.key);
 });
+
+test("maximum block: the grip's maximum fingertip force × strength ÷ (g × finger share)", () => {
+  const r = analyzeFinger(ex, v("full-crimp"), 100, { loadKg: 20, strengthPct: 90, placement: { fingerShare: 0.3 } });
+  close(r.maxBlockKg, (82 * 0.9) / (G * 0.3), 1e-9);
+  // At that block the effort is exactly 100%.
+  close(analyzeFinger(ex, v("full-crimp"), 100, { loadKg: r.maxBlockKg, strengthPct: 90, placement: { fingerShare: 0.3 } }).effort, 1, 1e-9);
+});
