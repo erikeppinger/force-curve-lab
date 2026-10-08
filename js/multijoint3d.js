@@ -660,7 +660,7 @@ export function hinge3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const toe = rad(P.toeOut);
   const f = v3(Math.cos(toe), 0, Math.sin(toe));
   const A = v3(0, L.ankleHeight, P.halfWidth);
-  const kneeFlex = P.kneeBase + P.kneePerHip * x;
+  const kneeFlex = Math.max(0, P.kneeBase + P.kneePerHip * x); // a negative base: the knees only start bending past some hip flexion
   const D = Math.sqrt(L.thigh ** 2 + L.shank ** 2 + 2 * L.thigh * L.shank * Math.cos(rad(kneeFlex)));
   const dz = L.hipHalfWidth - P.halfWidth;
   const R = Math.sqrt(Math.max(1e-9, D * D - dz * dz));

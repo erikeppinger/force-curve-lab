@@ -1,4 +1,4 @@
-import { analyze, sampleCurve } from "./physics.js";
+import { analyze, sampleCurve, rangeOf } from "./physics.js";
 import { muscleActivation } from "./muscles.js";
 import { renderChart } from "./chart.js";
 import { renderFigure, figureBounds, zoomBounds, viewTitle, renderMultiFigure, multiBounds } from "./figure.js";
@@ -90,9 +90,23 @@ function fillSelect(sel, items, includeNone) {
   for (const v of items) sel.add(new Option(v.name, v.id));
 }
 
+/** The angle slider follows the variant's range of motion (some variants have their own). */
+function applyRange(v) {
+  const [lo, hi] = rangeOf(state.exercise, v);
+  state.angle = Math.min(hi, Math.max(lo, state.angle));
+  $("angle").min = lo; $("angle").max = hi; $("angle").value = state.angle;
+}
+/** Charts span the selected variant's range and the compared one's. */
+function chartRange() {
+  const a = rangeOf(state.exercise, variant());
+  const b = state.compareId ? rangeOf(state.exercise, variant(state.compareId)) : a;
+  return [Math.min(a[0], b[0]), Math.max(a[1], b[1])];
+}
+
 function setVariant(id, pulley, load, placement) {
   state.variantId = id;
   const v = variant();
+  applyRange(v);
   // Machines, cables and ankle weights need very different loads: use the variant's default.
   // A load from a link is kept inside the slider's range.
   const kg = load != null ? Math.min(+$("load").max, Math.max(+$("load").min, load)) : v.defaultLoadKg;
@@ -445,9 +459,7 @@ function setExercise(id, h = {}) {
   $("effort-title").textContent = finger ? "A2 pulley load per finger" : "Effort across the range";
   $("effort-hint").textContent = finger ? "As a share of the A2 pulley's breaking load in cadaver tests (Lin et al. 1990, per finger): a guide to scale, not a safety limit. A finger off the edge shows 0." : "Joint torque ÷ strength at each angle. The peak is the sticking point.";
   buildLegend(ex);
-  const [lo, hi] = ex.angleRange;
-  state.angle = Math.min(hi, Math.max(lo, state.angle));
-  $("angle").min = lo; $("angle").max = hi; $("angle").value = state.angle;
+  applyRange(ex.variants.find((v) => v.id === ex.defaults.variant) ?? ex.variants[0]);
 
   const vId = ex.variants.some((v) => v.id === h.variant) ? h.variant : ex.defaults.variant;
   setVariant(vId, h.px != null && h.py != null ? { x: h.px, y: h.py } : undefined, h.load, h.variant === vId ? h.placement : undefined);
@@ -581,12 +593,12 @@ function renderMulti() {
   const torque = [...caps, ...(cmp ? series(cmp, "torque", "dash") : []), ...series(main, "torque", "")];
   const all = torque.flatMap((s) => s.points.map((p) => p[1]));
   renderChart($("torque-chart"), { onScrub: scrubAngle,
-    xRange: ex.angleRange, series: torque, bands, marker: state.angle, yMin: Math.min(0, ...all), xUnit: unit,
+    xRange: chartRange(), series: torque, bands, marker: state.angle, yMin: Math.min(0, ...all), xUnit: unit,
     xLabel: ex.angleLabel, yLabel: "Torque per leg / arm (Nm)", yFormat: (x) => x.toFixed(0),
   });
   const effort = [...(cmp ? series(cmp, "effort", "dash", 100) : []), ...series(main, "effort", "", 100)];
   renderChart($("effort-chart"), { onScrub: scrubAngle,
-    xRange: ex.angleRange, yMax: Math.max(100, ...effort.flatMap((s) => s.points.map((p) => p[1]))), xUnit: unit,
+    xRange: chartRange(), yMax: Math.max(100, ...effort.flatMap((s) => s.points.map((p) => p[1]))), xUnit: unit,
     series: effort, bands, marker: state.angle, xLabel: ex.angleLabel, yLabel: "Effort (% of max)", yFormat: (x) => `${x.toFixed(0)}%`,
   });
 
@@ -726,11 +738,11 @@ function renderFinger() {
   const bands = ex.phases.map((p) => ({ from: p.range[0], to: p.range[1], label: p.name }));
   const perFinger = (samples, get, dash) => ex.fingers.order.map((id) => ({ points: samples.map((s) => [s.angle, get(s.fingers[id])]), className: `fi-${id}${dash ? " dash" : ""}` }));
   renderChart($("torque-chart"), { onScrub: scrubAngle,
-    xRange: ex.angleRange, series: [...(cmp ? perFinger(cmp, (f) => f.fdp, true) : []), ...perFinger(main, (f) => f.fdp)], bands, marker: state.angle,
+    xRange: chartRange(), series: [...(cmp ? perFinger(cmp, (f) => f.fdp, true) : []), ...perFinger(main, (f) => f.fdp)], bands, marker: state.angle,
     xLabel: ex.angleLabel, yLabel: "FDP tension (N)", yFormat: (x) => x.toFixed(0),
   });
   renderChart($("effort-chart"), { onScrub: scrubAngle,
-    xRange: ex.angleRange, series: [...(cmp ? perFinger(cmp, (f) => f.a2 * 100, true) : []), ...perFinger(main, (f) => f.a2 * 100)], bands, marker: state.angle,
+    xRange: chartRange(), series: [...(cmp ? perFinger(cmp, (f) => f.a2 * 100, true) : []), ...perFinger(main, (f) => f.a2 * 100)], bands, marker: state.angle,
     xLabel: ex.angleLabel, yLabel: "A2 load (% of breaking)", yFormat: (x) => `${x.toFixed(0)}%`,
   });
   $("angle-out").textContent = `${state.angle.toFixed(0)}°`;
@@ -785,7 +797,7 @@ function renderView() {
     { points: main.map((s) => [s.angle, Math.max(0, s.jointTorque)]), className: "primary" },
   ];
   renderChart($("torque-chart"), { onScrub: scrubAngle,
-    xRange: ex.angleRange, series: torqueSeries, bands, marker: state.angle,
+    xRange: chartRange(), series: torqueSeries, bands, marker: state.angle,
     xLabel: ex.angleLabel, yLabel: "Torque (Nm)", yFormat: (v) => v.toFixed(0),
   });
   const effortSeries = [
@@ -793,7 +805,7 @@ function renderView() {
     { points: main.map((s) => [s.angle, s.effort * 100]), className: "primary" },
   ];
   renderChart($("effort-chart"), { onScrub: scrubAngle,
-    xRange: ex.angleRange, yMax: Math.max(100, ...effortSeries.flatMap((s) => s.points.map((p) => p[1]))),
+    xRange: chartRange(), yMax: Math.max(100, ...effortSeries.flatMap((s) => s.points.map((p) => p[1]))),
     series: effortSeries, bands, marker: state.angle,
     xLabel: ex.angleLabel, yLabel: "Effort (% of max)", yFormat: (v) => `${v.toFixed(0)}%`,
   });
@@ -852,7 +864,7 @@ function tick(t) {
     requestAnimationFrame(tick);
     return;
   }
-  const [lo, hi] = state.exercise.angleRange;
+  const [lo, hi] = rangeOf(state.exercise, variant());
   const speed = (hi - lo) / (state.direction > 0 ? 1.4 : 2.2); // lowering slower than lifting
   state.angle += state.direction * speed * dt;
   if (state.angle >= hi) { state.angle = hi; state.direction = -1; }
