@@ -442,6 +442,49 @@ export function idealEdge(ex0, P, pipDeg, hand = null) {
 }
 
 /**
+ * One lift over time, for Play: the force the hand must apply to the block (N), from Newton's
+ * second law F = m·(g + a) once the block is off the floor. Phases:
+ *   rest     block on the floor, no pull;
+ *   pull     the pull builds up while the floor still carries the rest (F: 0 → m·g, smooth);
+ *   lift     the block rises `height` in `liftTime` along a minimum-jerk path, so it speeds up
+ *            (F > m·g) and then slows down (F < m·g);
+ *   hold     still: F = m·g;
+ *   lower    back down the same path: F < m·g first, then > m·g as it is slowed before touching;
+ *   release  the floor takes the block back (F: m·g → 0).
+ * Everything along the straight arm (fingers, wrist, elbow, shoulder) carries this same pull.
+ * Timings and height are estimates (the pull's build-up follows the 1–1.5 s in the
+ * StrengthClimbing guide); the minimum-jerk path is the usual model of a smooth reach.
+ */
+export function liftProfile(massKg, { liftTime = 0.6, height = 0.05, pullTime = 1.2, holdTime = 2.5, restTime = 0.8, releaseTime = 0.5 } = {}) {
+  const mg = massKg * G;
+  const smooth = (x) => x * x * (3 - 2 * x);
+  const mjAcc = (tau) => (height * (60 * tau - 180 * tau ** 2 + 120 * tau ** 3)) / liftTime ** 2; // d²/dt² of the min-jerk path
+  const mjPos = (tau) => height * (10 * tau ** 3 - 15 * tau ** 4 + 6 * tau ** 5);
+  const phases = [
+    ["Rest", restTime, () => ({ F: 0, y: 0, a: 0 })],
+    ["Pull", pullTime, (u) => ({ F: mg * smooth(u), y: 0, a: 0 })],
+    ["Lift", liftTime, (u) => { const a = mjAcc(u); return { F: massKg * (G + a), y: mjPos(u), a }; }],
+    ["Hold", holdTime, () => ({ F: mg, y: height, a: 0 })],
+    ["Lower", liftTime, (u) => { const a = -mjAcc(u); return { F: massKg * (G + a), y: height - mjPos(u), a }; }],
+    ["Release", releaseTime, (u) => ({ F: mg * (1 - smooth(u)), y: 0, a: 0 })],
+  ];
+  const duration = phases.reduce((s, p) => s + p[1], 0);
+  const bands = [];
+  let t0 = 0;
+  for (const [name, dt] of phases) { bands.push({ from: t0, to: t0 + dt, label: name }); t0 += dt; }
+  const at = (t) => {
+    let s = ((t % duration) + duration) % duration;
+    for (const [name, dt, f] of phases) {
+      if (s <= dt) return { phase: name, t, ...f(dt > 0 ? s / dt : 1) };
+      s -= dt;
+    }
+    return { phase: "Rest", t, F: 0, y: 0, a: 0 };
+  };
+  const peakA = (5.7735 * height) / liftTime ** 2; // largest acceleration of a minimum-jerk move
+  return { duration, bands, at, mg, peakF: massKg * (G + peakA), holdAt: restTime + pullTime + liftTime + holdTime / 2 };
+}
+
+/**
  * The edge lift as the app shows it: all four fingers on the edge (fingerSet), the arm (armLoads)
  * and summary numbers. Efforts scale linearly with the block (the split doesn't depend on it), so
  * the block at which the hardest-working finger reaches its maximum is load ÷ that effort.

@@ -292,6 +292,7 @@ input[type="range"]:disabled { opacity: 0.4; }
 #figure .pulley-label.pl-a4 { fill: var(--compare); }
 #figure .fig-label.joint-name { font-size: 10px; font-weight: 500; fill: var(--muted); }
 .charts .line.cap { stroke-width: 1.5; stroke-dasharray: 2 4; opacity: 0.8; }
+.charts .line.lift-weight { stroke: var(--muted); stroke-dasharray: 6 5; }
 .charts .line.dash { stroke-dasharray: 7 5; opacity: 0.8; }
 .legend { list-style: none; padding: 0; margin: 0 0 6px; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.85rem; color: var(--muted); }
 .legend .sw { display: inline-block; width: 20px; height: 0; border-top: 3px solid; vertical-align: middle; margin-right: 6px; }

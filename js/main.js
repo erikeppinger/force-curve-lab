@@ -6,7 +6,7 @@ import { analyzeMulti, sampleMulti } from "./multijoint.js";
 import { CAMERAS, scene3d, bounds3d, renderView3d } from "./view3d.js";
 import { fetchExercise, descriptionParagraphs, bodyBackground, muscleOverlay, isBackMuscle } from "./wger.js";
 import { loadRegion, regionsOf, viewsFor, renderRegionView, regionValues } from "./regions.js";
-import { analyzeEdge, sampleEdge, idealEdge } from "./finger.js";
+import { analyzeEdge, sampleEdge, idealEdge, liftProfile } from "./finger.js";
 import { renderFingersView, renderHandView, renderArmView } from "./edgefig.js";
 
 const EXERCISES = [
@@ -29,6 +29,7 @@ const state = {
   placement: null, // live foot placement for 3D lifts (main variant only)
   hand: null, // edge lift: the user's own finger bone lengths (m), or null for the typical hand
   edgeView: "fingers", // edge lift: which figure (fingers | hand | arm)
+  liftT: null, // edge lift: time in the played lift (s); null = holding (the static view)
   cam: { ...CAMERAS["3d"] },
   angle: 90,
   pulley: null,
@@ -419,7 +420,10 @@ function setExercise(id, h = {}) {
   $("strength-out").textContent = pct ? "100%" : `${state.peakTorqueNm} Nm`;
   $("readouts").hidden = multi || finger;
   // The edge lift is a static hold: no lifting animation, the slider compares holds.
-  $("play").hidden = finger;
+  $("play").hidden = false;
+  $("play").textContent = finger ? "Play a lift" : "Play";
+  $("lift-chart-box").hidden = !finger;
+  state.liftT = null;
   // A new exercise starts paused (an animation running on the previous one doesn't carry over).
   if (state.playing) { state.playing = false; $("play").textContent = "Play"; $("play").setAttribute("aria-pressed", "false"); }
   $("view-buttons").hidden = ex.view !== "3d";
@@ -626,7 +630,11 @@ const EDGE_VIEWS = {
 function renderFinger() {
   const ex = state.exercise;
   const v = variant();
-  const r = analyzeEdge(ex, v, state.angle, opts(v));
+  // Play: the force on the hand at this moment of the lift (Newton: m·(g + a) off the floor).
+  const lift = liftProfile(state.loadKg, { liftTime: state.placement?.liftTime ?? 0.6 });
+  const now = state.liftT == null ? null : lift.at(state.liftT);
+  const effKg = now ? Math.max(1e-6, now.F / 9.81) : state.loadKg;
+  const r = analyzeEdge(ex, v, state.angle, { ...opts(v), loadKg: effKg });
   const act = muscleActivation(ex, v, r, state.angle);
   const { main, cmp } = curves();
   const set = r.set;
@@ -641,7 +649,8 @@ function renderFinger() {
   const armPeak = r.arm ? Math.max(r.arm.effort.shoulderForward, r.arm.effort.shoulderSide, r.arm.effort.elbow) : 0;
   $("edge-summary").replaceChildren(
     card("Block", `${state.loadKg} kg`),
-    card("Max block", Number.isFinite(r.maxBlockKg) ? `≈ ${Math.round(r.maxBlockKg)} kg` : "—"),
+    ...(now ? [card(`Now: ${now.phase.toLowerCase()}`, `${Math.round(now.F)} N · ${(now.F / lift.mg).toFixed(2)}×`, now.F > lift.mg * 1.02 ? "warn" : "")] : []),
+    card("Max block", Number.isFinite(r.maxBlockKg) && effKg > 0.01 ? `≈ ${Math.round(r.maxBlockKg)} kg` : "—"),
     card("Hardest finger", r.peak ? `${r.peak.label} ${Math.round(r.peak.effort * 100)}%` : "—", r.peak?.effort > 1 ? "over" : ""),
     card("Highest pulley", r.pulleyPeak ? `${r.pulleyPeak.finger.label} ${r.pulleyPeak.pulley} ${Math.round(r.pulleyPeak.share * 100)}%` : "—", r.pulleyPeak?.share > 0.6 ? "warn" : ""),
     card("Wrist sideways", `${Math.abs(set.wristSide).toFixed(1)} Nm`),
@@ -696,6 +705,14 @@ function renderFinger() {
     xLabel: ex.angleLabel, yLabel: "A2 load (% of breaking)", yFormat: (x) => `${x.toFixed(0)}%`,
   });
   $("angle-out").textContent = `${state.angle.toFixed(0)}°`;
+  // The lift over time, with where Play is now (or the middle of the hold when paused).
+  const ts = [];
+  for (let t = 0; t <= lift.duration + 1e-9; t += 0.02) ts.push([t, lift.at(Math.min(t, lift.duration - 1e-6)).F]);
+  renderChart($("lift-chart"), {
+    xRange: [0, lift.duration], xUnit: " s", xStep: 1, bands: lift.bands, marker: state.liftT ?? lift.holdAt,
+    series: [{ points: ts, className: "fi-middle" }, { points: [[0, lift.mg], [lift.duration, lift.mg]], className: "cap lift-weight" }],
+    yMax: lift.peakF * 1.15, xLabel: "Time (s)", yLabel: "Force on the hand (N)", yFormat: (x) => x.toFixed(0),
+  });
 
   // Notes under the figure
   $("ro-warning").hidden = !(r.peak?.effort > 1);
@@ -708,7 +725,7 @@ function renderFinger() {
   if (Math.abs(set.wristSide) > 0.05) info.push({ text: `The load centre sits ${Math.abs(set.loadCentre * 1000).toFixed(0)} mm towards the ${set.wristSide > 0 ? "thumb" : "little-finger"} side of the wrist: the wrist holds ${Math.abs(set.wristSide).toFixed(1)} Nm sideways.` });
   const fit = set.ideal;
   if (fit) info.push({ text: `An edge that fits ${state.hand ? "your" : "a typical"} hand in this grip exactly sits, compared with under the middle finger, ${["index", "ring", "little"].map((id) => `${id} ${fit[id].lift >= 0 ? "+" : "−"}${Math.abs(fit[id].lift * 1000).toFixed(1)} mm`).join(", ")} (+ = closer to the knuckles).` });
-  if (Number.isFinite(r.maxBlockKg)) info.push({ text: `Max block: the load at which the hardest-working finger reaches its typical maximum, with this grip, split and strength.` });
+  if (Number.isFinite(r.maxBlockKg)) info.push({ text: `Max block: the load at which the hardest-working finger reaches its typical maximum while holding, with this grip, split and strength. Lifting off and setting down briefly asks up to ${(lift.peakF / lift.mg).toFixed(2)}× more (Play).` });
   $("ro-limb").hidden = false;
   $("ro-limb").replaceChildren(...info.map((i) => Object.assign(document.createElement("span"), { textContent: `${i.text} `, className: i.warn ? "warn" : "" })));
   renderPhase(ex);
@@ -796,6 +813,12 @@ function tick(t) {
   if (!state.playing) return;
   const dt = last ? (t - last) / 1000 : 0;
   last = t;
+  if (state.exercise.model === "finger") { // edge lift: time through one lift, looping
+    state.liftT = (state.liftT ?? 0) + dt;
+    render();
+    requestAnimationFrame(tick);
+    return;
+  }
   const [lo, hi] = state.exercise.angleRange;
   const speed = (hi - lo) / (state.direction > 0 ? 1.4 : 2.2); // lowering slower than lifting
   state.angle += state.direction * speed * dt;
@@ -807,7 +830,7 @@ function tick(t) {
 }
 function setPlaying(on) {
   state.playing = on;
-  $("play").textContent = on ? "Pause" : "Play";
+  $("play").textContent = on ? "Pause" : state.exercise?.model === "finger" ? "Play a lift" : "Play";
   $("play").setAttribute("aria-pressed", on);
   last = 0;
   if (on) requestAnimationFrame(tick);
