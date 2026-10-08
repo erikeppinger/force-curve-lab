@@ -343,6 +343,29 @@
       "citation": "Danneskiold-Samsøe B, Bartels EM, Bülow PM, Lund H, Stockmarr A, Holm CC, Wätjen I, Appleyard M, Bliddal H (2009). Isokinetic and isometric muscle strength in a healthy population with special reference to age and gender. Acta Physiol 197(Suppl 673):1–68.",
       "url": "https://doi.org/10.1111/j.1748-1716.2009.02022.x",
       "usedFor": "Hip adduction and abduction peak torques for healthy young men (multi-joint lifts' sideways hip)."
+    },
+    {
+      "key": "O'Connell 2021",
+      "match": "O'Connell DG",
+      "group": "Two-joint muscles and grip",
+      "citation": "O'Connell DG, Cooper KA, Richeson SM, Moeller MB, Stephens JW, Key DJ (2021). The effect of forearm position on elbow flexion strength in nursing, occupational, and physical therapy students. Work 69:403–409.",
+      "url": "https://doi.org/10.3233/WOR-213486",
+      "usedFor": "Curls: cross-check of grip strength (neutral strongest, palms down weakest, at 90°)."
+    },
+    {
+      "key": "Provins 1955",
+      "match": "Provins KA, Salter N",
+      "group": "Two-joint muscles and grip",
+      "citation": "Provins KA, Salter N (1955). Maximum torque exerted about the elbow joint. J Appl Physiol 7(4):393–398.",
+      "usedFor": "Curls: cross-check, the mid-position (neutral grip) strongest with a handle."
+    },
+    {
+      "key": "Tsunoda 1993",
+      "match": "Tsunoda N, O'Hagan F",
+      "group": "Strength curves",
+      "citation": "Tsunoda N, O'Hagan F, Sale DG, MacDougall JD (1993). Elbow flexion strength curves in untrained men and women and male bodybuilders. Eur J Appl Physiol 66:235–239.",
+      "url": "https://doi.org/10.1007/BF00235099",
+      "usedFor": "Biceps curl: cross-check of the elbow-flexion strength curve's peak angle and size."
     }
   ],
   "resources": [
