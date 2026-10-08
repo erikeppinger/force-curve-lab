@@ -13,7 +13,7 @@
 // Torques are per leg (or per arm), positive when the joint's working muscles must resist.
 // Pure functions only — imported by the browser UI and by node tests.
 
-import { G, interp } from "./physics.js";
+import { G, interp, rangeOf } from "./physics.js";
 import { legPress3d, squat3d, bench3d, press3d, hinge3d, split3d, hipThrust3d, row3d, pull3d, jointScaleAt } from "./multijoint3d.js";
 export { jointScaleAt };
 
@@ -180,7 +180,7 @@ function standing(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
     let ts, tt, tk;
     if (hinge) { // x = hip flexion (rows: held at hipFlex); the knees bend a little as you hinge
       const hip = row ? P.hipFlex : x;
-      const knee = rad(P.kneeBase + P.kneePerHip * hip);
+      const knee = rad(Math.max(0, P.kneeBase + P.kneePerHip * hip));
       ts = free; tt = ts - knee; tk = tt + rad(hip);
     } else { // x = knee flexion; shin angle follows the knee
       ts = rad(P.shinPerKnee * x); tt = ts - rad(x); tk = free;
@@ -430,7 +430,7 @@ export function analyzeMulti(exercise, variant, x, opts) {
 
 /** Sample analyzeMulti() across the driver's range. */
 export function sampleMulti(exercise, variant, opts, step = 2.5) {
-  const [lo, hi] = exercise.angleRange;
+  const [lo, hi] = rangeOf(exercise, variant);
   const out = [];
   for (let a = lo; a <= hi + 1e-9; a += step) out.push({ angle: a, ...analyzeMulti(exercise, variant, a, opts) });
   return out;

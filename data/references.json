@@ -305,6 +305,14 @@
       "usedFor": "Deadlift: stance width and toe angle of the conventional and sumo pulls (abstract), and the comparison of their joint moments."
     },
     {
+      "key": "Ferrer-Uris 2023",
+      "match": "Ferrer-Uris B, Arias D",
+      "group": "Muscle activity",
+      "citation": "Ferrer-Uris B, Arias D, Torrado P, Marina M, Busquets A (2023). Exploring forearm muscle coordination and training applications of various grip positions during maximal isometric finger dead-hangs in rock climbers. PeerJ 11:e15464.",
+      "url": "https://doi.org/10.7717/peerj.15464",
+      "usedFor": "Edge lift: direction check of the FDP/FDS split (surface EMG in maximal dead-hangs: more FDS in the crimp than the slope grip, FDP about the same)."
+    },
+    {
       "key": "Braman 2009",
       "match": "Braman JP, Engel SC",
       "group": "Body data",

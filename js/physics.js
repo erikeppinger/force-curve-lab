@@ -170,9 +170,12 @@ export function strengthScaleAt(variant, angleDeg) {
   return sc.points ? interp(sc.points, angleDeg) : sc.factor;
 }
 
-/** Sample analyze() across the exercise's range of motion. */
+/** The range of motion of a variant: its own `angleRange` if it has one, else the exercise's. */
+export const rangeOf = (exercise, variant) => variant?.angleRange ?? exercise.angleRange;
+
+/** Sample analyze() across the variant's range of motion. */
 export function sampleCurve(exercise, variant, opts, step = 2.5) {
-  const [lo, hi] = exercise.angleRange;
+  const [lo, hi] = rangeOf(exercise, variant);
   const out = [];
   for (let a = lo; a <= hi + 1e-9; a += step) out.push({ angle: a, ...analyze(exercise, variant, a, opts) });
   return out;

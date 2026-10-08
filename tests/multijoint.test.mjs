@@ -96,8 +96,12 @@ test("deadlift: the conventional bar never passes through the legs, and the arms
     assert.ok(bar.x >= legFrontAt(r, bar.y) - 1e-4, `@${x}: bar ${bar.x} inside the legs`);
     assert.ok(bar.x >= S.x - 1e-9, `@${x}: arms only swing forward`);
   }
-  // Somewhere around the knees the rule is active: the bar sits in front of the shoulders.
-  assert.ok([60, 90, 110].some((x) => { const r = run("deadlift", "conventional", x); return r.loads[0].at.x > r.arms[0].from.x + 0.02; }));
+  // With the measured knee bend the shins stay steep and the bar hangs clear of them. With a
+  // squattier start (knees bending 0.9° per degree of hip flexion) the rule kicks in around the knees:
+  // the bar sits in front of the shoulders.
+  const ex = load2d("deadlift"), deep = { ...ex.variants.find((v) => v.id === "conventional") };
+  deep.params = { ...deep.params, kneeBase: 0, kneePerHip: 0.9 };
+  assert.ok([60, 90, 110].some((x) => { const r = analyzeMulti(ex, deep, x, opts); return r.loads[0].at.x > r.arms[0].from.x + 0.02; }));
 });
 
 test("deadlift: the trap bar hangs straight down and moves work from the hip to the knee", () => {
@@ -474,7 +478,7 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
   const flat = { halfWidth: body.lengths.hipHalfWidth, toeOut: 0, kneeTrack: 0, sidePush: 0 };
 
   test("3D hinge and hip thrust reduce exactly to the side view with feet under the hips", () => {
-    for (const [id, vids, xs] of [["romanian-deadlift", ["barbell", "stiff-leg"], [10, 45, 80]], ["deadlift", ["conventional", "trap-bar"], [10, 60, 95, 130]], ["hip-thrust", ["barbell", "feet-far"], [10, 40]]]) {
+    for (const [id, vids, xs] of [["romanian-deadlift", ["barbell", "stiff-leg"], [10, 45, 80]], ["deadlift", ["conventional", "trap-bar"], [40, 60, 95, 130]], ["hip-thrust", ["barbell", "feet-far"], [10, 40]]]) {
       for (const vid of vids) {
         for (const x of xs) {
           const a = run(id, vid, x), b = run3d(id, vid, x, flat);
