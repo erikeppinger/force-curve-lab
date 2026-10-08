@@ -2,41 +2,42 @@
 
 Papers found but not yet read. Each was seen in search results only: check the numbers in the paper before using them.
 
-## To fetch (checklist)
+## To fetch
 
-Updated after the break test (open items 15–20). **Read** = in the app (cited in the exercise files and References); **not obtainable** = not available through the user's institution.
+Papers identified but not here yet. Citations were seen elsewhere, so check the details in the paper itself.
 
-| # | Paper | Status | For |
+| # | Paper | Why |
+|---|---|---|
+| 1 | Escamilla RF, Francisco AC, Fleisig GS, Barrentine SW, Welch CM, Kayes AV, Speer KP, Andrews JR (2000). A three-dimensional biomechanical analysis of sumo and conventional style deadlifts. Med Sci Sports Exerc 32(7):1265–1275. doi:10.1097/00005768-200007000-00013 (only the abstract read) | Deadlift: hip, knee and ankle angles at lift-off for both styles (sets the knee bend per hip bend), and their joint moments to check the model against |
+| 2 | Delp SL, Hess WE, Hungerford DS, Jones LC (1999). Variation of rotation moment arms with hip flexion. J Biomech 32:493–501 | Seated abduction/adduction machines: which muscles abduct with the hip flexed |
+| 3 | Dostal WF, Soderberg GL, Andrews JG (1986). Actions of hip muscles. Phys Ther 66:351–361 | Hip muscles' moment arms and actions in different positions (gluteus medius vs maximus) |
+| 4 | Ferrer-Uris B et al. (2023), PeerJ: forearm muscle activation (FDP, FDS, FCR) in half crimp vs sloper dead-hangs (cited by StrengthClimbing) | Edge lift: check the FDP/FDS split |
+
+## To find (no paper identified yet)
+
+| # | What | Why | Meanwhile |
 |---|---|---|---|
-| 1 | Ramsay, Hunter, Gonzalez (2009), J Biomech 42:463–473 | **Read:** curl muscle levels (normalized potential moments) | Curls |
-| 2 | Holzbaur, Murray, Delp (2005), Ann Biomed Eng 33:829–840 | **Read, not used yet:** the OpenSim arm model; for a later OpenSim run (arm, wrist, fingers) | Arm muscle model |
-| 3 | Lieber et al. (1992), J Hand Surg Am 17(5):787–798 | **Read:** cross-check only; Gonzalez et al. took their muscle sizes from it (FDP 7.9 cm² in both) | Forearm muscle sizes |
-| 4 | Delp, Grierson, Buchanan (1996), J Biomech 29:1371–1375 | **Read:** wrist curls' strength curves and peaks | Wrist strength |
-| 5 | Gonzalez, Buchanan, Delp (1997), J Biomech 30:705–712 | **Read:** wrist curls' muscle weights | Wrist muscle shares |
-| 6 | Lin, Amadio, An, Cooney (1989), J Hand Surg Am 14:949–956 | **Read:** edge lift's A2/A4 positions | Pulley positions |
-| 7 | Lin, Cooney, Amadio, An (1990), J Hand Surg Br 15:429–434 | **Read:** edge lift's pulley breaking loads | Pulley strength |
-| 8 | Waters RL et al. (1974), J Bone Joint Surg Am 56(8):1592–1597 | **Not obtainable** | Hip extension vs knee angle |
-| 9 | Danneskiold-Samsøe et al. (2009), Acta Physiol 197(Suppl 673):1–68 | **Read:** hip adduction/abduction strength | Strength norms |
-| 10 | Provins & Salter (1955), J Appl Physiol 7:393–398 | **Read:** cross-check (neutral grip strongest) | Elbow strength by grip |
-| 11 | Folland & Morris (2008), J Sports Sci 26:163–169 | **Read:** leg-extension machine cams | Machine cams |
-| 12 | Yamamoto et al. (2015), Jpn J Phys Fitness Sports Med 64:289–294 (the Japanese study) | **Read:** hip-extension strength by knee angle | Hip extension vs knee angle |
-| 13 | Sprinters and hurdlers, hip extension at knee 30° vs 90° (<https://lida.sport-iat.de/ta/Record/4080023?lng=en>) | **Not obtainable** | Hip extension vs knee angle |
-| 14 | Rasch PJ: elbow-flexion strength by forearm position | **Still unknown:** the fetched Rasch & Morehouse 1957 is a training study (static vs dynamic exercise), not this | Elbow strength by grip |
-| 15 | Ferrer-Uris B et al. (2023), PeerJ: forearm muscle activation (FDP, FDS, FCR) in half crimp vs sloper dead-hangs | **New, to fetch** (cited by StrengthClimbing); citation details unchecked | Edge lift: check the FDP/FDS split |
-| 16 | Escamilla RF et al. (2000). A three-dimensional biomechanical analysis of sumo and conventional style deadlifts. Med Sci Sports Exerc 32(7):1265–1275. doi:10.1097/00005768-200007000-00013 | **To fetch** (only the abstract read) | Deadlift: hip, knee and ankle angles at lift-off for both styles (sets the knee bend per hip bend), and their joint moments to check the model against |
-| 17 | Braman JP et al. (2009), J Shoulder Elbow Surg 18(6):960–967 | **Read** (PMC full text): shoulder-blade rhythm, cited in the four arm-raising exercises | Scapulohumeral rhythm |
-| 18 | Latz D et al. (2019), Hand 14(2):259–263 | **Read:** each finger's active knuckle range, the four-finger search's limits | Edge lift |
-| 19 | Pull-up / chin-up kinematics: trunk lean and elbow path through the pull, wide pull-up vs chin-up | **To find** (no candidate checked); the model now picks the swing and leg position for least effort, which fixes the chin-up vs pull-up order. Measured lean and swing would check it | Pull-ups |
-| 20 | Plantarflexion strength vs ankle angle with the knee straight, over the full range to about 35° | **Partly done:** read off Chen & Franklin's Fig. 11 (knee extended datasets). One study with tabulated values would replace the figure reading | Calf raise |
-| 21 | Knuckle (MCP head) positions relative to the wrist, per finger; e.g. the geometry of a musculoskeletal hand model (Mirakhorlo et al. 2018 was suggested in a search; unread) | **To find** | Edge lift: the knuckle line is an estimate |
-| 22 | Shoulder flexion and abduction strength across the full range up to overhead (isometric angle–torque curves past 90°) | **To find** (no candidate checked). Mayer et al. 1994 (read) only place the peaks "in front of the body and below head level"; Kulig et al. 1984 (read) describe a clear drop beyond about 110° of flexion, without numbers | Front and lateral raise to overhead (Lu raise) |
-| 23 | Delp SL, Hess WE, Hungerford DS, Jones LC (1999). Variation of rotation moment arms with hip flexion. J Biomech 32:493–501 | **To fetch** (seen cited elsewhere; details unchecked) | Seated abduction/adduction machines: which muscles abduct with the hip flexed |
-| 24 | Dostal WF, Soderberg GL, Andrews JG (1986). Actions of hip muscles. Phys Ther 66:351–361 | **To fetch** (seen cited elsewhere; details unchecked) | Hip muscles' moment arms and actions in different positions (abduction machines, gluteus medius vs maximus) |
-| 25 | Hip abduction and adduction strength vs angle, ideally at more than one hip-flexion angle | **Partly available:** Chen & Franklin (read) Fig. 6 collects 11 abduction and 7 adduction datasets vs adduction and hip-flexion angle (to be read off the figure, like the calf raise). A study with tabulated values would be better | Hip adduction exercise, seated machines |
+| 5 | Shoulder flexion and abduction strength across the full range up to overhead (isometric angle–torque past 90°) | Front and lateral raise to overhead (Lu raise) | Mayer et al. 1994 only place the peaks "in front of the body and below head level"; Kulig et al. 1984 describe a clear drop beyond about 110° of flexion, without numbers |
+| 6 | Hip abduction and adduction strength vs angle, ideally at more than one hip-flexion angle, with tabulated values | Hip adduction exercise, seated machines | Chen & Franklin's Fig. 6 (here) collects 11 abduction and 7 adduction datasets and can be read off, like the calf raise |
+| 7 | Plantarflexion strength vs ankle angle with the knee straight, to about 35°, with tabulated values | Calf raise near the top | Read off Chen & Franklin's Fig. 11 (in the app) |
+| 8 | Pull-up / chin-up kinematics: trunk lean and elbow path through the pull | A check on the least-effort swing and leg position | The model picks them for least effort |
+| 9 | Knuckle (MCP head) positions relative to the wrist, per finger (e.g. a musculoskeletal hand model's geometry; Mirakhorlo et al. 2018 was suggested in a search) | Edge lift's knuckle line | Estimate, editable as "Your hand" |
+| 10 | Rasch PJ: elbow-flexion strength by forearm position (year and title unknown) | Elbow strength by grip | Provins & Salter 1955 and the grip studies cover it |
 
-Also read in this batch: Tsunoda et al. 1993 and O'Connell et al. 2021 (curl cross-checks, cited), Bianchi et al. 2007 (ultrasound of the finger flexor system; background, not used).
+## Not obtainable
 
-**Papers folder (checked against this list):** everything in `new` is already read: Holzbaur et al. 2005 (kept there for the OpenSim step), Youm et al. 1979 and Wu et al. 2009 (fetched by mistake), An et al. 1979, Rispler et al. 1996 and Bianchi et al. 2007 (background, not used), Rasch & Morehouse 1957 (not the paper wanted in item 14). They can move to `done` except Holzbaur. Latz et al. 2019 (item 18, cited) and Cook et al. 2007 (goniometer vs motion capture; no knuckle positions, not used) are still in Downloads, not in the papers folder.
+- Waters RL et al. (1974). The relative strength of the hamstrings during hip extension. J Bone Joint Surg Am 56(8):1592–1597 (not through the institution).
+- Sprinters and hurdlers, hip extension at knee 30° vs 90°: <https://lida.sport-iat.de/ta/Record/4080023?lng=en> (not through the institution). Yamamoto et al. 2015 covers the question.
+
+## Already here
+
+Read and in the app (cited in the exercise files and References) or read and set aside:
+
+- **In the app:** Ramsay et al. 2009 (curl muscle levels), Lieber et al. 1992 (forearm and finger muscle sizes), Delp et al. 1996 (wrist strength), Gonzalez et al. 1997 (wrist muscle shares), Lin et al. 1989 (pulley positions, finger bone lengths), Lin et al. 1990 (pulley breaking loads), Danneskiold-Samsøe et al. 2009 (hip abduction/adduction norms), Provins & Salter 1955 (cross-check), Folland & Morris 2008 (machine cams), Yamamoto et al. 2015 (hip extension by knee angle), Braman et al. 2009 (shoulder-blade rhythm), Latz et al. 2019 (knuckle ranges), Tsunoda et al. 1993 and O'Connell et al. 2021 (curl cross-checks), Chen & Franklin 2025 (cross-checks; calf strength with the knee straight).
+- **Read, for later:** Holzbaur et al. 2005 (the OpenSim arm model; kept in `new` for the OpenSim step), Rajagopal et al. 2016 (the OpenSim leg model).
+- **Read, not used:** An et al. 1979, Rispler et al. 1996, Bianchi et al. 2007 (background); Youm et al. 1979 and Wu et al. 2009 (fetched by mistake); Rasch & Morehouse 1957 (a training study, not item 10); Cook et al. 2007 (goniometer vs motion capture, no knuckle positions).
+
+**Papers folder:** everything in `new` is read; all can move to `done` except Holzbaur et al. 2005. Latz et al. 2019 and Cook et al. 2007 are still in Downloads.
 
 Details for each are in the sections below.
 
