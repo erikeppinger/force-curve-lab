@@ -64,15 +64,14 @@ export function renderHandFront(svg, { set, exercise: ex, P }) {
   // Edge: one height per finger's sideways position, from the touching middle finger's contact.
   const mid = fingers.find((x) => x.f.id === "middle");
   const yEdge0 = mid.pts[3].y;
-  const step = P.edgeStep ?? 0, tilt = Math.tan(rad(P.edgeTilt ?? 0));
+  const tilt = Math.tan(rad(P.edgeTilt ?? 0));
   const zMid = mid.pts[3].z;
-  const ringOn = P.stepRing ?? 0;
-  const sections = [
-    { z0: 0.05, z1: zMid + 0.01, on: 0 }, { z0: zMid + 0.01, z1: zMid - 0.01, on: 1 },
-    { z0: zMid - 0.01, z1: zMid - 0.03, on: ringOn }, { z0: zMid - 0.03, z1: -0.05, on: 0 },
-  ];
+  // One section per finger, centred on its pad, at its offset from the middle finger's height.
+  const sections = fingers.map(({ f, pts }) => ({ z0: pts[3].z + 0.01, z1: pts[3].z - 0.01, off: set.offsets?.[f.id] ?? 0 }));
+  sections[0].z0 += 0.012;
+  sections[sections.length - 1].z1 -= 0.012;
   for (const s of sections) {
-    const h = (z) => yEdge0 - step * (1 - s.on) + tilt * (z - zMid);
+    const h = (z) => yEdge0 + s.off + tilt * (z - zMid);
     const a = { y: h(s.z0), z: s.z0 }, b = { y: h(s.z1), z: s.z1 };
     const A = px(a), B = px(b), d = 0.012 * S;
     el("polygon", { points: `${A.x},${A.y} ${B.x},${B.y} ${B.x},${B.y + d} ${A.x},${A.y + d}`, class: "edge" }, svg);

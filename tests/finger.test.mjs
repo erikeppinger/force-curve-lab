@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { G, interp } from "../js/physics.js";
-import { analyzeFinger, sampleFinger, fingerSet } from "../js/finger.js";
+import { analyzeFinger, sampleFinger, fingerSet, idealEdge } from "../js/finger.js";
 import { muscleActivation } from "../js/muscles.js";
 
 const ex = JSON.parse(readFileSync(new URL("../data/exercises/edge-lift.json", import.meta.url)));
@@ -172,4 +172,29 @@ test("four fingers: tilting the edge tilts the hand with it", () => {
   const flat = fingerSet(ex, v.params, v.params.pip, 300);
   const tilted = fingerSet(ex, { ...v.params, edgeTilt: 10 }, v.params.pip, 300);
   assert.ok(tilted.deviationDeg < flat.deviationDeg, `${tilted.deviationDeg} vs ${flat.deviationDeg}`);
+});
+
+test("fitted edge: with every edge offset on Auto, each finger keeps the grip's own angles", () => {
+  for (const v of ex.variants) {
+    const P = { ...v.params, edgeIndex: "auto", edgeRing: "auto", edgeLittle: "auto" };
+    const set = fingerSet(ex, P, v.params.pip, 300);
+    for (const f of set.fingers) {
+      assert.ok(f.touches, `${v.id} ${f.id}`);
+      assert.ok(Math.abs(f.pose.pipDeg - v.params.pip) < 2, `${v.id} ${f.id} PIP ${f.pose.pipDeg}`);
+      assert.ok(Math.abs(f.pose.mcpDeg - v.params.mcp) < 4, `${v.id} ${f.id} MCP ${f.pose.mcpDeg}`);
+    }
+  }
+});
+
+test("fitted edge: identical fingers need a straight edge; a shorter little finger needs it closer", () => {
+  const v = ex.variants.find((x) => x.id === "half-crimp");
+  const m = ex.fingers.lengths.middle;
+  const same = idealEdge(ex, v.params, 90, { index: m, middle: m, ring: m, little: m });
+  for (const id of ex.fingers.order) { close(same[id].lift, 0, 1e-12); close(same[id].depth, 0, 1e-12); }
+  // Half crimp (MCP 0, PIP 90°, DIP 0): the proximal phalanx hangs along the pull and the rest lies
+  // across it, so the lift is the difference in metacarpal + proximal length (to first order).
+  const fit = idealEdge(ex, v.params, 90);
+  const L = ex.fingers.lengths;
+  const expect = (L.middle.metacarpal + L.middle.proximal) - (L.little.metacarpal + L.little.proximal);
+  assert.ok(Math.abs(fit.little.lift - expect) < 0.004, `${fit.little.lift} vs ${expect}`);
 });

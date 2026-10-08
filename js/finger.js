@@ -138,7 +138,8 @@ function fingerStatics(g, P, p, force, pipDeg) {
 function setFinger(ex, id) {
   const S = ex.fingers, base = ex.finger;
   const L = S.lengths[id];
-  const k = L.proximal / S.lengths.index.proximal;
+  // Scaled against the published index finger, also when the user enters their own lengths.
+  const k = L.proximal / (S.refIndexProximal ?? S.lengths.index.proximal);
   const momentArms = Object.fromEntries(Object.entries(base.momentArms).map(([key, v]) => [key, v * k]));
   return {
     lengths: L, momentArms, bowstring: base.bowstring, insertions: base.insertions,
@@ -283,25 +284,31 @@ function shareLoad(fingers, q) {
  * may tilt sideways at the wrist (radial/ulnar deviation), which lowers one side's knuckles. Where
  * the edge sits relative to the hand (searched along the middle finger's knuckle angle) and the
  * hand's tilt are chosen so the four postures together stay closest to the grip; a finger that
- * can't reach doesn't touch. The edge is raised/lowered per finger by P.edgeTilt and P.edgeStep
- * (a raised middle section under the middle finger; P.stepRing = how far the ring finger is on
- * it). The block's weight W is shared for least effort (shareLoad; P.quadriga = how far the FDP
- * slips of the middle, ring and little finger act as one muscle).
+ * can't reach doesn't touch. The edge under the index, ring and little finger sits closer to the
+ * knuckles (+) or further away (−) than under the middle finger by P.edgeIndex / edgeRing /
+ * edgeLittle (metres, or "auto" = the profile that fits this hand in this grip, see idealEdge),
+ * and the whole edge may tilt (P.edgeTilt). The block's weight W is shared for least effort
+ * (shareLoad; P.quadriga = how far the FDP slips of the middle, ring and little finger act as one
+ * muscle). hand: optional own bone lengths {index: {metacarpal, proximal, middle, distal}, …}.
  */
-export function fingerSet(ex, P, pipDeg, W, strengthPct = 100) {
+export function fingerSet(ex0, P, pipDeg, W, strengthPct = 100, hand = null) {
+  const ex = withHand(ex0, hand);
   const S = ex.fingers;
   if (!S) return null;
   const frac = Math.min(1, (P.contactFromDip ?? ex.finger.lengths.distal / 2) / ex.finger.lengths.distal);
   const gs = Object.fromEntries(S.order.map((id) => [id, setFinger(ex, id)]));
   const refAngles = { mcp: P.mcp, pip: pipDeg, dip: P.dip };
   const zMid = S.knuckleSide.middle;
-  const step = P.edgeStep ?? 0, edgeTilt = rad(P.edgeTilt ?? 0);
-  const onStep = { index: 0, middle: 1, ring: P.stepRing ?? 0, little: 0 };
-  // Edge height under each finger relative to the middle finger's, along the hand's long axis
-  // (towards the wrist = +), with the hand tilted sideways by devDeg: the edge's own tilt and the
-  // hand's tilt add up (both lower the little-finger side relative to the knuckles).
-  const lift = (id, devDeg) => -step * (onStep.middle - onStep[id]) / Math.cos(rad(devDeg))
-    + Math.tan(edgeTilt + rad(devDeg)) * (S.knuckleSide[id] - zMid);
+  const edgeTilt = rad(P.edgeTilt ?? 0);
+  const ideal = idealEdge(ex, P, pipDeg);
+  const offsets = Object.fromEntries(S.order.map((id) => {
+    const v = id === "middle" ? 0 : P[EDGE_KEY[id]] ?? 0;
+    return [id, v === "auto" ? ideal[id].lift : v];
+  }));
+  // Edge height under each finger relative to the middle finger's (towards the wrist = +), with
+  // the hand tilted sideways by devDeg: the edge's own tilt and the hand's tilt add up (both lower
+  // the little-finger side relative to the knuckles).
+  const lift = (id, devDeg) => offsets[id] / Math.cos(rad(devDeg)) + Math.tan(edgeTilt + rad(devDeg)) * (S.knuckleSide[id] - zMid);
   // The edge (relative to the wrist, in the hand's frame) for a given middle-finger knuckle angle.
   const edgeAt = (mcpDeg) => {
     const gm = gs.middle;
@@ -311,12 +318,15 @@ export function fingerSet(ex, P, pipDeg, W, strengthPct = 100) {
   const solve = (mcpDeg, devDeg, fine = false) => {
     const c = edgeAt(mcpDeg);
     const sol = S.order.map((id) => {
-      // The pad may rest a little deeper or shallower on the edge (coarse, then fine).
-      const y = c.y + lift(id, devDeg); // raised = closer to the wrist
+      // Up the pull's line (towards the wrist) by the edge's lift; the pad may rest a little deeper
+      // or shallower on the edge, across the pull (coarse, then fine).
+      const u = unit(c), n = { x: -u.y, y: u.x };
+      const base = add(c, u, -lift(id, devDeg));
       const at = (dx) => {
-        const pose = reachPose(gs[id], { x: c.x + dx, y }, frac, refAngles, S.cmcFlexMax?.[id] ?? 0);
+        const target = add(base, n, dx);
+        const pose = reachPose(gs[id], target, frac, refAngles, S.cmcFlexMax?.[id] ?? 0);
         if (pose) pose.cost += WEIGHT.depthMm * (dx * 1000) ** 2;
-        return { id, target: { x: c.x + dx, y }, depth: dx, pose };
+        return { id, target, depth: dx, pose };
       };
       const pick = (a, b) => (!a.pose || (b.pose && b.pose.cost < a.pose.cost) ? b : a);
       if (id === "middle") return at(0);
@@ -374,15 +384,48 @@ export function fingerSet(ex, P, pipDeg, W, strengthPct = 100) {
   // at its sideways position, which the hand's tilt shifts (z' = y·sin dev + z·cos dev).
   for (const f of fingers) f.zWorld = f.target.y * Math.sin(dev) + f.z * Math.cos(dev);
   const wristSide = fingers.reduce((m, f) => m + f.force * f.zWorld, 0);
-  return { fingers, wristSide, loadCentre: W > 0 ? wristSide / W : 0, deviationDeg: best.dev, quadriga: q, edge: best.c };
+  return { fingers, wristSide, loadCentre: W > 0 ? wristSide / W : 0, deviationDeg: best.dev, quadriga: q, edge: best.c, offsets, ideal };
 }
 
-export function analyzeFinger(ex, v, pipDeg, { loadKg, strengthPct = 100, placement, body, bodyMassKg, indexShare } = {}) {
+/** Placement keys of the edge offsets under each finger (relative to the middle finger). */
+const EDGE_KEY = { index: "edgeIndex", ring: "edgeRing", little: "edgeLittle" };
+
+/** The exercise with the user's own finger bone lengths (moment arms still scaled from the data's index). */
+function withHand(ex, hand) {
+  if (!hand || !ex.fingers) return ex;
+  return { ...ex, fingers: { ...ex.fingers, lengths: { ...ex.fingers.lengths, ...hand }, refIndexProximal: ex.fingers.lengths.index.proximal } };
+}
+
+/**
+ * The edge that fits a hand in a grip exactly: every finger in the grip's own angles (no knuckle
+ * adjustment, no cupping, hand straight), the hand hanging with the wrist above the middle
+ * finger's pad. Per finger: lift = how much closer to the knuckles (+) its pad sits than the
+ * middle finger's, along the pull; depth = how much deeper (towards the palm, +) across it.
+ */
+export function idealEdge(ex0, P, pipDeg, hand = null) {
+  const ex = withHand(ex0, hand);
+  const S = ex.fingers;
+  if (!S) return null;
+  const frac = Math.min(1, (P.contactFromDip ?? ex.finger.lengths.distal / 2) / ex.finger.lengths.distal);
+  const contact = (id) => {
+    const g = setFinger(ex, id);
+    const p = fingerPose(g, { ...P, contactFromDip: frac * g.lengths.distal }, pipDeg);
+    return sub(p.contact, p.wrist);
+  };
+  const cm = contact("middle");
+  const u = unit(cm), n = { x: -u.y, y: u.x };
+  return Object.fromEntries(S.order.map((id) => {
+    const d = sub(contact(id), cm);
+    return [id, { lift: -(d.x * u.x + d.y * u.y), depth: d.x * n.x + d.y * n.y }];
+  }));
+}
+
+export function analyzeFinger(ex, v, pipDeg, { loadKg, strengthPct = 100, placement, body, bodyMassKg, indexShare, hand } = {}) {
   const f = ex.finger;
   const P = { ...v.params, ...placement };
   const W = loadKg * G;
   // indexShare (from sampleFinger): the index's share is already known, skip the four-finger set.
-  const set = indexShare == null ? fingerSet(ex, P, pipDeg, W, strengthPct) : null;
+  const set = indexShare == null ? fingerSet(ex, P, pipDeg, W, strengthPct, hand) : null;
   // The detailed finger (index): its share is the least-effort split ("auto") or a set value.
   // If the index doesn't reach the edge in the four-finger set, the detailed view falls back to 25%.
   const idx = set?.fingers.find((x) => x.id === "index");
@@ -417,7 +460,7 @@ export function sampleFinger(ex, v, opts, step = 2.5) {
     const pts = [];
     for (let a = lo; a < hi + 10; a += 10) {
       const x = Math.min(a, hi);
-      const set = fingerSet(ex, P, x, (opts?.loadKg ?? 0) * G, opts?.strengthPct ?? 100);
+      const set = fingerSet(ex, P, x, (opts?.loadKg ?? 0) * G, opts?.strengthPct ?? 100, opts?.hand);
       const idx = set.fingers.find((f) => f.id === "index");
       pts.push([x, idx.touches ? idx.share : 0.25]);
       if (x === hi) break;
