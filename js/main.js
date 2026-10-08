@@ -94,7 +94,8 @@ function setVariant(id, pulley, load, placement) {
   state.variantId = id;
   const v = variant();
   // Machines, cables and ankle weights need very different loads: use the variant's default.
-  const kg = load ?? v.defaultLoadKg;
+  // A load from a link is kept inside the slider's range.
+  const kg = load != null ? Math.min(+$("load").max, Math.max(+$("load").min, load)) : v.defaultLoadKg;
   if (kg != null) { state.loadKg = kg; $("load").value = kg; $("load-out").textContent = `${kg} kg`; }
   state.pulley = anchored(v) ? { ...(pulley ?? v.load.pulley) } : null;
   $("variant").value = id;
@@ -130,7 +131,9 @@ function setPlacement(v, override = {}) {
   const spec = state.exercise.placement;
   $("placement-controls").hidden = !spec;
   if (!spec) { state.placement = null; return; }
-  state.placement = Object.fromEntries(spec.map((s) => [s.key, override[s.key] ?? v.params[s.key]]));
+  // Values from a link: "auto" only where the slider offers it, numbers kept inside the slider's range.
+  const fromLink = (s) => { const x = override[s.key]; if (x === "auto") return s.auto ? x : undefined; return Number.isFinite(x) ? Math.min(s.max, Math.max(s.min, x)) : undefined; };
+  state.placement = Object.fromEntries(spec.map((s) => [s.key, fromLink(s) ?? v.params[s.key]]));
   const edgeSpecs = spec.filter((s) => s.widget === "edge");
   $("placement-sliders").replaceChildren(...spec.flatMap((s) => {
     if (s.widget === "edge") return s === edgeSpecs[0] ? [edgeBars(edgeSpecs)] : [];
@@ -239,6 +242,8 @@ function setHand(list) {
   const S = state.exercise.fingers;
   $("hand-panel").hidden = !S;
   if (!S) { state.hand = null; return; }
+  // Lengths from a link outside the table's ranges are ignored (typical hand instead).
+  if (list && !list.every((mm, i) => mm >= BONE_RANGE[BONES[i % 4]][0] && mm <= BONE_RANGE[BONES[i % 4]][1])) list = undefined;
   state.hand = list ? Object.fromEntries(S.order.map((id, i) => [id, Object.fromEntries(BONES.map((b, j) => [b, list[i * 4 + j] / 1000]))])) : null;
   if (list) $("hand-panel").open = true;
   $("hand-table").tBodies[0].replaceChildren(...S.order.map((id) => {

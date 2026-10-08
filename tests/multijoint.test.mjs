@@ -674,3 +674,12 @@ test("arm lifts: the elbow moves smoothly through the range (no jumps between th
     }
   }
 });
+
+test("3D squat: a wide, toes-out stance balances at every knee angle with a light bar (shin lean measured in the side view)", () => {
+  const ex = load("squat");
+  const v = ex.variants.find((x) => x.id === "wide");
+  for (const kg of [0, 20, 40]) for (let x = 0; x <= 120; x += 10) {
+    const r = analyzeMulti(ex, v, x, { ...opts, loadKg: kg });
+    assert.ok(r.balance.ok, `${kg} kg @${x}`);
+  }
+});

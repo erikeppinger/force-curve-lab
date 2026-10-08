@@ -242,7 +242,7 @@ export function squat3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     const H = v3(A.x + R * Math.sin(psi), A.y + R * Math.cos(psi), L.hipHalfWidth);
     const K = placeMid(H, A, L.thigh, L.shank, f, P.kneeTrack);
     const s = sub3(K, A);
-    return { H, K, tilt: Math.atan2(s.x * f.x + s.z * f.z, s.y) };
+    return { H, K, tilt: Math.atan2(s.x, Math.hypot(s.y, s.z)) }; // forward lean of the shin (side view), whatever the stance width
   };
   const target = rad(P.shinPerKnee * x);
   let lo = rad(-85), hi = rad(45);
