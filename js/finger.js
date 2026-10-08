@@ -212,7 +212,8 @@ function reachPose(g, targetW, frac, ref, cmcMax = 0) {
  * fingers bend the knuckle more), the ring and little finger also by cupping. Where the edge sits
  * relative to the hand is chosen so the four postures together stay closest to the grip (searched
  * along the middle finger's knuckle angle); a finger that can't reach doesn't touch. The edge is
- * raised/lowered per finger by P.edgeTilt and P.edgeStep. The block's weight W is shared among the
+ * raised/lowered per finger by P.edgeTilt and P.edgeStep (a raised middle section under the middle
+ * finger; P.stepRing = how far the ring finger is on it, 0 = beside it, 1 = fully on it). The block's weight W is shared among the
  * touching fingers for least effort: minimise Σ (tension ÷ muscle size)² over each finger's FDP and
  * FDS, which gives finger i a share ∝ 1 / c_i, c_i = its squared effort per newton.
  */
@@ -224,7 +225,8 @@ export function fingerSet(ex, P, pipDeg, W, strengthPct = 100) {
   const refAngles = { mcp: P.mcp, pip: pipDeg, dip: P.dip };
   const zMid = S.knuckleSide.middle;
   const step = P.edgeStep ?? 0, tilt = Math.tan(rad(P.edgeTilt ?? 0));
-  const lift = (id) => (id === "middle" || id === "ring" ? 0 : -step) + tilt * (S.knuckleSide[id] - zMid);
+  const onStep = { index: 0, middle: 1, ring: P.stepRing ?? 0, little: 0 };
+  const lift = (id) => -step * (1 - onStep[id]) + tilt * (S.knuckleSide[id] - zMid);
   // The edge for a given middle-finger knuckle angle (the middle finger in the grip's PIP/DIP).
   const edgeAt = (mcpDeg) => {
     const gm = gs.middle;
