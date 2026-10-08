@@ -297,6 +297,14 @@
       "usedFor": "Edge lift: length and position of the A2 and A4 pulleys."
     },
     {
+      "key": "Latz 2019",
+      "match": "Latz D, Koukos C",
+      "group": "Body data",
+      "citation": "Latz D, Koukos C, Boeckers P, Jungbluth P, Schiffner E, Kaufmann R, Gehrmann SV (2019). Influence of wrist position on the metacarpophalangeal joint motion of the index through small finger. Hand 14(2):259–263.",
+      "url": "https://doi.org/10.1177/1558944717736823",
+      "usedFor": "Edge lift: active range of each finger's knuckle (MCP flexion and extension, wrist neutral), the limits of the four-finger reach search."
+    },
+    {
       "key": "Lin 1990",
       "match": "Lin GT, Cooney WP",
       "group": "Body data",

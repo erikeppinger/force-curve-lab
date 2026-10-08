@@ -146,6 +146,7 @@ function setFinger(ex, id) {
     lengths: L, momentArms, bowstring: base.bowstring, insertions: base.insertions,
     pulleys: { a2DistalEdge: (L.proximal * (1 - S.a2Length[id])) / 2, a4: 0.5 },
     pulleyStrength: { a2: S.pulleyStrength.a2[id], a4: S.pulleyStrength.a4[id] },
+    mcpRange: S.mcpRange?.[id], // measured active range of this knuckle (degrees)
   };
 }
 
@@ -176,6 +177,7 @@ const rot = (p, t) => ({ x: Math.cos(t) * p.x - Math.sin(t) * p.y, y: Math.sin(t
  */
 function reachPose(g, targetW, frac, ref, cmcMax = 0) {
   const L = g.lengths;
+  const mcpLim = g.mcpRange ?? LIMITS.mcp;
   const d = frac * L.distal;
   const dipLo = Math.max(LIMITS.dip[0], ref.dip - 15), dipHi = Math.min(LIMITS.dip[1], ref.dip + 15);
   const tryPose = (cmcDeg, dipDeg, best) => {
@@ -193,7 +195,7 @@ function reachPose(g, targetW, frac, ref, cmcMax = 0) {
       const pip = add({ x: 0, y: 0 }, dir(phiP), L.proximal);
       const phiM = Math.atan2(target.x - pip.x, -(target.y - pip.y)) - eps;
       const a = { mcp: deg(phiP), pip: deg(phiM - phiP), dip: dipDeg };
-      if (a.mcp < LIMITS.mcp[0] || a.mcp > LIMITS.mcp[1] || a.pip < LIMITS.pip[0] || a.pip > LIMITS.pip[1]) continue;
+      if (a.mcp < mcpLim[0] || a.mcp > mcpLim[1] || a.pip < LIMITS.pip[0] || a.pip > LIMITS.pip[1]) continue;
       const cost = WEIGHT.mcp * (a.mcp - ref.mcp) ** 2 + WEIGHT.pip * (a.pip - ref.pip) ** 2 + WEIGHT.dip * (a.dip - ref.dip) ** 2 + WEIGHT.cmc * cmcDeg ** 2;
       if (!best || cost < best.cost) best = { cost, a, phiP, phiM, pip, delta, k, cmcDeg, dipDeg };
     }
