@@ -42,38 +42,40 @@
       { "shape": "circle", "at": [-0.1, 0.56], "r": 0.11 }
     ]
   },
+  "weightsNote": "Muscle weights (flexors): each muscle's moment-generating potential, PCSA × wrist moment arm, relative to the largest at that wrist angle; held flat outside the two angles given. If the load is shared to keep the summed squared activation smallest, activation scales with this potential, so the bars show that pattern, not EMG. The finger flexors are included because they cross the wrist: Gonzalez et al. found they supply about 68% of the flexion potential at 40° of flexion (the long finger and wrist extensors about 45% and 55% of the extension potential).",
+  "weightsSource": "Gonzalez RV, Buchanan TS, Delp SL (1997). How muscle architecture and moment arms affect wrist flexion-extension moments. J Biomech 30(7):705–712. doi:10.1016/S0021-9290(97)00015-8 (Table 1: PCSA × moment arm at neutral, at 40° of flexion for the flexors and 20° of extension for the extensors)",
   "muscles": [
     {
       "id": "fcu", "name": "Flexor carpi ulnaris", "region": "forearm", "role": "Prime mover", "driver": "jointEffort",
-      "weight": [[-60, 1], [60, 1]],
-      "note": "Strongest pure wrist flexor, on the little-finger side.",
-      "source": "Weights: TODO (to derive from muscle size × wrist moment arm: Lieber et al. 1992, Gonzalez et al. 1997 on the reading list)",
+      "weight": [[0, 0.5], [40, 0.39]],
+      "note": "Strongest pure wrist flexor, on the little-finger side; still only about half the finger flexors' potential.",
+      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)",
       "draw": { "seg": "proximal", "along": [0.03, 0.2], "offset": 0.03, "w": 0.032, "layer": 1 }
     },
     {
       "id": "fcr", "name": "Flexor carpi radialis", "region": "forearm", "role": "Prime mover", "driver": "jointEffort",
-      "weight": [[-60, 0.9], [60, 0.9]],
+      "weight": [[0, 0.34], [40, 0.22]],
       "note": "Wrist flexor on the thumb side.",
-      "source": "Weights: TODO (see flexor carpi ulnaris)"
+      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)"
     },
     {
       "id": "palmaris-longus", "name": "Palmaris longus", "region": "forearm", "role": "Synergist", "driver": "jointEffort",
-      "weight": [[-60, 0.5], [60, 0.5]],
+      "weight": [[0, 0.16], [40, 0.11]],
       "note": "Small wrist flexor; absent in some people.",
-      "source": "Weights: TODO (see flexor carpi ulnaris)"
+      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)"
     },
     {
       "id": "fds", "name": "Flexor digitorum superficialis", "region": "forearm", "role": "Synergist", "driver": "jointEffort",
-      "weight": [[-60, 0.75], [60, 0.75]],
-      "note": "Finger flexor that also crosses the wrist: it helps whenever the fingers grip the bar.",
-      "source": "Weights: TODO (see flexor carpi ulnaris)",
+      "weight": [[0, 0.91], [40, 0.96]],
+      "note": "Finger flexor that also crosses the wrist, with a large cross-section and moment arm: one of the two main movers of a wrist curl.",
+      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)",
       "draw": { "seg": "proximal", "along": [0.05, 0.2], "offset": 0.012, "w": 0.035, "layer": 0 }
     },
     {
       "id": "fdp", "name": "Flexor digitorum profundus", "region": "forearm", "role": "Synergist", "driver": "jointEffort",
-      "weight": [[-60, 0.65], [60, 0.65]],
-      "note": "Deep finger flexor; the only one that bends the fingertips. Also crosses the wrist.",
-      "source": "Weights: TODO (see flexor carpi ulnaris)"
+      "weight": [[0, 1], [40, 1]],
+      "note": "Deep finger flexor; the only one that bends the fingertips. Its wrist potential is the largest of all wrist flexors, so it leads in a wrist curl.",
+      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)"
     }
   ],
   "phases": [

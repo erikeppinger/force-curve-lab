@@ -31,8 +31,8 @@
       {"shape": "circle", "at": [0.02, 0.24], "r": 0.11}
     ]
   },
-  "weightsNote": "Elbow flexor weights (biceps, brachialis, brachioradialis): the shape over the elbow angle follows each muscle's flexion moment arm relative to the three muscles' mean at that angle, scaled so the weight at 90° equals the muscle's level (weightLevel, an estimate: TODO, needs muscle sizes). Why relative: the effort already rises and falls with the elbow's strength, which itself follows the moment arms, so only a muscle's change against its partners shifts its share. Moment arms read off the paper's model curves (forearm neutral) at 20° steps, to about ±0.1 cm; held flat beyond 130°. With the palm up the biceps' moment arm is a few mm larger, palm down a few mm smaller (their Fig. 6); not included here, the grip variants use Coratella et al.'s factors instead.",
-  "weightsSource": "Murray WM, Delp SL, Buchanan TS (1995). Variation of muscle moment arms with elbow and forearm position. J Biomech 28(5):513–525 (Fig. 4, model; Fig. 6)",
+  "weightsNote": "Elbow flexor weights (biceps, brachialis, brachioradialis): the shape over the elbow angle follows each muscle's flexion moment arm relative to the three muscles' mean at that angle, scaled so the weight at 90° equals the muscle's level (weightLevel): its normalized potential moment in elbow flexion (muscle size × peak moment arm) relative to the biceps, from Ramsay et al. 2009 (1 : 0.75 : 0.40). If the load is shared to keep the summed squared activation smallest, activation scales with this potential. Why relative: the effort already rises and falls with the elbow's strength, which itself follows the moment arms, so only a muscle's change against its partners shifts its share. Moment arms read off the paper's model curves (forearm neutral) at 20° steps, to about ±0.1 cm; held flat beyond 130°. With the palm up the biceps' moment arm is a few mm larger, palm down a few mm smaller (their Fig. 6); not included here, the grip variants use Coratella et al.'s factors instead.",
+  "weightsSource": "Murray WM, Delp SL, Buchanan TS (1995). Variation of muscle moment arms with elbow and forearm position. J Biomech 28(5):513–525 (Fig. 4, model; Fig. 6); Ramsay JW, Hunter BV, Gonzalez RV (2009). Muscle moment arm and normalized moment contributions as reference data for musculoskeletal elbow and wrist joint models. J Biomech 42(4):463–473. doi:10.1016/j.jbiomech.2008.11.035 (Fig. 6: normalized potential moments in elbow flexion, biceps 16.8, brachialis 12.6, brachioradialis 6.7, read off)",
   "muscles": [
     {
       "id": "biceps",
@@ -47,7 +47,7 @@
       "momentArm": {"points": [[0, 1.3], [20, 1.85], [40, 2.35], [60, 2.8], [80, 3.2], [100, 3.45], [120, 3.55], [130, 3.1]], "unit": "cm"},
       "note": "Also supinates the forearm. Its moment arm grows with flexion, but less steeply than the brachioradialis', so its share of the work is largest with the arm fairly straight.",
       "draw": {"seg": "proximal", "along": [0.045, 0.255], "offset": 0.04, "w": 0.055, "layer": 1},
-      "source": "Weights: shape from Murray et al. 1995 (see weightsNote); level TODO. Grip effect: Coratella G, Tornatore G, Longo S, Toninelli N, Padovan R, Esposito F, Cè E (2023). Biceps brachii and brachioradialis excitation in biceps curl exercise: different handgrips, different synergy. Sports 11(3):64. doi:10.3390/sports11030064 (10 trained men, each grip at its own 8RM, surface EMG, lifting phase)"
+      "source": "Weights: shape from Murray et al. 1995 (see weightsNote); level from Ramsay et al. 2009. Grip effect: Coratella G, Tornatore G, Longo S, Toninelli N, Padovan R, Esposito F, Cè E (2023). Biceps brachii and brachioradialis excitation in biceps curl exercise: different handgrips, different synergy. Sports 11(3):64. doi:10.3390/sports11030064 (10 trained men, each grip at its own 8RM, surface EMG, lifting phase)"
     },
     {
       "id": "brachialis",
@@ -56,11 +56,11 @@
       "wgerId": 13,
       "role": "Prime mover",
       "driver": "jointEffort",
-      "weight": [[0, 0.887], [20, 0.883], [40, 0.924], [60, 0.95], [80, 0.909], [100, 0.892], [120, 0.886], [130, 0.924]],
-      "weightLevel": 0.9,
+      "weight": [[0, 0.739], [20, 0.736], [40, 0.77], [60, 0.792], [80, 0.758], [100, 0.743], [120, 0.738], [130, 0.77]],
+      "weightLevel": 0.75,
       "momentArm": {"points": [[0, 0.85], [20, 1.3], [40, 1.8], [60, 2.2], [80, 2.55], [100, 2.8], [120, 2.9], [130, 2.9]], "unit": "cm"},
       "note": "Pure elbow flexor, works in every grip. Its moment arm grows with flexion at about the group's pace, so its share stays fairly constant.",
-      "source": "Weights: shape from Murray et al. 1995 (see weightsNote); level TODO",
+      "source": "Weights: shape from Murray et al. 1995 (see weightsNote); level from Ramsay et al. 2009",
       "draw": {"seg": "proximal", "along": [0.15, 0.294], "offset": 0.025, "w": 0.04, "layer": 0}
     },
     {
@@ -70,12 +70,12 @@
       "wgerId": null,
       "role": "Synergist",
       "driver": "jointEffort",
-      "weight": [[0, 0.653], [20, 0.697], [40, 0.702], [60, 0.689], [80, 0.736], [100, 0.762], [120, 0.771], [130, 0.796]],
-      "weightLevel": 0.75,
+      "weight": [[0, 0.348], [20, 0.372], [40, 0.374], [60, 0.368], [80, 0.393], [100, 0.406], [120, 0.411], [130, 0.425]],
+      "weightLevel": 0.4,
       "momentArm": {"points": [[0, 1.45], [20, 2.38], [40, 3.17], [60, 3.7], [80, 4.79], [100, 5.55], [120, 5.85], [130, 5.8]], "unit": "cm"},
       "note": "Its moment arm grows the most with flexion (to about 6 cm, the largest of the elbow flexors), so it does more in mid-to-high flexion. Grip: at the same relative effort it is slightly more active with the palms up than neutral or down (Coratella et al.); other studies, at unmatched loads, found no change (Boland et al.) or more with the palms turned down (Kleiber et al., Marcolin et al.).",
       "draw": {"seg": "distal", "along": [0.0066, 0.1815], "offset": 0.03, "w": 0.04, "layer": 2},
-      "source": "Weights: shape from Murray et al. 1995 (see weightsNote); level TODO. Grip effect: Kleiber T, Kunz L, Disselhorst-Klug C (2015). Muscular coordination of biceps brachii and brachioradialis in elbow flexion with respect to hand position. Front Physiol 6:215. doi:10.3389/fphys.2015.00215; Boland MR, Spigelman T, Uhl TL (2008). The function of brachioradialis. J Hand Surg Am 33(10):1853–1859; Marcolin G, Panizzolo FA, Petrone N, Moro T, Grigoletto D, Piccolo D, Paoli A (2018). Differences in electromyographic activity of biceps brachii and brachioradialis while performing three variants of curl. PeerJ 6:e5165. doi:10.7717/peerj.5165; Coratella G, Tornatore G, Longo S, Toninelli N, Padovan R, Esposito F, Cè E (2023). Biceps brachii and brachioradialis excitation in biceps curl exercise: different handgrips, different synergy. Sports 11(3):64. doi:10.3390/sports11030064 (10 trained men, each grip at its own 8RM, surface EMG, lifting phase)"
+      "source": "Weights: shape from Murray et al. 1995 (see weightsNote); level from Ramsay et al. 2009. Grip effect: Kleiber T, Kunz L, Disselhorst-Klug C (2015). Muscular coordination of biceps brachii and brachioradialis in elbow flexion with respect to hand position. Front Physiol 6:215. doi:10.3389/fphys.2015.00215; Boland MR, Spigelman T, Uhl TL (2008). The function of brachioradialis. J Hand Surg Am 33(10):1853–1859; Marcolin G, Panizzolo FA, Petrone N, Moro T, Grigoletto D, Piccolo D, Paoli A (2018). Differences in electromyographic activity of biceps brachii and brachioradialis while performing three variants of curl. PeerJ 6:e5165. doi:10.7717/peerj.5165; Coratella G, Tornatore G, Longo S, Toninelli N, Padovan R, Esposito F, Cè E (2023). Biceps brachii and brachioradialis excitation in biceps curl exercise: different handgrips, different synergy. Sports 11(3):64. doi:10.3390/sports11030064 (10 trained men, each grip at its own 8RM, surface EMG, lifting phase)"
     },
     {
       "id": "anterior-deltoid",

@@ -36,31 +36,33 @@
       { "shape": "circle", "at": [0.0, 0.43], "r": 0.1 }
     ]
   },
+  "weightsNote": "Muscle weights (extensors): each muscle's moment-generating potential, PCSA × wrist moment arm, relative to the largest at that wrist angle; held flat outside the two angles given. If the load is shared to keep the summed squared activation smallest, activation scales with this potential, so the bars show that pattern, not EMG. The finger flexors are included because they cross the wrist: Gonzalez et al. found they supply about 68% of the flexion potential at 40° of flexion (the long finger and wrist extensors about 45% and 55% of the extension potential).",
+  "weightsSource": "Gonzalez RV, Buchanan TS, Delp SL (1997). How muscle architecture and moment arms affect wrist flexion-extension moments. J Biomech 30(7):705–712. doi:10.1016/S0021-9290(97)00015-8 (Table 1: PCSA × moment arm at neutral, at 40° of flexion for the flexors and 20° of extension for the extensors)",
   "muscles": [
     {
       "id": "ecrb", "name": "Extensor carpi radialis brevis", "region": "forearm", "role": "Prime mover", "driver": "jointEffort",
-      "weight": [[-60, 1], [50, 1]],
+      "weight": [[0, 0.98], [20, 0.98]],
       "note": "Main wrist extensor; its origin at the elbow is the usual site of tennis elbow.",
-      "source": "Weights: TODO (to derive from muscle size × wrist moment arm: Lieber et al. 1992, Gonzalez et al. 1997 on the reading list)",
+      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)",
       "draw": { "seg": "proximal", "along": [0.03, 0.2], "offset": 0.03, "w": 0.032, "layer": 1 }
     },
     {
       "id": "ecrl", "name": "Extensor carpi radialis longus", "region": "forearm", "role": "Prime mover", "driver": "jointEffort",
-      "weight": [[-60, 0.85], [50, 0.85]],
+      "weight": [[0, 0.33], [20, 0.34]],
       "note": "Wrist extensor on the thumb side; also a weak elbow flexor.",
-      "source": "Weights: TODO (see extensor carpi radialis brevis)"
+      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)"
     },
     {
       "id": "ecu", "name": "Extensor carpi ulnaris", "region": "forearm", "role": "Prime mover", "driver": "jointEffort",
-      "weight": [[-60, 0.8], [50, 0.8]],
+      "weight": [[0, 0.33], [20, 0.36]],
       "note": "Wrist extensor on the little-finger side.",
-      "source": "Weights: TODO (see extensor carpi radialis brevis)"
+      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)"
     },
     {
       "id": "edc", "name": "Extensor digitorum", "region": "forearm", "role": "Synergist", "driver": "jointEffort",
-      "weight": [[-60, 0.6], [50, 0.6]],
-      "note": "Finger extensor that also crosses the wrist.",
-      "source": "Weights: TODO (see extensor carpi radialis brevis)",
+      "weight": [[0, 1], [20, 1]],
+      "note": "Finger extensor that also crosses the wrist; as big a contributor as the ECRB.",
+      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)",
       "draw": { "seg": "proximal", "along": [0.05, 0.2], "offset": 0.012, "w": 0.035, "layer": 0 }
     }
   ],
