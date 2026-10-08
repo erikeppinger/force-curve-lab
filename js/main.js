@@ -336,6 +336,7 @@ function setExercise(id, h = {}) {
   setZoom(!ex.model && (ex.defaults.zoom ?? false));
   $("figure").classList.toggle("draggable", ex.view === "3d");
   $("joint-table").hidden = !(multi || finger);
+  $("finger-set").hidden = !finger; // shown again by renderFingerSet on the edge lift
   $("joint-table").tHead.rows[0].cells[0].textContent = finger ? "Structure" : "Joint";
   $("joint-table").tHead.rows[0].cells[1].textContent = finger ? "Force" : "Torque";
   $("joint-table").tHead.rows[0].cells[2].textContent = finger ? "× fingertip" : "Moment arm";
