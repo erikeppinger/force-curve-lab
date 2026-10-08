@@ -335,6 +335,14 @@
       "citation": "Yamamoto Y, Kato H, Fukuda T, Tsuga Y, Miyakawa S (2015). Effect of knee flexion angles during maximum isometric hip extension. Jpn J Phys Fitness Sports Med 64(3):289–294.",
       "url": "https://doi.org/10.7600/jspfsm.64.289",
       "usedFor": "Multi-joint lifts: hip-extension strength with the knee bent 90° vs nearly straight (82%), the hamstrings' two-joint effect at the hip."
+    },
+    {
+      "key": "Danneskiold-Samsøe 2009",
+      "match": "Danneskiold-Samsøe B",
+      "group": "Strength curves",
+      "citation": "Danneskiold-Samsøe B, Bartels EM, Bülow PM, Lund H, Stockmarr A, Holm CC, Wätjen I, Appleyard M, Bliddal H (2009). Isokinetic and isometric muscle strength in a healthy population with special reference to age and gender. Acta Physiol 197(Suppl 673):1–68.",
+      "url": "https://doi.org/10.1111/j.1748-1716.2009.02022.x",
+      "usedFor": "Hip adduction and abduction peak torques for healthy young men (multi-joint lifts' sideways hip)."
     }
   ],
   "resources": [

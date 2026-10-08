@@ -51,7 +51,7 @@ The hamstrings' share at the hip (deadlift, RDL, hip thrust, split squat). Still
 
 ### Hip adduction strength, general population
 
-The 247 Nm adductor peak is from trained ice hockey players and sits above every dataset in Chen & Franklin's collection. Candidate: Danneskiold-Samsøe B, Bartels EM, Bülow PM, Lund H, Stockmarr A, Holm CC, Wätjen I, Appleyard M, Bliddal H (2009). Isokinetic and isometric muscle strength in a healthy population with special reference to age and gender. Acta Physiol 197:1–68 (supplement). doi:10.1111/j.1748-1716.2009.02022.x (from Chen & Franklin's reference list; normative isometric and isokinetic strength, hip included).
+**Done (2026-10-09):** the app now uses Danneskiold-Samsøe et al.'s general-population values (men 20–29: adduction 217, abduction 185 Nm). Before: the 247 Nm adductor peak was from trained ice hockey players and sat above every dataset in Chen & Franklin's collection. Candidate: Danneskiold-Samsøe B, Bartels EM, Bülow PM, Lund H, Stockmarr A, Holm CC, Wätjen I, Appleyard M, Bliddal H (2009). Isokinetic and isometric muscle strength in a healthy population with special reference to age and gender. Acta Physiol 197:1–68 (supplement). doi:10.1111/j.1748-1716.2009.02022.x (from Chen & Franklin's reference list; normative isometric and isokinetic strength, hip included).
 
 ### Muscle activation weights
 
