@@ -85,6 +85,8 @@ export function renderView3d(svg, prims, cam, V) {
       el("circle", { cx: c.x, cy: c.y, r: p.r * S, class: p.cls }, svg);
     } else {
       const A = px(p.a), B = px(p.b);
+      // Body segments get a darker edge so a limb in front stands out from the one behind it.
+      if (/(^| )body( |$)/.test(p.cls)) el("line", { x1: A.x, y1: A.y, x2: B.x, y2: B.y, class: p.cls.replace("body", "body-edge"), "stroke-width": p.w * S + 4 }, svg);
       const attrs = { x1: A.x, y1: A.y, x2: B.x, y2: B.y, class: p.cls, "stroke-width": p.w * S };
       if (p.opacity != null) attrs["stroke-opacity"] = p.opacity.toFixed(3);
       if (p.arrow) attrs["marker-end"] = "url(#arrow)";

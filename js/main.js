@@ -747,6 +747,16 @@ function bind() {
     writeHash();
     render();
   });
+  // Theme: Auto follows the system; Light/Dark override it (remembered in this browser if allowed).
+  const themeButtons = [...document.querySelectorAll("[data-theme-set]")];
+  const showTheme = () => { const t = document.documentElement.dataset.theme ?? "auto"; for (const b of themeButtons) b.setAttribute("aria-pressed", String(b.dataset.themeSet === t)); };
+  for (const b of themeButtons) b.addEventListener("click", () => {
+    const t = b.dataset.themeSet;
+    if (t === "auto") delete document.documentElement.dataset.theme; else document.documentElement.dataset.theme = t;
+    try { if (t === "auto") localStorage.removeItem("theme"); else localStorage.setItem("theme", t); } catch (e) { /* storage blocked: the choice lasts for this page */ }
+    showTheme();
+  });
+  showTheme();
   $("hand-reset").addEventListener("click", () => { setHand(undefined); writeHash(); render(); });
   $("placement-reset").addEventListener("click", () => { setPlacement(variant()); writeHash(); render(); });
   for (const b of $("view-buttons").querySelectorAll("button")) {

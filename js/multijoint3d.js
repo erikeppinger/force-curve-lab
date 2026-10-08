@@ -156,7 +156,7 @@ function legPrims(H, K, A, heel, toes) {
   return [false, true].flatMap((left) => {
     const t = left ? mirror : (p) => p;
     const cls = left ? "body back" : "body";
-    return [L3(t(H), t(K), 0.14, cls), L3(t(K), t(A), 0.1, cls), L3(t(heel), t(toes), 0.06, cls)];
+    return [L3(t(H), t(K), 0.14, cls), L3(t(K), t(A), 0.1, cls), L3(t(heel), t(toes), 0.06, cls), dot(t(toes), 0.022, `toe${left ? " back" : ""}`)];
   });
 }
 

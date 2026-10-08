@@ -5,11 +5,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Force Curve Lab</title>
   <meta name="description" content="Interactive teaching tool: resistance curves, strength curves and muscle involvement for strength exercises across equipment variants.">
+  <script>try { const t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}</script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <header class="site-header">
     <h1>Force Curve Lab</h1>
+    <div class="theme-switch" role="group" aria-label="Colour theme">
+      <button type="button" data-theme-set="auto">Auto</button>
+      <button type="button" data-theme-set="light">Light</button>
+      <button type="button" data-theme-set="dark">Dark</button>
+    </div>
     <p class="tagline">How equipment and positioning change where an exercise is hard and which muscles do the work.</p>
   </header>
 
