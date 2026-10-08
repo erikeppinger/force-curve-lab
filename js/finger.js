@@ -441,6 +441,52 @@ export function idealEdge(ex0, P, pipDeg, hand = null) {
   }));
 }
 
+/**
+ * The edge lift as the app shows it: all four fingers on the edge (fingerSet), the arm (armLoads)
+ * and summary numbers. Efforts scale linearly with the block (the split doesn't depend on it), so
+ * the block at which the hardest-working finger reaches its maximum is load ÷ that effort.
+ * tendons: the whole FDP and FDS (summed over the four slips) expressed against one finger's
+ * reference tension, for the muscle bars.
+ */
+export function analyzeEdge(ex, v, pipDeg, { loadKg, strengthPct = 100, placement, body, bodyMassKg, hand } = {}) {
+  const P = { ...v.params, ...placement };
+  const set = fingerSet(ex, P, pipDeg, loadKg * G, strengthPct, hand);
+  const on = set.fingers.filter((f) => f.touches && f.share > 0);
+  const peak = on.reduce((a, f) => (!a || f.effort > a.effort ? f : a), null);
+  const pulleyPeak = on.flatMap((f) => [
+    { finger: f, pulley: "A2", share: f.res.pulleys.a2Share, load: f.res.pulleys.a2 },
+    { finger: f, pulley: "A4", share: f.res.pulleys.a4Share, load: f.res.pulleys.a4 },
+  ]).reduce((a, b) => (!a || b.share > a.share ? b : a), null);
+  const refT = ex.finger.referenceTension;
+  const sum = (get) => set.fingers.reduce((s, f) => s + get(f), 0);
+  const rel = (k) => sum((f) => f.res?.tendons[k] ?? 0) / sum((f) => f.tmax[k]);
+  return {
+    angle: pipDeg, P, set, peak, pulleyPeak,
+    maxBlockKg: peak && peak.effort > 0 ? loadKg / peak.effort : Infinity,
+    tendons: { fdp: rel("fdp") * refT.fdp, fds: rel("fds") * refT.fds },
+    arm: armLoads(ex, P, loadKg, { body, bodyMassKg, strengthPct }),
+  };
+}
+
+/** Curves over the PIP range for every finger (the set is a search, so every `step` degrees). */
+export function sampleEdge(ex, v, opts, step = 10) {
+  const [lo, hi] = ex.angleRange;
+  const P = { ...v.params, ...opts?.placement };
+  const out = [];
+  for (let a = lo; ; a += step) {
+    const x = Math.min(a, hi);
+    const set = fingerSet(ex, P, x, (opts?.loadKg ?? 0) * G, opts?.strengthPct ?? 100, opts?.hand);
+    out.push({
+      angle: x,
+      fingers: Object.fromEntries(set.fingers.map((f) => [f.id, f.touches
+        ? { touches: true, share: f.share, fdp: f.res.tendons.fdp, fds: f.res.tendons.fds, a2: f.res.pulleys.a2Share, a4: f.res.pulleys.a4Share, effort: f.effort }
+        : { touches: false, share: 0, fdp: 0, fds: 0, a2: 0, a4: 0, effort: 0 }])),
+    });
+    if (x >= hi) break;
+  }
+  return out;
+}
+
 export function analyzeFinger(ex, v, pipDeg, { loadKg, strengthPct = 100, placement, body, bodyMassKg, indexShare, hand } = {}) {
   const f = ex.finger;
   const P = { ...v.params, ...placement };
@@ -451,7 +497,7 @@ export function analyzeFinger(ex, v, pipDeg, { loadKg, strengthPct = 100, placem
   // If the index doesn't reach the edge in the four-finger set, the detailed view falls back to 25%.
   const idx = set?.fingers.find((x) => x.id === "index");
   const autoShare = indexShare ?? (idx?.touches ? idx.share : 0.25);
-  const share = P.fingerShare === "auto" ? autoShare : P.fingerShare;
+  const share = (P.fingerShare ?? "auto") === "auto" ? autoShare : P.fingerShare;
   const p = fingerPose(f, P, pipDeg);
   const F = W * share;
   const u = unit(sub(p.contact, p.wrist)); // direction of the edge's push on the pad

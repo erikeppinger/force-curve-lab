@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { G, interp } from "../js/physics.js";
-import { analyzeFinger, sampleFinger, fingerSet, idealEdge } from "../js/finger.js";
+import { analyzeFinger, sampleFinger, fingerSet, idealEdge, analyzeEdge, sampleEdge } from "../js/finger.js";
 import { muscleActivation } from "../js/muscles.js";
 
 const ex = JSON.parse(readFileSync(new URL("../data/exercises/edge-lift.json", import.meta.url)));
@@ -99,7 +99,7 @@ test("edge-lift data: grips, sources and phases", () => {
   for (const variant of ex.variants) {
     const p = variant.params;
     for (const k of ["mcp", "dip", "pip", "maxFingertipN", "contactFromDip"]) assert.ok(Number.isFinite(p[k]), `${variant.id}: ${k}`);
-    assert.ok(p.fingerShare === "auto" || Number.isFinite(p.fingerShare), `${variant.id}: fingerShare`);
+    assert.ok(p.fingerShare == null || p.fingerShare === "auto" || Number.isFinite(p.fingerShare), `${variant.id}: fingerShare`);
     assert.ok(variant.notes && variant.source, variant.id);
   }
   for (const k of ["lengths", "momentArms", "bowstring", "contact", "referenceTension"]) {
@@ -199,4 +199,22 @@ test("fitted edge: identical fingers need a straight edge; a shorter little fing
   const L = ex.fingers.lengths;
   const expect = ex.fingers.knuckleBack.little + L.middle.proximal - L.little.proximal;
   assert.ok(Math.abs(fit.little.lift - expect) < 0.004, `${fit.little.lift} vs ${expect}`);
+});
+
+test("edge lift summary: at the maximum block the hardest-working finger is at 100%", () => {
+  for (const v of ex.variants) {
+    const r = analyzeEdge(ex, v, v.params.pip, { loadKg: 20, strengthPct: 90 });
+    assert.ok(Number.isFinite(r.maxBlockKg) && r.maxBlockKg > 0, v.id);
+    const at = analyzeEdge(ex, v, v.params.pip, { loadKg: r.maxBlockKg, strengthPct: 90 });
+    close(at.peak.effort, 1, 1e-6);
+    // The pulley peak is the largest share of breaking load among the touching fingers.
+    for (const f of r.set.fingers.filter((x) => x.touches && x.share > 0)) assert.ok(r.pulleyPeak.share >= Math.max(f.res.pulleys.a2Share, f.res.pulleys.a4Share) - 1e-12);
+  }
+});
+
+test("edge lift curves: one point every 10°, ending at the range's end, with every finger", () => {
+  const s = sampleEdge(ex, ex.variants[1], { loadKg: 20 });
+  assert.equal(s[0].angle, ex.angleRange[0]);
+  assert.equal(s.at(-1).angle, ex.angleRange[1]);
+  for (const p of s) assert.deepEqual(Object.keys(p.fingers), ex.fingers.order);
 });
