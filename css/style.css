@@ -9,8 +9,9 @@
   --strength: #8a8f98;
   --muscle-on: #d23c3c;
   --muscle-base: #e9cfc8;
-  --body: #d9d6cf;
-  --bone: #9aa0a8;
+  --body: #cfcac0;
+  --bone: #868c95;
+  --body-edge: #8d887d;
   --equipment: #5b6270;
   --cable: #3a3f48;
   --band: rgba(0, 0, 0, 0.035);
@@ -37,9 +38,9 @@
     --compare: #f0a35a;
     --strength: #7d838c;
     --muscle-on: #ff5a50;
-    --muscle-base: #4a3533;
-    --body: #3a3d42;
-    --bone: #7d838c;
+    --muscle-base: #5a3d3a;
+    --body: #565b63;
+    --bone: #a3a9b2;
     --equipment: #9aa0a8;
     --cable: #c8ccd2;
     --band: rgba(255, 255, 255, 0.04);
@@ -51,8 +52,36 @@
     --j-hip-frontal: #f0a35a;
     --j-hip-rotation: #4fd1d3;
     --j-knee-frontal: #ff8a80;
+    --body-edge: #101215;
     color-scheme: dark;
   }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a;
+  --card: #1e2125;
+  --text: #e8e9eb;
+  --muted: #9aa0a8;
+  --border: #2e3238;
+  --accent: #6b9cf0;
+  --compare: #f0a35a;
+  --strength: #7d838c;
+  --muscle-on: #ff5a50;
+  --muscle-base: #5a3d3a;
+  --body: #565b63;
+  --bone: #a3a9b2;
+  --equipment: #9aa0a8;
+  --cable: #c8ccd2;
+  --band: rgba(255, 255, 255, 0.04);
+  --warning: #ff8a80;
+  --j-hip: #c39bd3;
+  --j-knee: #6b9cf0;
+  --j-ankle: #5fd39a;
+  --j-shoulder: #6b9cf0;
+  --j-hip-frontal: #f0a35a;
+  --j-hip-rotation: #4fd1d3;
+  --j-knee-frontal: #ff8a80;
+  --body-edge: #101215;
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
@@ -66,7 +95,11 @@ body {
 a { color: var(--accent); }
 
 .site-header, main, footer { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
-.site-header { padding-top: 20px; }
+.site-header { padding-top: 20px; position: relative; }
+.theme-switch { position: absolute; top: 20px; right: 16px; display: flex; gap: 2px; background: var(--card); border: 1px solid var(--border); border-radius: 999px; padding: 3px; }
+.theme-switch button { background: transparent; color: var(--muted); font-weight: 600; padding: 6px 12px; min-height: 32px; border-radius: 999px; font-size: 0.85rem; }
+.theme-switch button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+@media (max-width: 520px) { .theme-switch { position: static; margin: 8px 0 0; width: max-content; } }
 h1 { margin: 0; font-size: 1.6rem; }
 h2 { margin: 0 0 12px; font-size: 1.25rem; }
 h3 { margin: 0 0 8px; font-size: 1.05rem; }
@@ -126,8 +159,11 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure { width: 100%; height: auto; display: block; max-height: 60vh; }
 #figure .floor { stroke: var(--border); }
 #figure .body { stroke: var(--body); fill: var(--body); stroke-linecap: round; }
+#figure .body-edge { stroke: var(--body-edge); stroke-linecap: round; }
+#figure .body-edge.back { opacity: 0.55; }
 #figure .bone { stroke: var(--bone); stroke-linecap: round; }
-#figure .joint { fill: var(--card); stroke: var(--bone); stroke-width: 2; }
+#figure .joint { fill: var(--card); stroke: var(--text); stroke-opacity: 0.7; stroke-width: 2.5; }
+#figure .toe { fill: var(--body-edge); stroke: none; }
 #figure .muscle-base { stroke: var(--muscle-base); stroke-linecap: round; }
 #figure .muscle-on { stroke: var(--muscle-on); stroke-linecap: round; }
 #figure .weight { fill: var(--equipment); }
@@ -145,6 +181,9 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .moment-arm { stroke: var(--compare); stroke-dasharray: 6 4; }
 #figure .force { stroke: var(--accent); }
 #figure .arrowhead { fill: var(--accent); }
+#figure .hand-outline { stroke: var(--card); stroke-linecap: round; stroke-linejoin: round; }
+#figure .hand-fingers { stroke: var(--body); stroke-linecap: round; stroke-linejoin: round; }
+#figure .hand-label { font-size: 14px; font-weight: 600; }
 #figure .fig-label { fill: var(--text); font-size: 15px; font-weight: 600; paint-order: stroke; stroke: var(--card); stroke-width: 4px; }
 #figure .force-label { fill: var(--accent); }
 #figure .body.back { opacity: 0.55; }
@@ -268,6 +307,7 @@ input[type="range"]:disabled { opacity: 0.4; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .bodymap img:not(.overlay) { filter: invert(0.85) hue-rotate(180deg); }
 }
+:root[data-theme="dark"] .bodymap img:not(.overlay) { filter: invert(0.85) hue-rotate(180deg); }
 .muscle-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
 .m-head { display: flex; align-items: baseline; gap: 8px; }
 .m-name { font-weight: 600; }
@@ -310,6 +350,16 @@ input[type="range"]:disabled { opacity: 0.4; }
 .finger-set h4 { margin: 0 0 4px; }
 #finger-table td, #finger-table th { font-size: 0.85rem; padding: 5px 6px; }
 #finger-table tbody th { border-left-color: var(--j-knee); }
+.edge-bars { grid-column: 1 / -1; max-width: 460px; }
+.edge-bars-head { font-weight: 600; margin-bottom: 6px; }
+.edge-bars > label.auto-toggle { flex-direction: row; margin-top: 6px; }
+.edge-bars-grid { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.edge-bars-sketch { position: absolute; left: 0; right: 0; top: 0; height: 150px; width: 100%; pointer-events: none; }
+.edge-finger { fill: var(--body); stroke: var(--body-edge); stroke-width: 2; opacity: 0.6; }
+.edge-bar { position: relative; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 0.85rem; }
+.edge-bar input[type="range"] { writing-mode: vertical-lr; direction: rtl; width: 32px; height: 150px; min-height: 0; margin: 0; }
+.edge-bar-name { font-weight: 600; }
+.edge-bar output { font-variant-numeric: tabular-nums; color: var(--muted); }
 .slider-hint { display: block; font-size: 0.75rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
 .detail-region-head { grid-column: 1 / -1; margin: 6px 0 -4px; font-size: 0.9rem; color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
 .detail-views figure { margin: 0; }

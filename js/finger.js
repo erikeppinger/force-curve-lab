@@ -288,9 +288,9 @@ function shareLoad(fingers, q) {
  * may tilt sideways at the wrist (radial/ulnar deviation), which lowers one side's knuckles. Where
  * the edge sits relative to the hand (searched along the middle finger's knuckle angle) and the
  * hand's tilt are chosen so the four postures together stay closest to the grip; a finger that
- * can't reach doesn't touch. The edge under the index, ring and little finger sits closer to the
- * knuckles (+) or further away (−) than under the middle finger by P.edgeIndex / edgeRing /
- * edgeLittle (metres, or "auto" = the profile that fits this hand in this grip, see idealEdge),
+ * can't reach doesn't touch. The edge under each finger sits at P.edgeIndex / edgeMiddle /
+ * edgeRing / edgeLittle (metres, + = closer to the knuckles; only the differences from the middle
+ * finger's matter), or "auto" = the profile that fits this hand in this grip (see idealEdge),
  * and the whole edge may tilt (P.edgeTilt). The block's weight W is shared for least effort
  * (shareLoad; P.quadriga = how far the FDP slips of the middle, ring and little finger act as one
  * muscle). hand: optional own lengths {index: {knuckleBack, proximal, middle, distal}, …} (m).
@@ -305,9 +305,12 @@ export function fingerSet(ex0, P, pipDeg, W, strengthPct = 100, hand = null) {
   const zMid = S.knuckleSide.middle;
   const edgeTilt = rad(P.edgeTilt ?? 0);
   const ideal = idealEdge(ex, P, pipDeg);
+  // Set heights are relative to the edge under the middle finger (P.edgeMiddle); "auto" = fitted.
+  const mid = P.edgeMiddle === "auto" ? 0 : P.edgeMiddle ?? 0;
   const offsets = Object.fromEntries(S.order.map((id) => {
-    const v = id === "middle" ? 0 : P[EDGE_KEY[id]] ?? 0;
-    return [id, v === "auto" ? ideal[id].lift : v];
+    if (id === "middle") return [id, 0];
+    const v = P[EDGE_KEY[id]] ?? 0;
+    return [id, v === "auto" ? ideal[id].lift : v - mid];
   }));
   // Edge height under each finger relative to the middle finger's (towards the wrist = +), with
   // the hand tilted sideways by devDeg: the edge's own tilt and the hand's tilt add up (both lower

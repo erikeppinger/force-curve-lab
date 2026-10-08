@@ -198,6 +198,24 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
   }
   for (const j of [base, mid]) circle(svg, j, 0.022 / k, "joint");
 
+  // Hand (wrist exercises): palm and fingers curled round the handle on the palm side, so a palm-up
+  // and a palm-down curl look different. exercise.hand.palmSide: +1/−1 along the segment's normal
+  // (the side muscle offsets use); exercise.hand.label is printed in the corner.
+  if (exercise.hand) {
+    const s = exercise.hand.palmSide;
+    const u = unit({ x: tip.x - mid.x, y: tip.y - mid.y });
+    const n = { x: -u.y * s, y: u.x * s };
+    const L = Math.hypot(tip.x - mid.x, tip.y - mid.y);
+    const at = (t, off) => add(add(mid, u, t * L), n, off);
+    // Fingers: out from the palm side, round the handle at the tip and back underneath.
+    const pts = [at(0.35, 0.04), at(0.95, 0.045), at(1.3, 0.03), at(1.42, 0), at(1.3, -0.03)].map(toPx);
+    const line = pts.map((q) => `${q.x.toFixed(1)},${q.y.toFixed(1)}`).join(" ");
+    el("polyline", { points: line, class: "hand-outline", "stroke-width": 0.026 * S, fill: "none" }, svg);
+    el("polyline", { points: line, class: "hand-fingers", "stroke-width": 0.016 * S, fill: "none" }, svg);
+    const lab = el("text", { x: 8, y: 22, class: "fig-label hand-label" }, svg);
+    lab.textContent = exercise.hand.label;
+  }
+
   // Load at the tip
   if (variant.load.type === "gravity") {
     const w = circle(svg, tip, variant.equipment.startsWith("Dumbbell") || variant.equipment.startsWith("Ankle") ? 0.055 : 0.09, "weight");
