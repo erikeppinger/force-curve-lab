@@ -1,0 +1,93 @@
+{
+  "id": "reverse-wrist-curl",
+  "name": "Reverse wrist curl",
+  "joint": "Wrist extension",
+  "movingJoint": "distal",
+  "view": "side",
+  "angleLabel": "Wrist angle",
+  "angleRange": [-60, 50],
+  "angleNote": "Wrist extension: 0° = hand in line with the forearm, negative = curled down towards the palm (stretched), positive = bent back. Elbow at the origin.",
+  "segments": {
+    "proximal": 0.26,
+    "distal": 0.085,
+    "names": ["Forearm", "Hand"],
+    "massFractions": [0.0162, 0.0061],
+    "comFractions": [0.4574, 0.79],
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end, from de Leva's adjusted Zatsiorsky-Seluyanov table (young adult males). The hand's centre of mass is given along wrist → third knuckle; here it is applied along wrist → grip, which is about as long.",
+    "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
+    "note": "Elbow→wrist and wrist→grip centre in metres, typical adult. Estimates (TODO: anthropometric source)."
+  },
+  "defaults": { "loadKg": 4, "peakTorqueNm": 7, "variant": "seated-dumbbell", "bodyMassKg": 75 },
+  "ui": { "load": [0.5, 20, 0.5], "strength": [3, 15] },
+  "strengthCurve": {
+    "label": "Wrist extensor strength",
+    "points": [[-60, 1], [-30, 1], [0, 0.9], [25, 0.75], [50, 0.55]],
+    "note": "Relative wrist-extension torque vs wrist angle. Estimated shape (stronger when the extensors are stretched); not yet from a measurement. Peak torque default 7 Nm: estimate, roughly half to two thirds of flexion strength.",
+    "source": "TODO: wrist extension torque–angle data (candidates on the reading list: Delp et al. 1996; Gonzalez et al. 1997)"
+  },
+  "postures": {
+    "seated": [
+      { "shape": "seg", "from": [-0.36, -0.17], "to": [0.0, -0.17], "w": 0.04, "class": "equipment" },
+      { "shape": "seg", "from": [-0.18, -0.17], "to": [-0.18, -0.55], "w": 0.04, "class": "equipment" },
+      { "shape": "seg", "from": [-0.2, -0.08], "to": [0.22, -0.08], "w": 0.13 },
+      { "shape": "seg", "from": [0.22, -0.1], "to": [0.24, -0.55], "w": 0.1 },
+      { "shape": "seg", "from": [-0.22, -0.05], "to": [-0.08, 0.3], "w": 0.2 },
+      { "shape": "seg", "from": [-0.07, 0.29], "to": [0, 0], "w": 0.07 },
+      { "shape": "circle", "at": [0.0, 0.43], "r": 0.1 }
+    ]
+  },
+  "muscles": [
+    {
+      "id": "ecrb", "name": "Extensor carpi radialis brevis", "region": "forearm", "role": "Prime mover", "driver": "jointEffort",
+      "weight": [[-60, 1], [50, 1]],
+      "note": "Main wrist extensor; its origin at the elbow is the usual site of tennis elbow.",
+      "source": "Weights: TODO (to derive from muscle size × wrist moment arm: Lieber et al. 1992, Gonzalez et al. 1997 on the reading list)",
+      "draw": { "seg": "proximal", "along": [0.03, 0.2], "offset": 0.03, "w": 0.032, "layer": 1 }
+    },
+    {
+      "id": "ecrl", "name": "Extensor carpi radialis longus", "region": "forearm", "role": "Prime mover", "driver": "jointEffort",
+      "weight": [[-60, 0.85], [50, 0.85]],
+      "note": "Wrist extensor on the thumb side; also a weak elbow flexor.",
+      "source": "Weights: TODO (see extensor carpi radialis brevis)"
+    },
+    {
+      "id": "ecu", "name": "Extensor carpi ulnaris", "region": "forearm", "role": "Prime mover", "driver": "jointEffort",
+      "weight": [[-60, 0.8], [50, 0.8]],
+      "note": "Wrist extensor on the little-finger side.",
+      "source": "Weights: TODO (see extensor carpi radialis brevis)"
+    },
+    {
+      "id": "edc", "name": "Extensor digitorum", "region": "forearm", "role": "Synergist", "driver": "jointEffort",
+      "weight": [[-60, 0.6], [50, 0.6]],
+      "note": "Finger extensor that also crosses the wrist.",
+      "source": "Weights: TODO (see extensor carpi radialis brevis)",
+      "draw": { "seg": "proximal", "along": [0.05, 0.2], "offset": 0.012, "w": 0.035, "layer": 0 }
+    }
+  ],
+  "phases": [
+    { "name": "Bottom", "range": [-60, -20], "text": "Wrist curled down, extensors stretched. The weight hangs below the hand's line, so the moment arm is shrinking." },
+    { "name": "Middle", "range": [-20, 20], "text": "Hand in line with the forearm: the weight is furthest from the wrist horizontally, the hardest point." },
+    { "name": "Top", "range": [20, 50], "text": "Wrist bent back. The weight moves over the wrist and gets easier, while the extensors get weaker as they shorten." }
+  ],
+  "variants": [
+    {
+      "id": "seated-dumbbell",
+      "name": "Seated reverse wrist curl (dumbbell, palm down)",
+      "equipment": "Dumbbell",
+      "posture": "seated",
+      "proximalAngle": 90,
+      "load": { "type": "gravity" },
+      "notes": "Forearm flat on the thigh, palm down. Torque ∝ cos(wrist angle), like the palm-up curl, but the extensors are much weaker than the flexors, so the same dumbbell feels far heavier."
+    },
+    {
+      "id": "cable",
+      "name": "Cable reverse wrist curl (low pulley)",
+      "equipment": "Cable",
+      "posture": "seated",
+      "proximalAngle": 90,
+      "load": { "type": "cable", "pulley": { "x": 0.32, "y": -0.5 } },
+      "adjustablePulley": true,
+      "notes": "Palm down, cable from a low pulley in front of the hand: more tension at the top than with a dumbbell. Move the pulley to see the peak shift."
+    }
+  ]
+}

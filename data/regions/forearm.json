@@ -1,0 +1,92 @@
+{
+  "id": "forearm",
+  "name": "Forearm and hand",
+  "note": "Schematic right forearm, not to scale: each muscle is drawn as a belly from its origin towards its insertion, with its tendons. Positions follow standard anatomy atlases (e.g. Gray's Anatomy, 1918, public domain); shapes are simplified for teaching.",
+  "viewBox": [0, 0, 220, 460],
+  "muscles": {
+    "brachioradialis": {"name": "Brachioradialis", "abbr": "BR", "action": "Elbow flexion, strongest with a neutral grip"},
+    "pronator-teres": {"name": "Pronator teres", "abbr": "PT", "action": "Turns the palm down; weak elbow flexor"},
+    "fcr": {"name": "Flexor carpi radialis", "abbr": "FCR", "action": "Wrist flexion, towards the thumb side"},
+    "palmaris-longus": {"name": "Palmaris longus", "abbr": "PL", "action": "Wrist flexion; absent in some people"},
+    "fcu": {"name": "Flexor carpi ulnaris", "abbr": "FCU", "action": "Wrist flexion, towards the little-finger side"},
+    "fds": {"name": "Flexor digitorum superficialis", "abbr": "FDS", "action": "Bends the fingers at the middle joint (PIP); also flexes the wrist"},
+    "fdp": {"name": "Flexor digitorum profundus", "abbr": "FDP", "action": "Bends the fingertips (DIP), the only muscle that does; also flexes the wrist"},
+    "fpl": {"name": "Flexor pollicis longus", "abbr": "FPL", "action": "Bends the thumb tip"},
+    "pronator-quadratus": {"name": "Pronator quadratus", "abbr": "PQ", "action": "Turns the palm down"},
+    "ecrl": {"name": "Extensor carpi radialis longus", "abbr": "ECRL", "action": "Wrist extension, towards the thumb side"},
+    "ecrb": {"name": "Extensor carpi radialis brevis", "abbr": "ECRB", "action": "Wrist extension; the usual site of tennis elbow"},
+    "edc": {"name": "Extensor digitorum", "abbr": "ED", "action": "Straightens the fingers; also extends the wrist"},
+    "edm": {"name": "Extensor digiti minimi", "abbr": "EDM", "action": "Straightens the little finger"},
+    "ecu": {"name": "Extensor carpi ulnaris", "abbr": "ECU", "action": "Wrist extension, towards the little-finger side"},
+    "anconeus": {"name": "Anconeus", "abbr": "AN", "action": "Helps the triceps extend the elbow"},
+    "apl-epb": {"name": "Abductor pollicis longus and extensor pollicis brevis", "abbr": "APL", "action": "Move the thumb out and back"}
+  },
+  "views": [
+    {
+      "id": "flexor-superficial",
+      "title": "Palm side, surface layer",
+      "caption": "Right forearm, palm towards you: elbow at the top, thumb side on the left.",
+      "outline": [
+        "M40,8 C22,80 30,200 58,318 L162,318 C190,200 198,80 180,8 Z",
+        "M58,316 L162,316 L164,388 L60,388 Z",
+        "M62,384 h20 v52 a10,10 0 0 1 -20,0 Z",
+        "M86,384 h20 v64 a10,10 0 0 1 -20,0 Z",
+        "M110,384 h20 v56 a10,10 0 0 1 -20,0 Z",
+        "M136,384 h18 v38 a9,9 0 0 1 -18,0 Z",
+        "M60,326 L40,350 L22,388 Q20,404 34,400 L54,372 L70,350 Z"
+      ],
+      "muscles": [
+        {"id": "fds", "from": [150, 60], "to": [122, 318], "belly": [0.2, 0.8], "w": 50, "tendons": [[72, 418], [96, 428], [120, 420], [145, 408]], "labelAt": 0.72},
+        {"id": "brachioradialis", "from": [42, 0], "to": [62, 322], "belly": [0, 0.62], "w": 30, "bend": -4},
+        {"id": "pronator-teres", "from": [176, 22], "to": [70, 190], "belly": [0.04, 0.85], "w": 24, "labelAt": 0.7},
+        {"id": "fcr", "from": [140, 30], "to": [82, 338], "belly": [0.12, 0.62], "w": 28, "labelAt": 0.48},
+        {"id": "palmaris-longus", "from": [160, 30], "to": [110, 350], "belly": [0.15, 0.55], "w": 16, "labelAt": 0.42},
+        {"id": "fcu", "from": [182, 24], "to": [158, 334], "belly": [0.04, 0.74], "w": 30, "bend": 5}
+      ]
+    },
+    {
+      "id": "flexor-deep",
+      "title": "Palm side, deep layer",
+      "caption": "Same view with the surface muscles removed: the radius (left) and ulna (right) show through.",
+      "outline": [
+        "M40,8 C22,80 30,200 58,318 L162,318 C190,200 198,80 180,8 Z",
+        "M58,316 L162,316 L164,388 L60,388 Z",
+        "M62,384 h20 v52 a10,10 0 0 1 -20,0 Z",
+        "M86,384 h20 v64 a10,10 0 0 1 -20,0 Z",
+        "M110,384 h20 v56 a10,10 0 0 1 -20,0 Z",
+        "M136,384 h18 v38 a9,9 0 0 1 -18,0 Z",
+        "M60,326 L40,350 L22,388 Q20,404 34,400 L54,372 L70,350 Z"
+      ],
+      "bones": [[[52, 30], [70, 318], 9], [[170, 22], [152, 318], 9]],
+      "muscles": [
+        {"id": "pronator-quadratus", "from": [66, 296], "to": [160, 296], "belly": [0, 1], "w": 18},
+        {"id": "fdp", "from": [150, 55], "to": [120, 318], "belly": [0.05, 0.75], "w": 46, "tendons": [[72, 434], [96, 446], [120, 438], [145, 420]]},
+        {"id": "fpl", "from": [82, 100], "to": [74, 318], "belly": [0.1, 0.75], "w": 24, "tendons": [[30, 396]]}
+      ]
+    },
+    {
+      "id": "extensor",
+      "title": "Back of the forearm",
+      "caption": "Right forearm from behind: elbow at the top, thumb side on the right.",
+      "outline": [
+        "M40,8 C30,80 32,200 58,318 L162,318 C188,200 190,80 180,8 Z",
+        "M56,316 L162,316 L160,388 L56,388 Z",
+        "M138,384 h20 v52 a10,10 0 0 1 -20,0 Z",
+        "M114,384 h20 v64 a10,10 0 0 1 -20,0 Z",
+        "M90,384 h20 v56 a10,10 0 0 1 -20,0 Z",
+        "M66,384 h18 v38 a9,9 0 0 1 -18,0 Z",
+        "M160,326 L180,350 L198,388 Q200,404 186,400 L166,372 L150,350 Z"
+      ],
+      "muscles": [
+        {"id": "anconeus", "from": [126, 10], "to": [62, 46], "belly": [0, 1], "w": 20},
+        {"id": "brachioradialis", "from": [172, 4], "to": [156, 322], "belly": [0, 0.6], "w": 22, "bend": 3},
+        {"id": "ecrl", "from": [162, 14], "to": [146, 336], "belly": [0.05, 0.5], "w": 20},
+        {"id": "ecrb", "from": [142, 24], "to": [128, 336], "belly": [0.06, 0.55], "w": 22},
+        {"id": "edc", "from": [116, 30], "to": [112, 318], "belly": [0.06, 0.62], "w": 30, "tendons": [[148, 420], [124, 430], [100, 422], [75, 408]]},
+        {"id": "edm", "from": [92, 40], "to": [88, 318], "belly": [0.1, 0.62], "w": 16, "tendons": [[75, 404]]},
+        {"id": "ecu", "from": [68, 44], "to": [64, 334], "belly": [0.06, 0.72], "w": 26, "bend": -4},
+        {"id": "apl-epb", "from": [104, 178], "to": [176, 338], "belly": [0, 0.55], "w": 16, "tendons": [[192, 392]]}
+      ]
+    }
+  ]
+}

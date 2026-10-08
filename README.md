@@ -4,7 +4,7 @@ An interactive teaching tool that shows **where an exercise is hard and which mu
 
 Exercises (2–5 equipment variants each):
 
-- **Arms and shoulders:** biceps curl, triceps extension, lateral raise, front raise, chest fly, straight-arm pulldown / pullover
+- **Arms and shoulders:** biceps curl, triceps extension, wrist curl and reverse wrist curl, lateral raise, front raise, chest fly, straight-arm pulldown / pullover
 - **Legs:** leg extension, leg curl, calf raise, hip abduction, glute kickback
 - **Multi-joint:** squat, Romanian deadlift, deadlift (conventional and trap bar), split squat / lunge, leg press, hip thrust, bench press, overhead press, bent-over row, seated cable row, chest-supported row, lat pulldown, pull-up and chin-up. These show hip, knee and ankle torques and effort together.
 - **3D:** the leg press, squat, Romanian deadlift, split squat, hip thrust, bench press, overhead press and the rows have placement controls (foot height, stance width, toe angle, knee tracking; grip width and elbow position), sideways and rotation components at the hip, knee, shoulder and elbow, and a drag-to-turn 3D view.
@@ -16,7 +16,7 @@ For each exercise variant it shows:
 - **Side, front or top view.** Animated limb in the right posture (standing, seated, lying, kneeling), load, force direction, line of action and the **moment arm**.
 - **Resistance vs. strength.** The load's torque at the joint compared with the muscles' strength at each angle.
 - **Effort curve.** Torque ÷ strength across the range of motion. Its peak is the sticking point.
-- **Muscles involved.** Estimated relative activation per muscle, shown as bars and on the wger muscle map.
+- **Muscles involved.** Estimated relative activation per muscle, shown as bars and on the wger muscle map, plus a **close-up** of the body region where the overview is too coarse (so far the forearm and hand, with each wrist and finger muscle coloured on its own).
 - **Compare mode.** Overlay any two variants, e.g. a dumbbell curl against a Bayesian cable curl.
 
 It's a static site with no build step and no dependencies, and it works on phones. Shareable links keep the current state in the URL hash, e.g. `#v=cable-bayesian&cmp=dumbbell&kg=10`.
@@ -42,6 +42,7 @@ Push to GitHub, then go to **Settings → Pages → Deploy from a branch → `ma
 | Strength curve | Relative torque–angle table × the user's peak torque | `strengthCurve` in exercise JSON |
 | Multi-joint lifts | A solver finds the posture from the lift's constraint (centre of mass over the mid-foot, sled rail, bar path, bench and floor contacts); each joint's torque is the moment of all forces on one side of it | `js/multijoint.js`, `data/body.json` |
 | Muscle activation | Demand (effort, or stabilising torque) × the muscle's angle-dependent weight × variant modifier | `js/muscles.js`, `muscles` in JSON |
+| Close-ups | Schematic region drawings stored as data (each muscle a belly from origin to insertion, with tendons), coloured with the same activation values | `js/regions.js`, `data/regions/*.json` |
 | Exercise text and images | Fetched live from the [wger API](https://wger.de/api/v2/) and optional (the tool still works offline) | `js/wger.js` |
 
 Each exercise is a two-segment chain (base → mid → tip, e.g. shoulder → elbow → hand or hip → knee → ankle) in its own plane, in metres from the base joint. `view` sets the frame: `side` (x forward, y towards the head), `front` (x out to the side, y towards the head) or `top` (x out to the side, y forward). Joint angles are in degrees; positive torque means the load resists the lift.
@@ -56,7 +57,7 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 2. Exercise fields:
    - Chain: `segments` (`proximal`, `distal` lengths in m, `names`, optional `massFractions` / `comFractions` for limb weight), `movingJoint` (`distal`: e.g. elbow or knee moves | `proximal`: the whole limb swings about the base), `view`.
    - Angle: `angleRange`, `angleLabel`, `angleNote`, `angleSense` (−1 if a growing angle turns the limb clockwise, e.g. the knee), `angleOffset` (degrees added for the pose, e.g. 90 at the ankle), `concentric` (`decrease` if lifting makes the angle smaller, e.g. extensions).
-   - Content: `strengthCurve`, `muscles` (`driver`: `jointEffort` | `stabiliserDemand`; optional `draw`), `postures` (body shapes for the figure), `phases`, `defaults`, `ui` (slider ranges).
+   - Content: `strengthCurve`, `muscles` (`driver`: `jointEffort` | `stabiliserDemand`; optional `draw`; optional `region` to show the muscle in a close-up, matched by id or `regionPath`), `postures` (body shapes for the figure), `phases`, `defaults`, `ui` (slider ranges).
 3. Variant fields: `posture`, `gravity` (`{x, y}` in the exercise's frame; default straight down, `{x: 0, y: 0}` for a horizontal plane), `viewLabel`, `proximalAngle` (fixed angle of the proximal segment, or its offset when it moves), `distalBend`, `proximalSupported`, `load` (`gravity` | `cable` with `pulley` | `machine` with `padDistance` and `camProfile` `[[angle, effective radius in m]]` | `reaction` with `bodyWeight` share), `defaultLoadKg`, `muscleModifiers`, `notes`.
 4. Multi-joint lifts (`"model": "multi"`) instead pick a `solver` (`standing`, `split`, `hipThrust`, `seatedRow`, and the 3D `legPress3d`, `squat3d`, `bench3d`, `press3d`, `hinge3d`, `split3d`, `hipThrust3d`, `row3d`, `pull3d`) with per-variant `params`, and list `joints` with their strength curves; each muscle names its `joint`. Copy the closest existing file.
 5. Add a test in `tests/` that pins down the variant's key teaching point with a hand-computable case. `tests/exercises.test.mjs` checks every listed exercise file's structure and model-wide invariants automatically.
@@ -90,12 +91,16 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] Hip rotation strength by hip flexion (Uritani 2012); hammer and reverse curl muscle factors at matched effort (Coratella 2023)
 - [ ] Literature for muscle activation weights, machine cam profiles and hip-extension strength vs knee angle; rear-delt and bench horizontal strength now from Lategan 2002; optionally precomputed OpenSim results as JSON
 - [x] Back-view body map
-- [ ] Vendor the wger SVGs locally for offline use (wger exercise ids: all 23 set and checked against wger's public exercise list)
+- [x] wger muscle-map SVGs copied into `assets/wger` for offline use (wger exercise ids: all set and checked against wger's public exercise list)
+- [x] Close-up of one body region next to the overview: forearm and hand (wrist curls; brachioradialis in the curls)
+- [x] Wrist curl (seated, behind the back, cable, finger roll) and reverse wrist curl
+- [ ] Edge lift (25 mm edge on a loading pin, one arm hanging; open hand / half crimp / full crimp): finger chain with FDS and FDP tendon forces and A2/A4 pulley loads
+- [ ] More close-ups: shoulder (three deltoid heads, rotator cuff), thigh (quadriceps and hamstring heads)
 - [ ] Translations (DE)
 
 ## Licences and credits
 
-- Exercise descriptions, images and muscle-map SVGs: [wger.de](https://wger.de), **CC-BY-SA 3.0**, loaded at runtime with attribution. If you vendor these files into the repo, they stay CC-BY-SA.
+- Exercise descriptions, images and muscle-map SVGs: [wger.de](https://wger.de), **CC-BY-SA 3.0**, with attribution. Descriptions and images are loaded at runtime; the muscle-map SVGs are copied in `assets/wger` and stay CC-BY-SA.
 - Code (HTML, CSS, JavaScript, tests, tools): **MIT**, see [`LICENSE`](LICENSE).
 - Content (exercise data, curated numbers, notes, docs): **CC BY 4.0**, see [`LICENSE-CONTENT.md`](LICENSE-CONTENT.md).
 - Cited papers are listed in the app's References section and in `data/references.json`; the papers themselves are not included.

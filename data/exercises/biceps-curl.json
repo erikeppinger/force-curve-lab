@@ -55,6 +55,7 @@
     },
     {
       "id": "brachioradialis",
+      "region": "forearm",
       "name": "Brachioradialis",
       "wgerId": null,
       "role": "Synergist",

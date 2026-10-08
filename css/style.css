@@ -248,6 +248,30 @@ input[type="range"]:disabled { opacity: 0.4; }
 .bar { height: 8px; background: var(--muscle-base); border-radius: 4px; overflow: hidden; margin-top: 3px; }
 .bar span { display: block; height: 100%; background: var(--muscle-on); }
 .m-note { margin: 3px 0 0; font-size: 0.8rem; color: var(--muted); }
+.muscle-list li.picked { animation: picked 1.6s ease-out; border-radius: 8px; }
+@keyframes picked { from { background: color-mix(in srgb, var(--muscle-on) 22%, transparent); } to { background: transparent; } }
+
+/* Close-up of one body region (js/regions.js) */
+.muscle-detail { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border); }
+.muscle-detail h4 { margin: 0 0 8px; }
+.detail-views { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.detail-views figure { margin: 0; }
+.detail-views svg { width: 100%; height: auto; display: block; max-height: 420px; }
+.detail-views figcaption { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+.detail-views figcaption strong { color: var(--text); font-weight: 600; }
+.region-outline { fill: var(--body); stroke: var(--bone); stroke-width: 1; opacity: 0.55; }
+.region-bone { stroke: var(--bone); stroke-linecap: round; opacity: 0.45; }
+.region-tendon { stroke: var(--muted); stroke-width: 1.6; stroke-linecap: round; opacity: 0.7; }
+.region-belly-base { fill: var(--muscle-base); stroke: var(--card); stroke-width: 1; }
+.region-muscle:not(.involved) .region-belly-base { fill: var(--body); stroke: var(--bone); }
+.region-belly-on { fill: var(--muscle-on); }
+.region-belly-hatch { stroke: none; }
+.hatch-line { stroke: var(--muscle-on); stroke-width: 2.5; opacity: 0.55; }
+.region-label { font-size: 9px; font-weight: 700; fill: var(--text); paint-order: stroke; stroke: var(--card); stroke-width: 2.5px; pointer-events: none; }
+.region-muscle:not(.involved) .region-label { fill: var(--muted); font-weight: 500; }
+.region-muscle.involved { cursor: pointer; }
+.region-muscle.involved:focus-visible .region-belly-base { stroke: var(--accent); stroke-width: 2; }
+.region-muscle:not(.involved) .region-tendon { opacity: 0.35; }
 
 /* wger */
 .wger-row { display: flex; gap: 12px; align-items: flex-start; }

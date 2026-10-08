@@ -5,9 +5,10 @@ import { renderFigure, figureBounds, viewTitle, renderMultiFigure, multiBounds }
 import { analyzeMulti, sampleMulti } from "./multijoint.js";
 import { CAMERAS, scene3d, bounds3d, renderView3d } from "./view3d.js";
 import { fetchExercise, descriptionParagraphs, bodyBackground, muscleOverlay, isBackMuscle } from "./wger.js";
+import { loadRegion, regionsOf, viewsFor, renderRegionView } from "./regions.js";
 
 const EXERCISES = [
-  "biceps-curl", "triceps-extension", "lateral-raise", "front-raise", "chest-fly", "straight-arm-pulldown",
+  "biceps-curl", "triceps-extension", "wrist-curl", "reverse-wrist-curl", "lateral-raise", "front-raise", "chest-fly", "straight-arm-pulldown",
   "leg-extension", "leg-curl", "calf-raise", "hip-abduction", "glute-kickback",
   "squat", "romanian-deadlift", "deadlift", "split-squat", "leg-press", "hip-thrust", "bench-press", "overhead-press", "bent-over-row", "seated-row", "lat-pulldown", "pull-up",
 ];
@@ -130,11 +131,13 @@ const isMulti = () => state.exercise.model === "multi";
 
 function buildBodyMap() {
   const mapped = state.exercise.muscles.filter((x) => x.wgerId);
+  // Nothing on the wger map but a close-up exists (e.g. forearm muscles): show only the close-up.
+  const detailOnly = !mapped.length && regionsOf(state.exercise).length > 0;
   for (const front of [true, false]) {
     const box = $(front ? "bodymap-front" : "bodymap-back");
     const here = mapped.filter((m) => isBackMuscle(m.wgerId) !== front);
     box.replaceChildren();
-    box.hidden = !here.length && !(front && !mapped.length);
+    box.hidden = detailOnly || (!here.length && !(front && !mapped.length));
     const bg = new Image();
     bg.src = bodyBackground(front);
     bg.alt = `${front ? "Front" : "Back"} view of the human muscular system`;
@@ -149,6 +152,48 @@ function buildBodyMap() {
     }
   }
   $("bodymap-front").parentElement.classList.toggle("both", !$("bodymap-front").hidden && !$("bodymap-back").hidden);
+  $("bodymap-front").parentElement.hidden = detailOnly;
+}
+
+/** Close-up views for the exercise's body regions (see js/regions.js). */
+let detail = [];
+async function buildDetail() {
+  const ex = state.exercise;
+  detail = [];
+  $("muscle-detail").hidden = true;
+  const regions = await Promise.all(regionsOf(ex).map(loadRegion));
+  if (state.exercise !== ex) return; // switched exercise while loading
+  const box = $("detail-views");
+  box.replaceChildren();
+  for (const region of regions) {
+    for (const view of viewsFor(region, ex)) {
+      const fig = document.createElement("figure");
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("role", "img");
+      svg.setAttribute("aria-label", `${region.name}: ${view.title}`);
+      const cap = document.createElement("figcaption");
+      cap.innerHTML = "<strong></strong> <span></span>";
+      cap.querySelector("strong").textContent = view.title + ".";
+      cap.querySelector("span").textContent = view.caption;
+      fig.append(svg, cap);
+      box.append(fig);
+      detail.push({ region, view, svg });
+    }
+  }
+  $("detail-region").textContent = regions.map((r) => r.name.toLowerCase()).join(", ");
+  $("muscle-detail").hidden = !detail.length;
+  renderSoon();
+}
+
+/** Tapping a muscle in a close-up points at its bar in the list. */
+function pickMuscle(pathId) {
+  const i = state.exercise.muscles.findIndex((m) => (m.regionPath ?? m.id) === pathId);
+  const li = $("muscle-list").children[i];
+  if (!li) return;
+  li.classList.remove("picked");
+  void li.offsetWidth; // restart the highlight animation
+  li.classList.add("picked");
+  li.scrollIntoView({ block: "nearest", behavior: "smooth" });
 }
 
 async function loadWger() {
@@ -221,6 +266,7 @@ function setExercise(id, h = {}) {
 
   $("muscle-list").replaceChildren();
   buildBodyMap();
+  buildDetail();
   loadWger();
   renderReferences();
 }
@@ -423,6 +469,10 @@ function renderMuscles(act) {
   for (const img of $("muscles-card").querySelectorAll(".bodymap img.overlay")) {
     const m = act.find((x) => x.id === img.dataset.muscle);
     img.style.opacity = (0.12 + 0.88 * (m?.value ?? 0)).toFixed(3);
+  }
+  if (detail.length) {
+    const values = new Map(act.filter((m) => m.region).map((m) => [m.regionPath ?? m.id, m.value]));
+    for (const d of detail) renderRegionView(d.svg, d.region, d.view, values, pickMuscle);
   }
 }
 

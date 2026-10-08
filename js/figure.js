@@ -177,7 +177,9 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
     seg(svg, add(f.at, u, -0.5), add(f.at, u, 0.5), "line-of-action", 0.006);
     seg(svg, joint, result.momentArmFoot, "moment-arm", 0.012);
     const m = toPx(lerp(joint, result.momentArmFoot, 0.5));
-    el("text", { x: m.x + 6, y: m.y - 6, class: "fig-label" }, svg).textContent = `d = ${Math.abs(result.momentArm * 100).toFixed(0)} cm`;
+    // Near the right edge (small figures such as the wrist), put the label to the left so it isn't cut off.
+    const flip = m.x > (V.x1 - V.x0) * S - 90;
+    el("text", { x: flip ? m.x - 6 : m.x + 6, y: m.y - 6, class: "fig-label", "text-anchor": flip ? "end" : "start" }, svg).textContent = `d = ${Math.abs(result.momentArm * 100).toFixed(0)} cm`;
     seg(svg, f.at, add(f.at, u, 0.28), "force", 0.014, { "marker-end": "url(#arrow)" });
     const t = toPx(add(f.at, u, 0.33));
     el("text", { x: t.x, y: t.y + 4, class: "fig-label force-label", "text-anchor": "middle" }, svg).textContent = "F";

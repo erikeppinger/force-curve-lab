@@ -38,7 +38,7 @@ Each of these was a real break: the exercise either gave wrong numbers or couldn
 6. **No body weight or closed chains.** In a calf raise the floor pushes up on the ball of the foot with your body weight. There's now a `reaction` load with a body-weight share (1 on one leg, 0.5 on two, 0 seated).
 7. **The figure was hard-coded.** It drew a standing body and the curl's muscles by id. Postures and muscle drawings are now data in each exercise file.
 8. **The UI was sized for arms.** Load was 1–30 kg and strength 25–110 Nm (knee extensors are ~200+ Nm, leg-extension stacks 50+ kg). There was one default load per exercise, though an ankle weight and a machine stack differ ten-fold. Ranges are now per exercise and default loads per variant.
-9. **The body map only had a front view.** Triceps, lats, hamstrings, glutes and calves are on the back. Both views now show when needed. The list of back-view wger muscle ids is from memory and marked `TODO` until it can be checked against the API.
+9. **The body map only had a front view.** Triceps, lats, hamstrings, glutes and calves are on the back. Both views now show when needed. The list of back-view wger muscle ids has been checked against the live API (2026-10-08).
 
 ## Still limited (added, but the numbers are approximate)
 
@@ -49,6 +49,8 @@ Each of these was a real break: the exercise either gave wrong numbers or couldn
 - **A variant can't change the joint set-up.** The common *seated* hip-abduction machine (hip bent 90°, knee bent, horizontal plane) is a different chain from standing abduction, so it was left out. The same applies to seated vs lying leg curls if both hip angles needed to be shown properly.
 - **Straight limbs.** The soft elbow in a fly and the forward lean in a straight-arm pulldown aren't modelled.
 - **Machine cams are illustrative.** None was measured, and stack kg don't compare with dumbbell kg.
+- **Wrist curls are estimates throughout.** The statics are exact (forearm flat: torque ∝ cos of the wrist angle; behind the back: ∝ sin), but the wrist strength curves, peak torques and every muscle weight are estimates marked `TODO`; candidate sources are on the reading list. The finger roll's extra finger work is only a higher share for FDS and FDP: the finger joints aren't modelled.
+- **Close-ups are schematic.** The forearm drawing places muscles where atlases show them, simplified and not to scale. Their colours use the same activation estimates as the bars, so a muscle that looks distinct in the drawing is not resolved any better by the model.
 - **wger links.** The starter library has no exercise ids (its `Movement Pattern` column is empty and `Equipment` is unreliable, e.g. "None (Bodyweight)" for the leg-extension machine). All 23 ids are now set by hand from wger's public exercise list; four have no exact match there, so they link the closest entry and name the alternatives in their note.
 
 ## Multi-joint model

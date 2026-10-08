@@ -1,8 +1,9 @@
-// wger.de integration: exercise text/images (CC-BY-SA) and the muscle-map SVGs.
-// Everything here is optional — the tool works offline without it.
+// wger.de integration: exercise text/images (CC-BY-SA, fetched live) and the muscle-map SVGs
+// (copied into assets/wger, same licence, so the body map works offline).
+// The API part is optional — the tool works offline without it.
 
 const API = "https://wger.de/api/v2";
-const STATIC = "https://wger.de/static/images/muscles";
+const STATIC = "assets/wger";
 const ENGLISH = 2;
 
 const cache = new Map();
@@ -29,6 +30,6 @@ export const muscleOverlay = (wgerId) => `${STATIC}/main/muscle-${wgerId}.svg`;
 
 // wger muscles drawn on the back view (is_front = false in /api/v2/muscle/):
 // triceps, gastrocnemius, gluteus maximus, trapezius, biceps femoris, latissimus, soleus.
-// TODO: re-check against the live API when network access is available.
+// Checked against the live API on 2026-10-08.
 const BACK = new Set([5, 7, 8, 9, 11, 12, 15]);
 export const isBackMuscle = (wgerId) => BACK.has(wgerId);

@@ -1,0 +1,124 @@
+{
+  "id": "wrist-curl",
+  "name": "Wrist curl",
+  "joint": "Wrist flexion",
+  "movingJoint": "distal",
+  "view": "side",
+  "angleLabel": "Wrist angle",
+  "angleRange": [-60, 60],
+  "angleNote": "Wrist flexion: 0° = hand in line with the forearm, negative = bent back (stretched), positive = curled towards the palm. Elbow at the origin.",
+  "segments": {
+    "proximal": 0.26,
+    "distal": 0.085,
+    "names": ["Forearm", "Hand"],
+    "massFractions": [0.0162, 0.0061],
+    "comFractions": [0.4574, 0.79],
+    "massNote": "Segment mass as a fraction of body mass, and centre of mass as a fraction of the segment length from its proximal end, from de Leva's adjusted Zatsiorsky-Seluyanov table (young adult males). The hand's centre of mass is given along wrist → third knuckle; here it is applied along wrist → grip, which is about as long.",
+    "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
+    "note": "Elbow→wrist and wrist→grip centre (bar in the fingers, about at the knuckles) in metres, typical adult. Estimates (TODO: anthropometric source)."
+  },
+  "defaults": { "loadKg": 8, "peakTorqueNm": 12, "variant": "seated-dumbbell", "bodyMassKg": 75 },
+  "ui": { "load": [1, 30, 0.5], "strength": [4, 25] },
+  "strengthCurve": {
+    "label": "Wrist flexor strength",
+    "points": [[-60, 0.8], [-30, 0.95], [0, 1], [30, 0.88], [60, 0.65]],
+    "note": "Relative wrist-flexion torque vs wrist angle. Estimated shape (strongest near neutral, weaker when fully curled); not yet from a measurement. Peak torque default 12 Nm: estimate for a trained adult.",
+    "source": "TODO: wrist flexion torque–angle data (candidates on the reading list: Delp et al. 1996; Gonzalez et al. 1997)"
+  },
+  "postures": {
+    "seated": [
+      { "shape": "seg", "from": [-0.36, -0.17], "to": [0.0, -0.17], "w": 0.04, "class": "equipment" },
+      { "shape": "seg", "from": [-0.18, -0.17], "to": [-0.18, -0.55], "w": 0.04, "class": "equipment" },
+      { "shape": "seg", "from": [-0.2, -0.08], "to": [0.22, -0.08], "w": 0.13 },
+      { "shape": "seg", "from": [0.22, -0.1], "to": [0.24, -0.55], "w": 0.1 },
+      { "shape": "seg", "from": [-0.22, -0.05], "to": [-0.08, 0.3], "w": 0.2 },
+      { "shape": "seg", "from": [-0.07, 0.29], "to": [0, 0], "w": 0.07 },
+      { "shape": "circle", "at": [0.0, 0.43], "r": 0.1 }
+    ],
+    "standing-behind": [
+      { "shape": "seg", "from": [0, 0], "to": [0, 0.3], "w": 0.07 },
+      { "shape": "seg", "from": [-0.08, 0.33], "to": [-0.08, -0.2], "w": 0.2 },
+      { "shape": "seg", "from": [-0.08, -0.2], "to": [-0.07, -1.05], "w": 0.14 },
+      { "shape": "circle", "at": [-0.1, 0.56], "r": 0.11 }
+    ]
+  },
+  "muscles": [
+    {
+      "id": "fcu", "name": "Flexor carpi ulnaris", "region": "forearm", "role": "Prime mover", "driver": "jointEffort",
+      "weight": [[-60, 1], [60, 1]],
+      "note": "Strongest pure wrist flexor, on the little-finger side.",
+      "source": "Weights: TODO (to derive from muscle size × wrist moment arm: Lieber et al. 1992, Gonzalez et al. 1997 on the reading list)",
+      "draw": { "seg": "proximal", "along": [0.03, 0.2], "offset": 0.03, "w": 0.032, "layer": 1 }
+    },
+    {
+      "id": "fcr", "name": "Flexor carpi radialis", "region": "forearm", "role": "Prime mover", "driver": "jointEffort",
+      "weight": [[-60, 0.9], [60, 0.9]],
+      "note": "Wrist flexor on the thumb side.",
+      "source": "Weights: TODO (see flexor carpi ulnaris)"
+    },
+    {
+      "id": "palmaris-longus", "name": "Palmaris longus", "region": "forearm", "role": "Synergist", "driver": "jointEffort",
+      "weight": [[-60, 0.5], [60, 0.5]],
+      "note": "Small wrist flexor; absent in some people.",
+      "source": "Weights: TODO (see flexor carpi ulnaris)"
+    },
+    {
+      "id": "fds", "name": "Flexor digitorum superficialis", "region": "forearm", "role": "Synergist", "driver": "jointEffort",
+      "weight": [[-60, 0.75], [60, 0.75]],
+      "note": "Finger flexor that also crosses the wrist: it helps whenever the fingers grip the bar.",
+      "source": "Weights: TODO (see flexor carpi ulnaris)",
+      "draw": { "seg": "proximal", "along": [0.05, 0.2], "offset": 0.012, "w": 0.035, "layer": 0 }
+    },
+    {
+      "id": "fdp", "name": "Flexor digitorum profundus", "region": "forearm", "role": "Synergist", "driver": "jointEffort",
+      "weight": [[-60, 0.65], [60, 0.65]],
+      "note": "Deep finger flexor; the only one that bends the fingertips. Also crosses the wrist.",
+      "source": "Weights: TODO (see flexor carpi ulnaris)"
+    }
+  ],
+  "phases": [
+    { "name": "Bottom", "range": [-60, -20], "text": "Wrist bent back, flexors stretched. Seated, the weight hangs below the hand's line, so the moment arm is already shrinking; behind the back the load barely pulls against the flexors here." },
+    { "name": "Middle", "range": [-20, 20], "text": "Hand in line with the forearm. Seated with the forearm flat, the weight is furthest from the wrist horizontally: the hardest point." },
+    { "name": "Top", "range": [20, 60], "text": "Wrist curled. Seated, the weight moves back over the wrist and gets easier; behind the back the moment arm keeps growing to the top." }
+  ],
+  "variants": [
+    {
+      "id": "seated-dumbbell",
+      "name": "Seated wrist curl (dumbbell, palm up)",
+      "equipment": "Dumbbell",
+      "posture": "seated",
+      "proximalAngle": 90,
+      "load": { "type": "gravity" },
+      "notes": "Forearm flat on the thigh, palm up, hand over the knee. Gravity pulls straight down, so the moment arm is the hand's horizontal reach: torque ∝ cos(wrist angle), largest with the hand level (0°) and smaller both in the stretched bottom and at the top."
+    },
+    {
+      "id": "behind-back",
+      "name": "Behind-the-back barbell wrist curl",
+      "equipment": "Barbell",
+      "posture": "standing-behind",
+      "proximalAngle": 0,
+      "load": { "type": "gravity" },
+      "notes": "Standing, arms hanging, bar behind the thighs, palms facing back. The forearm is vertical, so torque ∝ sin(wrist angle): nothing with the hand hanging straight, most at full flexion — the opposite of the seated version. Load per hand (half the bar). Bending back (negative angles) is blocked by the legs here; the load would help, not resist."
+    },
+    {
+      "id": "cable",
+      "name": "Cable wrist curl (low pulley)",
+      "equipment": "Cable",
+      "posture": "seated",
+      "proximalAngle": 90,
+      "load": { "type": "cable", "pulley": { "x": 0.32, "y": -0.5 } },
+      "adjustablePulley": true,
+      "notes": "Forearm on the thigh or a bench, cable from a low pulley in front of the hand. The cable pulls towards the pulley instead of straight down, so the top of the curl keeps more tension than with a dumbbell. Move the pulley to see the peak shift."
+    },
+    {
+      "id": "finger-roll",
+      "name": "Seated barbell wrist curl with finger roll",
+      "equipment": "Barbell",
+      "posture": "seated",
+      "proximalAngle": 90,
+      "load": { "type": "gravity" },
+      "muscleModifiers": { "fds": 1.25, "fdp": 1.3 },
+      "notes": "Same wrist torque as the dumbbell version (per hand). At the bottom the bar rolls down to the fingertips and the fingers curl it back up before the wrist flexes. The finger joints aren't modelled here, so the extra finger work only shows as a higher estimated share for the two finger flexors (estimate, TODO)."
+    }
+  ]
+}
