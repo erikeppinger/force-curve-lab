@@ -284,6 +284,23 @@ input[type="range"]:disabled { opacity: 0.4; }
 .detail-views { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(190px, 45%), 1fr)); gap: 14px; }
 .detail-views figure { max-width: 260px; }
 .finger-set { margin-top: 12px; }
+.mini-fig { width: 100%; height: auto; display: block; max-height: 380px; margin: 4px 0 8px; }
+#hand-figure .fig-label { font-size: 44px; stroke-width: 10px; }
+#hand-figure .finger-name { font-size: 30px; }
+.mini-fig .body { stroke: var(--body); fill: var(--body); stroke-linecap: round; }
+.mini-fig .palm { stroke-width: 3; stroke-linejoin: round; }
+.mini-fig .finger-seg { stroke-linecap: round; }
+.mini-fig .joint { fill: var(--card); stroke: var(--bone); stroke-width: 2; }
+.mini-fig .edge { fill: var(--equipment); opacity: 0.5; }
+.mini-fig .weight { fill: var(--equipment); }
+.mini-fig .cable { stroke: var(--cable); }
+.mini-fig .force { stroke: var(--accent); }
+.mini-fig .arrowhead { fill: var(--accent); }
+.mini-fig .line-of-action { stroke: var(--accent); stroke-dasharray: 4 5; opacity: 0.6; }
+.mini-fig .fig-label { fill: var(--text); font-size: 15px; font-weight: 600; paint-order: stroke; stroke: var(--card); stroke-width: 4px; }
+.mini-fig .force-label { fill: var(--accent); }
+.mini-fig .small-note, .mini-fig .finger-name { font-size: 13px; font-weight: 500; }
+.mini-fig .panel-title { font-size: 14px; }
 .finger-set h4 { margin: 0 0 4px; }
 #finger-table td, #finger-table th { font-size: 0.85rem; padding: 5px 6px; }
 #finger-table tbody th { border-left-color: var(--j-knee); }

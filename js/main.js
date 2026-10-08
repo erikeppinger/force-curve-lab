@@ -7,6 +7,7 @@ import { CAMERAS, scene3d, bounds3d, renderView3d } from "./view3d.js";
 import { fetchExercise, descriptionParagraphs, bodyBackground, muscleOverlay, isBackMuscle } from "./wger.js";
 import { loadRegion, regionsOf, viewsFor, renderRegionView, regionValues } from "./regions.js";
 import { analyzeFinger, sampleFinger } from "./finger.js";
+import { renderHandFront, renderArmFigure } from "./handfig.js";
 import { renderFingerFigure, fingerBounds } from "./fingerfig.js";
 
 const EXERCISES = [
@@ -539,9 +540,13 @@ function renderFinger() {
   $("ro-warning").hidden = !(r.effort > 1);
   $("ro-warning").textContent = "More than this finger's typical maximum: the grip would open here.";
   renderFingerSet(r.set);
+  const P = { ...v.params, ...state.placement };
+  renderHandFront($("hand-figure"), { set: r.set, exercise: ex, P });
+  renderArmFigure($("arm-figure"), { arm: r.arm, P });
   const info = [{ text: `The detailed finger (index) carries ${((F / (state.loadKg * 9.81)) * 100).toFixed(0)}% of the block${v.params.fingerShare === "auto" && state.placement?.fingerShare === "auto" ? " (its least-effort share)" : ""}. FDP:FDS = ${Number.isFinite(r.ratio) ? r.ratio.toFixed(2) : "FDP only"}.` }];
   if (!r.indexReaches && state.placement?.fingerShare === "auto") info.push({ warn: true, text: "In the four-finger model the index doesn't reach the edge in this grip; the detailed finger is shown at 25% for comparison." });
-  if (r.set && Math.abs(r.set.wristSide) > 0.05) info.push({ text: `The uneven split tips the hand: the wrist holds ${Math.abs(r.set.wristSide).toFixed(1)} Nm towards the ${r.set.wristSide > 0 ? "thumb" : "little-finger"} side.` });
+  if (r.set && Math.abs(r.set.deviationDeg) >= 1) info.push({ text: `The hand tilts ${Math.abs(r.set.deviationDeg).toFixed(0)}° towards the ${r.set.deviationDeg > 0 ? "little finger (ulnar)" : "thumb (radial)"} to bring the fingers onto the edge.` });
+  if (r.set && Math.abs(r.set.wristSide) > 0.05) info.push({ text: `The load centre sits ${Math.abs(r.set.loadCentre * 1000).toFixed(0)} mm towards the ${r.set.wristSide > 0 ? "thumb" : "little-finger"} side of the wrist: the wrist holds ${Math.abs(r.set.wristSide).toFixed(1)} Nm sideways.` });
   // The block at which this finger reaches its typical maximum (grip, finger share and strength as set).
   info.push({ text: `Maximum block for this grip and share: about ${Math.round(r.maxBlockKg)} kg.` });
   if (r.passive > 0) info.push({ text: `The bent-back fingertip joint carries ${r.passive.toFixed(2)} Nm passively.` });

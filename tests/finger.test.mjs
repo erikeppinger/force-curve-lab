@@ -3,7 +3,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { G, interp } from "../js/physics.js";
-import { analyzeFinger, sampleFinger } from "../js/finger.js";
+import { analyzeFinger, sampleFinger, fingerSet } from "../js/finger.js";
 import { muscleActivation } from "../js/muscles.js";
 
 const ex = JSON.parse(readFileSync(new URL("../data/exercises/edge-lift.json", import.meta.url)));
@@ -132,4 +132,44 @@ test("arm: hanging straight carries the block as a pull only; turned out, the sh
   close(fwd.shoulderForward, (30 * G * (L.upperArm + L.forearm) + armMoment) * Math.sin((20 * Math.PI) / 180), 1e-9);
   close(fwd.shoulderSide, 0);
   assert.ok(at(20, 0).effort.shoulderSide === 0 && at(0, 20).effort.shoulderSide > at(20, 0).effort.shoulderForward, "sideways is the weaker direction");
+});
+
+test("four fingers: shares add up to the block, forces and the wrist's sideways moment follow", () => {
+  for (const v of ex.variants) {
+    const W = 300;
+    const set = fingerSet(ex, v.params, v.params.pip, W);
+    const touching = set.fingers.filter((f) => f.touches);
+    assert.ok(touching.length >= 2, v.id);
+    assert.ok(Math.abs(set.fingers.reduce((s, f) => s + f.share, 0) - 1) < 1e-9, v.id);
+    for (const f of set.fingers) {
+      assert.ok(f.share >= 0, v.id);
+      assert.ok(Math.abs(f.force - W * f.share) < 1e-9, v.id);
+    }
+    const m = set.fingers.reduce((s, f) => s + f.force * f.zWorld, 0);
+    assert.ok(Math.abs(set.wristSide - m) < 1e-9);
+    assert.ok(set.deviationDeg >= -15 && set.deviationDeg <= 25);
+  }
+});
+
+test("four fingers, quadriga 100%: the touching middle/ring/little FDP slips sit at the same share of their strength", () => {
+  const v = ex.variants.find((x) => x.id === "half-crimp");
+  const set = fingerSet(ex, { ...v.params, quadriga: 1 }, v.params.pip, 300);
+  const rel = set.fingers.filter((f) => f.touches && f.reach === 1 && f.id !== "index").map((f) => f.res.tendons.fdp / f.tmax.fdp);
+  assert.ok(rel.length >= 2);
+  for (const r of rel) assert.ok(Math.abs(r - rel[0]) / rel[0] < 0.01, `${r} vs ${rel[0]}`);
+});
+
+test("four fingers, independent slips: least effort leaves every touching finger at the same effort cost per share", () => {
+  // Without links, minimising Σ c_i s_i² under Σ s_i = 1 gives c_i s_i equal (Lagrange).
+  const v = ex.variants.find((x) => x.id === "half-crimp");
+  const set = fingerSet(ex, { ...v.params, quadriga: 0 }, v.params.pip, 300);
+  const k = set.fingers.filter((f) => f.touches && f.reach === 1).map((f) => ((f.per.a / f.tmax.fdp) ** 2 + (f.per.b / f.tmax.fds) ** 2) * f.share);
+  for (const x of k) assert.ok(Math.abs(x - k[0]) / k[0] < 1e-6);
+});
+
+test("four fingers: tilting the edge tilts the hand with it", () => {
+  const v = ex.variants.find((x) => x.id === "half-crimp");
+  const flat = fingerSet(ex, v.params, v.params.pip, 300);
+  const tilted = fingerSet(ex, { ...v.params, edgeTilt: 10 }, v.params.pip, 300);
+  assert.ok(tilted.deviationDeg < flat.deviationDeg, `${tilted.deviationDeg} vs ${flat.deviationDeg}`);
 });

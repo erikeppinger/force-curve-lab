@@ -147,14 +147,17 @@ function setFinger(ex, id) {
   };
 }
 
-/** Joint limits (degrees) for the reach search: flexion positive. */
-const LIMITS = { mcp: [-30, 90], pip: [0, 115], dip: [-30, 80] };
+/** Joint limits (degrees) for the reach search: flexion positive; deviation + = ulnar. */
+const LIMITS = { mcp: [-30, 90], pip: [0, 115], dip: [-30, 80], dev: [-15, 25] };
 /**
  * Cost weights of departing from the grip's angles: the grip type lives in the PIP and fingertip
- * joints, so fingers of different length adjust mainly at the knuckle (MCP), and the ring and
- * little fingers also by bending their metacarpal forward at the base of the hand ("cupping").
+ * joints, so fingers of different length adjust mainly at the knuckle (MCP), the ring and little
+ * fingers also by bending their metacarpal forward at the base of the hand ("cupping"), and the
+ * whole hand by tilting sideways at the wrist (radial/ulnar deviation). Estimates.
  */
-const WEIGHT = { mcp: 0.1, pip: 1, dip: 1, cmc: 0.5 };
+const WEIGHT = { mcp: 0.1, pip: 1, dip: 1, cmc: 0.5, dev: 0.5, depthMm: 1 };
+/** How far (m) a pad may sit deeper or shallower on the edge than the middle finger's. */
+const DEPTH = 0.006;
 /** Cost of a finger that can't reach the edge at all (it then carries nothing). */
 const MISS = 400; // about a 20° change of the PIP: a finger that can only touch in a contorted posture stays off
 
@@ -163,39 +166,43 @@ const rot = (p, t) => ({ x: Math.cos(t) * p.x - Math.sin(t) * p.y, y: Math.sin(t
 /**
  * Pose of a finger whose pad (a fraction `frac` along the distal phalanx) must touch `targetW`
  * (relative to the wrist; metacarpal hanging along -y). Searches the metacarpal's forward bend
- * (0 … cmcMax), the fingertip angle near the grip's and the two-link reach of knuckle and middle
- * joint; keeps the posture closest to the grip's angles `ref` {mcp, pip, dip} within the joint
- * limits. The pose is in the finger's own frame (metacarpal along -y, knuckle at the origin) with
- * `turn` = the metacarpal's bend. Null if the finger can't reach the edge.
+ * (0 … cmcMax) and the fingertip angle near the grip's (coarse, then fine), solving knuckle and
+ * middle joint by two-link reach; keeps the posture closest to the grip's angles `ref`
+ * {mcp, pip, dip} within the joint limits. The pose is in the finger's own frame (metacarpal along
+ * -y, knuckle at the origin) with `turn` = the metacarpal's bend. Null if it can't reach.
  */
 function reachPose(g, targetW, frac, ref, cmcMax = 0) {
   const L = g.lengths;
   const d = frac * L.distal;
-  let best = null;
   const dipLo = Math.max(LIMITS.dip[0], ref.dip - 15), dipHi = Math.min(LIMITS.dip[1], ref.dip + 15);
-  for (let cmcDeg = 0; cmcDeg <= cmcMax + 1e-9; cmcDeg += 2) {
+  const tryPose = (cmcDeg, dipDeg, best) => {
     const k = rad(cmcDeg);
     const mcpW = add({ x: 0, y: 0 }, dir(k), L.metacarpal);
     const target = rot(sub(targetW, mcpW), -k);
     const D = len(target);
     const tq = Math.atan2(target.x, -target.y);
-    for (let dipDeg = dipLo; dipDeg <= dipHi + 1e-9; dipDeg += 1) {
-      const delta = rad(dipDeg);
-      const v = { x: d * Math.sin(delta), y: -(L.middle + d * Math.cos(delta)) };
-      const s = len(v), eps = Math.atan2(v.x, -v.y);
-      if (D > L.proximal + s || D < Math.abs(L.proximal - s)) continue;
-      const A = Math.acos(Math.max(-1, Math.min(1, (L.proximal ** 2 + D * D - s * s) / (2 * L.proximal * D))));
-      for (const phiP of [tq - A, tq + A]) {
-        const pip = add({ x: 0, y: 0 }, dir(phiP), L.proximal);
-        const phiM = Math.atan2(target.x - pip.x, -(target.y - pip.y)) - eps;
-        const a = { mcp: deg(phiP), pip: deg(phiM - phiP), dip: dipDeg };
-        if (a.mcp < LIMITS.mcp[0] || a.mcp > LIMITS.mcp[1] || a.pip < LIMITS.pip[0] || a.pip > LIMITS.pip[1]) continue;
-        const cost = WEIGHT.mcp * (a.mcp - ref.mcp) ** 2 + WEIGHT.pip * (a.pip - ref.pip) ** 2 + WEIGHT.dip * (a.dip - ref.dip) ** 2 + WEIGHT.cmc * cmcDeg ** 2;
-        if (!best || cost < best.cost) best = { cost, a, phiP, phiM, pip, delta, k };
-      }
+    const delta = rad(dipDeg);
+    const v = { x: d * Math.sin(delta), y: -(L.middle + d * Math.cos(delta)) };
+    const s = len(v), eps = Math.atan2(v.x, -v.y);
+    if (D > L.proximal + s || D < Math.abs(L.proximal - s)) return best;
+    const A = Math.acos(Math.max(-1, Math.min(1, (L.proximal ** 2 + D * D - s * s) / (2 * L.proximal * D))));
+    for (const phiP of [tq - A, tq + A]) {
+      const pip = add({ x: 0, y: 0 }, dir(phiP), L.proximal);
+      const phiM = Math.atan2(target.x - pip.x, -(target.y - pip.y)) - eps;
+      const a = { mcp: deg(phiP), pip: deg(phiM - phiP), dip: dipDeg };
+      if (a.mcp < LIMITS.mcp[0] || a.mcp > LIMITS.mcp[1] || a.pip < LIMITS.pip[0] || a.pip > LIMITS.pip[1]) continue;
+      const cost = WEIGHT.mcp * (a.mcp - ref.mcp) ** 2 + WEIGHT.pip * (a.pip - ref.pip) ** 2 + WEIGHT.dip * (a.dip - ref.dip) ** 2 + WEIGHT.cmc * cmcDeg ** 2;
+      if (!best || cost < best.cost) best = { cost, a, phiP, phiM, pip, delta, k, cmcDeg, dipDeg };
     }
-  }
+    return best;
+  };
+  let best = null;
+  for (let cm = 0; cm <= cmcMax + 1e-9; cm += 4) for (let dp = dipLo; dp <= dipHi + 1e-9; dp += 3) best = tryPose(cm, dp, best);
   if (!best) return null;
+  const c0 = best.cmcDeg, d0 = best.dipDeg;
+  for (let cm = Math.max(0, c0 - 3); cm <= Math.min(cmcMax, c0 + 3) + 1e-9; cm += 1) {
+    for (let dp = Math.max(dipLo, d0 - 2); dp <= Math.min(dipHi, d0 + 2) + 1e-9; dp += 1) best = tryPose(cm, dp, best);
+  }
   const phiD = best.phiM + best.delta;
   const dipJ = add(best.pip, dir(best.phiM), L.middle);
   return {
@@ -206,16 +213,80 @@ function reachPose(g, targetW, frac, ref, cmcMax = 0) {
   };
 }
 
+/** Solve H x = b (small dense system, Gaussian elimination with pivoting). */
+function solveLinear(H, b) {
+  const n = b.length, A = H.map((row, i) => [...row, b[i]]);
+  for (let i = 0; i < n; i++) {
+    let p = i;
+    for (let r = i + 1; r < n; r++) if (Math.abs(A[r][i]) > Math.abs(A[p][i])) p = r;
+    [A[i], A[p]] = [A[p], A[i]];
+    for (let r = i + 1; r < n; r++) {
+      const f = A[r][i] / A[i][i];
+      for (let k = i; k <= n; k++) A[r][k] -= f * A[i][k];
+    }
+  }
+  const x = new Array(n).fill(0);
+  for (let i = n - 1; i >= 0; i--) {
+    let s = A[i][n];
+    for (let k = i + 1; k < n; k++) s -= A[i][k] * x[k];
+    x[i] = s / A[i][i];
+  }
+  return x;
+}
+
+/** Reference (maximal) tendon tensions of one finger's FDP and FDS, scaled by muscle size. */
+const refTension = (ex, id) => {
+  const S = ex.fingers, refT = ex.finger.referenceTension;
+  return { fdp: refT.fdp * (S.pcsa.fdp[id] / S.pcsa.fdp.middle), fds: refT.fds * (S.pcsa.fds[id] / S.pcsa.fds.middle) };
+};
+
+/**
+ * Least-effort split of the block between the touching fingers. Per newton on its pad, finger i
+ * needs FDP tension a_i and FDS tension b_i; with Tp_i, Ts_i its muscles' reference tensions,
+ * σ_i = a_i s_i / Tp_i is its FDP slip's relative tension (s = shares, Σ s = 1). The cost is
+ *   J = Σ [σ_i² + (b_i s_i / Ts_i)²] + λ Σ_{pairs of middle, ring, little} (σ_i − σ_j)²,
+ * the second term linking the FDP slips that share one muscle belly (the "quadriga"): it pulls
+ * them towards the same relative tension. λ = q / (1 − q): q = 0 independent slips, q = 1 one
+ * belly (equal relative tension in every touching slip). J = sᵀ H s; its minimum under Σ s = 1
+ * is s ∝ H⁻¹ 1, re-solved without any finger that would get a negative share.
+ * A finger that only just reaches the edge (posture cost between MISS/2 and MISS) takes part with a
+ * weight w falling to 0 (its cost terms ÷ w², its links × w), so its share fades out instead of
+ * jumping when a few millimetres of edge decide whether it touches.
+ */
+function shareLoad(fingers, q) {
+  const coupled = (f) => f.id !== "index";
+  const lambda = q >= 1 ? 1e4 : q / (1 - q);
+  for (const f of fingers) f.share = 0;
+  let active = fingers.filter((f) => f.touches);
+  while (active.length) {
+    const n = active.length;
+    const al = active.map((f) => f.per.a / f.tmax.fdp);
+    const w = active.map((f) => f.reach);
+    const link = (i, j) => (i !== j && coupled(active[i]) && coupled(active[j]) ? lambda * w[i] * w[j] : 0);
+    const H = active.map((fi, i) => active.map((fj, j) => {
+      if (i !== j) return -link(i, j) * al[i] * al[j];
+      const links = active.reduce((s, _, k) => s + link(i, k), 0);
+      return (al[i] ** 2 + (fi.per.b / fi.tmax.fds) ** 2) / w[i] ** 2 + links * al[i] ** 2;
+    }));
+    const x = solveLinear(H, new Array(n).fill(1));
+    const sum = x.reduce((a, b) => a + b, 0);
+    const s = x.map((v) => v / sum);
+    if (s.every((v) => v >= 0)) { active.forEach((f, i) => { f.share = s[i]; }); return; }
+    active = active.filter((_, i) => s[i] > 0);
+  }
+}
+
 /**
  * All four fingers on one edge (ex.fingers). The fingertips line up on the edge; every finger keeps
  * close to the grip's PIP and fingertip angles and takes up its length at the knuckle (longer
- * fingers bend the knuckle more), the ring and little finger also by cupping. Where the edge sits
- * relative to the hand is chosen so the four postures together stay closest to the grip (searched
- * along the middle finger's knuckle angle); a finger that can't reach doesn't touch. The edge is
- * raised/lowered per finger by P.edgeTilt and P.edgeStep (a raised middle section under the middle
- * finger; P.stepRing = how far the ring finger is on it, 0 = beside it, 1 = fully on it). The block's weight W is shared among the
- * touching fingers for least effort: minimise Σ (tension ÷ muscle size)² over each finger's FDP and
- * FDS, which gives finger i a share ∝ 1 / c_i, c_i = its squared effort per newton.
+ * fingers bend the knuckle more), the ring and little finger also by cupping, and the whole hand
+ * may tilt sideways at the wrist (radial/ulnar deviation), which lowers one side's knuckles. Where
+ * the edge sits relative to the hand (searched along the middle finger's knuckle angle) and the
+ * hand's tilt are chosen so the four postures together stay closest to the grip; a finger that
+ * can't reach doesn't touch. The edge is raised/lowered per finger by P.edgeTilt and P.edgeStep
+ * (a raised middle section under the middle finger; P.stepRing = how far the ring finger is on
+ * it). The block's weight W is shared for least effort (shareLoad; P.quadriga = how far the FDP
+ * slips of the middle, ring and little finger act as one muscle).
  */
 export function fingerSet(ex, P, pipDeg, W, strengthPct = 100) {
   const S = ex.fingers;
@@ -224,68 +295,99 @@ export function fingerSet(ex, P, pipDeg, W, strengthPct = 100) {
   const gs = Object.fromEntries(S.order.map((id) => [id, setFinger(ex, id)]));
   const refAngles = { mcp: P.mcp, pip: pipDeg, dip: P.dip };
   const zMid = S.knuckleSide.middle;
-  const step = P.edgeStep ?? 0, tilt = Math.tan(rad(P.edgeTilt ?? 0));
+  const step = P.edgeStep ?? 0, edgeTilt = rad(P.edgeTilt ?? 0);
   const onStep = { index: 0, middle: 1, ring: P.stepRing ?? 0, little: 0 };
-  const lift = (id) => -step * (1 - onStep[id]) + tilt * (S.knuckleSide[id] - zMid);
-  // The edge for a given middle-finger knuckle angle (the middle finger in the grip's PIP/DIP).
+  // Edge height under each finger relative to the middle finger's, along the hand's long axis
+  // (towards the wrist = +), with the hand tilted sideways by devDeg: the edge's own tilt and the
+  // hand's tilt add up (both lower the little-finger side relative to the knuckles).
+  const lift = (id, devDeg) => -step * (onStep.middle - onStep[id]) / Math.cos(rad(devDeg))
+    + Math.tan(edgeTilt + rad(devDeg)) * (S.knuckleSide[id] - zMid);
+  // The edge (relative to the wrist, in the hand's frame) for a given middle-finger knuckle angle.
   const edgeAt = (mcpDeg) => {
     const gm = gs.middle;
     const p = fingerPose(gm, { ...P, mcp: mcpDeg, contactFromDip: frac * gm.lengths.distal }, pipDeg);
     return sub(p.contact, p.wrist);
   };
-  const solve = (c) => S.order.map((id) => {
-    const t = { x: c.x, y: c.y - lift(id) + lift("middle") };
-    return { id, pose: reachPose(gs[id], t, frac, refAngles, S.cmcFlexMax?.[id] ?? 0) };
-  });
-  const total = (sol) => sol.reduce((s, f) => s + (f.pose ? f.pose.cost : MISS), 0);
-  // Coarse search over the middle finger's knuckle angle, then refine.
-  let bestMcp = P.mcp, best = null;
-  for (let m = LIMITS.mcp[0]; m <= LIMITS.mcp[1]; m += 6) {
-    const sol = solve(edgeAt(m)), t = total(sol);
-    if (!best || t < best.t) { best = { t, sol }; bestMcp = m; }
+  const solve = (mcpDeg, devDeg, fine = false) => {
+    const c = edgeAt(mcpDeg);
+    const sol = S.order.map((id) => {
+      // The pad may rest a little deeper or shallower on the edge (coarse, then fine).
+      const y = c.y + lift(id, devDeg); // raised = closer to the wrist
+      const at = (dx) => {
+        const pose = reachPose(gs[id], { x: c.x + dx, y }, frac, refAngles, S.cmcFlexMax?.[id] ?? 0);
+        if (pose) pose.cost += WEIGHT.depthMm * (dx * 1000) ** 2;
+        return { id, target: { x: c.x + dx, y }, depth: dx, pose };
+      };
+      const pick = (a, b) => (!a.pose || (b.pose && b.pose.cost < a.pose.cost) ? b : a);
+      if (id === "middle") return at(0);
+      let b = (fine ? [-DEPTH, -DEPTH / 2, 0, DEPTH / 2, DEPTH] : [-DEPTH, 0, DEPTH]).map(at).reduce(pick);
+      if (fine && b.pose) for (const dx of [b.depth - 0.002, b.depth - 0.001, b.depth + 0.001, b.depth + 0.002]) if (Math.abs(dx) <= DEPTH + 1e-9) b = pick(b, at(dx));
+      return b;
+    });
+    const total = sol.reduce((s, f) => s + (f.pose ? f.pose.cost : MISS), 0) + WEIGHT.dev * devDeg ** 2;
+    return { mcp: mcpDeg, dev: devDeg, c, sol, total };
+  };
+  const better = (a, b) => (!a || b.total < a.total ? b : a);
+  const devOk = (dv) => dv >= LIMITS.dev[0] && dv <= LIMITS.dev[1];
+  // Edge position first (hand straight), then alternate hand tilt and edge position, coarse to fine.
+  let best = null;
+  for (let m = LIMITS.mcp[0]; m <= LIMITS.mcp[1]; m += 6) best = better(best, solve(m, 0));
+  for (let round = 0; round < 2; round++) {
+    const m0 = best.mcp;
+    for (let dv = LIMITS.dev[0]; dv <= LIMITS.dev[1]; dv += 5) best = better(best, solve(m0, dv));
+    const d0 = best.dev;
+    for (let dv = d0 - 4; dv <= d0 + 4; dv += 2) if (devOk(dv)) best = better(best, solve(m0, dv));
+    const d1 = best.dev, m1 = best.mcp;
+    for (let m = m1 - 6; m <= m1 + 6; m += 2) best = better(best, solve(m, d1));
   }
-  for (let m = bestMcp - 5; m <= bestMcp + 5; m += 1) {
-    const sol = solve(edgeAt(m)), t = total(sol);
-    if (t < best.t) { best = { t, sol }; }
-  }
-  const c = edgeAt(bestMcp); // (kept for the force direction; the refined edge differs < 1 mm)
-  const u = unit(c); // the block's pull on every pad (hand hangs with the wrist above the edge)
-  const refT = ex.finger.referenceTension;
-  const fingers = best.sol.map(({ id, pose: p }) => {
-    const f = { id, label: S.labels[id], g: gs[id], pose: p, z: S.knuckleSide[id], touches: Boolean(p) };
-    if (!p) return { ...f, cost: Infinity, share: 0, force: 0, effort: 0 };
-    const uf = rot(u, -p.turn); // the pull in this finger's own frame
+  const m2 = best.mcp, d2 = best.dev;
+  for (let m = m2 - 1; m <= m2 + 1; m += 1) for (let dv = d2 - 1; dv <= d2 + 1; dv += 1) if (devOk(dv)) best = better(best, solve(m, dv, true));
+
+  const dev = rad(best.dev);
+  const u = unit(best.c); // the block's pull on every pad (hand hangs with the wrist above the edge)
+  // The pull is vertical; with the hand tilted sideways only cos(dev) of its long-axis part lies
+  // in the fingers' bending plane, the rest pushes the fingers sideways (collateral ligaments and
+  // interossei; reported, not analysed).
+  const uPlane = { x: u.x, y: u.y * Math.cos(dev) };
+  const fingers = best.sol.map(({ id, target, pose: p }) => {
+    const f = { id, label: S.labels[id], g: gs[id], pose: p, z: S.knuckleSide[id], target, touches: Boolean(p), tmax: refTension(ex, id), share: 0, force: 0, effort: 0 };
+    if (!p) return f;
+    const uf = rot(uPlane, -p.turn); // the pull in this finger's own frame
     // A bent-back fingertip carries part of the DIP moment passively (as in the full crimp).
     const Pf = { ...P, dipPassiveShare: p.dipDeg < 0 ? (P.dipPassiveShare ?? 0) : 0 };
-    const per = fingerStatics(gs[id], Pf, p, uf, p.pipDeg);
-    const tmax = { fdp: refT.fdp * (S.pcsa.fdp[id] / S.pcsa.fdp.middle), fds: refT.fds * (S.pcsa.fds[id] / S.pcsa.fds.middle) };
-    const cost = (per.tendons.fdp / tmax.fdp) ** 2 + (per.tendons.fds / tmax.fds) ** 2;
-    return { ...f, Pf, uf, tmax, cost };
+    const st = fingerStatics(gs[id], Pf, p, uf, p.pipDeg);
+    // Weight in the split: 1 for a comfortable reach, fading to 0 as the posture cost nears MISS.
+    const reach = Math.min(1, Math.max(0, (MISS - p.cost) / (MISS / 2)));
+    return { ...f, touches: reach > 0, reach, Pf, uf, per: { a: st.tendons.fdp, b: st.tendons.fds } };
   });
-  const inv = fingers.map((f) => (f.touches && f.cost > 0 ? 1 / f.cost : 0));
-  const sum = inv.reduce((a, b) => a + b, 0);
+  const q = Math.min(1, Math.max(0, P.quadriga ?? 0));
+  shareLoad(fingers, q);
   const scale = 100 / strengthPct;
-  for (const [i, f] of fingers.entries()) {
+  for (const f of fingers) {
     if (!f.touches) continue;
-    f.share = sum > 0 ? inv[i] / sum : 0;
     f.force = W * f.share;
     f.res = fingerStatics(f.g, f.Pf, f.pose, { x: f.uf.x * f.force, y: f.uf.y * f.force }, f.pose.pipDeg);
-    f.effort = Math.max(f.res.tendons.fdp / f.tmax.fdp, f.res.tendons.fds / f.tmax.fds) * scale;
+    f.sideways = f.force * Math.abs(u.y) * Math.sin(Math.abs(dev));
   }
-  // Sideways moment about the middle of the wrist (thumb side positive): the wrist holds it.
-  const wristSide = fingers.reduce((m, f) => m + f.force * f.z, 0);
-  return { fingers, wristSide, loadCentre: W > 0 ? wristSide / W : 0 };
+  for (const f of fingers) if (f.touches) f.effort = Math.max(f.res.tendons.fdp / f.tmax.fdp, f.res.tendons.fds / f.tmax.fds) * scale;
+  // Sideways moment about the middle of the wrist (thumb side positive): each pad's vertical pull
+  // at its sideways position, which the hand's tilt shifts (z' = y·sin dev + z·cos dev).
+  for (const f of fingers) f.zWorld = f.target.y * Math.sin(dev) + f.z * Math.cos(dev);
+  const wristSide = fingers.reduce((m, f) => m + f.force * f.zWorld, 0);
+  return { fingers, wristSide, loadCentre: W > 0 ? wristSide / W : 0, deviationDeg: best.dev, quadriga: q, edge: best.c };
 }
 
-export function analyzeFinger(ex, v, pipDeg, { loadKg, strengthPct = 100, placement, body, bodyMassKg } = {}) {
+export function analyzeFinger(ex, v, pipDeg, { loadKg, strengthPct = 100, placement, body, bodyMassKg, indexShare } = {}) {
   const f = ex.finger;
   const P = { ...v.params, ...placement };
   const W = loadKg * G;
-  const set = fingerSet(ex, P, pipDeg, W, strengthPct);
+  // indexShare (from sampleFinger): the index's share is already known, skip the four-finger set.
+  const set = indexShare == null ? fingerSet(ex, P, pipDeg, W, strengthPct) : null;
   // The detailed finger (index): its share is the least-effort split ("auto") or a set value.
   // If the index doesn't reach the edge in the four-finger set, the detailed view falls back to 25%.
   const idx = set?.fingers.find((x) => x.id === "index");
-  const share = P.fingerShare === "auto" ? (idx?.touches ? idx.share : 0.25) : P.fingerShare;
+  const autoShare = indexShare ?? (idx?.touches ? idx.share : 0.25);
+  const share = P.fingerShare === "auto" ? autoShare : P.fingerShare;
   const p = fingerPose(f, P, pipDeg);
   const F = W * share;
   const u = unit(sub(p.contact, p.wrist)); // direction of the edge's push on the pad
@@ -293,7 +395,7 @@ export function analyzeFinger(ex, v, pipDeg, { loadKg, strengthPct = 100, placem
   const st = fingerStatics(f, P, p, force, pipDeg);
   const capacity = P.maxFingertipN * (strengthPct / 100);
   return {
-    angle: pipDeg, pose: p, tilt: handTilt(p), force, fingertipN: F, share, indexReaches: idx ? idx.touches : true,
+    angle: pipDeg, pose: p, tilt: handTilt(p), force, fingertipN: F, share, indexReaches: indexShare != null ? indexShare > 0 : idx ? idx.touches : true,
     ...st,
     capacity, effort: F / capacity,
     maxBlockKg: capacity / (G * share), // block at which this finger reaches its maximum
@@ -303,10 +405,27 @@ export function analyzeFinger(ex, v, pipDeg, { loadKg, strengthPct = 100, placem
   };
 }
 
+/**
+ * The curves over the PIP range. The four-finger set (a search) is solved every 10° only and the
+ * index's least-effort share interpolated in between.
+ */
 export function sampleFinger(ex, v, opts, step = 2.5) {
   const [lo, hi] = ex.angleRange;
+  const P = { ...v.params, ...opts?.placement };
+  let shareAt = null;
+  if (ex.fingers && P.fingerShare === "auto") {
+    const pts = [];
+    for (let a = lo; a < hi + 10; a += 10) {
+      const x = Math.min(a, hi);
+      const set = fingerSet(ex, P, x, (opts?.loadKg ?? 0) * G, opts?.strengthPct ?? 100);
+      const idx = set.fingers.find((f) => f.id === "index");
+      pts.push([x, idx.touches ? idx.share : 0.25]);
+      if (x === hi) break;
+    }
+    shareAt = (a) => interp(pts, a);
+  }
   const out = [];
-  for (let a = lo; a <= hi + 1e-9; a += step) out.push(analyzeFinger(ex, v, a, opts));
+  for (let a = lo; a <= hi + 1e-9; a += step) out.push(analyzeFinger(ex, v, a, { ...opts, indexShare: shareAt ? shareAt(a) : undefined }));
   return out;
 }
 

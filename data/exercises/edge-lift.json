@@ -35,7 +35,7 @@
     "referenceTensionSource": "Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Table 3)"
   },
   "fingers": {
-    "note": "All four fingers on one edge. The middle finger takes the grip's posture (variant and PIP slider); each other finger bends as needed to put its pad on the same edge (same spot on the distal phalanx, same fingertip-joint angle), raised or lowered by the edge's shape. Moment arms are An et al.'s index-finger values scaled by each finger's proximal phalanx length (estimate); pulleys at the middle of the phalanges. How the block splits between the fingers isn't fixed by statics: it is shared for least effort, i.e. the smallest sum of squared tendon tension ÷ muscle size (FDP and FDS of each finger), which gives each finger a share ∝ 1 / (its squared effort per newton).",
+    "note": "All four fingers on one edge. The fingertips line up on the edge (each pad may sit up to 6 mm deeper or shallower than the middle finger's); every finger keeps close to the grip's PIP and fingertip angles and takes up its length at the knuckle, the ring and little finger also by cupping the palm, and the whole hand may tilt sideways at the wrist (radial/ulnar deviation, −15° to +25°). Where the edge sits under the hand and the hand's tilt are chosen so the four postures together stay closest to the grip (weighted squared angle changes; weights are estimates). Moment arms are An et al.'s index-finger values scaled by each finger's proximal phalanx length (estimate). How the block splits between the fingers isn't fixed by statics: it is shared for least effort (smallest sum of squared tendon tension ÷ reference tension over each finger's FDP and FDS), with the FDP slips of the middle, ring and little finger pulled towards equal relative tension by the quadriga slider. A finger that only just reaches fades out of the split.",
     "order": ["index", "middle", "ring", "little"],
     "labels": {"index": "Index", "middle": "Middle", "ring": "Ring", "little": "Little"},
     "lengths": {
@@ -77,8 +77,9 @@
     { "key": "armForward", "label": "Arm forward of the body", "min": 0, "max": 60, "step": 1, "unit": "°", "scale": 1, "hint": "0° = arm hanging against the front of the hip, as taught. Turning it forward puts the block on a lever at the shoulder." },
     { "key": "armSide", "label": "Arm out to the side", "min": 0, "max": 60, "step": 1, "unit": "°", "scale": 1, "hint": "Sideways the shoulder abductors hold the lever; they are weakest with the arm down." },
     { "key": "edgeTilt", "label": "Edge tilted along its length (+ = little-finger end lower)", "min": -15, "max": 15, "step": 1, "unit": "°", "scale": 1, "hint": "A block hanging off-centre tilts the edge: the fingers at the lower end must reach further." },
-    { "key": "edgeStep", "label": "Middle section of the edge raised (+) / lowered (−), under the middle finger", "min": -0.015, "max": 0.015, "step": 0.001, "unit": "mm", "scale": 1000, "hint": "Raised = closer to the knuckles. Some lifting blocks shape the edge so fingers of different lengths can grip alike; compare which way evens out the load." },
-    { "key": "stepRing", "label": "Ring finger on the raised section", "min": 0, "max": 1, "step": 0.05, "unit": "%", "scale": 100, "hint": "0% = beside it on the main edge (as on the pentagon block), 100% = fully on it; in between = the pad partly on the step." }
+    { "key": "edgeStep", "label": "Section under the middle finger: closer to the knuckles (+) / further away (−)", "min": -0.015, "max": 0.015, "step": 0.001, "unit": "mm", "scale": 1000, "hint": "Some lifting blocks have a bump under the middle finger so fingers of different lengths can grip alike. A bump that sticks out away from the hand (the longest finger reaches further) is −. Compare which way evens out the load." },
+    { "key": "stepRing", "label": "Ring finger on the raised section", "min": 0, "max": 1, "step": 0.05, "unit": "%", "scale": 100, "hint": "0% = beside it on the main edge (as on the pentagon block), 100% = fully on it; in between = the pad partly on the step." },
+    { "key": "quadriga", "label": "FDP of middle, ring and little finger linked (quadriga)", "min": 0, "max": 1, "step": 0.05, "unit": "%", "scale": 100, "hint": "The deep flexor's slips to these three fingers share one muscle belly. 0% = each slip works on its own; 100% = one belly, every slip at the same share of its strength. How tightly they are linked on an edge isn't measured: 50% is a middle guess." }
   ],
   "muscles": [
     {
@@ -102,7 +103,7 @@
       "id": "open-hand",
       "name": "Open hand (drag)",
       "equipment": "Edge block on a loading pin",
-      "params": { "mcp": -21, "dip": 38.8, "pip": 25.9, "contactFromDip": 0.00985, "fingerShare": "auto", "armForward": 0, "armSide": 0, "edgeTilt": 0, "edgeStep": 0, "stepRing": 0, "dipPassiveShare": 0, "maxFingertipN": 78 },
+      "params": { "mcp": -21, "dip": 38.8, "pip": 25.9, "contactFromDip": 0.00985, "fingerShare": "auto", "armForward": 0, "armSide": 0, "edgeTilt": 0, "edgeStep": 0, "stepRing": 0, "quadriga": 0.5, "dipPassiveShare": 0, "maxFingertipN": 78 },
       "notes": "Fingertip bent, middle joint nearly straight (the 'slope' grip of Vigouroux et al.: DIP 38.8°, PIP 25.9°, MCP −21°). The tendons barely change direction at the pulleys, so A2 carries very little.",
       "source": "Posture: Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027; maximum fingertip force (all four fingers on the hold, slope grip, 78 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
     },
@@ -110,7 +111,7 @@
       "id": "half-crimp",
       "name": "Half crimp",
       "equipment": "Edge block on a loading pin",
-      "params": { "mcp": 0, "dip": 0, "pip": 90, "contactFromDip": 0.00985, "fingerShare": "auto", "armForward": 0, "armSide": 0, "edgeTilt": 0, "edgeStep": 0, "stepRing": 0, "dipPassiveShare": 0, "maxFingertipN": 82 },
+      "params": { "mcp": 0, "dip": 0, "pip": 90, "contactFromDip": 0.00985, "fingerShare": "auto", "armForward": 0, "armSide": 0, "edgeTilt": 0, "edgeStep": 0, "stepRing": 0, "quadriga": 0.5, "dipPassiveShare": 0, "maxFingertipN": 82 },
       "notes": "Middle joint at about 90°, fingertip in line with the middle phalanx, no thumb. Estimated posture (neither paper measured this grip); the maximum force is taken from the crimp. A grip between half crimp and open hand with all four fingers is often recommended for off-the-wall strength training (Tyler Nelson, via StrengthClimbing); in the 'chisel' variant the index finger stays straight and carries less.",
       "source": "Posture: estimate (TODO); maximum fingertip force (all four fingers on the hold, crimp, 82 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
     },
@@ -118,7 +119,7 @@
       "id": "full-crimp",
       "name": "Full crimp",
       "equipment": "Edge block on a loading pin",
-      "params": { "mcp": -2.6, "dip": -22.6, "pip": 106.5, "contactFromDip": 0.00985, "fingerShare": "auto", "armForward": 0, "armSide": 0, "edgeTilt": 0, "edgeStep": 0, "stepRing": 0, "dipPassiveShare": 0.222, "maxFingertipN": 82 },
+      "params": { "mcp": -2.6, "dip": -22.6, "pip": 106.5, "contactFromDip": 0.00985, "fingerShare": "auto", "armForward": 0, "armSide": 0, "edgeTilt": 0, "edgeStep": 0, "stepRing": 0, "quadriga": 0.5, "dipPassiveShare": 0.222, "maxFingertipN": 82 },
       "notes": "Middle joint past 90°, fingertip bent back (the 'crimp' of Vigouroux et al.: DIP −22.6°, PIP 106.5°, MCP −2.6°). With the fingertip bent back, the joint itself carries about a fifth of the DIP moment (22% in their climbers), which spares the FDP. The thumb wrapped over the index finger isn't modelled.",
       "source": "Posture and passive DIP moment: Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Table 2); maximum fingertip force (82 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
     }
