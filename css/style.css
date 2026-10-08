@@ -213,6 +213,33 @@ input[type="range"]:disabled { opacity: 0.4; }
 .charts .line.joint-hip-frontal { stroke: var(--j-hip-frontal); }
 .charts .line.joint-hip-rotation { stroke: var(--j-hip-rotation); }
 .charts .line.joint-knee-frontal { stroke: var(--j-knee-frontal); stroke-width: 2; }
+/* Edge lift: tendons and pulleys (js/finger.js) */
+.charts .line.f-fdp { stroke: var(--j-hip); }
+.charts .line.f-fds { stroke: var(--j-knee); }
+.charts .line.f-a2 { stroke: var(--j-ankle); }
+.charts .line.f-a4 { stroke: var(--compare); }
+.legend .sw.f-fdp { border-color: var(--j-hip); }
+.legend .sw.f-fds { border-color: var(--j-knee); }
+.legend .sw.f-a2 { border-color: var(--j-ankle); }
+.legend .sw.f-a4 { border-color: var(--compare); }
+.joint-table .jt-f-tip { border-left-color: var(--accent); }
+.joint-table .jt-f-fdp { border-left-color: var(--j-hip); }
+.joint-table .jt-f-fds { border-left-color: var(--j-knee); }
+.joint-table .jt-f-a2 { border-left-color: var(--j-ankle); }
+.joint-table .jt-f-a4 { border-left-color: var(--compare); }
+#figure .tendon { fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.9; }
+#figure .tendon-fdp { stroke: var(--j-hip); }
+#figure .tendon-fds { stroke: var(--j-knee); }
+#figure .edge { fill: var(--equipment); stroke: var(--equipment); stroke-width: 1; opacity: 0.75; }
+#figure .pulley-band { stroke-linecap: butt; }
+#figure .pulley-band.pl-a2 { stroke: var(--j-ankle); }
+#figure .pulley-band.pl-a4 { stroke: var(--compare); }
+#figure .fig-label.tendon-label, #figure .fig-label.pulley-label { font-size: 13px; }
+#figure .tl-fdp { fill: var(--j-hip); }
+#figure .tl-fds { fill: var(--j-knee); }
+#figure .pulley-label.pl-a2 { fill: var(--j-ankle); }
+#figure .pulley-label.pl-a4 { fill: var(--compare); }
+#figure .fig-label.joint-name { font-size: 10px; font-weight: 500; fill: var(--muted); }
 .charts .line.cap { stroke-width: 1.5; stroke-dasharray: 2 4; opacity: 0.8; }
 .charts .line.dash { stroke-dasharray: 7 5; opacity: 0.8; }
 .legend { list-style: none; padding: 0; margin: 0 0 6px; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.85rem; color: var(--muted); }

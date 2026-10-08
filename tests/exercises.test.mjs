@@ -16,7 +16,7 @@ test("main.js lists every exercise once", () => {
   assert.equal(new Set(ids).size, ids.length);
 });
 
-const single = ids.filter((id) => load(id).model !== "multi");
+const single = ids.filter((id) => !load(id).model); // "multi" and "finger" have their own tests
 const multi = ids.filter((id) => load(id).model === "multi");
 
 for (const id of multi) {
@@ -150,7 +150,7 @@ test("references: every cited paper is listed, and every listed paper is cited",
   const sources = [];
   const walk = (o) => {
     if (Array.isArray(o)) o.forEach(walk);
-    else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) (k === "source" || k === "massSource") && typeof v === "string" ? sources.push(v) : walk(v);
+    else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) (k === "source" || /Source$/.test(k)) && typeof v === "string" ? sources.push(v) : walk(v);
   };
   for (const id of ids) walk(load(id));
   walk(JSON.parse(readFileSync(new URL("../data/body.json", import.meta.url))));

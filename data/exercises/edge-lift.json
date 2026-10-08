@@ -1,0 +1,80 @@
+{
+  "id": "edge-lift",
+  "name": "Edge lift (one arm, loading pin)",
+  "model": "finger",
+  "joint": "Finger flexion",
+  "view": "side",
+  "angleLabel": "PIP angle",
+  "angleRange": [0, 110],
+  "angleNote": "Bend of the middle finger joint (PIP): 0° = straight, about 90° = half crimp, about 105° = full crimp. Each grip keeps its own fingertip (DIP) and knuckle (MCP) angle; the slider shows what happens as the PIP closes.",
+  "defaults": { "loadKg": 20, "variant": "half-crimp", "bodyMassKg": 75 },
+  "ui": { "load": [2, 80, 1] },
+  "finger": {
+    "label": "Index finger",
+    "lengths": { "metacarpal": 0.0716, "proximal": 0.0436, "middle": 0.0247, "distal": 0.0197 },
+    "lengthsNote": "Bone lengths in metres, mean of 7 index fingers. The middle finger, which carries the most load on an edge, is somewhat longer; scale with care.",
+    "lengthsSource": "An KN, Ueba Y, Chao EY, Cooney WP, Linscheid RL (1983). Tendon excursion and moment arm of index finger muscles. J Biomech 16(6):419–425. doi:10.1016/0021-9290(83)90074-X (Table 1)",
+    "momentArms": { "fdpDip": 0.0041, "fdpPip": 0.0079, "fdpMcp": 0.0111, "fdsPip": 0.0062, "fdsMcp": 0.0119 },
+    "momentArmsNote": "Flexion moment arms in metres, averaged through each joint's range (7 index fingers). Table 3 is headed mm but its values are in cm: Table 2's excursions per 100° (e.g. FDP at the DIP 7.30 mm → 4.2 mm per radian) confirm it. The paper notes they grow slightly with flexion; Schweizer measured much more bowstringing over the PIP in the crimp, so the PIP moment arms are probably too small there (overestimating the tensions).",
+    "momentArmsSource": "An KN, Ueba Y, Chao EY, Cooney WP, Linscheid RL (1983). Tendon excursion and moment arm of index finger muscles. J Biomech 16(6):419–425. doi:10.1016/0021-9290(83)90074-X (Tables 2 and 3)",
+    "bowstring": { "fdp": [[5, 0.0002], [90, 0.0043]], "fds": [[0, 0], [90, 0.00175]] },
+    "bowstringNote": "Extra distance (m) of the flexor tendons from the bone over the PIP under load, added to the PIP moment arms. Measured over the PIP: FDP 0.2 mm in the slope grip (PIP 0–10°) and 4.3 mm in the crimp (PIP 90°); FDS alone 1.75 mm in the crimp. Linear in between and held flat beyond 90° (estimate). Taking the extra distance as extra moment arm is an approximation.",
+    "bowstringSource": "Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6 (Table 1, position 4: over the PIP joint; 16 fingers)",
+    "pulleys": { "a2DistalEdge": 0.013, "a4": 0.5 },
+    "insertions": { "fds": 0.35, "fdp": 0.3 },
+    "pulleysNote": "Estimates: A2's distal edge 13 mm before the PIP, A4 at the middle of the middle phalanx; FDS inserts 35% along the middle phalanx, FDP 30% along the distal phalanx. Tendons run straight between them (bone-axis geometry, no tendon thickness). TODO: positions from an anatomical source.",
+    "contactNote": "Where the edge presses: the centre of the pressure on the distal phalanx, measured from the DIP. Default half the distal phalanx, as Vigouroux et al. assumed for their 1 cm hold. On a 20–25 mm edge the whole distal phalanx and pad rest on the edge; where the centre then sits hasn't been measured (TODO), so it is a slider: closer to the DIP means less FDP and more FDS.",
+    "contactSource": "Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Methods 2.2)",
+    "referenceTension": { "fdp": 257.5, "fds": 214.8 },
+    "referenceTensionNote": "Tendon tension at a maximal one-finger effort (highest group mean of the two grips: FDP in the crimp, FDS in the slope grip), used to scale the muscle bars.",
+    "referenceTensionSource": "Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Table 3)"
+  },
+  "placement": [
+    { "key": "contactFromDip", "label": "Where the edge presses (from the fingertip joint)", "min": 0.002, "max": 0.019, "step": 0.0005, "unit": "mm", "scale": 1000 },
+    { "key": "fingerShare", "label": "This finger's share of the load", "min": 0.1, "max": 0.5, "step": 0.01, "unit": "%", "scale": 100 }
+  ],
+  "muscles": [
+    {
+      "id": "fdp", "name": "Flexor digitorum profundus", "region": "forearm", "role": "Prime mover", "driver": "tendon", "tendon": "fdp",
+      "weight": [[0, 1], [110, 1]],
+      "note": "Bends the fingertip. On an edge it carries the DIP moment alone, so its tension is set directly by the statics."
+    },
+    {
+      "id": "fds", "name": "Flexor digitorum superficialis", "region": "forearm", "role": "Prime mover", "driver": "tendon", "tendon": "fds",
+      "weight": [[0, 1], [110, 1]],
+      "note": "Bends the middle joint (PIP). Takes whatever PIP moment the FDP doesn't already supply: much more of it in a crimp."
+    }
+  ],
+  "phases": [
+    { "name": "Open", "range": [0, 45], "text": "Finger fairly straight. The tendons run close to the bone, so the pulleys carry little; the fingertip (DIP) and FDP do most of the work." },
+    { "name": "Half crimp", "range": [45, 95], "text": "The PIP bends towards 90°. The flexor tendons bowstring across the PIP and pull hard on the A2 and A4 pulleys; the FDS takes a larger share." },
+    { "name": "Crimp", "range": [95, 110], "text": "PIP past 90°: the sharpest bend for the tendons, the highest pulley loads per newton at the fingertip." }
+  ],
+  "variants": [
+    {
+      "id": "open-hand",
+      "name": "Open hand (drag)",
+      "equipment": "Edge block on a loading pin",
+      "params": { "mcp": -21, "dip": 38.8, "pip": 25.9, "contactFromDip": 0.00985, "fingerShare": 0.25, "dipPassiveShare": 0, "maxFingertipN": 78 },
+      "notes": "Fingertip bent, middle joint nearly straight (the 'slope' grip of Vigouroux et al.: DIP 38.8°, PIP 25.9°, MCP −21°). The tendons barely change direction at the pulleys, so A2 carries very little.",
+      "source": "Posture: Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027; maximum fingertip force (all four fingers on the hold, slope grip, 78 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
+    },
+    {
+      "id": "half-crimp",
+      "name": "Half crimp",
+      "equipment": "Edge block on a loading pin",
+      "params": { "mcp": 0, "dip": 0, "pip": 90, "contactFromDip": 0.00985, "fingerShare": 0.25, "dipPassiveShare": 0, "maxFingertipN": 82 },
+      "notes": "Middle joint at about 90°, fingertip in line with the middle phalanx, no thumb. Estimated posture (neither paper measured this grip); the maximum force is taken from the crimp.",
+      "source": "Posture: estimate (TODO); maximum fingertip force (all four fingers on the hold, crimp, 82 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
+    },
+    {
+      "id": "full-crimp",
+      "name": "Full crimp",
+      "equipment": "Edge block on a loading pin",
+      "params": { "mcp": -2.6, "dip": -22.6, "pip": 106.5, "contactFromDip": 0.00985, "fingerShare": 0.25, "dipPassiveShare": 0.222, "maxFingertipN": 82 },
+      "notes": "Middle joint past 90°, fingertip bent back (the 'crimp' of Vigouroux et al.: DIP −22.6°, PIP 106.5°, MCP −2.6°). With the fingertip bent back, the joint itself carries about a fifth of the DIP moment (22% in their climbers), which spares the FDP. The thumb wrapped over the index finger isn't modelled.",
+      "source": "Posture and passive DIP moment: Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Table 2); maximum fingertip force (82 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
+    }
+  ],
+  "wger": null
+}

@@ -6,9 +6,11 @@ import { analyzeMulti, sampleMulti } from "./multijoint.js";
 import { CAMERAS, scene3d, bounds3d, renderView3d } from "./view3d.js";
 import { fetchExercise, descriptionParagraphs, bodyBackground, muscleOverlay, isBackMuscle } from "./wger.js";
 import { loadRegion, regionsOf, viewsFor, renderRegionView } from "./regions.js";
+import { analyzeFinger, sampleFinger } from "./finger.js";
+import { renderFingerFigure, fingerBounds } from "./fingerfig.js";
 
 const EXERCISES = [
-  "biceps-curl", "triceps-extension", "wrist-curl", "reverse-wrist-curl", "lateral-raise", "front-raise", "chest-fly", "straight-arm-pulldown",
+  "biceps-curl", "triceps-extension", "wrist-curl", "reverse-wrist-curl", "edge-lift", "lateral-raise", "front-raise", "chest-fly", "straight-arm-pulldown",
   "leg-extension", "leg-curl", "calf-raise", "hip-abduction", "glute-kickback",
   "squat", "romanian-deadlift", "deadlift", "split-squat", "leg-press", "hip-thrust", "bench-press", "overhead-press", "bent-over-row", "seated-row", "lat-pulldown", "pull-up",
 ];
@@ -92,10 +94,14 @@ function setVariant(id, pulley, load) {
     $("pulley-y").value = state.pulley.y;
   }
   setPlacement(v);
+  if (state.exercise.model === "finger" && !state.playing) {
+    state.angle = v.params.pip;
+    $("angle").value = state.angle;
+  }
   $("variant-notes").textContent = v.strengthScale ? `${v.notes} Strength in this posture: ${v.strengthScale.note}` : v.notes;
   $("variant-equipment").textContent = v.equipment;
   $("figure-title").textContent = viewTitle(state.exercise, v);
-  $("load-label").textContent = v.load?.type === "reaction" ? "Added load" : "Load";
+  $("load-label").textContent = state.exercise.model === "finger" ? "Block (one hand)" : v.load?.type === "reaction" ? "Added load" : "Load";
 }
 
 /** Foot-placement sliders (3D lifts): start from the variant's preset. */
@@ -126,8 +132,11 @@ function setPlacement(v) {
 }
 
 /** Does the body-mass setting change anything (limb weight, or body weight on the floor)? */
-const usesBodyMass = (ex) => ex.model === "multi" || Boolean(ex.segments.massFractions) || ex.variants.some((v) => v.load.bodyWeight > 0);
+const usesBodyMass = (ex) => ex.model !== "finger" && (ex.model === "multi" || Boolean(ex.segments.massFractions) || ex.variants.some((v) => v.load.bodyWeight > 0));
 const isMulti = () => state.exercise.model === "multi";
+const isFinger = () => state.exercise.model === "finger";
+/** Strength as % of typical (multi-joint lifts, edge lift) instead of a peak torque in Nm. */
+const pctStrength = (ex) => ex.model === "multi" || ex.model === "finger";
 
 function buildBodyMap() {
   const mapped = state.exercise.muscles.filter((x) => x.wgerId);
@@ -233,7 +242,9 @@ function setExercise(id, h = {}) {
   $("angle-note").textContent = ex.angleNote;
   $("angle-label").textContent = ex.angleLabel;
   const multi = ex.model === "multi";
-  $("strength-label").textContent = multi ? "Strength (% of typical, all joints)" : `Strength (peak ${ex.joint.toLowerCase()} torque)`;
+  const finger = ex.model === "finger";
+  const pct = pctStrength(ex);
+  $("strength-label").textContent = finger ? "Strength (% of typical maximum fingertip force)" : multi ? "Strength (% of typical, all joints)" : `Strength (peak ${ex.joint.toLowerCase()} torque)`;
   $("pulley-x-label").textContent = view === "side" ? "Pulley forward / back" : "Pulley side to side";
   $("pulley-y-label").textContent = view === "top" ? "Pulley forward / back" : "Pulley height";
   fillSelect($("variant"), ex.variants);
@@ -243,17 +254,23 @@ function setExercise(id, h = {}) {
   state.peakTorqueNm = ex.defaults.peakTorqueNm;
   state.bodyMassKg = ex.defaults.bodyMassKg ?? 75;
   [$("load").min, $("load").max, $("load").step] = ui.load;
-  [$("strength").min, $("strength").max] = multi ? [50, 150] : ui.strength;
+  [$("strength").min, $("strength").max] = pct ? [50, 150] : ui.strength;
   state.strengthPct = 100;
   $("bodymass-control").hidden = !usesBodyMass(ex);
   $("bodymass").value = state.bodyMassKg; $("bodymass-out").textContent = `${state.bodyMassKg} kg`;
   $("load").value = state.loadKg; $("load-out").textContent = `${state.loadKg} kg`;
-  $("strength").value = multi ? 100 : state.peakTorqueNm;
-  $("strength-out").textContent = multi ? "100%" : `${state.peakTorqueNm} Nm`;
-  $("readouts").hidden = multi;
+  $("strength").value = pct ? 100 : state.peakTorqueNm;
+  $("strength-out").textContent = pct ? "100%" : `${state.peakTorqueNm} Nm`;
+  $("readouts").hidden = multi || finger;
   $("view-buttons").hidden = ex.view !== "3d";
   $("figure").classList.toggle("draggable", ex.view === "3d");
-  $("joint-table").hidden = !multi;
+  $("joint-table").hidden = !(multi || finger);
+  $("joint-table").tHead.rows[0].cells[0].textContent = finger ? "Structure" : "Joint";
+  $("joint-table").tHead.rows[0].cells[1].textContent = finger ? "Force" : "Torque";
+  $("joint-table").tHead.rows[0].cells[2].textContent = finger ? "× fingertip" : "Moment arm";
+  $("torque-title").textContent = finger ? "Tendon forces" : "Resistance vs strength";
+  $("effort-title").textContent = finger ? "Pulley loads" : "Effort across the range";
+  $("effort-hint").textContent = finger ? "Force on the A2 and A4 pulleys as the middle joint (PIP) bends. Pulley injuries happen here." : "Joint torque ÷ strength at each angle. The peak is the sticking point.";
   buildLegend(ex);
   const [lo, hi] = ex.angleRange;
   state.angle = Math.min(hi, Math.max(lo, state.angle));
@@ -282,6 +299,12 @@ function curves() {
   if (state.deferCurves && curveCache?.same === same && curveCache.ms > 50) return curveCache;
   const t0 = performance.now();
   const ex = state.exercise;
+  if (ex.model === "finger") {
+    const main = sampleFinger(ex, variant(), opts(variant()));
+    const cmp = state.compareId ? sampleFinger(ex, variant(state.compareId), opts(variant(state.compareId))) : null;
+    curveCache = { key, same, main, cmp, bounds: fingerBounds(cmp ? [...main, ...cmp] : main), ms: performance.now() - t0 };
+    return curveCache;
+  }
   if (ex.model === "multi") {
     const main = sampleMulti(ex, variant(), opts(variant()));
     const cmp = state.compareId ? sampleMulti(ex, variant(state.compareId), opts(variant(state.compareId))) : null;
@@ -311,7 +334,9 @@ function phaseAt(angle) {
 
 /** Legend for the torque chart: one entry per joint for multi-joint lifts. */
 function buildLegend(ex) {
-  const items = ex.model === "multi"
+  const items = ex.model === "finger"
+    ? [["f-fdp", "FDP tendon"], ["f-fds", "FDS tendon"], ["f-a2", "A2 pulley (lower chart)"], ["f-a4", "A4 pulley (lower chart)"], ["dash", "Comparison (dashed)"]]
+    : ex.model === "multi"
     ? [...ex.joints.map((j) => [`joint-${j.id}`, j.negative ? `${j.action} (+) / ${j.negative.action.toLowerCase()} (−)` : `${j.name} (${j.action.toLowerCase()})`]),
       ["cap", "Strength (dotted)"], ["dash", "Comparison (dashed)"]]
     : [["primary", "Selected variant"], ["compare", "Comparison"], ["strength", "Muscle strength (capacity)"]];
@@ -326,7 +351,8 @@ function buildLegend(ex) {
 
 function renderPhase(ex) {
   const ph = phaseAt(state.angle);
-  $("phase-name").textContent = state.playing ? `${ph.name} · ${state.direction * (ex.concentric === "decrease" ? -1 : 1) > 0 ? "concentric (lifting)" : "eccentric (lowering)"}` : ph.name;
+  // The edge lift is a hold: the slider sweeps the grip, not a lifting phase.
+  $("phase-name").textContent = state.playing && ex.model !== "finger" ? `${ph.name} · ${state.direction * (ex.concentric === "decrease" ? -1 : 1) > 0 ? "concentric (lifting)" : "eccentric (lowering)"}` : ph.name;
   $("phase-text").textContent = ph.text;
 }
 
@@ -403,7 +429,68 @@ function renderMulti() {
   renderMuscles(act);
 }
 
+/** Edge lift: finger figure, tendon and pulley charts, and a table of the structures' loads. */
+function renderFinger() {
+  const ex = state.exercise;
+  const v = variant();
+  const r = analyzeFinger(ex, v, state.angle, opts(v));
+  const act = muscleActivation(ex, v, r, state.angle);
+  const { main, cmp, bounds } = curves();
+  renderFingerFigure($("figure"), { exercise: ex, variant: v, result: r, bounds });
+
+  const bands = ex.phases.map((p) => ({ from: p.range[0], to: p.range[1], label: p.name }));
+  const lines = (samples, get, cls) => ({ points: samples.map((s) => [s.angle, get(s)]), className: cls });
+  const tendons = [
+    ...(cmp ? [lines(cmp, (s) => s.tendons.fdp, "f-fdp dash"), lines(cmp, (s) => s.tendons.fds, "f-fds dash")] : []),
+    lines(main, (s) => s.tendons.fdp, "f-fdp"), lines(main, (s) => s.tendons.fds, "f-fds"),
+  ];
+  renderChart($("torque-chart"), {
+    xRange: ex.angleRange, series: tendons, bands, marker: state.angle,
+    xLabel: ex.angleLabel, yLabel: "Tendon tension (N)", yFormat: (x) => x.toFixed(0),
+  });
+  const pulleys = [
+    ...(cmp ? [lines(cmp, (s) => s.pulleys.a2, "f-a2 dash"), lines(cmp, (s) => s.pulleys.a4, "f-a4 dash")] : []),
+    lines(main, (s) => s.pulleys.a2, "f-a2"), lines(main, (s) => s.pulleys.a4, "f-a4"),
+  ];
+  renderChart($("effort-chart"), {
+    xRange: ex.angleRange, series: pulleys, bands, marker: state.angle,
+    xLabel: ex.angleLabel, yLabel: "Pulley load (N)", yFormat: (x) => x.toFixed(0),
+  });
+
+  $("angle-out").textContent = `${state.angle.toFixed(0)}°`;
+  const F = r.fingertipN;
+  const rows = [
+    ["f-tip", "Fingertip", F, null, r.effort],
+    ["f-fdp", "FDP tendon", r.tendons.fdp, r.tendons.fdp / F, null],
+    ["f-fds", "FDS tendon", r.tendons.fds, r.tendons.fds / F, null],
+    ["f-a2", "A2 pulley", r.pulleys.a2, r.pulleys.a2 / F, null],
+    ["f-a4", "A4 pulley", r.pulleys.a4, r.pulleys.a4 / F, null],
+  ];
+  $("joint-table").tBodies[0].replaceChildren(...rows.map(([cls, name, force, ratio, effort]) => {
+    const tr = document.createElement("tr");
+    [name, `${force.toFixed(0)} N`, ratio == null ? "—" : `${ratio.toFixed(1)}×`, effort == null ? "" : `${(effort * 100).toFixed(0)}%`].forEach((t, i) => {
+      const td = document.createElement(i ? "td" : "th");
+      td.textContent = t;
+      if (i === 0) { td.scope = "row"; td.className = `jt-${cls}`; }
+      if (i === 3 && effort > 1) td.className = "over";
+      tr.append(td);
+    });
+    return tr;
+  }));
+  $("ro-warning").hidden = !(r.effort > 1);
+  $("ro-warning").textContent = "More than this finger's typical maximum: the grip would open here.";
+  const info = [{ text: `This finger carries ${((F / (state.loadKg * 9.81)) * 100).toFixed(0)}% of the block (slider below). FDP:FDS = ${Number.isFinite(r.ratio) ? r.ratio.toFixed(2) : "FDP only"}.` }];
+  if (r.passive > 0) info.push({ text: `The bent-back fingertip joint carries ${r.passive.toFixed(2)} Nm passively.` });
+  if (r.pipExtensor > 0.01) info.push({ warn: true, text: `The FDP alone over-bends the middle joint: the extensor mechanism has to hold ${r.pipExtensor.toFixed(2)} Nm (not shown as a force).` });
+  if (Math.abs(r.mcpRest) > 0.05) info.push({ text: `Knuckle (MCP): ${r.mcpRest > 0 ? "the intrinsic hand muscles add" : "the extensors (or intrinsics) hold back"} ${Math.abs(r.mcpRest).toFixed(2)} Nm.` });
+  $("ro-limb").hidden = false;
+  $("ro-limb").replaceChildren(...info.map((i) => Object.assign(document.createElement("span"), { textContent: `${i.text} `, className: i.warn ? "warn" : "" })));
+  renderPhase(ex);
+  renderMuscles(act);
+}
+
 function render() {
+  if (isFinger()) return renderFinger();
   if (isMulti()) return renderMulti();
   const ex = state.exercise;
   const v = variant();
@@ -508,7 +595,7 @@ function bind() {
   $("load").addEventListener("input", (e) => { state.loadKg = +e.target.value; $("load-out").textContent = `${state.loadKg} kg`; writeHash(); renderSoon(); });
   $("bodymass").addEventListener("input", (e) => { state.bodyMassKg = +e.target.value; $("bodymass-out").textContent = `${state.bodyMassKg} kg`; renderSoon(); });
   $("strength").addEventListener("input", (e) => {
-    if (isMulti()) { state.strengthPct = +e.target.value; $("strength-out").textContent = `${state.strengthPct}%`; }
+    if (pctStrength(state.exercise)) { state.strengthPct = +e.target.value; $("strength-out").textContent = `${state.strengthPct}%`; }
     else { state.peakTorqueNm = +e.target.value; $("strength-out").textContent = `${state.peakTorqueNm} Nm`; }
     renderSoon();
   });
@@ -551,7 +638,7 @@ function bind() {
 /** All `source` strings in an exercise (or any JSON value), for matching against references. */
 function sourcesOf(o, out = []) {
   if (Array.isArray(o)) o.forEach((x) => sourcesOf(x, out));
-  else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) (k === "source" || k === "massSource") && typeof v === "string" ? out.push(v) : sourcesOf(v, out);
+  else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) (k === "source" || /Source$/.test(k)) && typeof v === "string" ? out.push(v) : sourcesOf(v, out);
   return out;
 }
 const usesRef = (ex, ref) => sourcesOf(ex).some((s) => s.includes(ref.match));
@@ -602,10 +689,10 @@ async function init() {
   for (const ex of all) state.catalog[ex.id] = ex;
   const sel = $("exercise");
   sel.replaceChildren();
-  for (const [label, multi] of [["Single joint", false], ["Multi-joint", true]]) {
+  for (const [label, model] of [["Single joint", undefined], ["Multi-joint", "multi"], ["Grip", "finger"]]) {
     const group = document.createElement("optgroup");
     group.label = label;
-    for (const ex of all.filter((x) => (x.model === "multi") === multi)) group.append(new Option(ex.name, ex.id));
+    for (const ex of all.filter((x) => x.model === model)) group.append(new Option(ex.name, ex.id));
     sel.append(group);
   }
   setExercise(EXERCISES.includes(h.ex) ? h.ex : EXERCISES[0], h);

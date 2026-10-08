@@ -42,16 +42,19 @@ Added 2026-10-08 for the forearm close-up, the wrist curls and the planned edge 
 - Gonzalez RV, Buchanan TS, Delp SL (1997). How muscle architecture and moment arms affect wrist flexion-extension moments. J Biomech 30(7):705–712. **For:** each wrist muscle's share of the moment across the range, i.e. the `weight` tables (FCU, FCR, PL, FDS, FDP; ECRL, ECRB, ECU, ED).
 - Lieber RL, Jacobson MD, Fazeli BM, Abrams RA, Botte MJ (1992). Architecture of selected muscles of the arm and forearm: anatomy and implications for tendon transfer. J Hand Surg Am 17(5):787–798. **For:** muscle size (physiological cross-section) of the forearm muscles; size × moment arm gives a first estimate of the shares.
 - Holzbaur KRS, Murray WM, Delp SL (2005). A model of the upper extremity for simulating musculoskeletal surgery and analyzing neuromuscular control. Ann Biomed Eng 33(6):829–840. **For:** an OpenSim arm model with the wrist and finger muscles. Could go through the same offline OpenSim step as the Rajagopal leg model (check whether opensim-org/opensim-models on GitHub has it, as it had Rajagopal).
-- Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. **For:** the edge lift: FDS vs FDP tension and A2/A4 pulley forces in crimp vs slope grips; finger postures to copy; a check for the model's numbers. The key paper.
-- Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. **For:** the edge lift: crimp posture, fingertip force and pulley loads.
-- An KN, Chao EY, Cooney WP, Linscheid RL (1979). Normative model of human hand for biomechanical analysis. J Biomech 12(10):775–788. **For:** tendon moment arms at the finger joints (DIP, PIP, MCP), which turn joint torques into FDP and FDS tensions.
 
 Still to find (no candidate checked):
 - How the load splits between the four fingers on an edge, per grip type.
-- Phalanx lengths for a typical adult hand (the edge lift's finger chain).
+- Middle- and ring-finger bone lengths and moment arms (the edge lift uses the index finger's).
+- Where the pressure centre sits on the finger pad on a 20–25 mm edge.
+- Positions of the A2 and A4 pulleys and the FDS/FDP insertions along the phalanges (e.g. Lin et al. 1989, *Functional anatomy of the human digital flexor pulley system*, J Hand Surg Am 14:949–956, cited by Schweizer; not checked).
+- A measured half-crimp posture.
 - EMG of the forearm muscles in wrist curls, for the `weight` tables (the same gap as *Muscle activation weights* above).
 
 ## Read
+
+- **Edge lift (2026-10-08):** Vigouroux et al. 2006, Schweizer 2001 and An et al. 1983 are read and cited (`data/exercises/edge-lift.json`). An et al. 1979 was read but not used: its tables are normalised 3D tendon positions, too detailed for the 2D finger model. Rispler et al. 1996 (pulley efficiency after sectioning) was read as background, not used. Murray, Delp and Buchanan 1995 (elbow moment arms by angle and forearm rotation) is read and waiting to be used for the curls' muscle weights.
+- Fetched by mistake, not needed: Youm et al. 1979 (forearm and elbow kinematics for prostheses), Wu et al. 2009 (thumb model).
 
 - **Chen & Franklin 2025, joint moments** (preprint, CC BY 4.0) and **Chen & Franklin 2025, moment arms** (Ann Biomed Eng 53:1757–1776, open access): read; used as a cross-check (`docs/model-limits.md`). Their raw data are still to get: moment arms at <https://doi.org/10.6084/m9.figshare.26018563>; the joint-moment data link is in the published J Biomech version (the preprint says "link-to-add"). Both are MATLAB `.mat` files.
 - **Rajagopal et al. 2016** (OpenSim full-body model): read. Muscle forces and moment arms need the model files and an offline run.

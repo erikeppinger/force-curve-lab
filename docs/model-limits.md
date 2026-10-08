@@ -299,6 +299,30 @@ Limits:
 
 - **Shoulder-blade movement** for the bench, press, rows and pulls.
 
+## Edge lift (finger model)
+
+### How it works
+
+One finger as a planar chain: wrist → MCP → PIP → DIP, bone lengths and tendon moment arms of the index finger (An et al. 1983). The block's weight times the finger's share pulls on the finger pad; the hand hangs so that pull runs straight under the wrist (no wrist moment). From the joint moments:
+- **FDP** is the only muscle that bends the DIP, so its tension is the DIP moment ÷ its moment arm (minus the passive part when the DIP is bent back: 22% of the moment in Vigouroux et al.'s crimp).
+- **FDS** supplies the rest of the PIP moment. If the FDP alone already over-bends the PIP, the extensor mechanism must hold it; the app reports that moment instead of an FDS tension.
+- **MCP**: what the two long flexors leave over goes to the intrinsic hand muscles or the extensors (reported, not modelled as forces).
+- **Pulleys**: the tendons run straight between A2's distal edge and A4 (bowstring), and each pulley carries the vector sum of the tendon pulls on it.
+- Under load the tendons bowstring further from the PIP as it bends (Schweizer: 4.3 mm for FDP in the crimp, 0.2 mm in the slope grip, 1.75 mm for FDS), which is added to the PIP moment arms.
+
+### Checked against the paper
+
+On Vigouroux et al.'s own set-up (1 cm hold, pull along the metacarpal, their crimp posture) the model gives FDP:FDS 1.3 (they estimated 1.75), A2 2.5× and A4 1.5× the fingertip force (they: 2.7× and 2.4×). Without Schweizer's bowstring correction the ratio came out 0.5, the wrong way round; the unloaded cadaver moment arms are too small for a loaded crimp. Their slope grip can't be compared: its PIP moment (3.4 Nm at 97 N) shows their pull ran across the finger, unlike a block hanging under the wrist. A test pins the crimp comparison.
+
+### Still limited
+
+- **Where the edge presses is a slider.** Vigouroux et al. put the load at half the distal phalanx on a 1 cm hold. On a 20–25 mm edge the whole distal phalanx rests on it, but where the pressure centre sits hasn't been measured, and it matters: pressing closer to the DIP shifts the work from FDP to FDS.
+- **Index-finger geometry for "a finger".** The middle and ring fingers carry the most on an edge and are longer; tendon moment arms are averaged over each joint's range.
+- **The half crimp posture is an estimate** (PIP 90°, DIP straight); neither paper measured it. Its maximum force uses the crimp's.
+- **How the load splits between the fingers** is a slider (default 25%, equal shares; TODO: source).
+- **Pulley positions and tendon insertions are estimates** (`pulleysNote` in the data file), so pulley loads are the least certain output. The A3 pulley and the thumb in the full crimp aren't modelled.
+- **No co-contraction.** The flexors only do what the statics require; the intrinsic muscles and extensors appear only as leftover moments. Vigouroux et al. distributed forces by optimisation over all six muscles, so their FDS can differ.
+
 ## Sources for the curated numbers
 
 Every strength curve, peak strength and limb mass now carries its source in the exercise file. Where a source only gives part of the answer, the note says which part is an estimate. The papers were read in full; the one conference abstract is marked as such.

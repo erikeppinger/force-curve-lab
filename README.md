@@ -6,6 +6,7 @@ Exercises (2–5 equipment variants each):
 
 - **Arms and shoulders:** biceps curl, triceps extension, wrist curl and reverse wrist curl, lateral raise, front raise, chest fly, straight-arm pulldown / pullover
 - **Legs:** leg extension, leg curl, calf raise, hip abduction, glute kickback
+- **Grip:** edge lift (one arm, block on a loading pin): open hand, half crimp and full crimp, with the FDP and FDS tendon forces and the A2/A4 pulley loads from a finger model.
 - **Multi-joint:** squat, Romanian deadlift, deadlift (conventional and trap bar), split squat / lunge, leg press, hip thrust, bench press, overhead press, bent-over row, seated cable row, chest-supported row, lat pulldown, pull-up and chin-up. These show hip, knee and ankle torques and effort together.
 - **3D:** the leg press, squat, Romanian deadlift, split squat, hip thrust, bench press, overhead press and the rows have placement controls (foot height, stance width, toe angle, knee tracking; grip width and elbow position), sideways and rotation components at the hip, knee, shoulder and elbow, and a drag-to-turn 3D view.
 
@@ -42,6 +43,7 @@ Push to GitHub, then go to **Settings → Pages → Deploy from a branch → `ma
 | Strength curve | Relative torque–angle table × the user's peak torque | `strengthCurve` in exercise JSON |
 | Multi-joint lifts | A solver finds the posture from the lift's constraint (centre of mass over the mid-foot, sled rail, bar path, bench and floor contacts); each joint's torque is the moment of all forces on one side of it | `js/multijoint.js`, `data/body.json` |
 | Muscle activation | Demand (effort, or stabilising torque) × the muscle's angle-dependent weight × variant modifier | `js/muscles.js`, `muscles` in JSON |
+| Edge lift | Finger statics: joint moments from the pad force, FDP from the DIP, FDS from the PIP, pulley loads from the tendons' bend; checked against Vigouroux et al. 2006 | `js/finger.js`, `js/fingerfig.js` |
 | Close-ups | Schematic region drawings stored as data (each muscle a belly from origin to insertion, with tendons), coloured with the same activation values | `js/regions.js`, `data/regions/*.json` |
 | Exercise text and images | Fetched live from the [wger API](https://wger.de/api/v2/) and optional (the tool still works offline) | `js/wger.js` |
 
@@ -94,7 +96,8 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] wger muscle-map SVGs copied into `assets/wger` for offline use (wger exercise ids: all set and checked against wger's public exercise list)
 - [x] Close-up of one body region next to the overview: forearm and hand (wrist curls; brachioradialis in the curls)
 - [x] Wrist curl (seated, behind the back, cable, finger roll) and reverse wrist curl
-- [ ] Edge lift (25 mm edge on a loading pin, one arm hanging; open hand / half crimp / full crimp): finger chain with FDS and FDP tendon forces and A2/A4 pulley loads
+- [x] Edge lift (one arm hanging, block on a loading pin; open hand / half crimp / full crimp): finger chain with FDS and FDP tendon forces and A2/A4 pulley loads (Vigouroux 2006, Schweizer 2001, An 1983)
+- [ ] Edge lift: middle-finger geometry, measured half crimp, pressure centre on deep edges, load split between fingers
 - [ ] More close-ups: shoulder (three deltoid heads, rotator cuff), thigh (quadriceps and hamstring heads)
 - [ ] Translations (DE)
 

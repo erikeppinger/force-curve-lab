@@ -224,6 +224,30 @@
       "citation": "Maeo S, Wu Y, Huang M, Sakurai H, Kusagawa Y, Sugiyama T, Kanehisa H, Isaka T (2023). Triceps brachii hypertrophy is substantially greater after elbow extension training performed in the overhead versus neutral arm position. Eur J Sport Sci 23(7):1240–1250.",
       "url": "https://doi.org/10.1080/17461391.2022.2100279",
       "usedFor": "Overhead triceps: more growth despite lower strength."
+    },
+    {
+      "key": "Vigouroux 2006",
+      "match": "Vigouroux L",
+      "group": "Exercise biomechanics",
+      "citation": "Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592.",
+      "url": "https://doi.org/10.1016/j.jbiomech.2005.08.027",
+      "usedFor": "Edge lift: open-hand and full-crimp finger postures, where the edge presses, the passive moment of the bent-back fingertip joint, and the reference tendon tensions; its FDP:FDS ratios and pulley loads are the model’s check."
+    },
+    {
+      "key": "Schweizer 2001",
+      "match": "Schweizer A",
+      "group": "Exercise biomechanics",
+      "citation": "Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223.",
+      "url": "https://doi.org/10.1016/S0021-9290(00)00184-6",
+      "usedFor": "Edge lift: maximum fingertip force per finger in the crimp and open grips, and how far the flexor tendons bowstring over the middle joint under load."
+    },
+    {
+      "key": "An 1983",
+      "match": "An KN, Ueba Y",
+      "group": "Body data",
+      "citation": "An KN, Ueba Y, Chao EY, Cooney WP, Linscheid RL (1983). Tendon excursion and moment arm of index finger muscles. J Biomech 16(6):419–425.",
+      "url": "https://doi.org/10.1016/0021-9290(83)90074-X",
+      "usedFor": "Edge lift: finger bone lengths and the FDP and FDS moment arms at the three finger joints."
     }
   ],
   "resources": [
