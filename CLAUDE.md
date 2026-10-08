@@ -10,7 +10,9 @@ Static teaching site (GitHub Pages). Vanilla ES modules. **No build step, no npm
 - `js/view3d.js`: hand-rolled orthographic 3D view in SVG with drag-to-turn and camera presets
 - `js/muscles.js`: activation estimate from the physics result (a muscle may follow several joint components via `joints`)
 - `js/figure.js`, `js/chart.js`: hand-rolled SVG rendering. The figure draws `postures` and muscle `draw` specs from the JSON, rotated so the variant's gravity points down
-- `js/wger.js`: optional wger.de API calls; must fail silently
+- `js/finger.js`, `js/fingerfig.js`: the edge lift (`"model": "finger"`): finger statics (FDP from the DIP moment, FDS from the PIP, MCP leftover, A2/A4 pulley loads) and its side-view figure. Variant `params` hold the grip posture; `placement` sliders the pressure point and finger share
+- `js/regions.js`, `data/regions/*.json`: close-ups of one body region (schematic, each muscle a belly + tendons, coloured by activation). A muscle joins a close-up via `region`; `regionPath` names the drawn muscle(s) it colours (one id or a list). A list means the model only knows the group: each head gets the group's value, hatched. Drawn muscles are spindles (`from`/`to`/`belly`/`w`) or outlines (`d` + `label`)
+- `js/wger.js`: optional wger.de API calls; must fail silently. The muscle-map SVGs are copied in `assets/wger/` (CC-BY-SA, keep the attribution)
 - `data/exercises/*.json`: all exercise content (chain, variants, strength curve, muscles, postures, phases, `placement` sliders)
 - `data/references.json`: every paper cited in a `source` field, shown in the app's References section
 - `docs/model-limits.md`: what the model approximates, per lift, and how each was checked against measurements; `docs/reading-list.md`: papers still to get

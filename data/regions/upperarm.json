@@ -1,0 +1,48 @@
+{
+  "id": "upperarm",
+  "name": "Upper arm",
+  "note": "Schematic right upper arm, not to scale: shoulder at the top, elbow at the bottom. Positions follow standard anatomy atlases (e.g. Gray's Anatomy, 1918, public domain); shapes are simplified for teaching.",
+  "viewBox": [0, 0, 160, 360],
+  "muscles": {
+    "biceps-long": {"name": "Biceps brachii, long head", "abbr": "BIl", "action": "Bends the elbow and turns the palm up; crosses the shoulder (helps raise the arm forwards)"},
+    "biceps-short": {"name": "Biceps brachii, short head", "abbr": "BIs", "action": "Bends the elbow and turns the palm up; helps bring the arm across the body"},
+    "brachialis": {"name": "Brachialis", "abbr": "BRA", "action": "Bends the elbow in every grip (under the biceps)"},
+    "coracobrachialis": {"name": "Coracobrachialis", "abbr": "CB", "action": "Brings the arm forwards and in"},
+    "triceps-long": {"name": "Triceps, long head", "abbr": "TRl", "action": "Straightens the elbow; crosses the shoulder (pulls the arm back)"},
+    "triceps-lateral": {"name": "Triceps, lateral head", "abbr": "TRL", "action": "Straightens the elbow"},
+    "triceps-medial": {"name": "Triceps, medial head", "abbr": "TRm", "action": "Straightens the elbow; mostly under the other two heads"}
+  },
+  "views": [
+    {
+      "id": "front",
+      "title": "Front",
+      "caption": "Right upper arm from the front: shoulder at the top, outer side on the left.",
+      "outline": [
+        "M30,10 Q20,0 60,0 L120,0 Q142,4 134,40 Q130,200 120,340 L44,340 Q32,200 30,10 Z",
+        "M44,336 L120,336 L116,360 L48,360 Z"
+      ],
+      "bones": [[[78, 12], [80, 345], 9]],
+      "muscles": [
+        {"id": "brachialis", "from": [70, 170], "to": [84, 356], "belly": [0, 0.92], "w": 64, "labelAt": 0.8},
+        {"id": "coracobrachialis", "from": [110, 20], "to": [100, 170], "belly": [0.1, 1], "w": 16},
+        {"id": "biceps-short", "from": [104, 20], "to": [84, 352], "belly": [0.18, 0.8], "w": 30, "bend": 4},
+        {"id": "biceps-long", "from": [64, 6], "to": [80, 352], "belly": [0.2, 0.8], "w": 30, "bend": -4}
+      ]
+    },
+    {
+      "id": "back",
+      "title": "Back",
+      "caption": "Right upper arm from behind: shoulder at the top, outer side on the right.",
+      "outline": [
+        "M26,40 Q18,4 40,0 L100,0 Q140,0 130,10 Q128,200 116,340 L40,340 Q28,200 26,40 Z",
+        "M40,336 L116,336 L112,360 L44,360 Z"
+      ],
+      "bones": [[[82, 12], [80, 345], 9]],
+      "muscles": [
+        {"id": "triceps-medial", "from": [84, 150], "to": [80, 350], "belly": [0.05, 0.95], "w": 58, "labelAt": 0.86},
+        {"id": "triceps-long", "from": [62, 6], "to": [80, 350], "belly": [0.08, 0.8], "w": 36, "bend": -6},
+        {"id": "triceps-lateral", "from": [108, 16], "to": [82, 350], "belly": [0.05, 0.7], "w": 36, "bend": 6}
+      ]
+    }
+  ]
+}

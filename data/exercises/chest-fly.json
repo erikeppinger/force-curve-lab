@@ -8,6 +8,7 @@
   "angleOffset": 90,
   "angleRange": [-20, 90],
   "angleNote": "Horizontal adduction: 0° = arms out to the sides in line with the shoulders, 90° = arms pointing straight forward. Negative = arms behind the shoulders (stretch). Top view: x out to the side, y forward.",
+  "jointNote": "Not truly one joint: as the arms come together the shoulder blades slide forward round the rib cage (protraction), and they draw back in the stretch. The model treats the arm as turning about one fixed shoulder point; how much of the motion the shoulder blade takes in a fly hasn't been checked here (TODO: source), and the shoulder-blade muscles (serratus anterior, rhomboids) aren't analysed.",
   "segments": {
     "proximal": 0.3,
     "distal": 0.33,
@@ -49,6 +50,8 @@
   "muscles": [
     {
       "id": "pectoralis",
+      "region": "shoulder",
+      "regionPath": ["pec-clavicular", "pec-sternal"],
       "name": "Pectoralis major",
       "wgerId": 4,
       "role": "Prime mover",
@@ -56,10 +59,11 @@
       "weight": [[-20, 1.0], [45, 1.0], [90, 0.85]],
       "note": "Main horizontal adductor.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "proximal", "along": [-0.13, 0.09], "offset": 0.035, "w": 0.06, "layer": 0}
+      "draw": {"seg": "proximal", "origin": [-0.16, 0.06], "insert": 0.07, "offset": 0.03, "w": 0.06, "layer": 0}
     },
     {
       "id": "anterior-deltoid",
+      "region": "shoulder",
       "name": "Anterior deltoid",
       "wgerId": 2,
       "role": "Synergist",
@@ -71,6 +75,8 @@
     },
     {
       "id": "biceps",
+      "region": "upperarm",
+      "regionPath": "biceps-short",
       "name": "Biceps brachii (short head)",
       "wgerId": 1,
       "role": "Stabiliser",

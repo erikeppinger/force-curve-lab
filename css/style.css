@@ -213,6 +213,34 @@ input[type="range"]:disabled { opacity: 0.4; }
 .charts .line.joint-hip-frontal { stroke: var(--j-hip-frontal); }
 .charts .line.joint-hip-rotation { stroke: var(--j-hip-rotation); }
 .charts .line.joint-knee-frontal { stroke: var(--j-knee-frontal); stroke-width: 2; }
+/* Edge lift: tendons and pulleys (js/finger.js) */
+.charts .line.f-fdp { stroke: var(--j-hip); }
+.charts .line.f-fds { stroke: var(--j-knee); }
+.charts .line.f-a2 { stroke: var(--j-ankle); }
+.charts .line.f-a4 { stroke: var(--compare); }
+.legend .sw.f-fdp { border-color: var(--j-hip); }
+.legend .sw.f-fds { border-color: var(--j-knee); }
+.legend .sw.f-a2 { border-color: var(--j-ankle); }
+.legend .sw.f-a4 { border-color: var(--compare); }
+.joint-table .jt-f-tip { border-left-color: var(--accent); }
+.joint-table .jt-f-fdp { border-left-color: var(--j-hip); }
+.joint-table .jt-f-fds { border-left-color: var(--j-knee); }
+.joint-table .jt-f-a2 { border-left-color: var(--j-ankle); }
+.joint-table .jt-f-arm { border-left-color: var(--muted); }
+.joint-table .jt-f-a4 { border-left-color: var(--compare); }
+#figure .tendon { fill: none; stroke-linecap: round; stroke-linejoin: round; opacity: 0.9; }
+#figure .tendon-fdp { stroke: var(--j-hip); }
+#figure .tendon-fds { stroke: var(--j-knee); }
+#figure .edge { fill: var(--equipment); stroke: var(--equipment); stroke-width: 1; opacity: 0.75; }
+#figure .pulley-band { stroke-linecap: butt; }
+#figure .pulley-band.pl-a2 { stroke: var(--j-ankle); }
+#figure .pulley-band.pl-a4 { stroke: var(--compare); }
+#figure .fig-label.tendon-label, #figure .fig-label.pulley-label { font-size: 13px; }
+#figure .tl-fdp { fill: var(--j-hip); }
+#figure .tl-fds { fill: var(--j-knee); }
+#figure .pulley-label.pl-a2 { fill: var(--j-ankle); }
+#figure .pulley-label.pl-a4 { fill: var(--compare); }
+#figure .fig-label.joint-name { font-size: 10px; font-weight: 500; fill: var(--muted); }
 .charts .line.cap { stroke-width: 1.5; stroke-dasharray: 2 4; opacity: 0.8; }
 .charts .line.dash { stroke-dasharray: 7 5; opacity: 0.8; }
 .legend { list-style: none; padding: 0; margin: 0 0 6px; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.85rem; color: var(--muted); }
@@ -248,6 +276,59 @@ input[type="range"]:disabled { opacity: 0.4; }
 .bar { height: 8px; background: var(--muscle-base); border-radius: 4px; overflow: hidden; margin-top: 3px; }
 .bar span { display: block; height: 100%; background: var(--muscle-on); }
 .m-note { margin: 3px 0 0; font-size: 0.8rem; color: var(--muted); }
+.muscle-list li.picked { animation: picked 1.6s ease-out; border-radius: 8px; }
+@keyframes picked { from { background: color-mix(in srgb, var(--muscle-on) 22%, transparent); } to { background: transparent; } }
+
+/* Close-up of one body region (js/regions.js) */
+.muscle-detail { grid-column: 1 / -1; }
+.detail-views { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(190px, 45%), 1fr)); gap: 14px; }
+.detail-views figure { max-width: 260px; }
+.finger-set { margin-top: 12px; }
+.hand-panel { margin: 8px 0 12px; }
+.hand-panel summary { cursor: pointer; font-weight: 600; min-height: 32px; }
+.hand-panel .table-wrap { overflow-x: auto; max-width: 100%; }
+#hand-table { min-width: 0; }
+#hand-table input { width: 3.7em; min-height: 32px; font: inherit; padding: 2px 4px; }
+#hand-table td, #hand-table th { padding: 4px; }
+.mini-fig { width: 100%; height: auto; display: block; max-height: 380px; margin: 4px 0 8px; }
+#hand-figure .fig-label { font-size: 44px; stroke-width: 10px; }
+#hand-figure .finger-name { font-size: 30px; }
+.mini-fig .body { stroke: var(--body); fill: var(--body); stroke-linecap: round; }
+.mini-fig .palm { stroke-width: 3; stroke-linejoin: round; }
+.mini-fig .finger-seg { stroke-linecap: round; }
+.mini-fig .joint { fill: var(--card); stroke: var(--bone); stroke-width: 2; }
+.mini-fig .edge { fill: var(--equipment); opacity: 0.5; }
+.mini-fig .weight { fill: var(--equipment); }
+.mini-fig .cable { stroke: var(--cable); }
+.mini-fig .force { stroke: var(--accent); }
+.mini-fig .arrowhead { fill: var(--accent); }
+.mini-fig .line-of-action { stroke: var(--accent); stroke-dasharray: 4 5; opacity: 0.6; }
+.mini-fig .fig-label { fill: var(--text); font-size: 15px; font-weight: 600; paint-order: stroke; stroke: var(--card); stroke-width: 4px; }
+.mini-fig .force-label { fill: var(--accent); }
+.mini-fig .small-note, .mini-fig .finger-name { font-size: 13px; font-weight: 500; }
+.mini-fig .panel-title { font-size: 14px; }
+.finger-set h4 { margin: 0 0 4px; }
+#finger-table td, #finger-table th { font-size: 0.85rem; padding: 5px 6px; }
+#finger-table tbody th { border-left-color: var(--j-knee); }
+.slider-hint { display: block; font-size: 0.75rem; color: var(--muted); font-weight: 400; margin-top: 2px; }
+.detail-region-head { grid-column: 1 / -1; margin: 6px 0 -4px; font-size: 0.9rem; color: var(--muted); border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+.detail-views figure { margin: 0; }
+.detail-views svg { width: 100%; height: auto; display: block; max-height: 420px; }
+.detail-views figcaption { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+.detail-views figcaption strong { color: var(--text); font-weight: 600; }
+.region-outline { fill: var(--body); stroke: var(--bone); stroke-width: 1; opacity: 0.55; }
+.region-bone { stroke: var(--bone); stroke-linecap: round; opacity: 0.45; }
+.region-tendon { stroke: var(--muted); stroke-width: 1.6; stroke-linecap: round; opacity: 0.7; }
+.region-belly-base { fill: var(--muscle-base); stroke: var(--card); stroke-width: 1; }
+.region-muscle:not(.involved) .region-belly-base { fill: var(--body); stroke: var(--bone); }
+.region-belly-on { fill: var(--muscle-on); }
+.region-belly-hatch { stroke: none; }
+.hatch-line { stroke: var(--muscle-on); stroke-width: 2.5; opacity: 0.55; }
+.region-label { font-size: 9px; font-weight: 700; fill: var(--text); paint-order: stroke; stroke: var(--card); stroke-width: 2.5px; pointer-events: none; }
+.region-muscle:not(.involved) .region-label { fill: var(--muted); font-weight: 500; }
+.region-muscle.involved { cursor: pointer; }
+.region-muscle.involved:focus-visible .region-belly-base { stroke: var(--accent); stroke-width: 2; }
+.region-muscle:not(.involved) .region-tendon { opacity: 0.35; }
 
 /* wger */
 .wger-row { display: flex; gap: 12px; align-items: flex-start; }

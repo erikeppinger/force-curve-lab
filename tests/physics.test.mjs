@@ -98,3 +98,18 @@ test("strength scale: a variant's posture factor multiplies the capacity (consta
   assert.ok(Math.abs(r.capacity - interp(bc.strengthCurve.points, 67.5) * 65 * r.strengthScale) < 1e-9);
   assert.equal(analyze(bc, bc.variants.find((v) => v.id === "dumbbell"), 67.5, ob).strengthScale, 1);
 });
+
+test("curl muscle weights follow Murray et al.'s moment arms relative to the group, scaled to each level at 90°", () => {
+  const flexors = ex.muscles.filter((m) => m.momentArm);
+  assert.equal(flexors.length, 3);
+  const mean = (a) => flexors.reduce((s, m) => s + interp(m.momentArm.points, a), 0) / flexors.length;
+  for (const m of flexors) {
+    const rel = (a) => interp(m.momentArm.points, a) / mean(a);
+    for (const [a, w] of m.weight) close(w, m.weightLevel * rel(a) / rel(90), 0.001);
+    close(interp(m.weight, 90), m.weightLevel, 0.002);
+  }
+  // Teaching point: the brachioradialis gains share with flexion, the biceps loses it.
+  const w = (id, a) => interp(ex.muscles.find((m) => m.id === id).weight, a);
+  assert.ok(w("brachioradialis", 120) > w("brachioradialis", 0));
+  assert.ok(w("biceps", 120) < w("biceps", 0));
+});

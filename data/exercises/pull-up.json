@@ -83,6 +83,8 @@
   "muscles": [
     {
       "id": "latissimus-dorsi",
+      "region": "shoulder",
+      "regionPath": "latissimus",
       "name": "Latissimus dorsi",
       "wgerId": 12,
       "role": "Prime mover",
@@ -96,6 +98,7 @@
     },
     {
       "id": "teres-major",
+      "region": "shoulder",
       "name": "Teres major",
       "wgerId": null,
       "role": "Synergist",
@@ -108,6 +111,8 @@
     },
     {
       "id": "biceps",
+      "region": "upperarm",
+      "regionPath": ["biceps-long", "biceps-short", "brachialis"],
       "name": "Biceps, brachialis, brachioradialis",
       "wgerId": 1,
       "role": "Prime mover",
@@ -121,6 +126,7 @@
     },
     {
       "id": "posterior-deltoid",
+      "region": "shoulder",
       "name": "Posterior deltoid",
       "wgerId": null,
       "role": "Synergist",
@@ -134,6 +140,8 @@
     },
     {
       "id": "rotator-cuff-ext",
+      "region": "shoulder",
+      "regionPath": ["infraspinatus", "teres-minor"],
       "name": "Infraspinatus, teres minor",
       "wgerId": null,
       "role": "Stabiliser",
@@ -146,6 +154,7 @@
     },
     {
       "id": "subscapularis",
+      "region": "shoulder",
       "name": "Subscapularis",
       "wgerId": null,
       "role": "Stabiliser",
@@ -158,6 +167,8 @@
     },
     {
       "id": "lower-traps",
+      "region": "shoulder",
+      "regionPath": ["lower-trapezius", "rhomboids"],
       "name": "Lower trapezius, rhomboids",
       "wgerId": null,
       "role": "Synergist",
@@ -172,7 +183,7 @@
       "id": "pull-up",
       "name": "Pull-up, wide grip, palms down",
       "equipment": "Bar",
-      "params": {"hang": true, "gripHalf": 0.4, "touchFront": 0.1, "touchUp": 0.05, "elbowOut": "auto"},
+      "params": {"scapTravel": 0, "hang": true, "gripHalf": 0.4, "touchFront": 0.1, "touchUp": 0.05, "elbowOut": "auto"},
       "jointScale": {
         "elbow": {
           "grid": {
@@ -190,7 +201,7 @@
       "id": "chin-up",
       "name": "Chin-up, palms up",
       "equipment": "Bar",
-      "params": {"hang": true, "gripHalf": 0.2, "touchFront": 0.12, "touchUp": 0.05, "elbowOut": 0},
+      "params": {"scapTravel": 0, "hang": true, "gripHalf": 0.2, "touchFront": 0.12, "touchUp": 0.05, "elbowOut": 0},
       "jointScale": {
         "elbow": {
           "grid": {
@@ -208,7 +219,7 @@
       "id": "neutral",
       "name": "Neutral grip (parallel handles)",
       "equipment": "Parallel handles",
-      "params": {"hang": true, "gripHalf": 0.25, "touchFront": 0.12, "touchUp": 0.05, "elbowOut": 0},
+      "params": {"scapTravel": 0, "hang": true, "gripHalf": 0.25, "touchFront": 0.12, "touchUp": 0.05, "elbowOut": 0},
       "jointScale": {
         "elbow": {
           "grid": {
@@ -255,6 +266,15 @@
       "unit": "cm",
       "scale": 100,
       "auto": "Under the bar (auto)"
+    },
+    {
+      "key": "scapTravel",
+      "label": "Shoulder blades: raised overhead → pulled down (travel)",
+      "min": 0,
+      "max": 0.08,
+      "step": 0.005,
+      "unit": "cm",
+      "scale": 100
     }
   ],
   "wger": {

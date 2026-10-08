@@ -1,0 +1,103 @@
+{
+  "id": "shoulder",
+  "name": "Shoulder",
+  "note": "Schematic right shoulder, not to scale: fan-shaped muscles as outlines, the others as bellies with tendons. Positions follow standard anatomy atlases (e.g. Gray's Anatomy, 1918, public domain); shapes are simplified for teaching.",
+  "viewBox": [0, 0, 240, 260],
+  "muscles": {
+    "anterior-deltoid": {"name": "Anterior deltoid", "abbr": "AD", "action": "Raises the arm forwards (flexion); helps press and fly"},
+    "lateral-deltoid": {"name": "Lateral deltoid", "abbr": "LD", "action": "Raises the arm out to the side (abduction)"},
+    "posterior-deltoid": {"name": "Posterior deltoid", "abbr": "PD", "action": "Pulls the arm back and out (horizontal abduction, extension)"},
+    "pec-clavicular": {"name": "Pectoralis major, clavicular head", "abbr": "PMc", "action": "Raises the arm forwards and across the body"},
+    "pec-sternal": {"name": "Pectoralis major, sternal head", "abbr": "PMs", "action": "Brings the arm across and down (adduction, extension from overhead)"},
+    "upper-trapezius": {"name": "Upper trapezius", "abbr": "UT", "action": "Lifts and upwardly rotates the shoulder blade"},
+    "middle-trapezius": {"name": "Middle trapezius", "abbr": "MT", "action": "Pulls the shoulder blades together"},
+    "lower-trapezius": {"name": "Lower trapezius", "abbr": "LT", "action": "Pulls the shoulder blade down; helps rotate it upwards"},
+    "rhomboids": {"name": "Rhomboids", "abbr": "RH", "action": "Pull the shoulder blade towards the spine"},
+    "supraspinatus": {"name": "Supraspinatus", "abbr": "SS", "action": "Starts raising the arm to the side; keeps the joint centred"},
+    "infraspinatus": {"name": "Infraspinatus", "abbr": "IS", "action": "Turns the arm outwards (external rotation); steadies the joint"},
+    "teres-minor": {"name": "Teres minor", "abbr": "Tm", "action": "Turns the arm outwards, with the infraspinatus"},
+    "subscapularis": {"name": "Subscapularis", "abbr": "SC", "action": "Turns the arm inwards (internal rotation); steadies the joint"},
+    "teres-major": {"name": "Teres major", "abbr": "TM", "action": "Pulls the arm down and back, with the latissimus"},
+    "latissimus": {"name": "Latissimus dorsi", "abbr": "LAT", "action": "Pulls the arm down and back (extension, adduction)"},
+    "serratus-anterior": {"name": "Serratus anterior", "abbr": "SA", "action": "Holds the shoulder blade on the ribs and rotates it upwards"},
+    "biceps": {"name": "Biceps brachii", "abbr": "BIC", "action": "Bends the elbow; its long head crosses the front of the shoulder"},
+    "triceps-long": {"name": "Triceps, long head", "abbr": "TRl", "action": "Straightens the elbow; also pulls the arm back (crosses the shoulder)"},
+    "triceps-lateral": {"name": "Triceps, lateral head", "abbr": "TRL", "action": "Straightens the elbow (the medial head lies underneath)"}
+  },
+  "views": [
+    {
+      "id": "front",
+      "title": "Front",
+      "caption": "Right shoulder from the front: arm on the left, chest and neck on the right.",
+      "outline": [
+        "M110,40 Q160,30 205,22 L210,0 L240,0 L240,260 L108,260 Z",
+        "M38,70 Q42,42 80,38 L115,42 L112,110 L104,260 L44,260 Q34,160 38,70 Z"
+      ],
+      "bones": [[[205, 30], [70, 46], 6], [[78, 72], [74, 255], 7]],
+      "muscles": [
+        {"id": "biceps", "from": [86, 70], "to": [80, 258], "belly": [0.15, 1], "w": 26},
+        {"id": "pec-sternal", "d": "M206,58 L238,66 L238,170 Q170,176 108,108 Q150,82 206,58 Z", "label": [192, 122]},
+        {"id": "pec-clavicular", "d": "M120,47 L202,33 L206,57 Q152,80 106,100 Z", "label": [160, 60], "labelAngle": -14},
+        {"id": "anterior-deltoid", "d": "M70,47 L120,45 Q116,92 92,146 Q74,118 68,76 Z", "label": [94, 88], "labelAngle": 72},
+        {"id": "lateral-deltoid", "d": "M40,66 Q46,46 70,47 L68,76 Q72,112 90,146 Q56,126 40,66 Z", "label": [60, 92], "labelAngle": 68},
+        {"id": "upper-trapezius", "d": "M200,0 L232,0 L168,36 L132,42 Z", "label": [190, 18], "labelAngle": -28}
+      ]
+    },
+    {
+      "id": "front-deep",
+      "title": "Front, deep layer",
+      "caption": "Pectoralis and deltoid removed: the subscapularis on the front of the shoulder blade, the serratus on the ribs.",
+      "outline": [
+        "M110,40 Q160,30 205,22 L210,0 L240,0 L240,260 L108,260 Z",
+        "M38,70 Q42,42 80,38 L115,42 L112,110 L104,260 L44,260 Q34,160 38,70 Z"
+      ],
+      "bones": [[[205, 30], [70, 46], 6], [[78, 72], [74, 255], 7]],
+      "muscles": [
+        {"id": "biceps", "from": [86, 70], "to": [80, 258], "belly": [0.15, 1], "w": 26},
+        {"id": "serratus-anterior", "d": "M150,170 L236,140 L236,236 L156,214 Z", "label": [196, 192]},
+        {"id": "subscapularis", "d": "M90,80 L198,92 L194,170 L104,108 Z", "label": [150, 112], "labelAngle": 18}
+      ]
+    },
+    {
+      "id": "back",
+      "title": "Back",
+      "caption": "Right shoulder from behind: spine on the left, arm on the right.",
+      "outline": [
+        "M0,0 L45,0 Q120,30 192,40 L130,110 L128,260 L0,260 Z",
+        "M190,42 Q220,46 226,80 Q228,170 220,260 L160,260 L158,110 Z"
+      ],
+      "bones": [[[38, 72], [192, 52], 5], [[44, 50], [70, 182], 4], [[198, 70], [195, 255], 7]],
+      "muscles": [
+        {"id": "triceps-lateral", "from": [214, 110], "to": [205, 258], "belly": [0.05, 1], "w": 22},
+        {"id": "triceps-long", "from": [188, 104], "to": [186, 258], "belly": [0.1, 1], "w": 24},
+        {"id": "latissimus", "d": "M0,190 L84,186 L196,128 L200,140 L130,214 L120,260 L0,260 Z", "label": [70, 226]},
+        {"id": "teres-major", "d": "M72,180 L120,150 L196,120 L198,132 L92,190 Z", "label": [136, 154], "labelAngle": -26},
+        {"id": "infraspinatus", "d": "M48,78 L186,62 L184,88 L118,140 L74,176 Z", "label": [112, 104], "labelAngle": -14},
+        {"id": "teres-minor", "d": "M118,140 L184,90 L190,104 L130,150 Z", "label": [156, 122], "labelAngle": -36},
+        {"id": "posterior-deltoid", "d": "M120,58 L192,50 Q206,100 196,150 Q166,96 120,58 Z", "label": [180, 88], "labelAngle": 58},
+        {"id": "lateral-deltoid", "d": "M192,50 Q222,56 228,86 Q222,126 200,150 Q210,100 192,50 Z", "label": [214, 96], "labelAngle": 80},
+        {"id": "upper-trapezius", "d": "M0,0 L42,0 L190,44 L124,58 L0,48 Z", "label": [70, 32], "labelAngle": 10},
+        {"id": "middle-trapezius", "d": "M0,48 L124,58 L60,92 L0,96 Z", "label": [44, 72]},
+        {"id": "lower-trapezius", "d": "M0,96 L60,92 L44,126 L0,200 Z", "label": [22, 126], "labelAngle": -62}
+      ]
+    },
+    {
+      "id": "back-deep",
+      "title": "Back, deep layer",
+      "caption": "Trapezius and deltoid removed: the rotator cuff on the shoulder blade, the rhomboids next to the spine.",
+      "outline": [
+        "M0,0 L45,0 Q120,30 192,40 L130,110 L128,260 L0,260 Z",
+        "M190,42 Q220,46 226,80 Q228,170 220,260 L160,260 L158,110 Z"
+      ],
+      "bones": [[[38, 72], [192, 52], 5], [[44, 50], [70, 182], 4], [[198, 70], [195, 255], 7]],
+      "muscles": [
+        {"id": "triceps-long", "from": [188, 104], "to": [186, 258], "belly": [0.1, 1], "w": 24},
+        {"id": "rhomboids", "d": "M0,40 L44,48 L70,182 L0,140 Z", "label": [30, 102], "labelAngle": 70},
+        {"id": "supraspinatus", "d": "M46,40 L186,42 L192,56 L42,68 Z", "label": [116, 52]},
+        {"id": "teres-major", "d": "M72,180 L120,150 L196,120 L198,132 L92,190 Z", "label": [136, 154], "labelAngle": -26},
+        {"id": "infraspinatus", "d": "M48,78 L186,62 L184,88 L118,140 L74,176 Z", "label": [112, 104], "labelAngle": -14},
+        {"id": "teres-minor", "d": "M118,140 L184,90 L190,104 L130,150 Z", "label": [156, 122], "labelAngle": -36}
+      ]
+    }
+  ]
+}

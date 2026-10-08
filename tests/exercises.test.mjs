@@ -16,7 +16,7 @@ test("main.js lists every exercise once", () => {
   assert.equal(new Set(ids).size, ids.length);
 });
 
-const single = ids.filter((id) => load(id).model !== "multi");
+const single = ids.filter((id) => !load(id).model); // "multi" and "finger" have their own tests
 const multi = ids.filter((id) => load(id).model === "multi");
 
 for (const id of multi) {
@@ -79,7 +79,7 @@ for (const id of single) {
       assert.ok(m.note, `${m.id} note`);
       assert.ok(["jointEffort", "stabiliserDemand"].includes(m.driver), `${m.id} driver`);
       if (m.driver === "stabiliserDemand") assert.ok(ex.stabiliserCapacityNm > 0);
-      if (m.draw) assert.ok(m.draw.points || (["proximal", "distal"].includes(m.draw.seg) && m.draw.along.length === 2), `${m.id} draw`);
+      if (m.draw) assert.ok(m.draw.points || (["proximal", "distal"].includes(m.draw.seg) && (m.draw.along?.length === 2 || (m.draw.origin?.length === 2 && Number.isFinite(m.draw.insert)))), `${m.id} draw`);
     }
     for (const v of ex.variants) {
       for (const k of Object.keys(v.muscleModifiers ?? {})) assert.ok(ex.muscles.some((m) => m.id === k), `${v.id}: ${k}`);
@@ -150,7 +150,7 @@ test("references: every cited paper is listed, and every listed paper is cited",
   const sources = [];
   const walk = (o) => {
     if (Array.isArray(o)) o.forEach(walk);
-    else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) (k === "source" || k === "massSource") && typeof v === "string" ? sources.push(v) : walk(v);
+    else if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) (k === "source" || /Source$/.test(k)) && typeof v === "string" ? sources.push(v) : walk(v);
   };
   for (const id of ids) walk(load(id));
   walk(JSON.parse(readFileSync(new URL("../data/body.json", import.meta.url))));

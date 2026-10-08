@@ -1,0 +1,134 @@
+{
+  "id": "edge-lift",
+  "name": "Edge lift (one arm, loading pin)",
+  "technique": "Technique as taught for arm-lifting (block pulls): arm straight and resting against the front of the hip, back straight, the lift driven by straightening the knees, no shrug or row (a loading pin that is too long forces a shrug). Lift, hold the block about 2–3 seconds (peak finger force builds in about 1–1.5 s), set it down. The fingers keep their grip throughout; in a half crimp an index finger straightening out of its ~90° bend is the cue to stop the set. A cord through both sides of the block keeps the edge level, as modelled here; a cord through one side tilts it like an incut, which this model doesn't cover. Strong climbers lift far more than the 100% strength default (taken from recreational climbers): use the strength slider. Source: StrengthClimbing's arm-lifting guide (see References, resources).",
+  "model": "finger",
+  "joint": "Finger flexion",
+  "view": "side",
+  "angleLabel": "Hold position: PIP angle",
+  "angleRange": [0, 110],
+  "angleNote": "The edge lift is a static hold: the fingers keep one position while the block comes up, so nothing moves at the finger joints. The slider doesn't animate a lift; it compares holds with the middle joint (PIP) at different angles: 0° = straight, about 90° = half crimp, about 105° = full crimp. Each grip keeps its own fingertip (DIP) and knuckle (MCP) angles and starts at its measured position.",
+  "defaults": { "loadKg": 20, "variant": "half-crimp", "bodyMassKg": 75 },
+  "ui": { "load": [2, 80, 1] },
+  "finger": {
+    "label": "Index finger",
+    "lengths": { "metacarpal": 0.0716, "proximal": 0.0436, "middle": 0.0247, "distal": 0.0197 },
+    "lengthsNote": "Bone lengths in metres, mean of 7 index fingers. The middle finger, which carries the most load on an edge, is somewhat longer; scale with care.",
+    "lengthsSource": "An KN, Ueba Y, Chao EY, Cooney WP, Linscheid RL (1983). Tendon excursion and moment arm of index finger muscles. J Biomech 16(6):419–425. doi:10.1016/0021-9290(83)90074-X (Table 1)",
+    "momentArms": { "fdpDip": 0.0041, "fdpPip": 0.0079, "fdpMcp": 0.0111, "fdsPip": 0.0062, "fdsMcp": 0.0119 },
+    "momentArmsNote": "Flexion moment arms in metres, averaged through each joint's range (7 index fingers). Table 3 is headed mm but its values are in cm: Table 2's excursions per 100° (e.g. FDP at the DIP 7.30 mm → 4.2 mm per radian) confirm it. The paper notes they grow slightly with flexion; Schweizer measured much more bowstringing over the PIP in the crimp, so the PIP moment arms are probably too small there (overestimating the tensions).",
+    "momentArmsSource": "An KN, Ueba Y, Chao EY, Cooney WP, Linscheid RL (1983). Tendon excursion and moment arm of index finger muscles. J Biomech 16(6):419–425. doi:10.1016/0021-9290(83)90074-X (Tables 2 and 3)",
+    "bowstring": { "fdp": [[5, 0.0002], [90, 0.0043]], "fds": [[0, 0], [90, 0.00175]] },
+    "bowstringNote": "Extra distance (m) of the flexor tendons from the bone over the PIP under load, added to the PIP moment arms. Measured over the PIP: FDP 0.2 mm in the slope grip (PIP 0–10°) and 4.3 mm in the crimp (PIP 90°); FDS alone 1.75 mm in the crimp. Linear in between and held flat beyond 90° (estimate). Taking the extra distance as extra moment arm is an approximation.",
+    "bowstringSource": "Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6 (Table 1, position 4: over the PIP joint; 16 fingers)",
+    "pulleys": { "a2DistalEdge": 0.013, "a4": 0.5 },
+    "insertions": { "fds": 0.35, "fdp": 0.3 },
+    "pulleysNote": "A2 is 40.7% of the proximal phalanx long and sits at its mid-portion, so on this 43.6 mm phalanx its distal edge is 13 mm before the PIP; A4 sits at the middle of the middle phalanx. Tendon insertions (FDS 35% along the middle phalanx, FDP 30% along the distal phalanx) are estimates (TODO). Tendons run straight between them (bone-axis geometry, no tendon thickness).",
+    "pulleysSource": "Lin GT, Amadio PC, An KN, Cooney WP (1989). Functional anatomy of the human digital flexor pulley system. J Hand Surg Am 14(6):949–956 (Table III: A2 40.7%, A4 13.0% of the proximal phalanx's length, index finger extended); mid-portion of the phalanges: Lin GT, Cooney WP, Amadio PC, An KN (1990). Mechanical properties of human pulleys. J Hand Surg Br 15(4):429–434",
+    "pulleyStrength": { "a2": 431.9, "a4": 202.2 },
+    "pulleyStrengthNote": "Breaking load in newtons, index finger (mean of 5 cadaver hands, Table 1; middle finger A2 466 N, A4 210 N; all fingers A2 407 N, A4 210 N). Measured with a hook pulling straight across the pulley in cadavers, so living, trained climbers' pulleys may differ; a guide to scale, not a safety limit.",
+    "pulleyStrengthSource": "Lin GT, Cooney WP, Amadio PC, An KN (1990). Mechanical properties of human pulleys. J Hand Surg Br 15(4):429–434 (Table 1)",
+    "contactNote": "Where the edge presses: the centre of the pressure on the distal phalanx, measured from the DIP. Default half the distal phalanx, as Vigouroux et al. assumed for their 1 cm hold. On a 20–25 mm edge the whole distal phalanx and pad rest on the edge; where the centre then sits hasn't been measured (TODO), so it is a slider: closer to the DIP means less FDP and more FDS.",
+    "contactSource": "Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Methods 2.2)",
+    "referenceTension": { "fdp": 257.5, "fds": 214.8 },
+    "referenceTensionNote": "Tendon tension at a maximal one-finger effort (highest group mean of the two grips: FDP in the crimp, FDS in the slope grip), used to scale the muscle bars.",
+    "referenceTensionSource": "Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Table 3)"
+  },
+  "fingers": {
+    "note": "All four fingers on one edge. The fingertips line up on the edge (each pad may sit up to 6 mm deeper or shallower than the middle finger's); every finger keeps close to the grip's PIP and fingertip angles and takes up its length at the knuckle, the ring and little finger also by cupping the palm, and the whole hand may tilt sideways at the wrist (radial/ulnar deviation, −15° to +25°). Where the edge sits under the hand and the hand's tilt are chosen so the four postures together stay closest to the grip (weighted squared angle changes; weights are estimates). Moment arms are An et al.'s index-finger values scaled by each finger's proximal phalanx length (estimate). How the block splits between the fingers isn't fixed by statics: it is shared for least effort (smallest sum of squared tendon tension ÷ reference tension over each finger's FDP and FDS), with the FDP slips of the middle, ring and little finger pulled towards equal relative tension by the quadriga slider. A finger that only just reaches fades out of the split.",
+    "order": ["index", "middle", "ring", "little"],
+    "labels": {"index": "Index", "middle": "Middle", "ring": "Ring", "little": "Little"},
+    "lengths": {
+      "index": {"metacarpal": 0.06846, "proximal": 0.04069, "middle": 0.02403, "distal": 0.01873},
+      "middle": {"metacarpal": 0.06559, "proximal": 0.04409, "middle": 0.02800, "distal": 0.01861},
+      "ring": {"metacarpal": 0.06227, "proximal": 0.04116, "middle": 0.02604, "distal": 0.01848},
+      "little": {"metacarpal": 0.05395, "proximal": 0.03284, "middle": 0.01857, "distal": 0.01685}
+    },
+    "lengthsNote": "Bone lengths in metres (means of 10 hands). The phalanges are used as measured; the knuckle line comes from knuckleBack, not from the metacarpal lengths.",
+    "lengthsSource": "Lin GT, Amadio PC, An KN, Cooney WP (1989). Functional anatomy of the human digital flexor pulley system. J Hand Surg Am 14(6):949–956 (Table I: bone lengths of 10 hands; Table III: A2 length as a share of the proximal phalanx)",
+    "knuckleSide": {"index": 0.03, "middle": 0.01, "ring": -0.01, "little": -0.03},
+    "knuckleBack": {"index": 0.003, "middle": 0, "ring": 0.003, "little": 0.008},
+    "knuckleBackNote": "How far each knuckle (MCP joint) sits back towards the wrist from the middle finger's, in metres, with the fingers in line with the hand. Sets the knuckle line; the wrist-to-knuckle distance is the middle metacarpal's length minus this. The metacarpal bone lengths alone would put the little finger's knuckle 12 mm back and the index's 3 mm ahead of the middle's, but the metacarpal bases don't sit level in the wrist. Estimate (TODO: measured knuckle positions, e.g. from a musculoskeletal hand model); users can enter their own.",
+    "cmcFlexMax": {"index": 0, "middle": 0, "ring": 10, "little": 20},
+    "mcpRange": {"index": [-23.4, 83.5], "middle": [-25.9, 79.5], "ring": [-22.4, 83.4], "little": [-31.3, 84.0]},
+    "mcpRangeNote": "Active range of each knuckle (MCP) in degrees, extension negative: means of 31 healthy adults with the wrist in neutral (an edge lift holds the wrist near neutral). The reach search keeps every finger inside it. The small finger extends furthest, which helps it reach.",
+    "mcpRangeSource": "Latz D, Koukos C, Boeckers P, Jungbluth P, Schiffner E, Kaufmann R, Gehrmann SV (2019). Influence of wrist position on the metacarpophalangeal joint motion of the index through small finger. Hand 14(2):259–263. doi:10.1177/1558944717736823 (Table 1, neutral wrist)",
+    "cmcFlexMaxNote": "How far each metacarpal can bend forward at the base of the hand (degrees) to help a short finger reach: index and middle are nearly rigid, ring and little more mobile (cupping the palm). Estimates (TODO: anatomical source).",
+    "knuckleSideNote": "Sideways position of each knuckle from the middle of the wrist, in metres (thumb side positive): about 2 cm apart. Estimate (TODO).",
+    "a2Length": {"index": 0.4073, "middle": 0.4436, "ring": 0.4217, "little": 0.3428},
+    "a2LengthNote": "A2 length as a share of the proximal phalanx (Lin et al. 1989, Table III, extended finger); A2 is centred on the phalanx.",
+    "a2LengthSource": "Lin GT, Amadio PC, An KN, Cooney WP (1989). Functional anatomy of the human digital flexor pulley system. J Hand Surg Am 14(6):949–956 (Table I: bone lengths of 10 hands; Table III: A2 length as a share of the proximal phalanx)",
+    "pcsa": {
+      "fdp": {"index": 1.77, "middle": 2.23, "ring": 1.72, "little": 2.20},
+      "fds": {"index": 1.71, "middle": 2.53, "ring": 1.61, "little": 0.40}
+    },
+    "pcsaNote": "Physiological cross-sectional area in cm² per finger (FDS index: both bellies combined). The little finger's FDS is tiny, so the little finger relies on its FDP.",
+    "pcsaSource": "Lieber RL, Jacobson MD, Fazeli BM, Abrams RA, Botte MJ (1992). Architecture of selected muscles of the arm and forearm: anatomy and implications for tendon transfer. J Hand Surg Am 17(5):787–798 (Table I: physiological cross-sectional area of FDP and FDS per finger)",
+    "pulleyStrength": {
+      "a2": {"index": 431.9, "middle": 465.7, "ring": 431.6, "little": 305.7},
+      "a4": {"index": 202.2, "middle": 210.5, "ring": 272.8, "little": 172.4}
+    },
+    "pulleyStrengthSource": "Lin GT, Cooney WP, Amadio PC, An KN (1990). Mechanical properties of human pulleys. J Hand Surg Br 15(4):429–434 (Table 1: breaking load per finger)"
+  },
+  "arm": {
+    "note": "The arm holding the block: straight from shoulder to grip, the block hanging from the hand. Arm hanging straight down: the load line runs through elbow and shoulder, which are only pulled apart. Turned forward or out to the side: the block acts on a lever (arm length × sine of the angle), held by the shoulder flexors or abductors; the elbow, kept straight, is pushed towards over-straightening and held by the locked joint and the elbow flexors. Lengths and segment masses from the shared body data; forward and sideways reach combine as offsets (small-angle approximation).",
+    "shoulderFlexion": {"peakTorqueNm": 68, "points": [[0, 1], [45, 0.96], [90, 0.92]], "note": "As in the front raise.", "source": "Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (shape); Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25. doi:10.1055/s-2007-1021105 (peak torque)"},
+    "shoulderAbduction": {"peakTorqueNm": 47, "points": [[0, 0.62], [30, 1], [60, 0.86], [90, 0.76]], "note": "As in the lateral raise: weakest with the arm down (62%).", "source": "Haidar SG, Lloyd J, Cox D, Deshmukh S (2009). Shoulder abduction strength: is it affected by the degree of abduction? J Bone Joint Surg Br 91-B Suppl I:160 (conference abstract). doi:10.1302/0301-620X.91BSUPP_I.0910160c; Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Normal values of isokinetic maximum strength, the strength/velocity curve, and the angle at peak torque of all degrees of freedom in the shoulder. Int J Sports Med 15:S19–S25. doi:10.1055/s-2007-1021105; Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (Clarke et al., contrary finding at 0°)"},
+    "elbowStraight": {"peakTorqueNm": 34, "note": "Elbow flexors with the arm straight: the curl's peak (65 Nm) × its curve at the lowest measured angle (32°, 0.52), held flat to 0° (extrapolation). The locked elbow joint also resists over-straightening passively, so this effort is an upper bound.", "source": "Pinter IJ, Bobbert MF, van Soest AJ, Smeets JBJ (2010). Isometric torque–angle relationships of the elbow flexors and extensors in the transverse plane. J Electromyogr Kinesiol 20:923–931. doi:10.1016/j.jelekin.2010.05.001"}
+  },
+  "placement": [
+    { "key": "contactFromDip", "label": "Where the edge presses (from the fingertip joint)", "min": 0.002, "max": 0.019, "step": 0.0005, "unit": "mm", "scale": 1000, "hint": "Closer to the fingertip joint: more of the finger on the edge (a deeper edge). Further out: only the tip (a shallow edge). Where the pressure really centres isn't measured." },
+    { "key": "fingerShare", "label": "This finger's share of the load", "min": 0.1, "max": 0.5, "step": 0.01, "unit": "%", "scale": 100, "hint": "Auto: the least-effort split of the four fingers (table below). Unticked: a fixed share, e.g. 25% for an equal split.", "auto": "least effort" },
+    { "key": "armForward", "label": "Arm forward of the body", "min": 0, "max": 60, "step": 1, "unit": "°", "scale": 1, "hint": "0° = arm hanging against the front of the hip, as taught. Turning it forward puts the block on a lever at the shoulder." },
+    { "key": "armSide", "label": "Arm out to the side", "min": 0, "max": 60, "step": 1, "unit": "°", "scale": 1, "hint": "Sideways the shoulder abductors hold the lever; they are weakest with the arm down." },
+    { "key": "edgeTilt", "label": "Edge tilted along its length (+ = little-finger end lower)", "min": -15, "max": 15, "step": 1, "unit": "°", "scale": 1, "hint": "A block hanging off-centre tilts the edge: the fingers at the lower end must reach further." },
+    { "key": "edgeIndex", "label": "Edge under the index finger: closer to the knuckles (+) / further away (−) than under the middle finger", "min": -0.015, "max": 0.015, "step": 0.0005, "unit": "mm", "scale": 1000, "hint": "0 = a straight edge. Auto: the height at which this finger keeps the grip's exact angles (from the bone lengths, see Your hand). Shaped blocks with a bump under the longer fingers set these by design.", "auto": "fits this hand" },
+    { "key": "edgeRing", "label": "Edge under the ring finger: closer to the knuckles (+) / further away (−) than under the middle finger", "min": -0.015, "max": 0.015, "step": 0.0005, "unit": "mm", "scale": 1000, "hint": "As for the index finger. On a block whose bump spans the middle and ring finger, this is 0.", "auto": "fits this hand" },
+    { "key": "edgeLittle", "label": "Edge under the little finger: closer to the knuckles (+) / further away (−) than under the middle finger", "min": -0.015, "max": 0.015, "step": 0.0005, "unit": "mm", "scale": 1000, "hint": "As for the index finger. The little finger is shortest, so a fitted edge sits clearly closer to the knuckles here.", "auto": "fits this hand" },
+    { "key": "quadriga", "label": "FDP of middle, ring and little finger linked (quadriga)", "min": 0, "max": 1, "step": 0.05, "unit": "%", "scale": 100, "hint": "The deep flexor's slips to these three fingers share one muscle belly. 0% = each slip works on its own; 100% = one belly, every slip at the same share of its strength. How tightly they are linked on an edge isn't measured: 50% is a middle guess." }
+  ],
+  "muscles": [
+    {
+      "id": "fdp", "name": "Flexor digitorum profundus", "region": "forearm", "role": "Prime mover", "driver": "tendon", "tendon": "fdp",
+      "weight": [[0, 1], [110, 1]],
+      "note": "Bends the fingertip. On an edge it carries the DIP moment alone, so its tension is set directly by the statics."
+    },
+    {
+      "id": "fds", "name": "Flexor digitorum superficialis", "region": "forearm", "role": "Prime mover", "driver": "tendon", "tendon": "fds",
+      "weight": [[0, 1], [110, 1]],
+      "note": "Bends the middle joint (PIP). Takes whatever PIP moment the FDP doesn't already supply: much more of it in a crimp."
+    }
+  ],
+  "phases": [
+    { "name": "Open", "range": [0, 45], "text": "Finger fairly straight. The tendons run close to the bone, so the pulleys carry little; the fingertip (DIP) and FDP do most of the work." },
+    { "name": "Half crimp", "range": [45, 95], "text": "The PIP bends towards 90°. The flexor tendons bowstring across the PIP and pull hard on the A2 and A4 pulleys; the FDS takes a larger share." },
+    { "name": "Crimp", "range": [95, 110], "text": "PIP past 90°: the sharpest bend for the tendons, the highest pulley loads per newton at the fingertip." }
+  ],
+  "variants": [
+    {
+      "id": "open-hand",
+      "name": "Open hand (drag)",
+      "equipment": "Edge block on a loading pin",
+      "params": { "mcp": -21, "dip": 38.8, "pip": 25.9, "contactFromDip": 0.00985, "fingerShare": "auto", "armForward": 0, "armSide": 0, "edgeTilt": 0, "edgeIndex": 0, "edgeRing": 0, "edgeLittle": 0, "quadriga": 0.5, "dipPassiveShare": 0, "maxFingertipN": 78 },
+      "notes": "Fingertip bent, middle joint nearly straight (the 'slope' grip of Vigouroux et al.: DIP 38.8°, PIP 25.9°, MCP −21°). The tendons barely change direction at the pulleys, so A2 carries very little.",
+      "source": "Posture: Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027; maximum fingertip force (all four fingers on the hold, slope grip, 78 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
+    },
+    {
+      "id": "half-crimp",
+      "name": "Half crimp",
+      "equipment": "Edge block on a loading pin",
+      "params": { "mcp": 0, "dip": 0, "pip": 90, "contactFromDip": 0.00985, "fingerShare": "auto", "armForward": 0, "armSide": 0, "edgeTilt": 0, "edgeIndex": 0, "edgeRing": 0, "edgeLittle": 0, "quadriga": 0.5, "dipPassiveShare": 0, "maxFingertipN": 82 },
+      "notes": "Middle joint at about 90°, fingertip in line with the middle phalanx, no thumb. Estimated posture (neither paper measured this grip); the maximum force is taken from the crimp. A grip between half crimp and open hand with all four fingers is often recommended for off-the-wall strength training (Tyler Nelson, via StrengthClimbing); in the 'chisel' variant the index finger stays straight and carries less.",
+      "source": "Posture: estimate (TODO); maximum fingertip force (all four fingers on the hold, crimp, 82 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
+    },
+    {
+      "id": "full-crimp",
+      "name": "Full crimp",
+      "equipment": "Edge block on a loading pin",
+      "params": { "mcp": -2.6, "dip": -22.6, "pip": 106.5, "contactFromDip": 0.00985, "fingerShare": "auto", "armForward": 0, "armSide": 0, "edgeTilt": 0, "edgeIndex": 0, "edgeRing": 0, "edgeLittle": 0, "quadriga": 0.5, "dipPassiveShare": 0.222, "maxFingertipN": 82 },
+      "notes": "Middle joint past 90°, fingertip bent back (the 'crimp' of Vigouroux et al.: DIP −22.6°, PIP 106.5°, MCP −2.6°). With the fingertip bent back, the joint itself carries about a fifth of the DIP moment (22% in their climbers), which spares the FDP. The thumb wrapped over the index finger isn't modelled.",
+      "source": "Posture and passive DIP moment: Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Table 2); maximum fingertip force (82 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
+    }
+  ],
+  "wger": null
+}

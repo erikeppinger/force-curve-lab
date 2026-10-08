@@ -5,10 +5,20 @@
 // "stabiliserDemand" (holding the proximal segment still, e.g. the upper arm in a curl).
 // Multi-joint exercises: each muscle names its `joint`; its weight table is indexed by that
 // joint's angle. Driver "none" = not modelled (value null).
+// Edge lift (model "finger"): driver "tendon", value = the tendon's tension ÷ its reference tension.
 
 import { interp } from "./physics.js";
 
 export function muscleActivation(exercise, variant, result, angleDeg) {
+  // Edge lift: the statics give each flexor tendon's tension directly; scale it by the tension
+  // measured at a maximal one-finger effort.
+  if (exercise.model === "finger") {
+    return exercise.muscles.map((m) => ({
+      ...m,
+      value: Math.min(1, result.tendons[m.tendon] / exercise.finger.referenceTension[m.tendon]),
+      tension: result.tendons[m.tendon],
+    }));
+  }
   if (exercise.model === "multi") {
     return exercise.muscles.map((m) => {
       if (m.driver === "none") return { ...m, value: null };

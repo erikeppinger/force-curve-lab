@@ -224,6 +224,180 @@
       "citation": "Maeo S, Wu Y, Huang M, Sakurai H, Kusagawa Y, Sugiyama T, Kanehisa H, Isaka T (2023). Triceps brachii hypertrophy is substantially greater after elbow extension training performed in the overhead versus neutral arm position. Eur J Sport Sci 23(7):1240–1250.",
       "url": "https://doi.org/10.1080/17461391.2022.2100279",
       "usedFor": "Overhead triceps: more growth despite lower strength."
+    },
+    {
+      "key": "Vigouroux 2006",
+      "match": "Vigouroux L",
+      "group": "Exercise biomechanics",
+      "citation": "Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592.",
+      "url": "https://doi.org/10.1016/j.jbiomech.2005.08.027",
+      "usedFor": "Edge lift: open-hand and full-crimp finger postures, where the edge presses, the passive moment of the bent-back fingertip joint, and the reference tendon tensions; its FDP:FDS ratios and pulley loads are the model’s check."
+    },
+    {
+      "key": "Schweizer 2001",
+      "match": "Schweizer A",
+      "group": "Exercise biomechanics",
+      "citation": "Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223.",
+      "url": "https://doi.org/10.1016/S0021-9290(00)00184-6",
+      "usedFor": "Edge lift: maximum fingertip force per finger in the crimp and open grips, and how far the flexor tendons bowstring over the middle joint under load."
+    },
+    {
+      "key": "An 1983",
+      "match": "An KN, Ueba Y",
+      "group": "Body data",
+      "citation": "An KN, Ueba Y, Chao EY, Cooney WP, Linscheid RL (1983). Tendon excursion and moment arm of index finger muscles. J Biomech 16(6):419–425.",
+      "url": "https://doi.org/10.1016/0021-9290(83)90074-X",
+      "usedFor": "Edge lift: finger bone lengths and the FDP and FDS moment arms at the three finger joints."
+    },
+    {
+      "key": "Murray 1995",
+      "match": "Murray WM, Delp SL",
+      "group": "Muscle activity",
+      "citation": "Murray WM, Delp SL, Buchanan TS (1995). Variation of muscle moment arms with elbow and forearm position. J Biomech 28(5):513–525.",
+      "usedFor": "Biceps curl: how the biceps', brachialis' and brachioradialis' moment arms change with elbow angle, which sets the shape of their muscle weights."
+    },
+    {
+      "key": "Folland 2008",
+      "match": "Folland J, Morris B",
+      "group": "Exercise biomechanics",
+      "citation": "Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169.",
+      "url": "https://doi.org/10.1080/02640410701370663",
+      "usedFor": "Leg extension: measured resistance profiles of knee-extension machines (mean of eight, and the two extremes) in place of an illustrative cam."
+    },
+    {
+      "key": "Ono 2011",
+      "match": "Ono T, Higashihara A",
+      "group": "Muscle activity",
+      "citation": "Ono T, Higashihara A, Fukubayashi T (2011). Hamstring functions during hip-extension exercise assessed with electromyography and magnetic resonance imaging. Res Sports Med 19(1):42–52.",
+      "url": "https://doi.org/10.1080/15438627.2011.535769",
+      "usedFor": "Romanian deadlift: how the hamstrings' activity splits between biceps femoris, semitendinosus and semimembranosus (surface EMG, stiff-leg deadlift)."
+    },
+    {
+      "key": "Messer 2018",
+      "match": "Messer DJ, Bourne MN",
+      "group": "Muscle activity",
+      "citation": "Messer DJ, Bourne MN, Williams MD, Al Najjar A, Shield AJ (2018). Hamstring muscle use in women during hip extension and the Nordic hamstring exercise: a functional magnetic resonance imaging study. J Orthop Sports Phys Ther 48(8):607–612.",
+      "url": "https://doi.org/10.2519/jospt.2018.7748",
+      "usedFor": "Leg curl: how the hamstrings' activity splits between the heads in knee flexion (MRI, Nordic exercise); also a contrasting result for hip extension."
+    },
+    {
+      "key": "Park 2023",
+      "match": "Park S, Lim W",
+      "group": "Muscle activity",
+      "citation": "Park S, Lim W (2023). Comparison of muscle activity of hamstrings as knee flexors and hip extensors and effect of tibial and hip rotation on the contribution of hamstrings. J Bodyw Mov Ther 34:1–5.",
+      "url": "https://doi.org/10.1016/j.jbmt.2023.04.029",
+      "usedFor": "Hamstrings: inner vs outer hamstrings in knee flexion and hip extension, and the shift towards the biceps femoris with the hip turned out (context for the per-head splits)."
+    },
+    {
+      "key": "Lin 1989",
+      "match": "Lin GT, Amadio PC",
+      "group": "Body data",
+      "citation": "Lin GT, Amadio PC, An KN, Cooney WP (1989). Functional anatomy of the human digital flexor pulley system. J Hand Surg Am 14(6):949–956.",
+      "url": "https://doi.org/10.1016/S0363-5023(89)80043-7",
+      "usedFor": "Edge lift: length and position of the A2 and A4 pulleys."
+    },
+    {
+      "key": "Escamilla 2000",
+      "match": "Escamilla RF, Francisco AC",
+      "group": "Exercise biomechanics",
+      "citation": "Escamilla RF, Francisco AC, Fleisig GS, Barrentine SW, Welch CM, Kayes AV, Speer KP, Andrews JR (2000). A three-dimensional biomechanical analysis of sumo and conventional style deadlifts. Med Sci Sports Exerc 32(7):1265–1275.",
+      "url": "https://doi.org/10.1097/00005768-200007000-00013",
+      "usedFor": "Deadlift: stance width and toe angle of the conventional and sumo pulls (abstract), and the comparison of their joint moments."
+    },
+    {
+      "key": "Braman 2009",
+      "match": "Braman JP, Engel SC",
+      "group": "Body data",
+      "citation": "Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967.",
+      "url": "https://doi.org/10.1016/j.jse.2009.02.001",
+      "usedFor": "Shoulder raises and the straight-arm pulldown: how much of arm elevation is the shoulder blade turning (about 2.3 : 1 shoulder joint to shoulder blade when raising, 2.7 lowering; Inman's classic 2 : 1), noted as what the single-joint model leaves out."
+    },
+    {
+      "key": "Latz 2019",
+      "match": "Latz D, Koukos C",
+      "group": "Body data",
+      "citation": "Latz D, Koukos C, Boeckers P, Jungbluth P, Schiffner E, Kaufmann R, Gehrmann SV (2019). Influence of wrist position on the metacarpophalangeal joint motion of the index through small finger. Hand 14(2):259–263.",
+      "url": "https://doi.org/10.1177/1558944717736823",
+      "usedFor": "Edge lift: active range of each finger's knuckle (MCP flexion and extension, wrist neutral), the limits of the four-finger reach search."
+    },
+    {
+      "key": "Lin 1990",
+      "match": "Lin GT, Cooney WP",
+      "group": "Body data",
+      "citation": "Lin GT, Cooney WP, Amadio PC, An KN (1990). Mechanical properties of human pulleys. J Hand Surg Br 15(4):429–434.",
+      "url": "https://doi.org/10.1016/0266-7681(90)90085-I",
+      "usedFor": "Edge lift: breaking loads of the A2 and A4 pulleys (cadaver), shown against the model’s pulley loads."
+    },
+    {
+      "key": "Delp 1996",
+      "match": "Delp SL, Grierson AE",
+      "group": "Strength curves",
+      "citation": "Delp SL, Grierson AE, Buchanan TS (1996). Maximum isometric moments generated by the wrist muscles in flexion-extension and radial-ulnar deviation. J Biomech 29(10):1371–1375.",
+      "url": "https://doi.org/10.1016/0021-9290(96)00029-2",
+      "usedFor": "Wrist curls: wrist flexion and extension strength vs wrist angle and peak moments."
+    },
+    {
+      "key": "Gonzalez 1997",
+      "match": "Gonzalez RV, Buchanan TS",
+      "group": "Muscle activity",
+      "citation": "Gonzalez RV, Buchanan TS, Delp SL (1997). How muscle architecture and moment arms affect wrist flexion-extension moments. J Biomech 30(7):705–712.",
+      "url": "https://doi.org/10.1016/S0021-9290(97)00015-8",
+      "usedFor": "Wrist curls: each wrist muscle's moment potential (size × moment arm) at two wrist angles, which sets the muscle weights; the finger flexors' large share."
+    },
+    {
+      "key": "Ramsay 2009",
+      "match": "Ramsay JW, Hunter BV",
+      "group": "Muscle activity",
+      "citation": "Ramsay JW, Hunter BV, Gonzalez RV (2009). Muscle moment arm and normalized moment contributions as reference data for musculoskeletal elbow and wrist joint models. J Biomech 42(4):463–473.",
+      "url": "https://doi.org/10.1016/j.jbiomech.2008.11.035",
+      "usedFor": "Biceps curl: the levels of the biceps', brachialis' and brachioradialis' weights (normalized potential moments in elbow flexion)."
+    },
+    {
+      "key": "Yamamoto 2015",
+      "match": "Yamamoto Y, Kato H",
+      "group": "Two-joint muscles and grip",
+      "citation": "Yamamoto Y, Kato H, Fukuda T, Tsuga Y, Miyakawa S (2015). Effect of knee flexion angles during maximum isometric hip extension. Jpn J Phys Fitness Sports Med 64(3):289–294.",
+      "url": "https://doi.org/10.7600/jspfsm.64.289",
+      "usedFor": "Multi-joint lifts: hip-extension strength with the knee bent 90° vs nearly straight (82%), the hamstrings' two-joint effect at the hip."
+    },
+    {
+      "key": "Danneskiold-Samsøe 2009",
+      "match": "Danneskiold-Samsøe B",
+      "group": "Strength curves",
+      "citation": "Danneskiold-Samsøe B, Bartels EM, Bülow PM, Lund H, Stockmarr A, Holm CC, Wätjen I, Appleyard M, Bliddal H (2009). Isokinetic and isometric muscle strength in a healthy population with special reference to age and gender. Acta Physiol 197(Suppl 673):1–68.",
+      "url": "https://doi.org/10.1111/j.1748-1716.2009.02022.x",
+      "usedFor": "Hip adduction and abduction peak torques for healthy young men (multi-joint lifts' sideways hip)."
+    },
+    {
+      "key": "O'Connell 2021",
+      "match": "O'Connell DG",
+      "group": "Two-joint muscles and grip",
+      "citation": "O'Connell DG, Cooper KA, Richeson SM, Moeller MB, Stephens JW, Key DJ (2021). The effect of forearm position on elbow flexion strength in nursing, occupational, and physical therapy students. Work 69:403–409.",
+      "url": "https://doi.org/10.3233/WOR-213486",
+      "usedFor": "Curls: cross-check of grip strength (neutral strongest, palms down weakest, at 90°)."
+    },
+    {
+      "key": "Provins 1955",
+      "match": "Provins KA, Salter N",
+      "group": "Two-joint muscles and grip",
+      "citation": "Provins KA, Salter N (1955). Maximum torque exerted about the elbow joint. J Appl Physiol 7(4):393–398.",
+      "usedFor": "Curls: cross-check, the mid-position (neutral grip) strongest with a handle."
+    },
+    {
+      "key": "Tsunoda 1993",
+      "match": "Tsunoda N, O'Hagan F",
+      "group": "Strength curves",
+      "citation": "Tsunoda N, O'Hagan F, Sale DG, MacDougall JD (1993). Elbow flexion strength curves in untrained men and women and male bodybuilders. Eur J Appl Physiol 66:235–239.",
+      "url": "https://doi.org/10.1007/BF00235099",
+      "usedFor": "Biceps curl: cross-check of the elbow-flexion strength curve's peak angle and size."
+    },
+    {
+      "key": "Lieber 1992",
+      "match": "Lieber RL, Jacobson MD",
+      "group": "Body data",
+      "citation": "Lieber RL, Jacobson MD, Fazeli BM, Abrams RA, Botte MJ (1992). Architecture of selected muscles of the arm and forearm: anatomy and implications for tendon transfer. J Hand Surg Am 17(5):787–798.",
+      "url": "https://doi.org/10.1016/0363-5023(92)90444-T",
+      "usedFor": "Edge lift: FDP and FDS muscle size per finger, which sets how the block splits between the fingers (least effort)."
     }
   ],
   "resources": [
@@ -232,6 +406,16 @@
       "url": "https://wger.de",
       "licence": "CC-BY-SA 3.0",
       "usedFor": "Exercise descriptions, images and the muscle-map SVGs, loaded at runtime with attribution; the exercise list this project started from (wger starter library)."
+    },
+    {
+      "name": "StrengthClimbing: The complete guide to arm-lifting finger strength training",
+      "url": "https://strengthclimbing.com/the-complete-guide-to-arm-lifting-finger-strength-training/",
+      "usedFor": "Edge lift: lifting technique (straight arm, short static hold, grip choices, level vs tilted edge) and typical loads; practitioner guide, not peer-reviewed."
+    },
+    {
+      "name": "StrengthClimbing: Dr. Tyler Nelson's active finger strength training protocols",
+      "url": "https://strengthclimbing.com/dr-tyler-nelsons-new-active-finger-strength-training-protocols/",
+      "usedFor": "Edge lift: training context (active vs passive finger loading, transfer to edge sizes); no joint mechanics."
     }
   ]
 }

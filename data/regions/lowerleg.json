@@ -1,0 +1,41 @@
+{
+  "id": "lowerleg",
+  "name": "Lower leg",
+  "note": "Schematic right lower leg from behind, not to scale. Positions follow standard anatomy atlases (e.g. Gray's Anatomy, 1918, public domain); shapes are simplified for teaching.",
+  "viewBox": [0, 0, 160, 380],
+  "muscles": {
+    "gastroc-medial": {"name": "Gastrocnemius, medial head", "abbr": "GM", "action": "Points the foot (plantarflexion); also bends the knee"},
+    "gastroc-lateral": {"name": "Gastrocnemius, lateral head", "abbr": "GL", "action": "Points the foot (plantarflexion); also bends the knee"},
+    "soleus": {"name": "Soleus", "abbr": "SOL", "action": "Points the foot; works whatever the knee angle (crosses only the ankle)"}
+  },
+  "views": [
+    {
+      "id": "back",
+      "title": "Back",
+      "caption": "Right calf from behind: knee at the top, outer side on the right.",
+      "outline": [
+        "M30,0 L130,0 Q150,90 128,200 Q112,290 98,345 L62,345 Q50,290 38,200 Q12,90 30,0 Z",
+        "M60,340 L100,340 Q104,372 80,376 Q56,372 60,340 Z"
+      ],
+      "bones": [[[80, 268], [80, 362], 7]],
+      "muscles": [
+        {"id": "soleus", "d": "M40,132 Q80,104 122,132 Q126,200 104,268 L56,268 Q36,200 40,132 Z", "label": [80, 250]},
+        {"id": "gastroc-medial", "from": [62, 8], "to": [80, 362], "belly": [0.03, 0.6], "w": 52, "bend": -10},
+        {"id": "gastroc-lateral", "from": [100, 8], "to": [80, 362], "belly": [0.03, 0.55], "w": 46, "bend": 10}
+      ]
+    },
+    {
+      "id": "back-deep",
+      "title": "Back, deep layer",
+      "caption": "Gastrocnemius removed: the soleus underneath, joining the Achilles tendon.",
+      "outline": [
+        "M30,0 L130,0 Q150,90 128,200 Q112,290 98,345 L62,345 Q50,290 38,200 Q12,90 30,0 Z",
+        "M60,340 L100,340 Q104,372 80,376 Q56,372 60,340 Z"
+      ],
+      "bones": [[[80, 280], [80, 362], 7]],
+      "muscles": [
+        {"id": "soleus", "d": "M36,84 Q80,56 124,84 Q130,190 102,282 L58,282 Q30,190 36,84 Z", "label": [80, 170]}
+      ]
+    }
+  ]
+}

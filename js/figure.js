@@ -7,7 +7,8 @@
 import { gravityOf } from "./physics.js";
 
 const NS = "http://www.w3.org/2000/svg";
-const S = 150; // px per metre
+const BASE_S = 150; // px per metre
+const S = BASE_S;
 const MARGIN = 0.25; // m around the drawing
 
 const lerp = (a, b, t) => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
@@ -40,6 +41,30 @@ const postureOf = (exercise, variant) => {
   return all[variant.posture] ?? Object.values(all)[0] ?? [];
 };
 
+/**
+ * Zoomed frame around the moving joint: the moving segment over its whole range plus a stretch
+ * of the fixed one, for small joints (wrist, ankle) that are tiny in the whole-body view.
+ * Carries its own drawing scale (px per metre) so the picture keeps about the same pixel size.
+ */
+export function zoomBounds(exercise, variant, poses) {
+  const R = rotator(screenRotation(variant));
+  const proximalMoves = exercise.movingJoint === "proximal";
+  const reach = exercise.segments.distal;
+  const pts = [];
+  for (const p of poses) {
+    const joint = proximalMoves ? p.base : p.mid;
+    const other = proximalMoves ? p.mid : p.base;
+    const len = Math.hypot(other.x - joint.x, other.y - joint.y) || 1;
+    const back = { x: joint.x + ((other.x - joint.x) / len) * reach * 0.6, y: joint.y + ((other.y - joint.y) / len) * reach * 0.6 };
+    pts.push(R(joint), R(p.tip), R(back));
+  }
+  const m = Math.max(0.04, reach * 0.45);
+  const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y);
+  const b = { x0: Math.min(...xs) - m, x1: Math.max(...xs) + m, y0: Math.min(...ys) - m, y1: Math.max(...ys) + m };
+  b.scale = 380 / Math.max(b.x1 - b.x0, b.y1 - b.y0);
+  return b;
+}
+
 /** Bounding box (screen frame, metres) that holds the body, the chain over its whole range and the pulley. */
 export function figureBounds(exercise, variant, poses, pulley) {
   const rot = screenRotation(variant);
@@ -63,6 +88,9 @@ function rotator(rot) {
 
 export function renderFigure(svg, { exercise, variant, result, activation, pulley, bounds }) {
   const V = bounds;
+  const S = V.scale ?? BASE_S; // px per metre; a zoomed frame brings its own
+  const k = S / BASE_S; // overlays (arrows, markers) are divided by this to keep their on-screen size
+  const arrow = (k > 2 ? 1.6 : 1) / k; // and the force arrow a bit longer when zoomed in
   svg.setAttribute("viewBox", `0 0 ${((V.x1 - V.x0) * S).toFixed(1)} ${((V.y1 - V.y0) * S).toFixed(1)}`);
   svg.replaceChildren();
   const R = rotator(screenRotation(variant));
@@ -148,7 +176,14 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
     const d = m.draw;
     let a, b;
     if (d.points) [a, b] = d.points.map(P);
-    else {
+    else if (d.origin) {
+      // Origin fixed on the body (body frame), insertion on the moving segment: the muscle stretches
+      // and swings with the limb instead of moving rigidly with it.
+      const [from, to] = segs[d.seg];
+      const u = unit({ x: to.x - from.x, y: to.y - from.y });
+      a = P(d.origin);
+      b = add(add(from, u, d.insert), { x: -u.y, y: u.x }, d.offset ?? 0);
+    } else {
       const [from, to] = segs[d.seg];
       const u = unit({ x: to.x - from.x, y: to.y - from.y });
       const n = { x: -u.y, y: u.x };
@@ -161,11 +196,12 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
     seg(g, a, b, "muscle-on", d.w, { "stroke-opacity": value.toFixed(3) });
     el("title", {}, g).textContent = `${m.name}: ${Math.round(value * 100)}%`;
   }
-  for (const j of [base, mid]) circle(svg, j, 0.022, "joint");
+  for (const j of [base, mid]) circle(svg, j, 0.022 / k, "joint");
 
   // Load at the tip
   if (variant.load.type === "gravity") {
-    circle(svg, tip, variant.equipment.startsWith("Dumbbell") || variant.equipment.startsWith("Ankle") ? 0.055 : 0.09, "weight");
+    const w = circle(svg, tip, variant.equipment.startsWith("Dumbbell") || variant.equipment.startsWith("Ankle") ? 0.055 : 0.09, "weight");
+    if (k > 2) w.setAttribute("opacity", "0.35"); // zoomed: the plate is larger than the hand; keep the hand visible
   } else if (variant.load.type === "cable" || variant.load.type === "band") {
     circle(svg, tip, 0.025, "handle");
   }
@@ -174,12 +210,14 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
   const f = result.force;
   if (f.mag > 0) {
     const u = unit(f);
-    seg(svg, add(f.at, u, -0.5), add(f.at, u, 0.5), "line-of-action", 0.006);
-    seg(svg, joint, result.momentArmFoot, "moment-arm", 0.012);
+    seg(svg, add(f.at, u, -0.5 / k), add(f.at, u, 0.5 / k), "line-of-action", 0.006 / k);
+    seg(svg, joint, result.momentArmFoot, "moment-arm", 0.012 / k);
     const m = toPx(lerp(joint, result.momentArmFoot, 0.5));
-    el("text", { x: m.x + 6, y: m.y - 6, class: "fig-label" }, svg).textContent = `d = ${Math.abs(result.momentArm * 100).toFixed(0)} cm`;
-    seg(svg, f.at, add(f.at, u, 0.28), "force", 0.014, { "marker-end": "url(#arrow)" });
-    const t = toPx(add(f.at, u, 0.33));
+    // Near the right edge (small figures such as the wrist), put the label to the left so it isn't cut off.
+    const flip = m.x > (V.x1 - V.x0) * S - 90;
+    el("text", { x: flip ? m.x - 6 : m.x + 6, y: m.y - 6, class: "fig-label", "text-anchor": flip ? "end" : "start" }, svg).textContent = `d = ${Math.abs(result.momentArm * 100).toFixed(0)} cm`;
+    seg(svg, f.at, add(f.at, u, 0.28 * arrow), "force", 0.014 / k, { "marker-end": "url(#arrow)" });
+    const t = toPx(add(f.at, u, 0.33 * arrow));
     el("text", { x: t.x, y: t.y + 4, class: "fig-label force-label", "text-anchor": "middle" }, svg).textContent = "F";
   }
 

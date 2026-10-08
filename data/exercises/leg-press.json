@@ -61,12 +61,12 @@
       "name": "Hip (sideways)",
       "action": "Hip adduction",
       "angleLabel": "hip flexion",
-      "peakTorqueNm": 247,
-      "negative": {"action": "Hip abduction", "peakTorqueNm": 130},
+      "peakTorqueNm": 217,
+      "negative": {"action": "Hip abduction", "peakTorqueNm": 185},
       "strength": {
         "points": [[0, 1.0], [160, 1.0]],
-        "note": "Hip adductor (positive) and abductor (negative) peak torque per leg, taken as constant across the range: Welsh et al.'s isometric means at 10° of hip abduction (trained recreational hockey players, hip straight): adductors 247 Nm, abductors 130 Nm. Abductor strength falls as the hip abducts (Neumann et al.; Welsh et al.), which isn't modelled here. Welsh et al.'s men were trained ice hockey players: 247 Nm is about 1.9 Nm per kg·m (body mass × height), above every isometric adduction dataset collected by Chen & Franklin (roughly 0.5–1.3 Nm per kg·m, 75–175 Nm), so the adductor effort shown here is probably too low for an untrained lifter. Their abduction data (roughly 0.5–1.0 Nm per kg·m) bracket the 130 Nm used here (about 1.0).",
-        "source": "Welsh P, Howitt S, Howarth SJ (2020). The influence of hip joint angle on the ratio between adduction and abduction torque in experienced, recreational male ice hockey players. Int J Sports Phys Ther 15(1):22–33. doi:10.26603/ijspt20200022; cross-check: Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183 (read as the bioRxiv preprint, doi:10.1101/2024.06.22.600197, CC BY 4.0)"
+        "note": "Hip adductor (positive) and abductor (negative) peak torque per leg, taken as constant across the range: Danneskiold-Samsøe et al.'s isometric means for healthy men aged 20–29 (lying on the side, knee straight, hip abducted 15–30°): adduction 217 Nm (SD 48), abduction 185 Nm (SD 38); women of the same age 124 and 114 Nm. Abductor strength falls as the hip abducts (Neumann et al.; Welsh et al.), which isn't modelled here. Earlier values from trained ice hockey players (Welsh et al.: 247 and 130 Nm) had a much larger adduction-to-abduction ratio. Both of Danneskiold-Samsøe et al.'s values sit at the top of the isometric datasets collected by Chen & Franklin (adduction roughly 0.5–1.3, abduction 0.5–1.0 Nm per kg·m of body mass × height), so the sideways efforts shown may be on the low side for an untrained lifter.",
+        "source": "Danneskiold-Samsøe B, Bartels EM, Bülow PM, Lund H, Stockmarr A, Holm CC, Wätjen I, Appleyard M, Bliddal H (2009). Isokinetic and isometric muscle strength in a healthy population with special reference to age and gender. Acta Physiol 197(Suppl 673):1–68. doi:10.1111/j.1748-1716.2009.02022.x (isometric hip adduction and abduction, men 20–29 years); previous values: Welsh P, Howitt S, Howarth SJ (2020). The influence of hip joint angle on the ratio between adduction and abduction torque in experienced, recreational male ice hockey players. Int J Sports Phys Ther 15(1):22–33. doi:10.26603/ijspt20200022; cross-check: Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183 (read as the bioRxiv preprint, doi:10.1101/2024.06.22.600197, CC BY 4.0)"
       }
     },
     {
@@ -103,6 +103,13 @@
     }
   ],
   "jointScale": {
+    "hip": {
+      "by": "knee",
+      "direction": "positive",
+      "points": [[15, 1], [90, 0.82]],
+      "note": "Two-joint hamstrings: hip-extension strength by knee flexion, relative to the base curve's test (standing, knee slightly bent ≈ 15°). Yamamoto et al. measured 93 Nm with the knee bent 15° and 76 Nm at 90° (82%), with 2–3× more hamstring EMG at 15° and slightly more gluteus maximus at 90°. Measured prone with the hip straight, applied at every hip angle; held flat beyond the two knee angles. Other datasets found smaller (Chen & Franklin's collection: nearly flat) or larger (29–42%) differences.",
+      "source": "Yamamoto Y, Kato H, Fukuda T, Tsuga Y, Miyakawa S (2015). Effect of knee flexion angles during maximum isometric hip extension. Jpn J Phys Fitness Sports Med 64(3):289–294. doi:10.7600/jspfsm.64.289 (Fig. 2, read off: 93 Nm at 15° vs 76 Nm at 90° of knee flexion; 10 men, prone, hip straight)"
+    },
     "ankle": {
       "by": "knee",
       "direction": "positive",
@@ -121,6 +128,8 @@
   "muscles": [
     {
       "id": "quadriceps",
+      "region": "thigh",
+      "regionPath": ["rectus-femoris", "vastus-lateralis", "vastus-medialis"],
       "name": "Quadriceps",
       "wgerId": 10,
       "role": "Prime mover",
@@ -133,6 +142,7 @@
     },
     {
       "id": "gluteus-maximus",
+      "region": "thigh",
       "name": "Gluteus maximus",
       "wgerId": 8,
       "role": "Prime mover",
@@ -145,6 +155,7 @@
     },
     {
       "id": "adductor-magnus",
+      "region": "thigh",
       "name": "Adductor magnus",
       "wgerId": null,
       "role": "Synergist",
@@ -156,6 +167,8 @@
     },
     {
       "id": "adductors",
+      "region": "thigh",
+      "regionPath": ["adductor-longus", "gracilis"],
       "name": "Adductors (longus, brevis, gracilis)",
       "wgerId": null,
       "role": "Stabiliser",
@@ -169,6 +182,7 @@
     },
     {
       "id": "gluteus-medius",
+      "region": "thigh",
       "name": "Gluteus medius and minimus",
       "wgerId": null,
       "role": "Stabiliser",
@@ -182,6 +196,8 @@
     },
     {
       "id": "external-rotators",
+      "region": "thigh",
+      "regionPath": ["piriformis", "deep-rotators", "quadratus-femoris"],
       "name": "Deep hip external rotators",
       "wgerId": null,
       "role": "Stabiliser",
@@ -194,6 +210,8 @@
     },
     {
       "id": "calves",
+      "region": "lowerleg",
+      "regionPath": ["gastroc-medial", "gastroc-lateral", "soleus"],
       "name": "Calves (soleus, gastrocnemius)",
       "wgerId": 7,
       "role": "Stabiliser",

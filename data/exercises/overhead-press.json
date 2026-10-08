@@ -93,6 +93,7 @@
   "muscles": [
     {
       "id": "anterior-deltoid",
+      "region": "shoulder",
       "name": "Anterior deltoid",
       "wgerId": 2,
       "role": "Prime mover",
@@ -106,6 +107,7 @@
     },
     {
       "id": "lateral-deltoid",
+      "region": "shoulder",
       "name": "Lateral deltoid",
       "wgerId": 2,
       "role": "Prime mover",
@@ -119,6 +121,8 @@
     },
     {
       "id": "triceps",
+      "region": "upperarm",
+      "regionPath": ["triceps-long", "triceps-lateral", "triceps-medial"],
       "name": "Triceps",
       "wgerId": 5,
       "role": "Prime mover",
@@ -132,6 +136,8 @@
     },
     {
       "id": "rotator-cuff-ext",
+      "region": "shoulder",
+      "regionPath": ["infraspinatus", "teres-minor"],
       "name": "Infraspinatus, teres minor",
       "wgerId": null,
       "role": "Stabiliser",
@@ -144,6 +150,7 @@
     },
     {
       "id": "subscapularis",
+      "region": "shoulder",
       "name": "Subscapularis",
       "wgerId": null,
       "role": "Stabiliser",
@@ -156,6 +163,8 @@
     },
     {
       "id": "scapular-rotators",
+      "region": "shoulder",
+      "regionPath": ["serratus-anterior", "upper-trapezius", "lower-trapezius"],
       "name": "Serratus anterior, upper and lower trapezius",
       "wgerId": null,
       "role": "Synergist",

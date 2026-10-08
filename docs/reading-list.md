@@ -2,6 +2,33 @@
 
 Papers found but not yet read. Each was seen in search results only: check the numbers in the paper before using them.
 
+## To fetch (checklist)
+
+Updated 2026-10-09 after the third batch. **Read** = in the app (cited in the exercise files and References); **not obtainable** = not available through the user's institution.
+
+| # | Paper | Status | For |
+|---|---|---|---|
+| 1 | Ramsay, Hunter, Gonzalez (2009), J Biomech 42:463–473 | **Read:** curl muscle levels (normalized potential moments) | Curls |
+| 2 | Holzbaur, Murray, Delp (2005), Ann Biomed Eng 33:829–840 | **Read, not used yet:** the OpenSim arm model; for a later OpenSim run (arm, wrist, fingers) | Arm muscle model |
+| 3 | Lieber et al. (1992), J Hand Surg Am 17(5):787–798 | **Read:** cross-check only; Gonzalez et al. took their muscle sizes from it (FDP 7.9 cm² in both) | Forearm muscle sizes |
+| 4 | Delp, Grierson, Buchanan (1996), J Biomech 29:1371–1375 | **Read:** wrist curls' strength curves and peaks | Wrist strength |
+| 5 | Gonzalez, Buchanan, Delp (1997), J Biomech 30:705–712 | **Read:** wrist curls' muscle weights | Wrist muscle shares |
+| 6 | Lin, Amadio, An, Cooney (1989), J Hand Surg Am 14:949–956 | **Read:** edge lift's A2/A4 positions | Pulley positions |
+| 7 | Lin, Cooney, Amadio, An (1990), J Hand Surg Br 15:429–434 | **Read:** edge lift's pulley breaking loads | Pulley strength |
+| 8 | Waters RL et al. (1974), J Bone Joint Surg Am 56(8):1592–1597 | **Not obtainable** | Hip extension vs knee angle |
+| 9 | Danneskiold-Samsøe et al. (2009), Acta Physiol 197(Suppl 673):1–68 | **Read:** hip adduction/abduction strength | Strength norms |
+| 10 | Provins & Salter (1955), J Appl Physiol 7:393–398 | **Read:** cross-check (neutral grip strongest) | Elbow strength by grip |
+| 11 | Folland & Morris (2008), J Sports Sci 26:163–169 | **Read:** leg-extension machine cams | Machine cams |
+| 12 | Yamamoto et al. (2015), Jpn J Phys Fitness Sports Med 64:289–294 (the Japanese study) | **Read:** hip-extension strength by knee angle | Hip extension vs knee angle |
+| 13 | Sprinters and hurdlers, hip extension at knee 30° vs 90° (<https://lida.sport-iat.de/ta/Record/4080023?lng=en>) | **Not obtainable** | Hip extension vs knee angle |
+| 14 | Rasch PJ: elbow-flexion strength by forearm position | **Still unknown:** the fetched Rasch & Morehouse 1957 is a training study (static vs dynamic exercise), not this | Elbow strength by grip |
+| 15 | Ferrer-Uris B et al. (2023), PeerJ: forearm muscle activation (FDP, FDS, FCR) in half crimp vs sloper dead-hangs | **New, to fetch** (cited by StrengthClimbing); citation details unchecked | Edge lift: check the FDP/FDS split |
+| 16 | Escamilla RF et al. (2000). A three-dimensional biomechanical analysis of sumo and conventional style deadlifts. Med Sci Sports Exerc 32(7):1265–1275. doi:10.1097/00005768-200007000-00013 | **To fetch** (only the abstract read) | Deadlift: hip, knee and ankle angles at lift-off for both styles (sets the knee bend per hip bend), and their joint moments to check the model against |
+
+Also read in this batch: Tsunoda et al. 1993 and O'Connell et al. 2021 (curl cross-checks, cited), Bianchi et al. 2007 (ultrasound of the finger flexor system; background, not used).
+
+Details for each are in the sections below.
+
 All of the earlier list has now been read and is cited in the exercise files:
 - **Calf:** Cresswell 1995, Baptista 2014, Kovács 2024
 - **Rectus femoris:** Black 1993, Worrell 1989, Bampouras 2017
@@ -19,29 +46,53 @@ Each would close one remaining `TODO`. All were seen in search results only (the
 The hamstrings' share at the hip (deadlift, RDL, hip thrust, split squat). Still to get:
 - Isometric hip extension at 15° vs 90° of knee bend, 10 men, torque plus EMG of the hamstrings, adductor magnus and gluteus maximus. Japanese Journal of Physical Fitness and Sports Medicine: <https://jlc.jst.go.jp/DN/JLC/20011214456?from=WPRIM>. Snippet: more torque and more hamstring EMG with the knee nearly straight; more gluteus maximus EMG with it bent.
 - Sprinters and hurdlers, supine dynamometer, isometric and concentric hip extension with the knee at 30° vs about 90°: <https://lida.sport-iat.de/ta/Record/4080023?lng=en>. Snippet: 29–42% more hip-extension torque with the knee straighter, at every speed.
-- Waters RL et al. (1974; co-authors still to check). "The relative strength of the hamstrings during hip extension." J Bone Joint Surg Am 56(8):1592–1597. Cited by Rajagopal et al. 2016 for hip-extension strength; the title is the open question exactly.
+- Waters RL et al. (1974). "The relative strength of the hamstrings during hip extension." J Bone Joint Surg Am 56(8):1592–1597. Cited by Rajagopal et al. 2016 (ref. 61) for hip-extension strength, which confirms title, journal and pages; the co-authors are listed only as "et al." there. The title is the open question exactly.
 - Chen & Franklin's collection (read) found hip extension nearly flat with knee angle in three datasets, against the two studies above. Waters et al. would settle which applies to lifting.
 
 ### Machine cam profiles
 
-- Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. Eight knee-extension machines from six makers, resistive torque measured at five knee angles. Would replace the illustrative leg-extension cam with measured ones (makers likely anonymised).
+- Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. Eight knee-extension machines from six makers, resistive torque measured at five knee angles. **Read and cited:** the leg extension now uses its measured profiles (makers are named in the paper).
 
 ### Hip adduction strength, general population
 
-The 247 Nm adductor peak is from trained ice hockey players and sits above every dataset in Chen & Franklin's collection. Candidate: Danneskiold-Samsøe et al. 2009 (normative isometric and isokinetic strength, hip included), listed in Chen & Franklin's study table; full citation still to check.
+**Done (2026-10-09):** the app now uses Danneskiold-Samsøe et al.'s general-population values (men 20–29: adduction 217, abduction 185 Nm). Before: the 247 Nm adductor peak was from trained ice hockey players and sat above every dataset in Chen & Franklin's collection. Candidate: Danneskiold-Samsøe B, Bartels EM, Bülow PM, Lund H, Stockmarr A, Holm CC, Wätjen I, Appleyard M, Bliddal H (2009). Isokinetic and isometric muscle strength in a healthy population with special reference to age and gender. Acta Physiol 197:1–68 (supplement). doi:10.1111/j.1748-1716.2009.02022.x (from Chen & Franklin's reference list; normative isometric and isokinetic strength, hip included).
 
 ### Muscle activation weights
 
 The largest group of `TODO`s (every `muscles` entry). No single source covers them; it needs EMG studies per exercise, ideally ones that report several muscles in the same lift. No candidates checked yet.
 
+### Forearm, wrist and fingers (wrist curls, edge lift)
+
+Added 2026-10-08 for the forearm close-up, the wrist curls and the edge lift. First written from memory; on 2026-10-09 Holzbaur et al. 2005 was confirmed in Chen & Franklin's reference list. Delp 1996, Gonzalez 1997 and Lieber 1992 were not found in any read paper, so check them against the papers themselves.
+
+- Ramsay JW, Hunter BV, Gonzalez RV (2009). Muscle moment arm and normalized moment contributions as reference data for musculoskeletal elbow and wrist joint models. J Biomech 42(4):463–473. doi:10.1016/j.jbiomech.2008.11.035 (confirmed in Guenzkofer et al. 2012's references). **For:** reference moment arms and each muscle's normalised share of the elbow and wrist moments: probably the most direct source for the curl and wrist-curl weight levels.
+
+- Delp SL, Grierson AE, Buchanan TS (1996). Maximum isometric moments generated by the wrist muscles in flexion-extension and radial-ulnar deviation. J Biomech 29(10):1371–1375. **For:** wrist flexion and extension strength vs angle, replacing the estimated `strengthCurve` of both wrist curls.
+- Gonzalez RV, Buchanan TS, Delp SL (1997). How muscle architecture and moment arms affect wrist flexion-extension moments. J Biomech 30(7):705–712. **For:** each wrist muscle's share of the moment across the range, i.e. the `weight` tables (FCU, FCR, PL, FDS, FDP; ECRL, ECRB, ECU, ED).
+- Lieber RL, Jacobson MD, Fazeli BM, Abrams RA, Botte MJ (1992). Architecture of selected muscles of the arm and forearm: anatomy and implications for tendon transfer. J Hand Surg Am 17(5):787–798. **For:** muscle size (physiological cross-section) of the forearm muscles; size × moment arm gives a first estimate of the shares.
+- Holzbaur KRS, Murray WM, Delp SL (2005). A model of the upper extremity for simulating musculoskeletal surgery and analyzing neuromuscular control. Ann Biomed Eng 33(6):829–840. doi:10.1007/s10439-005-3320-7. **For:** an OpenSim arm model with the wrist and finger muscles. Could go through the same offline OpenSim step as the Rajagopal leg model (check whether opensim-org/opensim-models on GitHub has it, as it had Rajagopal).
+
+Still to find (no candidate checked):
+- How the load splits between the four fingers on an edge, per grip type.
+- Middle- and ring-finger bone lengths and moment arms (the edge lift uses the index finger's).
+- Where the pressure centre sits on the finger pad on a 20–25 mm edge.
+- Positions of the A2 and A4 pulleys and the FDS/FDP insertions along the phalanges: Lin GT, Amadio PC, An KN, Cooney WP (1989). Functional anatomy of the human digital flexor pulley system. J Hand Surg Am 14:949–956 (confirmed in Schweizer's references).
+- How much the pulleys can take: Lin GT, Cooney WP, Amadio PC, An KN (1990). Mechanical properties of human pulleys. J Hand Surg Br 15:429–434 (confirmed in Schweizer's and Vigouroux et al.'s references; Vigouroux et al. note the A4 is close to its maximal resistance in the crimp). Would let the edge lift show the pulley loads against their breaking strength.
+- A measured half-crimp posture.
+- EMG of the forearm muscles in wrist curls, for the `weight` tables (the same gap as *Muscle activation weights* above).
+
 ## Read
+
+- **Edge lift (2026-10-08):** Vigouroux et al. 2006, Schweizer 2001 and An et al. 1983 are read and cited (`data/exercises/edge-lift.json`). An et al. 1979 was read but not used: its tables are normalised 3D tendon positions, too detailed for the 2D finger model. Rispler et al. 1996 (pulley efficiency after sectioning) was read as background, not used. Murray, Delp and Buchanan 1995 (elbow moment arms by angle and forearm rotation) is read and cited: it sets the shape of the curl's elbow-flexor weights.
+- **2026-10-09:** Folland & Morris 2008 (leg-extension machine cams), Ono et al. 2011, Messer et al. 2018 and Park & Lim 2023 (how the hamstring heads share the work) are read and cited.
+- Fetched by mistake, not needed: Youm et al. 1979 (forearm and elbow kinematics for prostheses), Wu et al. 2009 (thumb model).
 
 - **Chen & Franklin 2025, joint moments** (preprint, CC BY 4.0) and **Chen & Franklin 2025, moment arms** (Ann Biomed Eng 53:1757–1776, open access): read; used as a cross-check (`docs/model-limits.md`). Their raw data are still to get: moment arms at <https://doi.org/10.6084/m9.figshare.26018563>; the joint-moment data link is in the published J Biomech version (the preprint says "link-to-add"). Both are MATLAB `.mat` files.
 - **Rajagopal et al. 2016** (OpenSim full-body model): read. Muscle forces and moment arms need the model files and an offline run.
 
 ## To grab: Rajagopal model files
 
-From <https://simtk.org/home/full_body> (free account needed for downloads):
+The model file is also published by the OpenSim team on GitHub, no account needed: `Models/Rajagopal/Rajagopal2016.osim` in <https://github.com/opensim-org/opensim-models> (0.9 MB; the same folder has `RajagopalLaiUhlrich2023.osim`, which allows deeper knee flexion, useful for squats). That folder's README states no licence, so the licence check below still applies. Otherwise from <https://simtk.org/home/full_body> (free account needed for downloads):
 - The model file, `.osim` (XML: muscles, path points, wrap surfaces, joint definitions). The bone geometry (`.vtp`) isn't needed.
 - The licence text on the project page: check that results derived from the model may be published under CC BY 4.0 (the model file itself stays out of the repo unless its licence allows it, like the papers).
 
@@ -58,8 +109,8 @@ Seen in search results; the sites are blocked from the build environment, so non
 
 ## Classic strength-curve sources (not found online)
 
-- Provins KA, Salter N: elbow-flexion strength by forearm position.
-- Rasch PJ: elbow-flexion strength by forearm position.
+- Provins KA, Salter N (1955). Maximum torque exerted about the elbow joint. J Appl Physiol 7(4):393–398 (confirmed in Guenzkofer et al. 2012's references): elbow-flexion strength by forearm position.
+- Rasch PJ: elbow-flexion strength by forearm position (not found in any read paper; year and title unknown).
 
 ## Checked and unavailable
 
