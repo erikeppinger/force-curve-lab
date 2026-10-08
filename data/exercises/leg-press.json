@@ -203,6 +203,8 @@
     },
     {
       "id": "calves",
+      "region": "lowerleg",
+      "regionPath": ["gastroc-medial", "gastroc-lateral", "soleus"],
       "name": "Calves (soleus, gastrocnemius)",
       "wgerId": 7,
       "role": "Stabiliser",

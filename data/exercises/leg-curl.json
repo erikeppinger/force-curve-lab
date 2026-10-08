@@ -67,6 +67,8 @@
     },
     {
       "id": "gastrocnemius",
+      "region": "lowerleg",
+      "regionPath": ["gastroc-medial", "gastroc-lateral"],
       "name": "Gastrocnemius",
       "wgerId": 7,
       "role": "Synergist",

@@ -40,6 +40,8 @@
   "muscles": [
     {
       "id": "gastrocnemius",
+      "region": "lowerleg",
+      "regionPath": ["gastroc-medial", "gastroc-lateral"],
       "name": "Gastrocnemius",
       "wgerId": 7,
       "role": "Prime mover",
@@ -51,6 +53,7 @@
     },
     {
       "id": "soleus",
+      "region": "lowerleg",
       "name": "Soleus",
       "wgerId": 15,
       "role": "Prime mover",
