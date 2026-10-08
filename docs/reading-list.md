@@ -23,6 +23,7 @@ Updated 2026-10-09 after the third batch. **Read** = in the app (cited in the ex
 | 13 | Sprinters and hurdlers, hip extension at knee 30° vs 90° (<https://lida.sport-iat.de/ta/Record/4080023?lng=en>) | **Not obtainable** | Hip extension vs knee angle |
 | 14 | Rasch PJ: elbow-flexion strength by forearm position | **Still unknown:** the fetched Rasch & Morehouse 1957 is a training study (static vs dynamic exercise), not this | Elbow strength by grip |
 | 15 | Ferrer-Uris B et al. (2023), PeerJ: forearm muscle activation (FDP, FDS, FCR) in half crimp vs sloper dead-hangs | **New, to fetch** (cited by StrengthClimbing); citation details unchecked | Edge lift: check the FDP/FDS split |
+| 16 | Escamilla RF et al. (2000). A three-dimensional biomechanical analysis of sumo and conventional style deadlifts. Med Sci Sports Exerc 32(7):1265–1275. doi:10.1097/00005768-200007000-00013 | **To fetch** (only the abstract read) | Deadlift: hip, knee and ankle angles at lift-off for both styles (sets the knee bend per hip bend), and their joint moments to check the model against |
 
 Also read in this batch: Tsunoda et al. 1993 and O'Connell et al. 2021 (curl cross-checks, cited), Bianchi et al. 2007 (ultrasound of the finger flexor system; background, not used).
 
