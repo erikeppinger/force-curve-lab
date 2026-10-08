@@ -87,7 +87,7 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] 3D Romanian deadlift, split squat (sideways balance) and hip thrust
 - [x] 3D rows: grip width and elbow flare (lats vs rear delts)
 - [x] Pull-ups, chin-ups and lat pulldowns: grip width and grip, body lean, elbow strength by arm angle and grip
-- [x] Shoulder blades by slider in the bench (pulled back, up/down) and rows (reach → squeeze); the press needs a shoulder-blade rotation model (a shrug as a shift changes nothing)
+- [x] Shoulder blades by slider in the bench (pulled back, up/down), rows (reach → squeeze) and pull-ups/pulldowns (raised → pulled down); the press needs a shoulder-blade rotation model (a shrug as a shift changes nothing)
 - [ ] Measured shoulder-blade movement (scapulohumeral rhythm) and a shoulder-blade rotation model
 - [x] Literature sources for the strength curves, peak strengths and limb masses (see `docs/model-limits.md`)
 - [x] References section in the app: the current exercise's papers, plus every paper and resource with links and what each is used for (`data/references.json`)

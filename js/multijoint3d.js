@@ -1041,9 +1041,12 @@ export function pull3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     const up = v3(-Math.sin(lean), Math.cos(lean), 0), front = v3(Math.cos(lean), Math.sin(lean), 0);
     const pelvis = origin;
     const mid = add3(pelvis, up, L.trunk);
-    const S = add3(mid, Z, L.shoulderHalfWidth);
+    // Shoulder blades (slider scapTravel, default 0): raised by half the travel with the arms
+    // overhead at the start, pulled down by half at the end ("packing" the shoulders).
+    const travel = P.scapTravel ?? 0;
+    const S = add3(add3(mid, up, travel * (0.5 - x / 100)), Z, L.shoulderHalfWidth);
     const dz = P.gripHalf - L.shoulderHalfWidth;
-    const start = add3(add3(mid, Z, P.gripHalf), up, Math.sqrt(Math.max(0, reach * reach - dz * dz)));
+    const start = add3(add3(add3(mid, up, travel / 2), Z, P.gripHalf), up, Math.sqrt(Math.max(0, reach * reach - dz * dz)));
     const end = add3(add3(add3(mid, Z, P.gripHalf), front, P.touchFront), up, P.touchUp);
     const hand = lerp3(start, end, x / 100);
     return { up, front, pelvis, mid, S, start, end, hand };

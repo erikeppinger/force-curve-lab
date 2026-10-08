@@ -181,7 +181,7 @@
       "id": "pull-up",
       "name": "Pull-up, wide grip, palms down",
       "equipment": "Bar",
-      "params": {"hang": true, "gripHalf": 0.4, "touchFront": 0.1, "touchUp": 0.05, "elbowOut": "auto"},
+      "params": {"scapTravel": 0, "hang": true, "gripHalf": 0.4, "touchFront": 0.1, "touchUp": 0.05, "elbowOut": "auto"},
       "jointScale": {
         "elbow": {
           "grid": {
@@ -199,7 +199,7 @@
       "id": "chin-up",
       "name": "Chin-up, palms up",
       "equipment": "Bar",
-      "params": {"hang": true, "gripHalf": 0.2, "touchFront": 0.12, "touchUp": 0.05, "elbowOut": 0},
+      "params": {"scapTravel": 0, "hang": true, "gripHalf": 0.2, "touchFront": 0.12, "touchUp": 0.05, "elbowOut": 0},
       "jointScale": {
         "elbow": {
           "grid": {
@@ -217,7 +217,7 @@
       "id": "neutral",
       "name": "Neutral grip (parallel handles)",
       "equipment": "Parallel handles",
-      "params": {"hang": true, "gripHalf": 0.25, "touchFront": 0.12, "touchUp": 0.05, "elbowOut": 0},
+      "params": {"scapTravel": 0, "hang": true, "gripHalf": 0.25, "touchFront": 0.12, "touchUp": 0.05, "elbowOut": 0},
       "jointScale": {
         "elbow": {
           "grid": {
@@ -264,6 +264,15 @@
       "unit": "cm",
       "scale": 100,
       "auto": "Under the bar (auto)"
+    },
+    {
+      "key": "scapTravel",
+      "label": "Shoulder blades: raised overhead → pulled down (travel)",
+      "min": 0,
+      "max": 0.08,
+      "step": 0.005,
+      "unit": "cm",
+      "scale": 100
     }
   ],
   "wger": {

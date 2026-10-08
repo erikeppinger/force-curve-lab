@@ -1,4 +1,5 @@
-// Shoulder-blade sliders: bench (pulled back, up/down) and rows (reach forward → squeeze back).
+// Shoulder-blade sliders: bench (pulled back, up/down), rows (reach forward → squeeze back),
+// pull-ups and pulldowns (raised overhead → pulled down).
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -16,7 +17,7 @@ const shoulder = (r) => r.frames.upperArm.from;
 const torques = (r) => r.joints.map((j) => j.torque);
 
 test("sliders at 0 change nothing (the shoulder joints stay where they were)", () => {
-  for (const [id, vid, key] of [["bench-press", "flat", "scapRetract"], ["bent-over-row", "barbell", "scapTravel"], ["seated-row", load("seated-row").variants[0].id, "scapTravel"]]) {
+  for (const [id, vid, key] of [["bench-press", "flat", "scapRetract"], ["bent-over-row", "barbell", "scapTravel"], ["seated-row", load("seated-row").variants[0].id, "scapTravel"], ["pull-up", load("pull-up").variants[0].id, "scapTravel"], ["lat-pulldown", load("lat-pulldown").variants[0].id, "scapTravel"]]) {
     const ex = load(id);
     const v = ex.variants.find((y) => y.id === vid);
     const params = Object.fromEntries(Object.entries(v.params).filter(([k]) => !k.startsWith("scap")));
@@ -64,4 +65,15 @@ test("rows: the shoulder starts reached forward and ends squeezed back, `travel`
   const plain = run("bent-over-row", "barbell", 100), squeeze = run("bent-over-row", "barbell", 100, { scapTravel: 0.06 });
   assert.ok(J(squeeze, "shoulder") < J(plain, "shoulder"));
   assert.ok(J(squeeze, "elbow") > J(plain, "elbow"));
+});
+
+test("pull-ups: pulling the shoulder blades down by the top shortens the elbow's lever and the shoulder's", () => {
+  const vid = load("pull-up").variants[0].id;
+  const J = (r, id) => Math.abs(r.joints.find((j) => j.id === id).torque);
+  const plain = run("pull-up", vid, 100), packed = run("pull-up", vid, 100, { scapTravel: 0.06 });
+  assert.ok(J(packed, "elbow") < J(plain, "elbow"));
+  assert.ok(J(packed, "shoulder-ext") < J(plain, "shoulder-ext"));
+  // At the start (arms straight, shoulder blades raised) nothing changes: the hands just start higher.
+  const b0 = run("pull-up", vid, 0), p0 = run("pull-up", vid, 0, { scapTravel: 0.06 });
+  for (const j of b0.joints) assert.ok(Math.abs(j.torque - p0.joints.find((k) => k.id === j.id).torque) < 1e-6, j.id);
 });
