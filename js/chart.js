@@ -41,8 +41,11 @@ export function renderChart(svg, { xRange, yMax, yMin = 0, series, bands = [], m
   const Y = (y) => H - M.b - ((Math.min(top, Math.max(bottom, y)) - bottom) / (top - bottom)) * (H - M.t - M.b);
 
   bands.forEach((b, i) => {
-    el("rect", { x: X(b.from), y: M.t, width: X(b.to) - X(b.from), height: H - M.t - M.b, class: `band band-${i % 2}` }, svg);
-    el("text", { x: (X(b.from) + X(b.to)) / 2, y: M.t + 12, class: "band-label", "text-anchor": "middle" }, svg).textContent = b.label;
+    // Only the part inside the x range (a variant can have a shorter range than the exercise).
+    const from = Math.max(x0, b.from), to = Math.min(x1, b.to);
+    if (to <= from) return;
+    el("rect", { x: X(from), y: M.t, width: X(to) - X(from), height: H - M.t - M.b, class: `band band-${i % 2}` }, svg);
+    el("text", { x: (X(from) + X(to)) / 2, y: M.t + 12, class: "band-label", "text-anchor": "middle" }, svg).textContent = b.label;
   });
 
   for (let v = bottom; v <= top + 1e-9; v += step) {

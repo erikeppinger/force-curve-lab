@@ -21,7 +21,7 @@
       "angleLabel": "upper-arm angle (0° = out to the side, 90° = up)",
       "peakTorqueNm": 92,
       "strength": {
-        "points": [[-30, 1.0], [60, 1.0], [90, 0.75], [120, 0.45]],
+        "points": [[-30, 1], [60, 1], [90, 0.75], [120, 0.45]],
         "note": "Relative horizontal-adduction strength vs arm angle (0° = arms out in line with the shoulders): constant from 30° behind that line to 60° in front, then a sharp drop (Williams & Stutzman, 10 men; Whitley, 31 men, found no change over 60°; both via Kulig et al.). How far it drops by 90–120° isn't given numerically, so those values are estimates. Peak per arm: Lategan's mean horizontal-adduction torque for men, 92 ± 23 Nm (isokinetic, 60°/s, not gravity-corrected).",
         "source": "Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (shape; drop beyond 60° estimated); peak: Lategan L (2002). Normative isokinetic torque values for rehabilitation in South Africa. DPhil thesis, University of Pretoria, Table 6.17 (103 men aged 16–29, isokinetic 60°/s, concentric, lying on the back with the arm out at 90°, not gravity-corrected). https://repository.up.ac.za/handle/2263/27346"
       }
@@ -34,7 +34,7 @@
       "peakTorqueNm": 68,
       "negative": {"action": "Shoulder extension", "peakTorqueNm": 93},
       "strength": {
-        "points": [[-60, 1.0], [180, 1.0]],
+        "points": [[-60, 1], [180, 1]],
         "note": "Shoulder flexion (positive) and extension (negative) peak torque per arm, taken as constant across the range: Mayer's isometric means for men (68 and 93 Nm), measured standing.",
         "source": "Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25, Table 2 (men, dominant side, isometric)"
       }
@@ -47,7 +47,7 @@
       "peakTorqueNm": 30,
       "negative": {"action": "Internal rotation", "peakTorqueNm": 43},
       "strength": {
-        "points": [[-60, 1.0], [180, 1.0]],
+        "points": [[-60, 1], [180, 1]],
         "note": "Shoulder external (positive) and internal (negative) rotation peak torque per arm, taken as constant: Mayer's isometric means for men (30 and 43 Nm).",
         "source": "Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25, Table 2 (men, dominant side, isometric)"
       }
@@ -60,17 +60,7 @@
       "peakTorqueNm": 80,
       "negative": {"action": "Elbow flexion", "peakTorqueNm": 80},
       "strength": {
-        "points": [
-          [20, 0.55],
-          [30, 0.79],
-          [45, 0.97],
-          [54, 1.0],
-          [60, 0.99],
-          [75, 0.91],
-          [90, 0.8],
-          [105, 0.72],
-          [116, 0.71]
-        ],
+        "points": [[20, 0.55], [30, 0.79], [45, 0.97], [54, 1], [60, 0.99], [75, 0.91], [90, 0.8], [105, 0.72], [116, 0.71]],
         "note": "Relative isometric elbow-extension torque vs elbow flexion (0° = straight), peak about 55°: the paper's mean cubic fit, normalised, inside the measured 20–116° (held flat beyond). Measured with the upper arm raised 90° to the side, so the long head's length differs from overhead or arm-at-side positions. Peak per arm: the paper's male mean, 77 Nm (rounded to 80 for trained lifters).",
         "source": "Pinter IJ, Bobbert MF, van Soest AJ, Smeets JBJ (2010). Isometric torque–angle relationships of the elbow flexors and extensors in the transverse plane. J Electromyogr Kinesiol 20:923–931. doi:10.1016/j.jelekin.2010.05.001"
       }
@@ -83,7 +73,7 @@
       "passive": true,
       "negative": {"action": "Hand pushed outwards"},
       "strength": {
-        "points": [[-60, 1.0], [180, 1.0]],
+        "points": [[-60, 1], [180, 1]],
         "note": "No muscle capacity: the elbow's sideways moment is carried mostly by ligaments and the joint surfaces, so it is shown as torque only.",
         "source": "Not applicable: carried by ligaments and joint surfaces, so no muscle strength is used"
       }
@@ -99,7 +89,7 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "joint": "shoulder-h",
-      "weight": [[-60, 1.0], [180, 1.0]],
+      "weight": [[-60, 1], [180, 1]],
       "note": "Main horizontal adductor. Measured: wider grips raise the shoulder's moment and the abdominal head's EMG; the sternocostal head barely changes (Mausehund et al.).",
       "source": "Activation weights: TODO. Grip-width effect: Mausehund L, Werkhausen A, Bartsch J, Krosshaug T (2022). Understanding bench press biomechanics — the necessity of measuring lateral barbell forces. J Strength Cond Res 36(10):2685–2695",
       "draw3d": {"seg": "upperArm", "side": "medial", "along": [-0.06, 0.12], "offset": 0.04, "w": 0.07}
@@ -112,7 +102,7 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "joint": "shoulder-flex",
-      "weight": [[-60, 1.0], [180, 1.0]],
+      "weight": [[-60, 1], [180, 1]],
       "note": "Shoulder flexor; also helps horizontal adduction.",
       "source": "TODO: check against EMG literature",
       "sign": 1,
@@ -127,7 +117,7 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "joint": "elbow",
-      "weight": [[0, 0.9], [90, 1.0], [150, 1.0]],
+      "weight": [[0, 0.9], [90, 1], [150, 1]],
       "note": "Elbow extensor. Measured: narrower grips raise the elbow's moment (by up to 26%) and the lateral head's EMG (Mausehund et al.). This model's elbow moment arm (15–20 cm) is about twice the measured one (7–9 cm), so its triceps numbers run high.",
       "source": "Activation weights: TODO. Grip-width effect and moment arms: Mausehund L, Werkhausen A, Bartsch J, Krosshaug T (2022). Understanding bench press biomechanics — the necessity of measuring lateral barbell forces. J Strength Cond Res 36(10):2685–2695",
       "sign": 1,
@@ -142,10 +132,11 @@
       "role": "Stabiliser",
       "driver": "jointEffort",
       "joint": "shoulder-rotation",
-      "weight": [[-60, 1.0], [180, 1.0]],
+      "weight": [[-60, 1], [180, 1]],
       "note": "External rotators of the rotator cuff: hold the upper arm from turning inwards.",
       "source": "TODO: check against EMG literature",
-      "sign": 1
+      "sign": 1,
+      "draw3d": {"seg": "upperArm", "side": "posterior", "along": [-0.07, -0.01], "offset": 0.05, "w": 0.04}
     },
     {
       "id": "subscapularis",
@@ -155,10 +146,11 @@
       "role": "Stabiliser",
       "driver": "jointEffort",
       "joint": "shoulder-rotation",
-      "weight": [[-60, 1.0], [180, 1.0]],
+      "weight": [[-60, 1], [180, 1]],
       "note": "Internal rotator of the rotator cuff: holds the upper arm from turning outwards.",
       "source": "TODO: check against EMG literature",
-      "sign": -1
+      "sign": -1,
+      "draw3d": {"seg": "upperArm", "side": "anterior", "along": [-0.07, -0.01], "offset": 0.04, "w": 0.04}
     }
   ],
   "phases": [
@@ -179,35 +171,79 @@
       "id": "flat",
       "name": "Flat bench, medium grip",
       "equipment": "Barbell, flat bench",
-      "params": {"scapRetract": 0, "scapElevate": 0, "gripHalf": 0.35, "elbowOut": "auto", "touch": 0.16, "chestDepth": 0.2, "incline": 0, "barSpread": 0},
+      "params": {
+        "scapRetract": 0,
+        "scapElevate": 0,
+        "gripHalf": 0.35,
+        "elbowOut": "auto",
+        "touch": 0.16,
+        "chestDepth": 0.2,
+        "incline": 0,
+        "barSpread": 0
+      },
       "notes": "Medium grip. Grip width from Mausehund et al.'s arm–bar angle at lockout (75°), converted with this model's arm length and shoulder width; touch point from their measured shoulder moment arm at the bottom; chest raised 20 cm above the shoulder joints for the arch (their arch angle was about 30°; the height is an estimate). Elbows as close under the bar as the arm allows (the shoulder joints stay put): this placement gives elbow moment arms close to the ones Mausehund et al. measured for the medium grip, too small for the wide grip and too large for the narrow one (see docs/model-limits.md). Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     },
     {
       "id": "wide",
       "name": "Wide grip",
       "equipment": "Barbell, flat bench",
-      "params": {"scapRetract": 0, "scapElevate": 0, "gripHalf": 0.45, "elbowOut": "auto", "touch": 0.13, "chestDepth": 0.2, "incline": 0, "barSpread": 0},
+      "params": {
+        "scapRetract": 0,
+        "scapElevate": 0,
+        "gripHalf": 0.45,
+        "elbowOut": "auto",
+        "touch": 0.13,
+        "chestDepth": 0.2,
+        "incline": 0,
+        "barSpread": 0
+      },
       "notes": "Hands far out: the upper arms flare, the pecs (horizontal adduction) work much harder and the triceps less. The bar also travels less. Grip width from Mausehund et al.'s arm–bar angle at lockout (65°), converted with this model's arm length and shoulder width, touch point an estimate; chest raised 20 cm above the shoulder joints for the arch (their arch angle was about 30°; the height is an estimate). Elbows as close under the bar as the arm allows (the shoulder joints stay put): this placement gives elbow moment arms close to the ones Mausehund et al. measured for the medium grip, too small for the wide grip and too large for the narrow one (see docs/model-limits.md). Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     },
     {
       "id": "close",
       "name": "Close grip",
       "equipment": "Barbell, flat bench",
-      "params": {"scapRetract": 0, "scapElevate": 0, "gripHalf": 0.245, "elbowOut": "auto", "touch": 0.2, "chestDepth": 0.2, "incline": 0, "barSpread": 0},
+      "params": {
+        "scapRetract": 0,
+        "scapElevate": 0,
+        "gripHalf": 0.245,
+        "elbowOut": "auto",
+        "touch": 0.2,
+        "chestDepth": 0.2,
+        "incline": 0,
+        "barSpread": 0
+      },
       "notes": "Hands about shoulder width, elbows tucked, bar lower on the chest: the triceps take over and the pecs' across-the-body work nearly vanishes. Grip width from Mausehund et al.'s arm–bar angle at lockout (85°), converted with this model's arm length and shoulder width; touch point from their measured shoulder moment arm at the bottom; chest raised 20 cm above the shoulder joints for the arch (their arch angle was about 30°; the height is an estimate). Elbows as close under the bar as the arm allows (the shoulder joints stay put): this placement gives elbow moment arms close to the ones Mausehund et al. measured for the medium grip, too small for the wide grip and too large for the narrow one (see docs/model-limits.md). Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     },
     {
       "id": "elbows-out",
       "name": "Medium grip, elbows flared past the hands",
       "equipment": "Barbell, flat bench",
-      "params": {"scapRetract": 0, "scapElevate": 0, "gripHalf": 0.35, "elbowOut": 0.06, "touch": 0.04, "chestDepth": 0.16, "incline": 0, "barSpread": 0},
+      "params": {
+        "scapRetract": 0,
+        "scapElevate": 0,
+        "gripHalf": 0.35,
+        "elbowOut": 0.06,
+        "touch": 0.04,
+        "chestDepth": 0.16,
+        "incline": 0,
+        "barSpread": 0
+      },
       "notes": "Elbows pushed 6 cm outside the hands, no arch and the bar lowered high on the chest, near the neck: compare the rotation torque, the flare angle and the elbow's moment arm with the medium grip. Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     },
     {
       "id": "incline",
       "name": "Incline bench (30°), medium grip",
       "equipment": "Barbell, incline bench",
-      "params": {"scapRetract": 0, "scapElevate": 0, "gripHalf": 0.35, "elbowOut": "auto", "touch": 0.03, "incline": 30, "barSpread": 0},
+      "params": {
+        "scapRetract": 0,
+        "scapElevate": 0,
+        "gripHalf": 0.35,
+        "elbowOut": "auto",
+        "touch": 0.03,
+        "incline": 30,
+        "barSpread": 0
+      },
       "notes": "Bench tilted 30°: the bar touches the upper chest and presses vertically over the shoulders. Elbows as close under the bar as the arm allows. Each hand pushes up with half the bar by default. Lifters also pull the bar apart: Mausehund et al. measured a lateral force of about 17% of the vertical force with a medium grip, 38% wide and about 0% narrow (try the bar-spread slider)."
     }
   ],

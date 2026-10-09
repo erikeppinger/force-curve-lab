@@ -62,7 +62,7 @@
 // Rendered from the exercise data files; text only (no HTML from the data is interpreted).
 const EXERCISES = [
   "biceps-curl", "triceps-extension", "wrist-curl", "reverse-wrist-curl", "edge-lift", "lateral-raise", "front-raise", "chest-fly", "straight-arm-pulldown",
-  "leg-extension", "leg-curl", "calf-raise", "hip-abduction", "glute-kickback",
+  "leg-extension", "leg-curl", "calf-raise", "hip-abduction", "hip-adduction", "glute-kickback",
   "squat", "romanian-deadlift", "deadlift", "split-squat", "leg-press", "hip-thrust", "bench-press", "overhead-press", "bent-over-row", "seated-row", "lat-pulldown", "pull-up",
 ];
 
@@ -159,6 +159,11 @@ function exerciseSection(ex, refs) {
     if (s.note) { out.push(para(`Correction for ${id}: ${s.note}`, "muted")); out.push(sourceLine(s.source)); }
   }
   if (ex.finger) out.push(para("The edge lift has its own detailed description: see the link at the top.", "muted"));
+  if (ex.hipModel) {
+    out.push(h("h3", {}, "Muscle shares: OpenSim hip model"));
+    out.push(para(ex.hipModel.note));
+    out.push(sourceLine(ex.hipModel.source));
+  }
 
   if (ex.segments?.massNote) {
     out.push(h("h3", {}, "Body segments"));

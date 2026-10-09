@@ -67,6 +67,9 @@ def main(argv=None):
     ap.add_argument("--hip-range", type=parse_range, default=frange(-20, 120, 10), help="hip flexion grid, lo:hi:step degrees (default -20:120:10). Write it with = when it starts with a minus: --hip-range=-20:120:10")
     ap.add_argument("--knee-range", type=parse_range, default=frange(0, 120, 10), help="knee grid (default 0:120:10)")
     ap.add_argument("--ankle-range", type=parse_range, default=frange(-30, 30, 10), help="ankle grid (default -30:30:10); e.g. --ankle-range=-30:30:5")
+    ap.add_argument("--abd-hip-range", type=parse_range, default=frange(0, 120, 15), help="hip flexion grid of the hip-adduction grids (default 0:120:15)")
+    ap.add_argument("--adduction-range", type=parse_range, default=frange(-60, 20, 10), help="hip adduction grid, + = adducted (default -60:20:10; write --adduction-range=-60:20:10)")
+    ap.add_argument("--grids", default="hip-knee,knee-ankle,hip-adduction,hip-adduction-knee90", help="which grids to export (comma-separated)")
     args = ap.parse_args(argv)
 
     model = osim.Model(args.model)
@@ -81,6 +84,10 @@ def main(argv=None):
             sys.exit(f"Coordinate {name!r} not in the model. Its coordinates: {', '.join(names)}. "
                      f"Pass the right one with --{key.replace('_', '-')}.")
         coords[key] = coordset.get(name)
+
+    # Poses may go past a coordinate's range (e.g. 60° of abduction): no clamping.
+    for c in coords.values():
+        c.setClamped(state, False)
 
     def set_pose(pose):
         """pose: {key: degrees}; every listed coordinate not in pose is set to 0."""
@@ -105,31 +112,43 @@ def main(argv=None):
                     crosses[m.getName()].add(key)
     leg = [m for m in leg if crosses[m.getName()]]
 
-    def capacity(m):
-        """Active (full activation) and passive fibre force along the tendon at the current pose."""
-        try:
-            m.setActivation(state, 1.0)
-            model.equilibrateMuscles(state)
-            model.realizeDynamics(state)
-            return m.getActiveFiberForceAlongTendon(state), m.getPassiveFiberForceAlongTendon(state)
-        except Exception:  # some muscle types have no activation state; report no force rather than guess
-            return None, None
+    def capacities():
+        """Active (full activation) and passive fibre force along the tendon of every leg muscle at
+        the current pose: all activations 1, one fibre–tendon equilibrium for the whole model."""
+        out = {}
+        for m in leg:
+            try:
+                m.setActivation(state, 1.0)
+            except Exception:  # some muscle types have no activation state
+                out[m.getName()] = (None, None)
+        model.equilibrateMuscles(state)
+        model.realizeDynamics(state)
+        for m in leg:
+            if m.getName() not in out:
+                out[m.getName()] = (m.getActiveFiberForceAlongTendon(state), m.getPassiveFiberForceAlongTendon(state))
+        return out
 
     grids = []
-    for name, (k1, r1), (k2, r2) in [
-        ("hip-knee", ("hip_flexion", args.hip_range), ("knee", args.knee_range)),
-        ("knee-ankle", ("knee", args.knee_range), ("ankle", args.ankle_range)),
+    wanted = set(args.grids.split(","))
+    for name, (k1, r1), (k2, r2), fixed in [
+        ("hip-knee", ("hip_flexion", args.hip_range), ("knee", args.knee_range), {}),
+        ("knee-ankle", ("knee", args.knee_range), ("ankle", args.ankle_range), {}),
+        ("hip-adduction", ("hip_flexion", args.abd_hip_range), ("hip_adduction", args.adduction_range), {}),
+        ("hip-adduction-knee90", ("hip_flexion", args.abd_hip_range), ("hip_adduction", args.adduction_range), {"knee": 90}),
     ]:
+        if name not in wanted:
+            continue
         data = {m.getName(): {"momentArm": {k: [] for k in sorted(crosses[m.getName()])}, "activeForce": [], "passiveForce": []} for m in leg}
         for a1 in r1:
             rows = {m.getName(): {"momentArm": {k: [] for k in data[m.getName()]["momentArm"]}, "activeForce": [], "passiveForce": []} for m in leg}
             for a2 in r2:
-                set_pose({k1: a1, k2: a2})
+                set_pose({**fixed, k1: a1, k2: a2})
+                caps = capacities()
                 for m in leg:
                     row = rows[m.getName()]
                     for k in row["momentArm"]:
                         row["momentArm"][k].append(round(m.computeMomentArm(state, coords[k]), 5))
-                    act, pas = capacity(m)
+                    act, pas = caps[m.getName()]
                     row["activeForce"].append(None if act is None else round(act, 1))
                     row["passiveForce"].append(None if pas is None else round(pas, 1))
             for mname, row in rows.items():
@@ -142,7 +161,7 @@ def main(argv=None):
             "name": name,
             "rows": {"coordinate": k1, "degrees": r1},
             "columns": {"coordinate": k2, "degrees": r2},
-            "fixedAtZero": [k for k in coords if k not in (k1, k2)],
+            "fixed": {k: fixed.get(k, 0) for k in coords if k not in (k1, k2)},
             "muscles": data,
         })
 

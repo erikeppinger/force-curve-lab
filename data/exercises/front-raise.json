@@ -5,8 +5,8 @@
   "movingJoint": "proximal",
   "view": "side",
   "angleLabel": "Shoulder angle",
-  "angleRange": [0, 90],
-  "angleNote": "Shoulder flexion: 0° = arm by your side, 90° = arm pointing forward at shoulder height.",
+  "angleRange": [0, 180],
+  "angleNote": "Shoulder flexion: 0° = arm by your side, 90° = arm pointing forward at shoulder height, 180° = straight overhead (the overhead variant).",
   "jointNote": "Not truly one joint: the shoulder blade turns upwards on the rib cage as the arm rises, so the angle here is the whole arm against the trunk. In 12 people reaching overhead, the shoulder joint itself moved about 2.3° for every 1° of shoulder-blade rotation on the way up (2.7 on the way down), and the first 30° came mostly from the shoulder joint (about 3.7 : 1); Inman's classic figure is 2 : 1. Above about 30° a good part of the raise is the shoulder blade turning. The model treats the arm as turning about one fixed shoulder point; the shoulder-blade muscles (trapezius, serratus anterior) that turn the blade aren't analysed.",
   "jointNoteSource": "Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001",
   "segments": {
@@ -24,8 +24,8 @@
   "ui": {"load": [0.5, 25, 0.5], "strength": [20, 110]},
   "strengthCurve": {
     "label": "Shoulder flexor strength",
-    "points": [[0, 1.0], [45, 0.96], [90, 0.92]],
-    "note": "Relative shoulder-flexion strength vs flexion: \"descending\" in all three studies Kulig et al. reviewed, strongest low, with a plateau around 45–90° and a clear drop only beyond about 110°. The size of the drop across 0–90° isn't given numerically, so these values are an estimate of that shape; Mayer et al. found the isometric peak at 35–72° (men). Peak torque default: Mayer's isometric shoulder flexion, men, 68 ± 18 Nm.",
+    "points": [[0, 1], [45, 0.96], [90, 0.92]],
+    "note": "Relative shoulder-flexion strength vs flexion: \"descending\" in all three studies Kulig et al. reviewed, strongest low, with a plateau around 45–90° and a clear drop only beyond about 110°. The size of the drop across 0–90° isn't given numerically, so these values are an estimate of that shape; Mayer et al. found the isometric peak at 35–72° (men). Peak torque default: Mayer's isometric shoulder flexion, men, 68 ± 18 Nm. Above 90° (the overhead variant) the 90° value is held: no measured curve was found that goes higher (Mayer et al. place the isometric peaks in front of the body and below head level; Kulig et al. describe a clear drop in flexion strength beyond about 110°, without numbers), so effort overhead is probably underestimated.",
     "source": "Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (shape); Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25. doi:10.1055/s-2007-1021105 (peak torque)"
   },
   "postures": {
@@ -50,7 +50,7 @@
       "wgerId": 2,
       "role": "Prime mover",
       "driver": "jointEffort",
-      "weight": [[0, 0.8], [45, 1.0], [90, 1.0]],
+      "weight": [[0, 0.8], [45, 1], [90, 1]],
       "note": "Main shoulder flexor.",
       "source": "TODO: check against EMG literature",
       "draw": {"seg": "proximal", "along": [-0.03, 0.15], "offset": 0.035, "w": 0.055, "layer": 2}
@@ -65,7 +65,11 @@
       "weight": [[0, 0.5], [60, 0.6], [90, 0.5]],
       "note": "Upper chest; assists flexion in the lower and middle range.",
       "source": "TODO: check against EMG literature",
-      "draw": {"points": [[0.1, -0.08], [0.05, -0.02]], "w": 0.05, "layer": 1}
+      "draw": {
+        "points": [[0.1, -0.08], [0.05, -0.02]],
+        "w": 0.05,
+        "layer": 1
+      }
     },
     {
       "id": "lateral-deltoid",
@@ -89,7 +93,35 @@
       "weight": [[0, 0.15], [45, 0.3], [90, 0.6]],
       "note": "Rotates the shoulder blade upwards as the arm rises.",
       "source": "TODO: check against EMG literature",
-      "draw": {"points": [[-0.04, 0.15], [-0.05, 0.03]], "w": 0.04, "layer": 0}
+      "draw": {
+        "points": [[-0.04, 0.15], [-0.05, 0.03]],
+        "w": 0.04,
+        "layer": 0
+      }
+    },
+    {
+      "id": "serratus-anterior",
+      "region": "shoulder",
+      "regionPath": "serratus-anterior",
+      "name": "Serratus anterior",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.1], [30, 0.2], [90, 0.5], [150, 0.85], [180, 0.9]],
+      "note": "Turns the shoulder blade upwards (with the trapezius) so the arm can rise forward and up; its share grows as the arm goes up, and most of the motion above shoulder height is the shoulder blade turning. Estimated shape: the model has no shoulder blade.",
+      "source": "TODO: EMG; direction from Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001 (direction only)"
+    },
+    {
+      "id": "lower-trapezius",
+      "region": "shoulder",
+      "regionPath": "lower-trapezius",
+      "name": "Lower trapezius",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.05], [60, 0.15], [90, 0.35], [150, 0.7], [180, 0.75]],
+      "note": "Part of the upward-rotation pair with the serratus anterior and upper trapezius, mostly overhead. Estimated shape.",
+      "source": "TODO: EMG; direction from Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001 (direction only)"
     }
   ],
   "phases": [
@@ -107,6 +139,11 @@
       "name": "Top",
       "range": [70, 90],
       "text": "Arm near horizontal: the dumbbell's moment arm is the full arm length."
+    },
+    {
+      "name": "Overhead",
+      "range": [90, 180],
+      "text": "Above shoulder height (overhead variant): the load's lever shrinks again, and the shoulder blade turning upwards carries more of the motion."
     }
   ],
   "variants": [
@@ -116,16 +153,21 @@
       "equipment": "Dumbbell",
       "posture": "standing",
       "load": {"type": "gravity"},
-      "notes": "Torque = m·g·L·sin(angle): zero at the bottom, maximum at shoulder height. Same curve as the lateral raise, in a different plane."
+      "notes": "Torque = m·g·L·sin(angle): zero at the bottom, maximum at shoulder height. Same curve as the lateral raise, in a different plane.",
+      "angleRange": [0, 90]
     },
     {
       "id": "cable",
       "name": "Cable front raise (low pulley behind)",
       "equipment": "Cable",
       "posture": "standing",
-      "load": {"type": "cable", "pulley": {"x": -0.3, "y": -1.35}},
+      "load": {
+        "type": "cable",
+        "pulley": {"x": -0.3, "y": -1.35}
+      },
       "adjustablePulley": true,
-      "notes": "Facing away from a low pulley, the cable running between your legs. It already pulls the arm back at the bottom, so the curve is flatter than with a dumbbell."
+      "notes": "Facing away from a low pulley, the cable running between your legs. It already pulls the arm back at the bottom, so the curve is flatter than with a dumbbell.",
+      "angleRange": [0, 90]
     },
     {
       "id": "incline",
@@ -135,7 +177,16 @@
       "gravity": {"x": 0.7071068, "y": -0.7071068},
       "viewLabel": "Side view (leaning on a 45° bench)",
       "load": {"type": "gravity"},
-      "notes": "Leaning face-down on a 45° bench tilts gravity relative to the body. Below 45° gravity helps raise the arm, and the torque keeps rising past shoulder height (outside this range)."
+      "notes": "Leaning face-down on a 45° bench tilts gravity relative to the body. Below 45° gravity helps raise the arm, and the torque keeps rising past shoulder height (outside this range).",
+      "angleRange": [0, 90]
+    },
+    {
+      "id": "overhead",
+      "name": "Dumbbell front raise to overhead",
+      "equipment": "Dumbbell",
+      "posture": "standing",
+      "load": {"type": "gravity"},
+      "notes": "The same raise continued over the head. The load's lever (arm length × sin of the angle) peaks at shoulder height and shrinks to zero overhead, so mechanically the top half gets easier; the shoulder blade does more and more of the turning (serratus anterior, trapezius)."
     }
   ],
   "wger": {

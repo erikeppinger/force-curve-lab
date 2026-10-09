@@ -13,6 +13,7 @@
   --strength: #8a8f98;
   --muscle-on: #d23c3c;
   --muscle-base: #e9cfc8;
+  --muscle-hold: #c27400;
   --body: #cfcac0;
   --bone: #868c95;
   --body-edge: #8d887d;
@@ -43,6 +44,7 @@
     --strength: #7d838c;
     --muscle-on: #ff5a50;
     --muscle-base: #5a3d3a;
+    --muscle-hold: #ffb02e;
     --body: #565b63;
     --bone: #a3a9b2;
     --equipment: #9aa0a8;
@@ -71,6 +73,7 @@
   --strength: #7d838c;
   --muscle-on: #ff5a50;
   --muscle-base: #5a3d3a;
+  --muscle-hold: #ffb02e;
   --body: #565b63;
   --bone: #a3a9b2;
   --equipment: #9aa0a8;
@@ -184,6 +187,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .toe { fill: var(--body-edge); stroke: none; }
 #figure .muscle-base { stroke: var(--muscle-base); stroke-linecap: round; }
 #figure .muscle-on { stroke: var(--muscle-on); stroke-linecap: round; }
+#figure .muscle-hold { stroke: var(--muscle-hold); stroke-linecap: round; }
 #figure .weight { fill: var(--equipment); }
 #figure .plate { fill-opacity: 0.3; }
 #figure .handle { fill: var(--cable); }
@@ -229,6 +233,9 @@ input[type="range"]:disabled { opacity: 0.4; }
 .joint-table thead th { font-size: 0.78rem; color: var(--muted); font-weight: 500; }
 .joint-table tbody th { font-weight: 700; border-left: 4px solid; }
 .joint-table .jt-hip { border-left-color: var(--j-hip); }
+.joint-table .jt-hold { border-left-color: var(--muted); font-weight: 600; }
+.joint-table .hold-head th { border-left: 0; font-size: 0.78rem; color: var(--muted); font-weight: 600; text-align: left; padding-top: 12px; }
+.holding-switch { display: flex; flex-direction: row; gap: 8px; align-items: center; margin-top: 8px; font-size: 0.85rem; color: var(--muted); min-height: 32px; }
 .joint-table .jt-knee { border-left-color: var(--j-knee); }
 .joint-table .jt-ankle { border-left-color: var(--j-ankle); }
 .joint-table .jt-shoulder { border-left-color: var(--j-shoulder); }

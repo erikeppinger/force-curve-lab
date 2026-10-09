@@ -92,10 +92,10 @@ const variantOf = (ex) => (id) => ex.variants.find((x) => x.id === id);
     close(analyze(ex, v("single-leg"), -5, opts).capacity / analyze(ex, v("seated"), -5, opts).capacity, strengthScaleAt(v("single-leg"), -5) / v("seated").strengthScale.factor);
   });
 
-  test("standing calf raise: with the knee straight, strength keeps about half its foot-flat value near the top (Chen & Franklin), so a body-weight raise stays possible", () => {
+  test("standing calf raise: with the knee straight, strength keeps about half its foot-flat value near the top (OpenSim knee-straight curve, in line with Chen & Franklin), so a body-weight raise stays possible", () => {
     const at = (x) => analyze(ex, v("single-leg"), x, opts).capacity;
     assert.ok(Math.abs(at(34) / at(0) - 0.45) < 0.03, `${at(34) / at(0)}`);
-    assert.ok(Math.abs(at(20) / at(0) - 0.7) < 0.03, `${at(20) / at(0)}`);
+    assert.ok(Math.abs(at(20) / at(0) - 0.74) < 0.03, `${at(20) / at(0)}`);
     const noLoad = { ...opts, loadKg: 0 };
     for (let x = -20; x <= 40; x += 2) assert.ok(analyze(ex, v("single-leg"), x, noLoad).effort < 1.05, `single-leg body weight @${x}`);
   });
@@ -140,5 +140,25 @@ const variantOf = (ex) => (id) => ex.variants.find((x) => x.id === id);
     const d = { x: pulley.x - tip.x, y: pulley.y - tip.y };
     const fx = (10 * G * d.x) / Math.hypot(d.x, d.y);
     close(analyze(ex, v("cable"), 0, opts).loadTorque, -tip.y * fx); // w = −1, r × F = −y·Fx at x = 0
+  });
+}
+
+// ---------- glute kickback: knee-bend slider ----------
+{
+  const ex = load("glute-kickback");
+  const kneeling = ex.variants.find((x) => x.id === "kneeling");
+  const o = (knee) => ({ loadKg: 4, peakTorqueNm: 200, bodyMassKg: 75, placement: { knee } });
+  test("kickback knee slider: the preset 90° gives the same pose and torque as a fixed 90° bend", () => {
+    const { placement, ...plain } = ex;
+    const fixed = analyze(plain, { ...kneeling, distalBend: -90 }, 30, { ...o(90), placement: undefined });
+    const slid = analyze(ex, kneeling, 30, o(90));
+    assert.ok(Math.abs(fixed.jointTorque - slid.jointTorque) < 1e-9);
+    assert.ok(Math.abs(fixed.pose.tip.x - slid.pose.tip.x) < 1e-12);
+  });
+  test("kickback knee slider: with the knee bent 90° the hamstrings nearly drop out near full hip extension, strength × 0.82 (Yamamoto)", () => {
+    const val = (knee) => Object.fromEntries(muscleActivation(ex, kneeling, analyze(ex, kneeling, -20, o(knee)), -20).map((m) => [m.id, m.value]));
+    const straight = val(0), bent = val(90);
+    assert.ok(bent.hamstrings < 0.1 * straight.hamstrings, `${bent.hamstrings} vs ${straight.hamstrings}`);
+    assert.ok(Math.abs(analyze(ex, kneeling, -20, o(90)).strengthScale - 0.82) < 1e-9);
   });
 }

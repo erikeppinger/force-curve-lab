@@ -8,10 +8,11 @@ import { fetchExercise, descriptionParagraphs, bodyBackground, muscleOverlay, is
 import { loadRegion, regionsOf, viewsFor, renderRegionView, regionValues } from "./regions.js";
 import { analyzeEdge, sampleEdge, idealEdge, liftProfile } from "./finger.js";
 import { renderFingersView, renderHandView, renderArmView } from "./edgefig.js";
+import { hipScene3d } from "./hipmodel.js";
 
 const EXERCISES = [
   "biceps-curl", "triceps-extension", "wrist-curl", "reverse-wrist-curl", "edge-lift", "lateral-raise", "front-raise", "chest-fly", "straight-arm-pulldown",
-  "leg-extension", "leg-curl", "calf-raise", "hip-abduction", "glute-kickback",
+  "leg-extension", "leg-curl", "calf-raise", "hip-abduction", "hip-adduction", "glute-kickback",
   "squat", "romanian-deadlift", "deadlift", "split-squat", "leg-press", "hip-thrust", "bench-press", "overhead-press", "bent-over-row", "seated-row", "lat-pulldown", "pull-up",
 ];
 const $ = (id) => document.getElementById(id);
@@ -81,8 +82,13 @@ function writeHash() {
 // ---------- setup ----------
 async function loadExercise(id) {
   const res = await fetch(`data/exercises/${id}.json`);
-  return res.json();
+  const ex = await res.json();
+  // Hip abduction / adduction: the OpenSim muscle geometry their activations and 3D figure use.
+  if (ex.hipModel) ex.hipModel.geometry = await fetch(ex.hipModel.data).then((r) => r.json()).catch(() => null);
+  return ex;
 }
+/** A 3D figure (drag to turn): the 3D lifts, and single-joint exercises with `figure3d`. */
+const is3d = (ex) => ex.view === "3d" || Boolean(ex.figure3d && ex.hipModel?.geometry);
 
 function fillSelect(sel, items, includeNone) {
   sel.replaceChildren();
@@ -142,9 +148,10 @@ function setZoom(on) {
 
 /** Foot-placement sliders (3D lifts): start from the variant's preset. */
 function setPlacement(v, override = {}) {
-  const spec = state.exercise.placement;
-  $("placement-controls").hidden = !spec;
-  if (!spec) { state.placement = null; return; }
+  // A slider can belong to some variants only (e.g. the trunk lean of a seated machine).
+  const spec = state.exercise.placement?.filter((s) => !s.variants || s.variants.includes(v.id));
+  $("placement-controls").hidden = !spec?.length;
+  if (!spec?.length) { state.placement = null; return; }
   // Values from a link: "auto" only where the slider offers it, numbers kept inside the slider's range.
   const fromLink = (s) => { const x = override[s.key]; if (x === "auto") return s.auto ? x : undefined; return Number.isFinite(x) ? Math.min(s.max, Math.max(s.min, x)) : undefined; };
   state.placement = Object.fromEntries(spec.map((s) => [s.key, fromLink(s) ?? v.params[s.key]]));
@@ -445,12 +452,14 @@ function setExercise(id, h = {}) {
   state.liftT = null;
   // A new exercise starts paused (an animation running on the previous one doesn't carry over).
   if (state.playing) { state.playing = false; $("play").textContent = "Play"; $("play").setAttribute("aria-pressed", "false"); }
-  $("view-buttons").hidden = ex.view !== "3d";
+  $("view-buttons").hidden = !is3d(ex);
   // Zoom for single-joint lifts; on by default where the moving segment is small (e.g. the hand).
-  $("zoom-buttons").hidden = Boolean(ex.model);
-  setZoom(!ex.model && (ex.defaults.zoom ?? false));
-  $("figure").classList.toggle("draggable", ex.view === "3d");
+  $("zoom-buttons").hidden = Boolean(ex.model) || ex.view === "3d"; // the 3D hip view zooms to the hip
+  setZoom(!ex.model && !is3d(ex) && (ex.defaults.zoom ?? false));
+  $("figure").classList.toggle("draggable", is3d(ex));
   $("joint-table").hidden = !multi; // the edge lift shows it in its Arm view
+  $("holding-switch").hidden = true; // shown again by renderHolding on lifts that report holding loads
+  $("holding-rows").replaceChildren();
   $("finger-set").hidden = !finger; // shown again by renderFingerSet on the edge lift
   $("edge-summary").hidden = !finger;
   $("edge-tabs").hidden = !finger;
@@ -499,7 +508,7 @@ function curves() {
   }
   const main = sampleCurve(ex, variant(), opts(variant()));
   const cmp = state.compareId ? sampleCurve(ex, variant(state.compareId), opts(variant(state.compareId))) : null;
-  const bounds = figureBounds(ex, variant(), main.map((s) => s.pose), state.pulley);
+  const bounds = is3d(ex) ? null : figureBounds(ex, variant(), main.map((s) => s.pose), state.pulley);
   curveCache = { key, same, main, cmp, bounds, ms: performance.now() - t0 };
   return curveCache;
 }
@@ -578,7 +587,7 @@ function renderMulti() {
     if (curves().camKey !== camKey) {
       Object.assign(curves(), { camKey, bounds3: bounds3d(main.filter((_, i) => i % 8 === 0 || i === main.length - 1).map((s) => scene3d(ex, s, act)), state.cam) });
     }
-    renderView3d($("figure"), scene3d(ex, r, act), state.cam, curves().bounds3);
+    renderView3d($("figure"), [...scene3d(ex, r, act), ...holdingPrims(r.holding, main)], state.cam, curves().bounds3);
   } else {
     renderMultiFigure($("figure"), { exercise: ex, variant: v, result: r, activation: act, bounds });
   }
@@ -629,6 +638,7 @@ function renderMulti() {
     tr.title = opposite && !j.negative ? `${j.name}: the opposite muscles to ${j.action.toLowerCase()} have to work here.` : action;
     return tr;
   }));
+  renderHolding(r.holding);
   const over = r.joints.filter((j) => j.effort > 1);
   $("ro-warning").hidden = !over.length;
   $("ro-warning").textContent = `Load exceeds ${over.map((j) => j.name.toLowerCase()).join(" and ")} strength here — this is where the lift would fail.`;
@@ -786,8 +796,22 @@ function renderView() {
   const act = muscleActivation(ex, v, r, state.angle);
   const { main, cmp, bounds } = curves();
 
-  const frame = state.zoom ? zoomBounds(ex, v, main.map((s) => s.pose)) : bounds;
-  renderFigure($("figure"), { exercise: ex, variant: v, result: r, activation: act, pulley: state.pulley, bounds: frame });
+  if (is3d(ex)) {
+    // Hip model: 3D figure with the muscles along their model paths. Bounds over the range for this
+    // camera (and lean), so the figure doesn't jump while animating.
+    const geo = ex.hipModel.geometry;
+    const scene = (res) => scene3d(ex, hipScene3d(ex, v, res, { geometry: geo, acts: act[0]?.parts ?? {}, muscles: ex.muscles, pulley: state.pulley }), act);
+    const camKey = `${state.cam.yaw},${state.cam.pitch}`;
+    if (curves().camKey !== camKey) {
+      Object.assign(curves(), { camKey, bounds3: bounds3d(main.filter((_, i) => i % 6 === 0 || i === main.length - 1).map((s) => scene(s)), state.cam) });
+    }
+    // Zoomed: a box around the hip, where the muscles are.
+    const V = state.zoom ? { x0: -0.45, x1: 0.45, y0: -0.45, y1: 0.35 } : curves().bounds3;
+    renderView3d($("figure"), scene(r), state.cam, V);
+  } else {
+    const frame = state.zoom ? zoomBounds(ex, v, main.map((s) => s.pose)) : bounds;
+    renderFigure($("figure"), { exercise: ex, variant: v, result: r, activation: act, pulley: state.pulley, bounds: frame });
+  }
 
   const bands = ex.phases.map((p) => ({ from: p.range[0], to: p.range[1], label: p.name }));
   const strength = main.map((s) => [s.angle, s.capacity]);
@@ -822,6 +846,49 @@ function renderView() {
   $("ro-warning").textContent = "Load exceeds strength at this angle — this is where the lift would fail.";
   renderPhase(ex);
   renderMuscles(act);
+}
+
+/**
+ * Holding muscles in the 3D figure (when the switch is on): their schematic lines, shaded by the
+ * load relative to the most that muscle holds over this lift's range (no strength norms yet).
+ */
+function holdingPrims(list, samples) {
+  if (!list?.length || !$("holding-toggle").checked) return [];
+  const size = (h) => Math.abs(h.kgPerHand ?? h.torque);
+  return list.filter((h) => h.draw).flatMap((h) => {
+    const max = Math.max(1e-9, ...samples.map((s) => size(s.holding?.find((x) => x.id === h.id) ?? { torque: 0 })));
+    const rel = Math.min(1, size(h) / max);
+    const title = `${h.name}: ${Math.round(rel * 100)}% of its maximum in this lift`;
+    return h.draw.flatMap(([a, b]) => [
+      { kind: "line", a, b, w: 0.02, cls: "muscle-base", title, top: 50 },
+      { kind: "line", a, b, w: 0.02, cls: "muscle-hold", opacity: rel, title, top: 50 },
+    ]);
+  });
+}
+
+/**
+ * Holding (isometric) loads under the joint table: back extensors, grip, shoulders. Torques only:
+ * no strength norms yet, so no effort. Switched off and on with the checkbox (remembered).
+ */
+function renderHolding(list) {
+  $("holding-switch").hidden = !list?.length;
+  const show = Boolean(list?.length) && $("holding-toggle").checked;
+  $("holding-rows").replaceChildren(...(!show ? [] : [
+    Object.assign(document.createElement("tr"), { className: "hold-head", innerHTML: '<th colspan="4" scope="rowgroup">Holding (isometric): no strength norms yet, so no effort</th>' }),
+    ...list.map((h) => {
+      const tr = document.createElement("tr");
+      tr.title = h.note;
+      const cells = [h.name, h.kgPerHand != null ? `${h.kgPerHand.toFixed(1)} kg / hand` : `${Math.abs(h.torque).toFixed(0)} Nm`, "—", "—"];
+      cells.forEach((t, i) => {
+        const td = document.createElement(i ? "td" : "th");
+        td.textContent = t;
+        if (!i) { td.scope = "row"; td.className = "jt-hold"; }
+        if (i === 1 && h.torque < -0.5 && h.negative) td.append(Object.assign(document.createElement("small"), { textContent: h.negative }));
+        tr.append(td);
+      });
+      return tr;
+    }),
+  ]));
 }
 
 /** Muscle bars + wger body map overlays. A null value means "not modelled". */
@@ -859,7 +926,8 @@ function tick(t) {
   const dt = last ? (t - last) / 1000 : 0;
   last = t;
   if (state.exercise.model === "finger") { // edge lift: time through one lift, looping
-    state.liftT = (state.liftT ?? 0) + dt;
+    const { duration } = liftProfile(state.loadKg, { liftTime: state.placement?.liftTime ?? 0.6 });
+    state.liftT = ((state.liftT ?? 0) + dt) % duration;
     render();
     requestAnimationFrame(tick);
     return;
@@ -975,13 +1043,19 @@ function bind() {
   showLayout();
   $("hand-reset").addEventListener("click", () => { setHand(undefined); writeHash(); render(); });
   $("placement-reset").addEventListener("click", () => { setPlacement(variant()); writeHash(); render(); });
+  // Holding muscles on or off; remembered per browser (falls back to on).
+  try { $("holding-toggle").checked = localStorage.getItem("fcl-holding") !== "off"; } catch {}
+  $("holding-toggle").addEventListener("change", () => {
+    try { localStorage.setItem("fcl-holding", $("holding-toggle").checked ? "on" : "off"); } catch {}
+    render();
+  });
   for (const b of $("view-buttons").querySelectorAll("button")) {
     b.addEventListener("click", () => { state.cam = { ...CAMERAS[b.dataset.cam] }; render(); });
   }
   // Drag to turn the 3D view (horizontal drags only on touch, so the page still scrolls).
   let drag = null;
   $("figure").addEventListener("pointerdown", (e) => {
-    if (state.exercise.view !== "3d") return;
+    if (!is3d(state.exercise)) return;
     drag = { x: e.clientX, y: e.clientY, cam: { ...state.cam } };
     $("figure").setPointerCapture(e.pointerId);
   });

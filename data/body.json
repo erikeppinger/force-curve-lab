@@ -23,6 +23,8 @@
     "forearmHand": 0.0223
   },
   "com": {"shank": 0.554, "thigh": 0.591, "headTrunk": 0.66, "upperArm": 0.577, "forearmHand": 0.534},
+  "trunkParts": {"head": 0.0694, "upperTrunk": 0.1596, "middleTrunk": 0.1633, "lowerTrunk": 0.1117, "l5s1": 0.1},
+  "trunkPartsNote": "For the holding muscles (lower and upper back): head and trunk split as in de Leva's table (fraction of body mass; together = headTrunk). Placed along the hip → shoulder line: head 0.13 m above the shoulders, upper trunk halfway between mid-back and shoulders, middle trunk 70% of the way from L5/S1 to mid-back (positions estimated). l5s1: the lumbosacral joint, metres above the hip joints along the trunk (estimate, TODO: source).",
   "massNote": "mass: fraction of body mass per segment (one leg or arm; the masses sum to 1 for the whole body). com: centre of mass as a fraction of segment length, measured from the ankle (shank), knee (thigh), hip (head + trunk), shoulder (upper arm) or elbow (forearm + hand, along elbow → grip). From de Leva's table for young adult males; head + trunk is the mass-weighted combination (head centre of mass placed about 0.13 m above the trunk's top), which lands at 66% of hip → shoulder.",
   "source": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)"
 }

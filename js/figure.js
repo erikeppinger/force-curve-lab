@@ -32,6 +32,7 @@ export function screenRotation(variant) {
 
 /** Title for the figure card. */
 export function viewTitle(exercise, variant) {
+  if (exercise.figure3d) return "3D view (drag to turn)";
   if (variant.viewLabel) return variant.viewLabel;
   return { side: "Side view", front: "Front view", top: "Top view", "3d": "3D view (drag to turn)" }[exercise.view ?? "side"];
 }
