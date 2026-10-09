@@ -103,7 +103,9 @@
       <table id="joint-table" class="joint-table" hidden>
         <thead><tr><th scope="col">Joint</th><th scope="col">Torque</th><th scope="col">Moment arm</th><th scope="col">Effort</th></tr></thead>
         <tbody></tbody>
+        <tbody id="holding-rows"></tbody>
       </table>
+      <label id="holding-switch" class="holding-switch" hidden><input type="checkbox" id="holding-toggle" checked> Show holding muscles (isometric: back, grip, shoulders). In the figure in amber, shaded by their load relative to the most they hold in this lift.</label>
       <div id="finger-set" class="finger-set" data-fold="fingers" hidden>
         <h4>Finger by finger</h4>
         <table id="finger-table" class="joint-table">

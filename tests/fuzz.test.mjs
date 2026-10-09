@@ -34,6 +34,7 @@ const settings = [
 for (const id of ids) {
   test(`break test: ${id} stays finite at the extremes`, () => {
     const ex = JSON.parse(readFileSync(new URL(`${id}.json`, dir)));
+    if (ex.hipModel) ex.hipModel.geometry = JSON.parse(readFileSync(new URL(`../${ex.hipModel.data}`, import.meta.url)));
     const [lo, hi] = ex.angleRange;
     const spec = ex.placement ?? [];
     const placements = [undefined, Object.fromEntries(spec.map((s) => [s.key, s.min])), Object.fromEntries(spec.map((s) => [s.key, s.max])),

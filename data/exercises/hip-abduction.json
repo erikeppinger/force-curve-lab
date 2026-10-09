@@ -5,8 +5,8 @@
   "movingJoint": "proximal",
   "view": "front",
   "angleLabel": "Hip angle",
-  "angleRange": [0, 45],
-  "angleNote": "Abduction: 0° = leg straight down, 45° = leg out to the side. Hip at the origin, x out to the side.",
+  "angleRange": [0, 60],
+  "angleNote": "Abduction: 0° = leg straight down (seated: thighs together, pointing forward), 60° = leg far out to the side. The hip joint itself abducts about 45° in common norms (with the hip bent, more); flexible people go further, and a leg that goes much higher (a side kick, a side-lying raise to vertical) gets the rest from the pelvis tilting and the spine bending sideways, which this single-joint model doesn't include.",
   "segments": {
     "proximal": 0.43,
     "distal": 0.43,
@@ -22,8 +22,8 @@
   "ui": {"load": [0, 60, 0.5], "strength": [40, 250]},
   "strengthCurve": {
     "label": "Hip abductor strength",
-    "points": [[-10, 1.0], [0, 0.84], [10, 0.71], [20, 0.59], [30, 0.47], [40, 0.36]],
-    "note": "Relative isometric hip-abduction torque vs abduction angle: the paper's mean torques (both sides, 40 adults, supine) at −10° to 40°, divided by the −10° value. Falls steadily as the leg rises. Peak torque default = their −10° mean, 110 Nm.",
+    "points": [[-10, 1], [0, 0.84], [10, 0.71], [20, 0.59], [30, 0.47], [40, 0.36]],
+    "note": "Relative isometric hip-abduction torque vs abduction angle: the paper's mean torques (both sides, 40 adults, supine) at −10° to 40°, divided by the −10° value. Falls steadily as the leg rises. Peak torque default = their −10° mean, 110 Nm. Measured only to 40°; held at the 40° value up to 60° (estimate, TODO: a source beyond 40°).",
     "source": "Neumann DA, Soderberg GL, Cook TM (1988). Comparison of maximal isometric hip abductor muscle torques between hip sides. Phys Ther 68(4):496–502"
   },
   "postures": {
@@ -33,10 +33,16 @@
       {"shape": "circle", "at": [-0.1, 0.8], "r": 0.11}
     ],
     "side-lying": [
-      {"shape": "seg", "from": [-0.3, 0.95], "to": [-0.3, -1.0], "w": 0.02, "class": "equipment"},
+      {"shape": "seg", "from": [-0.3, 0.95], "to": [-0.3, -1], "w": 0.02, "class": "equipment"},
       {"shape": "seg", "from": [-0.2, -0.02], "to": [-0.21, -0.86], "w": 0.12},
       {"shape": "seg", "from": [-0.1, 0.05], "to": [-0.1, 0.55], "w": 0.3},
       {"shape": "circle", "at": [-0.12, 0.8], "r": 0.11}
+    ],
+    "seated-top": [
+      {"shape": "seg", "from": [-0.35, 0.18], "to": [0.35, 0.18], "w": 0.05, "class": "equipment"},
+      {"shape": "seg", "from": [-0.2, 0], "to": [-0.2, -0.43], "w": 0.13},
+      {"shape": "ellipse", "at": [-0.1, 0.12], "rx": 0.2, "ry": 0.11},
+      {"shape": "circle", "at": [-0.1, 0.12], "r": 0.1}
     ]
   },
   "muscles": [
@@ -46,11 +52,11 @@
       "name": "Gluteus medius",
       "wgerId": null,
       "role": "Prime mover",
-      "driver": "jointEffort",
-      "weight": [[0, 1.0], [45, 0.95]],
-      "note": "Main hip abductor (no separate wger map).",
-      "source": "TODO: check against EMG literature",
-      "draw": {"seg": "proximal", "origin": [0.03, 0.13], "insert": 0.03, "offset": 0.05, "w": 0.07, "layer": 0}
+      "driver": "hipModel",
+      "note": "Main hip abductor with the hip straight (moment arm about 4–5.5 cm in the model). As the hip bends towards 90° its leverage for abduction shrinks to almost nothing (front part first): leaning forward in the seated machine takes it out.",
+      "draw": {"seg": "proximal", "origin": [0.03, 0.13], "insert": 0.03, "offset": 0.05, "w": 0.07, "layer": 0},
+      "osim": ["glmed1", "glmed2", "glmed3"],
+      "source": "Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079, with the hip abductor paths of Uhlrich SD, Jackson RW, Seth A, Kolesar JA, Delp SL (2022). Muscle coordination retraining inspired by musculoskeletal simulations reduces knee contact force. Sci Rep 12 (Rajagopal2016.osim, abductor paths from RajagopalLaiUhlrich2023.osim, both from opensim-org/opensim-models, MIT licence; straight segments wrapped over the model's cylinders)"
     },
     {
       "id": "gluteus-minimus",
@@ -58,10 +64,10 @@
       "name": "Gluteus minimus",
       "wgerId": null,
       "role": "Synergist",
-      "driver": "jointEffort",
-      "weight": [[0, 0.7], [45, 0.7]],
-      "note": "Lies under gluteus medius and helps it.",
-      "source": "TODO: check against EMG literature"
+      "driver": "hipModel",
+      "note": "Lies under gluteus medius; same pattern: strong abductor with the hip straight, its front part turns against abduction at 90° of hip bend and beyond.",
+      "osim": ["glmin1", "glmin2", "glmin3"],
+      "source": "Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079, with the hip abductor paths of Uhlrich SD, Jackson RW, Seth A, Kolesar JA, Delp SL (2022). Muscle coordination retraining inspired by musculoskeletal simulations reduces knee contact force. Sci Rep 12 (Rajagopal2016.osim, abductor paths from RajagopalLaiUhlrich2023.osim, both from opensim-org/opensim-models, MIT licence; straight segments wrapped over the model's cylinders)"
     },
     {
       "id": "tfl",
@@ -69,22 +75,46 @@
       "name": "Tensor fasciae latae",
       "wgerId": null,
       "role": "Synergist",
-      "driver": "jointEffort",
-      "weight": [[0, 0.5], [45, 0.6]],
-      "note": "Front-side abductor; works more if the hip is bent.",
-      "source": "TODO: check against EMG literature",
-      "draw": {"seg": "proximal", "along": [0.02, 0.2], "offset": 0.045, "w": 0.035, "layer": 1}
+      "driver": "hipModel",
+      "note": "Front-side abductor (about 5.5 cm with the hip straight in the model). With the hip bent 90° it keeps about 3.4 cm with the legs together but loses it as they open.",
+      "draw": {"seg": "proximal", "along": [0.02, 0.2], "offset": 0.045, "w": 0.035, "layer": 1},
+      "osim": ["tfl"],
+      "source": "Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079, with the hip abductor paths of Uhlrich SD, Jackson RW, Seth A, Kolesar JA, Delp SL (2022). Muscle coordination retraining inspired by musculoskeletal simulations reduces knee contact force. Sci Rep 12 (Rajagopal2016.osim, abductor paths from RajagopalLaiUhlrich2023.osim, both from opensim-org/opensim-models, MIT licence; straight segments wrapped over the model's cylinders)"
     },
     {
       "id": "gluteus-maximus",
       "region": "thigh",
-      "name": "Gluteus maximus (upper fibres)",
+      "name": "Gluteus maximus (upper and middle fibres)",
       "wgerId": 8,
       "role": "Synergist",
-      "driver": "jointEffort",
-      "weight": [[0, 0.3], [45, 0.4]],
-      "note": "Upper fibres assist abduction.",
-      "source": "TODO: check against EMG literature"
+      "driver": "hipModel",
+      "note": "Upper and middle fibres: little abduction with the hip straight (1–2 cm in the model), more with the hip bent (about 3 cm at 90°, wrapped over the pelvis as in the model): with the gluteus medius out, they carry much of the seated machine. The lower fibres adduct (not counted here).",
+      "osim": ["glmax1", "glmax2"],
+      "source": "Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079, with the hip abductor paths of Uhlrich SD, Jackson RW, Seth A, Kolesar JA, Delp SL (2022). Muscle coordination retraining inspired by musculoskeletal simulations reduces knee contact force. Sci Rep 12 (Rajagopal2016.osim, abductor paths from RajagopalLaiUhlrich2023.osim, both from opensim-org/opensim-models, MIT licence; straight segments wrapped over the model's cylinders)"
+    },
+    {
+      "id": "piriformis",
+      "region": "thigh",
+      "regionPath": "piriformis",
+      "name": "Piriformis",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "hipModel",
+      "osim": ["piri"],
+      "note": "Abducts at every hip bend (about 2–3 cm in the model), so it takes a larger share when the gluteus medius drops out in the seated machine. The other deep rotators (obturators, gemelli, quadratus femoris), which Dostal et al. found turn into abductors with the hip bent 90°, aren't in the model.",
+      "source": "Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079, with the hip abductor paths of Uhlrich SD, Jackson RW, Seth A, Kolesar JA, Delp SL (2022). Muscle coordination retraining inspired by musculoskeletal simulations reduces knee contact force. Sci Rep 12 (Rajagopal2016.osim, abductor paths from RajagopalLaiUhlrich2023.osim, both from opensim-org/opensim-models, MIT licence; straight segments wrapped over the model's cylinders)"
+    },
+    {
+      "id": "sartorius-rf",
+      "region": "thigh",
+      "regionPath": ["sartorius", "rectus-femoris"],
+      "name": "Sartorius and rectus femoris",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "hipModel",
+      "osim": ["sart", "recfem"],
+      "note": "Hip flexors that also abduct (1.5–3.5 cm in the model, more with the hip bent).",
+      "source": "Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079, with the hip abductor paths of Uhlrich SD, Jackson RW, Seth A, Kolesar JA, Delp SL (2022). Muscle coordination retraining inspired by musculoskeletal simulations reduces knee contact force. Sci Rep 12 (Rajagopal2016.osim, abductor paths from RajagopalLaiUhlrich2023.osim, both from opensim-org/opensim-models, MIT licence; straight segments wrapped over the model's cylinders)"
     }
   ],
   "phases": [
@@ -93,8 +123,12 @@
       "range": [0, 15],
       "text": "Leg straight down. Side-lying, the leg's own weight has its full moment arm here; standing, gravity does almost nothing."
     },
-    {"name": "Mid-range", "range": [15, 30], "text": "Leg rising."},
-    {"name": "Top", "range": [30, 45], "text": "Leg out to the side, abductors at their weakest."}
+    {"name": "Mid-range", "range": [15, 40], "text": "Leg rising."},
+    {
+      "name": "Top",
+      "range": [40, 60],
+      "text": "Leg far out to the side, abductors short and at their weakest. Past about 45° most people tilt the pelvis."
+    }
   ],
   "variants": [
     {
@@ -102,10 +136,14 @@
       "name": "Standing cable hip abduction",
       "equipment": "Cable, ankle cuff",
       "posture": "standing",
-      "load": {"type": "cable", "pulley": {"x": -0.6, "y": -0.85}},
+      "load": {
+        "type": "cable",
+        "pulley": {"x": -0.6, "y": -0.85}
+      },
       "adjustablePulley": true,
       "defaultLoadKg": 2,
-      "notes": "Standing on the other leg, cable from a low pulley on that side. The cable loads the start; the leg's own weight adds a little as it rises."
+      "notes": "Standing on the other leg, cable from a low pulley on that side. The cable loads the start; the leg's own weight adds a little as it rises.",
+      "hip": {"flexion": 0}
     },
     {
       "id": "side-lying",
@@ -113,10 +151,10 @@
       "equipment": "Ankle weight",
       "posture": "side-lying",
       "gravity": {"x": -1, "y": 0},
-      "viewLabel": "Front view (lying on your side)",
       "load": {"type": "gravity"},
       "defaultLoadKg": 0,
-      "notes": "Lying on your side, gravity pulls the top leg back down: torque = (m·L + leg weight)·g·cos(angle). Even with no added weight the leg itself (about 16% of body mass) is a real load."
+      "notes": "Lying on your side, gravity pulls the top leg back down: torque = (m·L + leg weight)·g·cos(angle). Even with no added weight the leg itself (about 16% of body mass) is a real load.",
+      "hip": {"flexion": 0}
     },
     {
       "id": "machine",
@@ -133,12 +171,59 @@
         }
       },
       "defaultLoadKg": 5,
-      "notes": "Pad on the outside of the thigh above the knee. The common seated machine (hip bent 90°, knee bent) is a different joint set-up this model can't put in the same exercise."
+      "notes": "Pad on the outside of the thigh above the knee. For the seated machines see the two seated variants.",
+      "hip": {"flexion": 0}
+    },
+    {
+      "id": "seated",
+      "name": "Seated hip abduction machine",
+      "equipment": "Machine",
+      "posture": "seated-top",
+      "gravity": {"x": 0, "y": 0},
+      "load": {
+        "type": "machine",
+        "padDistance": 0.4,
+        "camProfile": {
+          "points": [[0, 0.3], [20, 0.34], [45, 0.34]],
+          "note": "Effective radius in metres: joint torque per unit of stack weight. Illustrative shape, as for the standing machine.",
+          "source": "TODO: replace with a measured profile for a real machine"
+        }
+      },
+      "defaultLoadKg": 5,
+      "notes": "Seated, pad on the outside of the knees, the thighs move apart in a horizontal plane, so the legs' own weight doesn't load the movement; the pad's cam does. Use the trunk-lean slider: upright the hip is bent 90°, and the gluteus medius has lost most of its abduction leverage (OpenSim model: about 0.2–1.5 cm vs 4–5.5 cm standing); the upper gluteus maximus and piriformis take over, and abduction is weaker overall. Leaning back (less hip bend) brings the gluteus medius back in; leaning forward leaves mostly the upper gluteus maximus.",
+      "hip": {"flexion": 90, "lean": true, "kneeBent": true, "balance": ["adduction"]},
+      "params": {"lean": 0},
+      "strengthScale": {
+        "by": "hipFlexion",
+        "points": [[0, 1], [45, 1], [60, 0.87], [75, 0.71], [90, 0.54], [105, 0.42], [120, 0.41]],
+        "note": "Abduction strength vs hip bend: about the same as straight up to 45° of hip flexion (two datasets in Chen & Franklin's Fig. 6 bottom left; the OpenSim model's summed force × moment arm agrees, −5%). Beyond 45° nothing is measured: the points follow the model's summed force × moment arm (at 10° of abduction) relative to 45°, so upright (90°) is about half of standing. An estimate: the model has no obturators, gemelli or quadratus femoris, which Dostal et al. found turn into abductors with the hip bent, so it is likely too low. With force–length (OpenSim) the model drops further (about 0.41 at 90°), but it already overstates the drop to 45°, so the leverage-only values are kept until a measurement is found.",
+        "source": "Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183 (bioRxiv preprint, CC BY 4.0: Fig. 6, read off the figure); beyond 45°: Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079, with the hip abductor paths of Uhlrich SD, Jackson RW, Seth A, Kolesar JA, Delp SL (2022). Muscle coordination retraining inspired by musculoskeletal simulations reduces knee contact force. Sci Rep 12 (Rajagopal2016.osim, abductor paths from RajagopalLaiUhlrich2023.osim, both from opensim-org/opensim-models, MIT licence; straight segments wrapped over the model's cylinders)"
+      }
     }
   ],
   "wger": {
     "exerciseId": 1096,
     "name": "Abduction while standing",
     "note": "Checked against wger's public exercise list (id = the number in the page address)."
-  }
+  },
+  "figure3d": "hip",
+  "hipModel": {
+    "data": "data/opensim/hip-muscles.json",
+    "direction": "abduction",
+    "note": "Each muscle's share comes from an OpenSim leg model: its force at full activation at this posture (OpenSim's force–length, so a short muscle counts for less) and its moment arms (abduction angle and hip bend), for all 25 model muscles that cross the hip, wrapped over the model's cylinders. Their working-way total is scaled to the measured strength curve. The activations minimise the sum of squared activations (static optimisation) while making the joint torque about the abduction–adduction axis and nothing about flexion–extension or rotation, so a muscle that also extends or rotates the hip needs others to cancel that (seated, the seat and the pads and footrests are taken to carry those two instead). The model has no obturators, gemelli, quadratus femoris or pectineus.",
+    "source": "Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079, with the hip abductor paths of Uhlrich SD, Jackson RW, Seth A, Kolesar JA, Delp SL (2022). Muscle coordination retraining inspired by musculoskeletal simulations reduces knee contact force. Sci Rep 12 (Rajagopal2016.osim, abductor paths from RajagopalLaiUhlrich2023.osim, both from opensim-org/opensim-models, MIT licence; straight segments wrapped over the model's cylinders)"
+  },
+  "placement": [
+    {
+      "key": "lean",
+      "label": "Trunk lean",
+      "min": -30,
+      "max": 45,
+      "step": 1,
+      "unit": "° back",
+      "scale": 1,
+      "variants": ["seated"],
+      "hint": "+ = leaning back against a reclined pad (less hip bend), − = leaning forward over the thighs (more hip bend). The thighs stay on the seat, so the hip bend is 90° minus the lean. The pelvis is taken to tilt with the trunk."
+    }
+  ]
 }

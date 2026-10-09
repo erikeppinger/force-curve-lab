@@ -4,8 +4,9 @@ An interactive teaching tool that shows **where an exercise is hard and which mu
 
 Exercises (2–5 equipment variants each):
 
-- **Arms and shoulders:** biceps curl, triceps extension, wrist curl and reverse wrist curl, lateral raise, front raise, chest fly, straight-arm pulldown / pullover
-- **Legs:** leg extension, leg curl, calf raise, hip abduction, glute kickback
+- **Arms and shoulders:** biceps curl, triceps extension, wrist curl and reverse wrist curl, lateral raise (with the Lu raise to overhead), front raise (with an overhead variant), chest fly, straight-arm pulldown / pullover
+- **Legs:** leg extension, leg curl, calf raise, hip abduction and hip adduction (standing, side-lying and seated machines with a trunk-lean slider; 3D figure, muscle shares from the OpenSim leg model), glute kickback
+- **Holding muscles (isometric):** for the deadlifts, RDLs, squats and rows, the lower- and upper-back moments, the grip load per hand and the shoulders' hold on a hanging bar, under the joint table (switchable)
 - **Grip:** edge lift (one arm, block on a loading pin): open hand, half crimp and full crimp. All four fingers on the edge (bone lengths per finger, or your own), the edge's shape under each finger, how the block splits between them for least effort, FDP and FDS tendon forces and A2/A4 pulley loads per finger, the wrist's sideways load, shoulder and elbow loads, and Play: the force over one lift (lift-off, hold, set-down).
 - **Multi-joint:** squat, Romanian deadlift, deadlift (conventional, sumo and trap bar), split squat / lunge, leg press, hip thrust, bench press, overhead press, bent-over row, seated cable row, chest-supported row, lat pulldown, pull-up and chin-up. These show hip, knee and ankle torques and effort together.
 - **3D:** the leg press, squat, Romanian deadlift, deadlift, split squat, hip thrust, bench press, overhead press and the rows have placement controls (foot height, stance width, toe angle, knee tracking; grip width and elbow position), sideways and rotation components at the hip, knee, shoulder and elbow, and a drag-to-turn 3D view.
@@ -69,6 +70,7 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 
 - [x] Lateral raise (dumbbell, cable, machine)
 - [x] Triceps extension, front raise, chest fly, straight-arm pulldown, leg extension, leg curl, calf raise, hip abduction, glute kickback
+- [x] Hip adduction; seated abduction and adduction machines; overhead front raise and Lu raise (per-variant range of motion)
 - [x] Postures (lying, seated, kneeling, horizontal plane), limb weight, body weight for closed-chain lifts
 - [x] Two-joint muscles and grip in the single-joint exercises: lying vs seated leg curl, preacher, hammer and reverse curls, overhead and lying triceps (Guex 2012, Guenzkofer 2012, Kohn 2018, Kleiber 2015)
 - [x] Calf raise knee angle (Cresswell 1995, Baptista 2014, Kovács 2024); rectus femoris checked, no correction (Black 1993, Bampouras 2017)

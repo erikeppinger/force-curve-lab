@@ -10,6 +10,8 @@
 // Segment angles are measured from the -y axis (hanging down), positive turning towards +x.
 // Pure functions only — imported by the browser UI and by node tests.
 
+import { hipPosture } from "./hipmodel.js";
+
 export const G = 9.81;
 
 const rad = (deg) => (deg * Math.PI) / 180;
@@ -131,8 +133,13 @@ export function limbWeights(exercise, variant, p, bodyMassKg = 75) {
  *   the proximal segment still against clockwise rotation (the shoulder flexors in a standing
  *   curl). 0 when a pad supports the segment or the base joint itself moves.
  */
-export function analyze(exercise, variant, angleDeg, opts) {
+export function analyze(exercise, variant0, angleDeg, opts) {
   const { peakTorqueNm, bodyMassKg = 75 } = opts;
+  // A placement slider with `distalBend` (e.g. the kickback's knee bend, degrees of flexion) sets
+  // the fixed bend between the two segments: distalBend = −value.
+  const bendSpec = exercise.placement?.find((s) => s.distalBend);
+  const bendVal = bendSpec ? Number(opts.placement?.[bendSpec.key] ?? variant0.params?.[bendSpec.key] ?? -(variant0.distalBend ?? 0)) : undefined;
+  const variant = bendSpec ? { ...variant0, distalBend: -bendVal } : variant0;
   const p = pose(exercise, variant, angleDeg);
   const f = loadForce(exercise, variant, p, angleDeg, opts);
   const w = workSense(exercise);
@@ -155,19 +162,21 @@ export function analyze(exercise, variant, angleDeg, opts) {
   }
 
   // Posture correction for this variant (e.g. a two-joint muscle at a different length, or the
-  // grip): a factor on the strength curve, constant or varying with the joint angle.
-  const strengthScale = strengthScaleAt(variant, angleDeg);
+  // grip): a factor on the strength curve, constant or varying with the joint angle (or, with
+  // `by: "hipFlexion"`, with the hip bend of the hip-model exercises).
+  const hip = exercise.hipModel ? hipPosture(variant, angleDeg, opts.placement) : undefined;
+  const strengthScale = strengthScaleAt(variant, angleDeg, { hipFlexion: hip?.flexion, knee: bendVal });
   const capacity = interp(exercise.strengthCurve.points, angleDeg) * peakTorqueNm * strengthScale;
   const effort = Math.max(0, jointTorque) / capacity;
 
-  return { pose: p, force: f, limbs, jointTorque, loadTorque, limbTorque, stabiliserDemand, momentArm, momentArmFoot, capacity, effort, strengthScale };
+  return { pose: p, force: f, limbs, jointTorque, loadTorque, limbTorque, stabiliserDemand, momentArm, momentArmFoot, capacity, effort, strengthScale, ...(hip ? { hip } : {}), ...(bendSpec ? { knee: bendVal } : {}) };
 }
 
-/** The variant's strength factor at this angle: `strengthScale.points` (by joint angle) or `.factor`; 1 if none. */
-export function strengthScaleAt(variant, angleDeg) {
+/** The variant's strength factor: `strengthScale.points` (by joint angle, or by `at[sc.by]`) or `.factor`; 1 if none. */
+export function strengthScaleAt(variant, angleDeg, at = {}) {
   const sc = variant.strengthScale;
   if (!sc) return 1;
-  return sc.points ? interp(sc.points, angleDeg) : sc.factor;
+  return sc.points ? interp(sc.points, sc.by ? at[sc.by] ?? 0 : angleDeg) : sc.factor;
 }
 
 /** The range of motion of a variant: its own `angleRange` if it has one, else the exercise's. */

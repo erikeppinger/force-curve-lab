@@ -6,8 +6,18 @@
 // Multi-joint exercises: each muscle names its `joint`; its weight table is indexed by that
 // joint's angle. Driver "none" = not modelled (value null).
 // Edge lift (model "finger"): driver "tendon", value = the tendon's tension ÷ its reference tension.
+// Hip abduction / adduction (`hipModel`): driver "hipModel", static optimisation over the OpenSim
+// hip muscles (js/hipmodel.js); a listed muscle shows the mean of its model parts (`osim`).
 
 import { interp } from "./physics.js";
+import { hipActivations, groupActivation } from "./hipmodel.js";
+
+/** Bilinear in { hip: [...], knee: [...], factor: [hip][knee] }, held at the edges. */
+function grid2(t, hip, knee) {
+  const at = (xs, x) => { const v = Math.min(xs.at(-1), Math.max(xs[0], x)); let i = 0; while (i < xs.length - 2 && v > xs[i + 1]) i++; return [i, (v - xs[i]) / (xs[i + 1] - xs[i])]; };
+  const [i, u] = at(t.hip, hip), [j, w] = at(t.knee, knee), f = t.factor;
+  return (1 - u) * ((1 - w) * f[i][j] + w * f[i][j + 1]) + u * ((1 - w) * f[i + 1][j] + w * f[i + 1][j + 1]);
+}
 
 export function muscleActivation(exercise, variant, result, angleDeg) {
   // Edge lift: the statics give each flexor tendon's tension directly; scale it by the tension
@@ -34,13 +44,19 @@ export function muscleActivation(exercise, variant, result, angleDeg) {
       return { ...m, value: Math.min(1, Math.max(0, value * mod)) };
     });
   }
+  const geo = exercise.hipModel?.geometry;
+  const hipActs = geo && result.hip ? hipActivations(exercise, variant, result, geo) : null;
   return exercise.muscles.map((m) => {
+    if (m.driver === "hipModel") return { ...m, value: hipActs && m.osim.length ? Math.min(1, groupActivation(m, hipActs, geo)) : null, parts: hipActs };
     const demand =
       m.driver === "stabiliserDemand"
         ? result.stabiliserDemand / exercise.stabiliserCapacityNm
         : result.effort;
     const mod = variant.muscleModifiers?.[m.id] ?? 1; // estimates; see the variant's notes
-    const value = Math.min(1, Math.max(0, demand * interp(m.weight, angleDeg) * mod));
+    // `kneeFactor`: the weight's change with the knee bend (e.g. the kickback's hamstrings), on a
+    // hip × knee grid, bilinear and held at the edges.
+    const kf = m.kneeFactor && result.knee != null ? grid2(m.kneeFactor, angleDeg, result.knee) : 1;
+    const value = Math.min(1, Math.max(0, demand * interp(m.weight, angleDeg) * mod * kf));
     return { ...m, value };
   });
 }

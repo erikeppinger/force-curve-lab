@@ -5,14 +5,15 @@ We tried 5 standard upper-body and 10 standard leg exercises from the wger start
 | Exercise | Status | Variants |
 |---|---|---|
 | Triceps extension | ✅ added | cable pushdown, overhead dumbbell, lying EZ-bar (skullcrusher) |
-| Front raise | ✅ added | dumbbell, cable from behind, chest-supported 45° incline |
+| Front raise | ✅ added | dumbbell, cable from behind, chest-supported 45° incline, dumbbell to overhead |
 | Chest fly | ✅ added | lying dumbbell, standing cable, pec deck |
 | Straight-arm pulldown / pullover | ✅ added | cable pulldown, lying dumbbell pullover |
 | Bench press | ✅ 3D (shoulder and elbow) | medium, wide and close grip, elbows flared, 30° incline |
 | Leg extension | ✅ added | machine, ankle weight |
 | Leg curl | ✅ added | lying machine, seated machine, standing with ankle weight |
 | Calf raise | ✅ added | single-leg with dumbbell, two-leg machine, seated machine |
-| Hip abduction | ✅ added | standing cable, side-lying, standing machine |
+| Hip abduction | ✅ added (3D figure, OpenSim muscle model) | standing cable, side-lying, standing machine, seated machine with trunk lean |
+| Hip adduction | ✅ added (3D figure, OpenSim muscle model) | standing cable, side-lying (bottom leg), seated machine with trunk lean |
 | Glute kickback | ✅ added | standing cable, kneeling with ankle weight, machine |
 | Squat | ✅ 3D | high-bar, low-bar, front, goblet, wide (sumo), knees caving in |
 | Leg press | ✅ 3D | feet middle, high, low, wide toes-out, narrow, toes in, knees caving in |
@@ -45,16 +46,103 @@ Each of these was a real break: the exercise either gave wrong numbers or couldn
 - **Muscles that cross two joints.** Muscle weights depend on one joint angle only, so the long heads of the triceps and biceps and the hamstrings keep the same share in every posture. The only exception is the gastrocnemius in the seated calf raise (modifier 0.65). Strength is now corrected per variant for the other joint's angle (see *Two-joint muscles and grip* below). Fix for the weights: tables that take both joint angles.
 - **Stabiliser demand is one-directional and arm-specific.** It only counts torque that rotates the upper arm backwards (as in a curl). In a pushdown or a pulldown the shoulder holding work isn't counted, so the new exercises have no stabiliser muscles.
 - **Flat 2D.** In a standing cable fly gravity is perpendicular to the plane, so holding the arms up isn't counted. Cables that run beside the body are drawn through it.
-- **One range of motion per exercise.** A standing cable kickback realistically uses 30° to −25°, the kneeling one 90° to −25°. The incline front raise keeps getting harder past 90°, outside the range.
-- **A variant can't change the joint set-up.** The common *seated* hip-abduction machine (hip bent 90°, knee bent, horizontal plane) is a different chain from standing abduction, so it was left out. The same applies to seated vs lying leg curls if both hip angles needed to be shown properly.
+- **Range of motion per variant.** A variant can now set its own range: the overhead front raise and the Lu raise go to 180°, the other raises stop at 90°, side-lying adduction stops where the leg meets the floor. Not split yet: the standing cable kickback realistically uses 30° to −25°, the kneeling one 90° to −25°.
+- **A variant can't change the joint set-up.** Seated vs lying leg curls would need both hip angles shown properly. (The seated hip machines get around this with the hip model below: the hip bend is a parameter of the muscle model, not a second joint.)
 - **Straight limbs.** The soft elbow in a fly and the forward lean in a straight-arm pulldown aren't modelled.
 - **The shoulder blade moves too.** The lateral and front raises, the straight-arm pulldown and the fly turn the arm about one fixed shoulder point, but the shoulder blade turns with the arm: Braman et al. 2009 measured about 2.3° at the shoulder joint per 1° of shoulder-blade upward rotation when raising the arm (2.7 lowering; about 3.7 : 1 in the first 30°), against Inman's classic 2 : 1. Each of these exercises now says so under the angle slider; the shoulder-blade muscles (trapezius, serratus anterior, rhomboids) aren't analysed. For the fly the share of shoulder-blade motion hasn't been sourced (TODO). The other single-joint exercises are single-joint as performed strictly; the finger-roll wrist curl's finger work and the calf raise's toe joints (taken as a fixed pivot at the ball of the foot) are noted in their files.
+- **3D muscle drawings** are schematic strips on the side of each segment the data names, on both limbs (the split squat: front leg only) and on both sides of the spine; which ones you see depends on the camera, as on a real body (the back muscles are hidden from the front). Every listed muscle of the 3D lifts is drawn.
 - **Muscle drawings with a fixed origin.** Muscles that run from the trunk or pelvis to the moving limb (lat, teres major and sternal pec in the pulldown and pullover, pectoralis in the fly, gluteus medius in hip abduction, gluteus maximus in the kickback) are drawn from a fixed body point to their insertion, so they stretch with the limb. The others still ride along the limb segment. The points are schematic.
 - **Machine cams: the leg extension's are measured, the others illustrative.** The three leg-extension machines use profiles read off Folland & Morris 2008 (the mean of eight machines, and the two extremes), checked against their Table I; they were measured at 20–100° of knee bend, so the app holds them flat below 20°. The lateral-raise cam is still illustrative. Stack kg don't compare with dumbbell kg, and the absolute scale of a cam is nominal.
 - **Curl muscle weights: shape sourced, level estimated.** How the biceps', brachialis' and brachioradialis' weights change over the elbow angle now follows their moment arms (Murray et al. 1995) relative to each other: the brachioradialis gains share with flexion, the biceps loses some. Each muscle's overall level (its weight at 90°) is its normalized potential moment from Ramsay et al. 2009 (biceps 1, brachialis 0.75, brachioradialis 0.40). The palm-up vs palm-down change in the biceps' moment arm (a few mm, their Fig. 6) is left to the grip factors from Coratella et al. The curls' elbow flexors in the multi-joint lifts (rows, pull-ups) still use their own estimated weights.
 - **Wrist curls: strength measured, muscle shares estimated.** The statics are exact (forearm flat: torque ∝ cos of the wrist angle; behind the back: ∝ sin). Strength curves and peak torques are from Delp et al. 1996 (10 men): flexion strongest at 40° of flexion, so the seated curl's sticking point is about 30° bent back, not at the level hand; extension nearly flat. Their test held the elbow at 90° with the forearm supinated, as in the seated curl. Muscle weights follow each muscle's moment potential (size × moment arm) from Gonzalez et al. 1997, at two wrist angles: the finger flexors (FDP, FDS) lead, the dedicated wrist flexors follow. The finger roll's extra finger work is still an estimate. The finger roll's extra finger work is only a higher share for FDS and FDP: the finger joints aren't modelled.
 - **Close-ups are schematic.** The forearm, upper-arm, shoulder, trunk, hip/thigh and lower-leg drawings place muscles where atlases show them, simplified and not to scale. Their colours use the same activation estimates as the bars, so a muscle that looks distinct in the drawing is not resolved any better by the model. Where an exercise only has a group value (quadriceps, hamstrings, pectoralis, the external rotators of the shoulder or hip), all heads show that value and are hatched: which head works more needs a muscle model (OpenSim) or EMG. Two exceptions use measured per-head shares (`regionShares`): the Romanian deadlift's hamstrings from Ono et al. 2011 (surface EMG in the stiff-leg deadlift: semitendinosus lowest) and the leg curl's from Messer et al. 2018 (MRI after the Nordic exercise: semitendinosus highest). The sources disagree on hip extension (Messer et al. found the semitendinosus highest in the 45° back extension), and Park & Lim 2023 show the split shifts with hip rotation, so these are one study's pattern each, not settled values.
 - **wger links.** The starter library has no exercise ids (its `Movement Pattern` column is empty and `Equipment` is unreliable, e.g. "None (Bodyweight)" for the leg-extension machine). All 23 ids are now set by hand from wger's public exercise list; four have no exact match there, so they link the closest entry and name the alternatives in their note.
+
+## Hip abduction and adduction: OpenSim muscle model
+
+### How it works
+- **Geometry from OpenSim.** `tools/osim-hip.mjs` reads the Rajagopal et al. 2016 leg model directly from its XML, with Uhlrich et al. 2022's updated paths for the gluteus medius, minimus and TFL (no OpenSim install needed). It writes `data/opensim/hip-muscles.json` with the 25 right-leg muscles that cross the hip: maximum force, path points relative to the hip centre, and the wrap cylinders (gluteus maximus over the pelvis, adductors along the femur shaft, iliopsoas at the pelvic brim).
+- **Moment arms.** `js/hipmodel.js` puts the femur at any hip bend, abduction and rotation (the model's flexion → adduction → rotation order). It wraps each path over its cylinders the way OpenSim does (tangent, arc, tangent; when the line cuts the cylinder or passes on its forbidden side), and takes the moment arm as minus the change of length per radian.
+- **Muscle shares: static optimisation.** Each muscle can pull with its maximum force × moment arms about flexion, adduction and rotation. The working-way total is scaled to the measured strength, so the strength curves stay the measured ones. The activations minimise the sum of squared activations while the muscles make the joint torque about the ab/adduction axis and nothing about the other two, so a muscle that also extends or rotates strongly costs extra (others have to cancel it). Seated, the seat is taken to carry flexion–extension and the pads and footrests rotation, so only ab/adduction is balanced there. The solution is exact: a = clamp(Aᵀy, 0, 1), with y found by Newton steps on the dual.
+- **Force–length from OpenSim itself.** `tools/opensim_export.py` (run with OpenSim 4.6) gives every muscle's force at full activation at each posture: the Millard muscle model with the tendon in equilibrium, on a hip bend (0–120°) × ab/adduction (−50 to 20°) grid, knee straight and bent 90°. `tools/hip-force.mjs` stores it as a share of the maximum force; the optimisation uses that force instead of the maximum, so a muscle that is short (or overstretched) at this posture counts for less. Example: the hamstrings with the hip bent 90° are overstretched with the knee straight (about 10% of their force) and near full force with the knee bent (seated).
+- **Seated machines and trunk lean.** One seated variant per exercise. The trunk-lean slider sets the hip bend (90° − lean; the thighs stay on the seat, the pelvis tilts with the trunk). The figure is 3D (drag to turn, zoom to the hip) and draws each muscle along its model path, coloured by its activation.
+
+### What it shows
+- **Seated abduction, 20° apart, 5 kg** (light, about 25–60% effort): leaning back 45° (hip bent 45°) shares the work: gluteus medius 32%, upper gluteus maximus 26%, piriformis 23%. Upright (90°): upper gluteus maximus 63%, piriformis 59%, gluteus medius 13%. Leaning forward 30° (120°): upper gluteus maximus 82%, gluteus medius 0%. The gluteus medius's abduction moment arm falls from 4–5.4 cm (hip straight) to 0.2–1.5 cm at 90°, and its front part reverses past that.
+- **Standing**, the gluteus medius leads (about 73% at 20° with the cable's default load), with TFL, gluteus minimus and the sartorius/rectus femoris helping.
+- **Adduction:** adductor longus/brevis/gracilis lead, then the adductor magnus; the lower gluteus maximus and the hamstrings help a little (they also extend, which has to be cancelled). Seated, leaning changes little: the adductors keep their leverage.
+
+### Checked against
+- **OpenSim 4.6 itself:** the JS moment arms (`js/hipmodel.js`, with its own cylinder wrapping) against OpenSim's `computeMomentArm` for all 25 muscles, about all three hip axes, at hip bend 0–120° and abduction 0–50°: mean difference about 0.1 cm, largest 1–2 cm (TFL and sartorius at the extremes). The knee bent 90° changes no hip moment arm (only the muscles' force, through their length).
+- **The model's own strength curves vs the measured ones** (sum of every muscle's force × moment arm, with force–length):
+  - *Adduction vs angle* matches well. Relative to 25°: model 0.59 / 0.83 / 0.96 / 1.0 at −15 / 0 / 15 / 40°, measured (Chen & Franklin) 0.62 / 0.72 / 0.88 / 1.0. Without force–length the leverage alone rose steadily, the wrong shape.
+  - *Adduction vs hip bend:* the model drops 15–28% by 45° (more with the leg out), measured about 40%. Right direction; without force–length there was no drop.
+  - *Abduction vs angle* is only partly reproduced. The model peaks near 10° of abduction and has dropped 27% by 40°; Neumann et al. measured a steady fall to 36% of the −10° value. Without force–length the leverage alone rose.
+  - *Abduction vs hip bend:* the model drops 18% by 45°, measured about the same as straight.
+  - So the shares use the model, and the strength curves stay the measured ones.
+- **Dostal et al. 1986 (Table 1, hip straight):** model vs Dostal's moment arms. Gluteus medius middle and rear 4.0–4.9 vs 6.0–6.7 cm; gluteus minimus 3.9–5.2 vs 4.3–5.8; TFL 5.5 vs 3.9; piriformis 2.4 vs 5.2; adductor brevis 5.5 vs 7.1, longus 5.8 vs 3.2, magnus 3.5–6.4 vs 6.2–7.6. Same signs and roles; sizes mostly within about ±30%, up to about 2× apart for the piriformis and adductor longus (different specimens and attachment points).
+- **Dostal et al. (Table 2, actions at 0, 40 and 90° of flexion):** reproduced in direction. The gluteus medius and minimus lose their abduction with the hip bent and their front parts turn against it; TFL and piriformis keep abducting; the adductors keep adducting.
+- **Chen & Franklin (Fig. 6):** abduction strength about the same at 45° of hip bend as straight; the model's summed force × moment arm falls only 5%. Adduction measured about 40% weaker at 45°, but the model's leverage doesn't fall. The loss is more likely the adductors working shorter (force–length), which the leverage model leaves out, so the measured value is used.
+
+### Still limited
+- **Muscles missing:** the model has no obturators, gemelli, quadratus femoris or pectineus. Dostal found the external rotators turn into abductors with the hip bent 90°, so the model likely underrates seated abduction strength and the deep rotators' share. The pectineus shows "not modelled".
+- **Strength beyond 45° of hip bend** (seated abduction) follows the model's summed maximum force × moment arm, relative to 45°: about 0.54 at 90° and 0.41 at 120°. With force–length the model says lower still (0.41 at 90°), but it already overstates the drop to 45° and lacks the deep rotators, so both are likely too low; the leverage-only value is kept until a measurement is found (reading list). Seated adduction is held at the measured 45° value.
+- **Passive forces** (stretched muscles pulling back at the ends of the range) are exported but not used. Velocity isn't modelled (the curves are isometric).
+- **Wrapping:** cylinders only; the three wraps around the knee (gracilis, semimembranosus, semitendinosus on the tibia) are left out, which doesn't change their hip moment arms. Two-joint muscles use the knee straight, so seated (knee bent) the hamstrings' and gracilis' hip moment arms are approximate.
+- **The supports' share** (seated flexion and rotation) is an assumption; how much the pads and footrests really take isn't measured.
+- **Range:** 0–60° of abduction. The hip itself abducts about 45° in common norms (a source is still to find), more with the hip bent; strength is measured only to 40° and held beyond. Past about 45°, standing, most people tilt the pelvis, which isn't modelled.
+- **Licence:** Rajagopal et al. 2016 and Uhlrich et al. 2022 are under the MIT licence (SimTK project pages); `data/opensim/hip-muscles.json` carries the notice. The Lai et al. 2017 changes in the 2023 model file state no licence and are left out (they only change the knee end of the two-joint muscles; the hip moment arms move by at most 0.2 cm).
+
+## OpenSim cross-check: the other leg exercises
+
+Run 2026-10-09 with OpenSim 4.6: `tools/opensim_export.py` on Rajagopal2016.osim (grids hip × knee and knee × ankle, every muscle's force at full activation with force–length), then `node tools/opensim-check.mjs export.json`. Nothing in the app was changed by it; the 2023 model file (with Lai et al.'s changes) was run locally as a second opinion, not published.
+
+**Strength-curve shapes: the model doesn't reproduce the measured ones, so the measured curves stay.**
+- Knee extension (relative to peak, at 0 / 30 / 60 / 90° of knee flexion): measured 0.14 / 0.73 / 1.0 / 0.86, model 0.81 / 1.0 / 0.84 / 0.46. The model peaks at 30° instead of about 65° and is far too strong near full extension. Lai's version is closer (peak 45–60°) but still 0.65 at 0°.
+- Knee flexion: measured peak at 30°, model at 60° (hip 70°).
+- Hip extension: measured peak at about 50°, model at 25°, and the model falls to 0.28 at 120° where the measured curve is held at 0.94.
+- Plantarflexion: same shape, the model's peak about 10° further towards plantarflexion.
+- Generic musculoskeletal models are scaled from cadaver and MRI data, not fitted to dynamometer curves, so this is a limit of the model, not a reason to change the measured curves.
+
+**Two-joint corrections:**
+- Plantarflexion by knee angle (Cresswell et al.): agrees. Model vs app at knee 0 / 30 / 60 / 120°: 1.11 / 1.08 / 0.94 / 0.67 vs 1.20 / 1.06 / 0.97 / 0.72. Only at 90° do they differ (model 0.77, measured 0.92).
+- Knee flexion by hip angle (Guex et al.): agrees with the hip straight (model 0.76, measured 0.61, both weaker than the base test), disagrees at 90° of hip flexion (model 0.85, measured 1.09: the model's hamstrings are overstretched there). Measured kept.
+- Hip extension by knee angle (Yamamoto et al.): the model finds almost no loss with the knee bent 90° (0.94; measured 0.82). Measured kept.
+- Calf raise, knee straight: the model's own ratio (knee straight ÷ knee 50°: 1.11 / 1.25 / 1.34 at 0 / 20 / 30°) can't be put on the measured knee-bent curve, which falls much more steeply near the top than the model's (0.18 vs 0.32 at 34–35°); stacked on it, a single-leg bodyweight raise would need about 170% at the top. Used consistently instead (the model's knee-straight curve shape, anchored to Cresswell's measured 1.2 at foot flat), the factor comes out 1.34 / 1.52 / 1.98 / 2.50 at 10 / 20 / 30 / 34°, close to the earlier Chen-based values (2.52 at 34°) and matching Chen & Franklin's knee-extended datasets. **Now used** above foot flat; below it the measured 1.2 is kept (the model gives 0.88 at 20° of dorsiflexion, which would make a deficit single-leg raise 111%).
+- Knee extension by hip angle (rectus femoris): the app has no correction; the model gives 1.13 with the hip straight vs the leg-extension test's 80°, 0.97 at 90°. Small; not added.
+
+**Muscle weights** (the model's activation ÷ effort in static optimisation, comparable to the app's weight tables, which are mostly `TODO` estimates):
+- Kickback: same direction as the app (gluteus maximus falls with hip flexion, hamstrings and adductor magnus rise), larger swings. With the knee bent 90° (kneeling) the model's hamstrings nearly drop out near full hip extension (0.03–0.11 vs 0.6–1.1 with the knee straight). **Now used:** the kickback has a knee-bend slider (0–120°, presets: standing 0°, kneeling 90°); it moves the ankle load, scales hip-extension strength by knee bend (Yamamoto et al., as in the lifts) and rescales the gluteus maximus, hamstrings and adductor magnus by the model's ratio to the knee straight (`kneeFactor`, hip × knee grid).
+- Leg extension: vasti agree (about 1.0). The model's rectus femoris falls from 0.67 at 90° of knee flexion to 0 at full extension (short with the hip bent 80°); the app keeps it at 0.7–0.8. EMG studies generally show the rectus femoris active in the leg extension throughout, and static optimisation is known to under-use two-joint muscles, so the app's values are kept.
+- Leg curl: the model gives the gastrocnemius a large share near full knee extension (1.1–1.4 vs the app's 0.5) and, lying (hip straight), drops the hamstrings to 0.13 at 120° of knee flexion (active insufficiency). The app's flatter weights are kept until checked against EMG.
+- Calf raise: the model works the soleus hardest (1.4–1.5 vs gastrocnemius 0.7–0.8 knee straight) and makes the gastrocnemius almost silent seated (0–0.4); the app uses measured EMG for the seated drop (× 0.65). Kept.
+
+
+## OpenSim cross-check: elbow (Arm26 model)
+
+Run 2026-10-09 with OpenSim 4.6: `tools/opensim_arm_check.py` on Arm26 (the OpenSim team's version of Holzbaur et al. 2005's arm, CC BY 3.0: biceps long and short heads, brachialis, the three triceps heads; shoulder flexion and elbow joints; no brachioradialis). Nothing in the app was changed by it.
+
+- **Elbow flexion strength** (shoulder at 90°): agrees with the measured curve (Pinter et al.): model 0.61 / 0.88 / 1.0 / 0.96 / 0.78 at 30 / 60 / 90 / 100 / 120° of flexion, measured 0.53 / 0.77 / 1.0 / 0.99 / 0.79. Beyond the measured 120° the model keeps falling (0.50 at 140°); the app holds 0.79 there (no measurement, see the curve note).
+- **Biceps vs brachialis** (standing curl): the model's ratio of their weights matches the app's (Murray et al. moment arms × Ramsay et al. sizes) in mid-range, 1.37 vs 1.40 at 40° and 1.23 vs 1.35 at 80°; near a straight arm the model leans on the brachialis (0.32 vs 1.64 at 0°), at 120° it has them equal (app 1.31).
+- **Curls by shoulder angle:** the model changes elbow-flexion strength by only a few percent with the upper arm forward or back (45° forward: 0.94–1.02; 30° back: 0.97–1.09 of standing). The app's preacher factor (0.87–0.96) and Bayesian curl (1.0, biceps × 1.05) are in that range or a little beyond.
+- **Elbow extension strength:** the model is nearly flat towards the straight arm (0.99 at 20° of flexion) where the measured curve falls to 0.56: the measured curve stays.
+- **Triceps by shoulder angle:** the model makes elbow extension about 20% stronger with the upper arm down (pushdown) and 10% stronger overhead than with it raised 90°, and the long head's weight falls overhead with the elbow bent (0.79 at 120°: overstretched in this model). The app uses 1.0 for the pushdown and 0.85–0.9 overhead (see the variants' notes and sources). Not changed: the model's shoulder is a single flexion axis, and its long head is known to be simplified.
+- **Not covered:** the brachioradialis (hammer and reverse curls) and the shoulder muscles. The full Stanford-VA upper limb model (Holzbaur et al. 2005, BSD licence) is downloaded, but only as the original SIMM files: its shoulder (coupled shoulder-blade motion, ellipsoid wrapping of the deltoids) needs OpenSim's own import, which OpenSim 4 no longer has.
+
+## OpenSim cross-check: hand and wrist (ARMS model)
+
+> **Non-commercial source.** The numbers in this section come from the ARMS hand and wrist model (McFarland DC, Binder-Markey BI, Nichols JA, Wohlman SJ, de Bruin M, Murray WM (2021). A musculoskeletal model of the hand and wrist capable of simulating functional tasks. bioRxiv 2021.12.28.474357), which is licensed for non-commercial use only. They are a check; nothing in the app's data was taken from it. Anyone reusing this page commercially should leave this section out or get a licence from the authors.
+
+Run 2026-10-09 with OpenSim 4.6: `tools/opensim_hand_check.py` (index finger moment arms, per-finger flexor force at the edge lift's grips, wrist muscles from 60° of flexion to 60° of extension with the fingers straight and gripping).
+
+**Edge lift:**
+- *Per-finger flexor size* agrees with the app's (Lieber et al. PCSA): FDP index / middle / ring / little 24 / 26 / 21 / 29% (app 22 / 28 / 22 / 28%), FDS 24 / 39 / 26 / 11% (app 27 / 40 / 26 / 6%: ARMS gives the little finger's FDS more).
+- *Force–length doesn't matter in these grips:* every finger flexor works at 91–100% of its maximum force in the open hand, half crimp and full crimp.
+- *Moment arms:* DIP (FDP) 3.1–5.0 mm, growing with flexion (app: 4.1 mm, An et al.'s average); MCP FDP 9.5–10.6, FDS 10.5–12.2 mm (app 11.1 and 11.9). At the PIP in the crimps the app is larger: half crimp FDP 8.4 vs 12.2 mm, FDS 5.9 vs 8.0 mm, and ARMS's FDS moment arm shrinks as the PIP bends (7.6 mm straight, 4.9 mm at 100°). The app adds Schweizer's measured bowstringing of the loaded tendons over the PIP; ARMS is unloaded geometry, so the gap is expected and the app's measured values stay. If ARMS's shrinking FDS arm is right, the FDS works at even less leverage in a deep crimp than the app shows.
+
+**Wrist curls:**
+- *Strength curves:* extension matches the measured curve (Delp et al.) closely with the fingers straight (peak with the wrist bent back 10–20° in both) and falls a little faster when the wrist is curled with the fingers gripping. Flexion doesn't: ARMS peaks at 10° of flexion, measured at 40°. The measured curves stay.
+- *Muscle weights* (force × moment arm per group, relative to the largest, fingers gripping): the finger flexors dominate flexion and the ECU stays small, as in the app (Gonzalez et al.). Different: ECRL 0.78 vs the app's 0.33 at neutral (ARMS gives it 337 N maximum force; Gonzalez's architecture data make it a small extensor); FCU nearly silent at 40° of flexion (0.02 vs 0.39: in ARMS it is short and slack there, 12 N active of 480 N); FCR 0.57 vs 0.34 at neutral. Both are models built on different muscle data, so the published Gonzalez values stay; EMG would settle it.
 
 ## Multi-joint model
 
@@ -218,10 +306,12 @@ Limits:
 
 - **Fixed trunk and shoulders.** Lifters lean back at the start and shrug the shoulder blades up at lockout. Neither is modelled, so the start torques and the overhead geometry are approximate. A shrug can't be added as a simple slider: lifting the shoulder joints moves the whole hand path with them and leaves every torque unchanged. Its real effect is the shoulder blade's upward rotation (glenoid facing up, muscle lengths), which needs a shoulder-blade model.
 - **Straight bar path.** At the start the line passes the chin; real lifters tilt the head back or curve the path.
-- **Strength overhead is estimated.** Flexion strength is sourced up to 110° and abduction up to 90°. Beyond that, both are marked `TODO` (60% and 50% of peak at 180°). The adduction peak (90 Nm) is also an estimate.
+- **Strength overhead is estimated.** Flexion strength is sourced up to 110° and abduction up to 90°. Beyond that, both are marked `TODO` (60% and 50% of peak at 180°). The adduction peak (90 Nm) is also an estimate. The single-joint overhead front raise and Lu raise hold the 90° value above 90° (estimate), and the shoulder-blade muscles (serratus anterior, lower trapezius) are listed with estimated shares only.
 - **Shoulder blade muscles** (serratus anterior, trapezius) are listed but not estimated.
 
 ## 3D: deadlift, Romanian deadlift, split squat and hip thrust
+
+**Romanian deadlift range:** 0–130° of hip flexion, so the bar can go down to the floor (45 cm plates touch at about 125° with soft knees and a flat back, sooner with straighter knees or a rounded back; the model says so when they do). The hip strength curve is only measured to 74° and held flat beyond, so the effort past about 75° is an estimate. How deep someone can hinge with nearly straight knees depends on hamstring flexibility, which the model doesn't limit.
 
 The deadlift uses the same 3D hinge as the Romanian deadlift. With the feet under the hips, toes forward and no sideways push it reduces exactly to the side view (tested for the conventional and trap-bar pulls), including the rule that a straight bar must pass in front of the shins and thighs (the straight arms swing forward just enough). Controls: knee bend as a share of the hip bend, stance width, toe angle, knee tracking and the sideways floor push. Stance width and toe angle of both pulls come from Escamilla et al. 2000 (12 + 12 national-level powerlifters, read in full): conventional 32 cm between the feet with the toes out 14°, sumo 70 cm and 42°. Knee bend: 0.7° (conventional) and 0.9° (sumo) per degree of hip flexion (estimates), and the back is a slider from arched (−20°) to rounded (+40°), default straight (the upper half of the trunk bends forward or back from the lower half).
 
@@ -251,6 +341,16 @@ Limits:
 - **Split squat:** the front foot can push sideways on the floor, and the rear contact pushes back equally. The push is least effort by default, with a slider. Because the rear contact is higher (a bench), that pair also tips the body sideways, and the sideways balance includes it (tested: moments about the front-back axis add to zero). With least effort the push is 6–35% of the front foot's vertical force, and the hip-rotation load nearly vanishes. Set to zero, the feet-in-line variant needs more than the measured hip internal-rotation strength when deep. The pelvis stays level (no hip drop), and the rear contact can't take front-back friction.
 - **Pelvis shift instead of a hip drop.** Real lifters also let the pelvis tilt and the knee drift. The model keeps the pelvis level and moves it sideways as one piece.
 - **Hip rotation strength** is from Uritani & Fukumoto 2012, by hip flexion. Internal rotation rises from 25 Nm lying back to 39 Nm sitting; external rotation stays about 37–43 Nm. Their group was mostly women (60 kg), so the values are likely low for men. Frontal-plane strength is the squat's.
+
+## Holding muscles (isometric)
+
+The lifts' joint tables can also list what is held still while the lift moves (switch "Show holding muscles", on by default, remembered in the browser):
+- **Lower back (L5/S1):** the back extensors' moment at the lumbosacral joint: head, upper and middle trunk, arms and any load in the hands or on the back, about a point 10 cm up the trunk from the hips (estimate). Whole trunk, both sides together (the hip column is per leg). Example, RDL with 50 kg at 90° of hip flexion: 266 Nm at L5/S1 vs 179 Nm per hip.
+- **Upper back (mid-back):** the same at the middle of the trunk, for head, upper trunk, arms and load. It is what holds the back from rounding further; front squats and goblet squats load it more than back squats.
+- **Grip:** the load in each hand (deadlifts, RDLs, rows, goblet squat).
+- **Shoulders (lats, rear delts), per arm:** the moment that keeps the straight arm and bar from swinging forward. Zero when the bar hangs under the shoulders (the RDL here); in the deadlift it appears around the knees, where the bar must pass in front of the legs.
+- In the seated row's finish the arms pull the trunk back, so the back moments turn negative: the abdominals hold instead (shown as the opposite muscles).
+- Trunk segment masses from de Leva (head 6.94%, upper trunk 15.96%, middle trunk 16.33%, lower trunk 11.17% of body mass); where along the trunk they sit, and the L5/S1 height, are estimates. No strength norms yet (trunk extension, grip), so no effort is shown; on the reading list.
 
 ## 3D: rows
 
@@ -359,6 +459,8 @@ Every strength curve, peak strength and limb mass now carries its source in the 
 | Shoulder flexion, extension, abduction, horizontal adduction | Kulig, Andrews & Hay 1984 (*Exerc Sport Sci Rev*) | Curve shapes from the studies it reviews; shoulder extension numbers (Clarke et al.) |
 | Shoulder abduction | Haidar et al. 2009 (conference abstract) | Relative strength at 0, 30, 60, 90° |
 | Hip abduction | Neumann et al. 1988 (*Phys Ther*) | Torques at −10° to 40° |
+| Hip adduction | Chen & Franklin 2025 (meta-visualization, *J Biomech*); Danneskiold-Samsøe et al. (peak) | Curve shape vs abduction angle and hip flexion, read off Fig. 6 |
+| Hip muscle moment arms | Dostal, Soderberg & Andrews 1986 (*Phys Ther*) | Abduction/adduction moment arms at 0°, 40° and 90° of hip flexion |
 | Hip adduction / abduction (3D lifts) | Welsh et al. 2020 (*Int J Sports Phys Ther*) | Isometric torques at 10° of abduction |
 | Limb masses and centres of mass | de Leva 1996 (*J Biomech*) | Young adult males |
 | Bench press sideways bar force and joint moments | Mausehund et al. 2022 (*J Strength Cond Res*) | Measured lateral forces, moment arms and moments by grip |
@@ -488,7 +590,7 @@ Other points from the same paper:
 - **Lowering vs lifting:** measured joint torque rarely goes above 125% of isometric in eccentric tests, and rarely below 25% even at high concentric speeds. The app uses isometric strength in both phases, so effort while lowering is overstated by up to about a fifth.
 - **Hip rotators change role as the hip bends.** The gluteus maximus and medius rotate the thigh outwards with the hip straight and turn into internal rotators when it is deeply bent (Chen & Franklin's moment-arm review, citing Delp et al. 1999). The model's "external rotators" keep the same weight at every hip angle, which overstates them at the bottom of a deep squat or leg press.
 
-Rajagopal et al. 2016 (the OpenSim full-body model) gives each leg muscle's force capacity (from MRI volumes) and moment arms. Turning those into angle-dependent muscle weights needs the model run offline; the files are on simtk.org, which is also blocked here. Its strength validation cites Waters et al. 1974 on hip extension with the hamstrings, now on the reading list.
+Rajagopal et al. 2016 (the OpenSim full-body model) gives each leg muscle's force capacity (from MRI volumes) and moment arms. The hip part is now in use for hip abduction and adduction (see that section; read straight from the model file, with wrapping); the knee and ankle muscles of the other leg exercises are still to do. Its strength validation cites Waters et al. 1974 on hip extension with the hamstrings, now on the reading list.
 
 ### Still without a source
 

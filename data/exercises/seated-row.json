@@ -21,7 +21,7 @@
       "peakTorqueNm": 93,
       "negative": {"action": "Shoulder flexion", "peakTorqueNm": 68},
       "strength": {
-        "points": [[-90, 1.0], [180, 1.0]],
+        "points": [[-90, 1], [180, 1]],
         "note": "Shoulder extension (positive) and flexion (negative) peak torque per arm, taken as constant across the range: Mayer's isometric means for men (93 and 68 Nm), measured standing.",
         "source": "Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25, Table 2 (men, dominant side, isometric)"
       }
@@ -34,7 +34,7 @@
       "peakTorqueNm": 93,
       "negative": {"action": "Horizontal adduction", "peakTorqueNm": 92},
       "strength": {
-        "points": [[-90, 1.0], [180, 1.0]],
+        "points": [[-90, 1], [180, 1]],
         "note": "Horizontal abduction (positive: rear delts, with the elbows flared) and adduction (negative) per arm, taken as constant over the range: Lategan's means for men, 93 ± 27 and 92 ± 23 Nm (isokinetic, 60°/s). Lying on the back, gravity helps abduction and resists adduction in that test and wasn't corrected for, so abduction may read slightly high and adduction slightly low. Weir et al. (via Lategan) found 68 and 74 Nm in 16–18-year-old wrestlers at 30°/s.",
         "source": "Lategan L (2002). Normative isokinetic torque values for rehabilitation in South Africa. DPhil thesis, University of Pretoria, Table 6.17 (103 men aged 16–29, isokinetic 60°/s, concentric, lying on the back with the arm out at 90°, not gravity-corrected). https://repository.up.ac.za/handle/2263/27346"
       }
@@ -47,7 +47,7 @@
       "peakTorqueNm": 30,
       "negative": {"action": "Internal rotation", "peakTorqueNm": 43},
       "strength": {
-        "points": [[-60, 1.0], [180, 1.0]],
+        "points": [[-60, 1], [180, 1]],
         "note": "Shoulder external (positive) and internal (negative) rotation peak torque per arm, taken as constant: Mayer's isometric means for men (30 and 43 Nm).",
         "source": "Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25, Table 2 (men, dominant side, isometric)"
       }
@@ -60,7 +60,7 @@
       "peakTorqueNm": 85,
       "negative": {"action": "Elbow extension", "peakTorqueNm": 77},
       "strength": {
-        "points": [[32, 0.52], [45, 0.61], [60, 0.76], [75, 0.9], [90, 0.99], [95, 1.0], [105, 0.97], [120, 0.78]],
+        "points": [[32, 0.52], [45, 0.61], [60, 0.76], [75, 0.9], [90, 0.99], [95, 1], [105, 0.97], [120, 0.78]],
         "note": "Relative isometric elbow-flexion torque vs elbow flexion (0° = straight), peak about 95°: the paper's mean cubic fit, normalised, inside the measured 32–120° (held flat beyond). Measured with the upper arm raised 90° and horizontally adducted 20°, not hanging as in a standing curl. Peak per arm: the paper's male means (flexion 85 Nm, extension 77 Nm).",
         "source": "Pinter IJ, Bobbert MF, van Soest AJ, Smeets JBJ (2010). Isometric torque–angle relationships of the elbow flexors and extensors in the transverse plane. J Electromyogr Kinesiol 20:923–931. doi:10.1016/j.jelekin.2010.05.001"
       }
@@ -73,7 +73,7 @@
       "passive": true,
       "negative": {"action": "Hand pushed outwards"},
       "strength": {
-        "points": [[-60, 1.0], [180, 1.0]],
+        "points": [[-60, 1], [180, 1]],
         "note": "No muscle capacity: the elbow's sideways moment is carried mostly by ligaments and the joint surfaces, so it is shown as torque only.",
         "source": "Not applicable: carried by ligaments and joint surfaces, so no muscle strength is used"
       }
@@ -85,7 +85,7 @@
       "angleLabel": "hip flexion",
       "peakTorqueNm": 200,
       "strength": {
-        "points": [[-25, 0.26], [0, 0.63], [25, 0.89], [50, 1.0], [74, 0.94]],
+        "points": [[-25, 0.26], [0, 0.63], [25, 0.89], [50, 1], [74, 0.94]],
         "note": "Relative isometric hip-extension torque vs hip flexion, peak about 53°, measured standing with the knee slightly bent (tested −29° to 74°; deeper hip flexion is held flat at the 74° value, which is extrapolation). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m).",
         "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
       }
@@ -101,7 +101,7 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "joint": "shoulder",
-      "weight": [[-90, 1.0], [90, 1.0]],
+      "weight": [[-90, 1], [90, 1]],
       "sign": 1,
       "note": "Main shoulder extensor: pulls the upper arm back towards the hips.",
       "source": "TODO: check against EMG literature",
@@ -115,7 +115,7 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "joint": "shoulder-h",
-      "weight": [[-90, 1.0], [180, 1.0]],
+      "weight": [[-90, 1], [180, 1]],
       "sign": 1,
       "note": "Horizontal abductor: pulls the upper arm out and back when the elbows flare. With the elbows tucked the lats do that job instead.",
       "source": "TODO: check against EMG literature",
@@ -130,7 +130,7 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "joint": "elbow",
-      "weight": [[0, 1.0], [150, 1.0]],
+      "weight": [[0, 1], [150, 1]],
       "sign": 1,
       "note": "Elbow flexors: work while the forearm is tilted away from the line of the load.",
       "source": "TODO: check against EMG literature",
@@ -144,9 +144,10 @@
       "wgerId": null,
       "role": "Synergist",
       "driver": "none",
-      "weight": [[-90, 1.0], [90, 1.0]],
+      "weight": [[-90, 1], [90, 1]],
       "note": "Pull the shoulder blades together at the top. Not estimated: the model has no shoulder blade.",
-      "source": "Not modelled"
+      "source": "Not modelled",
+      "draw3d": {"seg": "trunk", "side": "posterior", "along": [0.36, 0.5], "offset": 0.12, "w": 0.06, "spread": 0.05}
     },
     {
       "id": "erector-spinae",
@@ -171,9 +172,10 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "joint": "hip",
-      "weight": [[0, 0.8], [120, 1.0]],
+      "weight": [[0, 0.8], [120, 1]],
       "note": "With the glutes, hold the hip angle against the cable pulling the trunk forward.",
-      "source": "TODO: check against EMG literature"
+      "source": "TODO: check against EMG literature",
+      "draw3d": {"seg": "thigh", "side": "posterior", "along": [0.12, 0.36], "offset": 0.06, "w": 0.06}
     },
     {
       "id": "gluteus-maximus",
@@ -183,9 +185,10 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "joint": "hip",
-      "weight": [[0, 0.8], [90, 1.0], [130, 1.0]],
+      "weight": [[0, 0.8], [90, 1], [130, 1]],
       "note": "Main hip extensor.",
-      "source": "TODO: check against EMG literature"
+      "source": "TODO: check against EMG literature",
+      "draw3d": {"seg": "thigh", "side": "posterior", "along": [0, 0.12], "offset": 0.06, "w": 0.09}
     },
     {
       "id": "rotator-cuff-ext",
@@ -196,10 +199,11 @@
       "role": "Stabiliser",
       "driver": "jointEffort",
       "joint": "shoulder-rotation",
-      "weight": [[-60, 1.0], [180, 1.0]],
+      "weight": [[-60, 1], [180, 1]],
       "note": "External rotators of the rotator cuff: hold the upper arm from turning inwards.",
       "source": "TODO: check against EMG literature",
-      "sign": 1
+      "sign": 1,
+      "draw3d": {"seg": "upperArm", "side": "posterior", "along": [-0.07, -0.01], "offset": 0.05, "w": 0.04}
     },
     {
       "id": "subscapularis",
@@ -209,10 +213,11 @@
       "role": "Stabiliser",
       "driver": "jointEffort",
       "joint": "shoulder-rotation",
-      "weight": [[-60, 1.0], [180, 1.0]],
+      "weight": [[-60, 1], [180, 1]],
       "note": "Internal rotator of the rotator cuff: holds the upper arm from turning outwards.",
       "source": "TODO: check against EMG literature",
-      "sign": -1
+      "sign": -1,
+      "draw3d": {"seg": "upperArm", "side": "anterior", "along": [-0.07, -0.01], "offset": 0.04, "w": 0.04}
     }
   ],
   "variants": [

@@ -126,7 +126,8 @@
       "weight": [[0, 0.7], [180, 0.7]],
       "sign": 1,
       "note": "Works with the lats on both actions.",
-      "source": "TODO: check against EMG literature"
+      "source": "TODO: check against EMG literature",
+      "draw3d": {"seg": "upperArm", "side": "medial", "along": [-0.03, 0.07], "offset": 0.04, "w": 0.05}
     },
     {
       "id": "biceps",
@@ -169,7 +170,8 @@
       "weight": [[-60, 1], [180, 1]],
       "note": "External rotators of the rotator cuff: hold the upper arm from turning inwards.",
       "source": "TODO: check against EMG literature",
-      "sign": 1
+      "sign": 1,
+      "draw3d": {"seg": "upperArm", "side": "posterior", "along": [-0.07, -0.01], "offset": 0.05, "w": 0.04}
     },
     {
       "id": "subscapularis",
@@ -182,7 +184,8 @@
       "weight": [[-60, 1], [180, 1]],
       "note": "Internal rotator of the rotator cuff: holds the upper arm from turning outwards.",
       "source": "TODO: check against EMG literature",
-      "sign": -1
+      "sign": -1,
+      "draw3d": {"seg": "upperArm", "side": "anterior", "along": [-0.07, -0.01], "offset": 0.04, "w": 0.04}
     },
     {
       "id": "lower-traps",
@@ -194,7 +197,8 @@
       "driver": "none",
       "weight": [[0, 1], [180, 1]],
       "note": "Pull the shoulder blades down and together. Not estimated: the model has no shoulder blade.",
-      "source": "Not modelled"
+      "source": "Not modelled",
+      "draw3d": {"seg": "trunk", "side": "posterior", "along": [0.33, 0.45], "offset": 0.11, "w": 0.05, "spread": 0.09}
     },
     {
       "id": "hip-flexors",
@@ -207,7 +211,8 @@
       "joint": "hip",
       "sign": -1,
       "weight": [[0, 1], [60, 1]],
-      "note": "Hold the legs forward of the trunk. Bringing the legs forward lets the trunk lean back so the shoulders sit behind the bar and the forearms stand upright; the model picks how far for least effort (hip flexors included)."
+      "note": "Hold the legs forward of the trunk. Bringing the legs forward lets the trunk lean back so the shoulders sit behind the bar and the forearms stand upright; the model picks how far for least effort (hip flexors included).",
+      "draw3d": {"seg": "thigh", "side": "anterior", "along": [-0.03, 0.1], "offset": 0.04, "w": 0.05}
     }
   ],
   "variants": [

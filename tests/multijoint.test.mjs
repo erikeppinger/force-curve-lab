@@ -694,3 +694,31 @@ test("3D squat: a wide, toes-out stance balances at every knee angle with a ligh
     assert.ok(r.balance.ok, `${kg} kg @${x}`);
   }
 });
+
+test("holding loads: a load in the hands with the trunk horizontal gives W·d at L5/S1 and at mid-back", async () => {
+  const { holding, v3 } = await import("../js/multijoint3d.js");
+  // Massless body (kg = 0): only the 20 kg in the hands, 0.4 m in front of the hips along a
+  // horizontal trunk, hanging straight down.
+  const W = 20 * G, back = v3(1, 0, 0), pelvis = v3(0, 1, 0), S = v3(body.lengths.trunk, 1, 0);
+  const hands = [{ at: v3(0.4, 0.5, 0.2), f: v3(0, -W / 2, 0) }, { at: v3(0.4, 0.5, -0.2), f: v3(0, -W / 2, 0) }];
+  const h = Object.fromEntries(holding({ pelvis, back, S, hands, hang: true, kg: 0, body }).map((x) => [x.id, x]));
+  assert.ok(Math.abs(h["lower-back"].torque - W * (0.4 - body.trunkParts.l5s1)) < 1e-9);
+  assert.ok(Math.abs(h["upper-back"].torque - W * (0.4 - body.lengths.trunk / 2)) < 1e-9);
+  assert.ok(Math.abs(h.grip.kgPerHand - 10) < 1e-9);
+  // Shoulder, per arm: the hand 0.4 − trunk length behind the shoulder → negative (bar behind).
+  assert.ok(Math.abs(h.shoulders.torque - (W / 2) * (0.4 - body.lengths.trunk)) < 1e-9);
+  // Upright trunk, bar straight under the shoulders: nothing to hold at the back or shoulders.
+  const up = Object.fromEntries(holding({ pelvis, back: v3(0, 1, 0), S: v3(0, 1 + body.lengths.trunk, 0), kg: 0, body, hang: true,
+    hands: [{ at: v3(0, 0.6, 0.2), f: v3(0, -W / 2, 0) }, { at: v3(0, 0.6, -0.2), f: v3(0, -W / 2, 0) }] }).map((x) => [x.id, x]));
+  for (const id of ["lower-back", "upper-back", "shoulders"]) assert.ok(Math.abs(up[id].torque) < 1e-9, id);
+});
+
+test("holding loads: the RDL's lower-back moment grows with the hinge and stays below both hips together", () => {
+  const ex = JSON.parse(readFileSync(new URL("../data/exercises/romanian-deadlift.json", import.meta.url)));
+  const v = ex.variants[0];
+  const at = (x) => analyzeMulti(ex, v, x, { loadKg: 50, bodyMassKg: 75, body, strengthPct: 100 });
+  const lb = (r) => r.holding.find((h) => h.id === "lower-back").torque;
+  assert.ok(lb(at(90)) > lb(at(45)) && lb(at(45)) > lb(at(0)));
+  const r = at(90);
+  assert.ok(lb(r) > 0 && lb(r) < 2 * r.joints.find((j) => j.id === "hip").torque);
+});

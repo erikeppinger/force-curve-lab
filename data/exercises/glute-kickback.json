@@ -23,7 +23,7 @@
   "ui": {"load": [0, 60, 0.5], "strength": [60, 300]},
   "strengthCurve": {
     "label": "Hip extensor strength",
-    "points": [[-25, 0.26], [0, 0.63], [25, 0.89], [50, 1.0], [74, 0.94]],
+    "points": [[-25, 0.26], [0, 0.63], [25, 0.89], [50, 1], [74, 0.94]],
     "note": "Relative isometric hip-extension torque vs hip flexion, peak about 53°, measured standing with the knee slightly bent (tested −29° to 74°; deeper hip flexion is held flat at the 74° value, which is extrapolation). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m).",
     "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
   },
@@ -49,10 +49,17 @@
       "wgerId": 8,
       "role": "Prime mover",
       "driver": "jointEffort",
-      "weight": [[-25, 1.0], [45, 0.95], [90, 0.85]],
+      "weight": [[-25, 1], [45, 0.95], [90, 0.85]],
       "note": "Main hip extensor, working hardest near full hip extension.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "proximal", "origin": [-0.09, 0.1], "insert": 0.1, "offset": -0.05, "w": 0.1, "layer": 0}
+      "draw": {"seg": "proximal", "origin": [-0.09, 0.1], "insert": 0.1, "offset": -0.05, "w": 0.1, "layer": 0},
+      "kneeFactor": {
+        "hip": [-20, 0, 20, 40, 60, 90],
+        "knee": [0, 30, 60, 90, 120],
+        "factor": [[1, 1.01, 0.96, 0.93, 0.92], [1, 1.14, 1.18, 1.14, 1.11], [1, 1.15, 1.45, 1.55, 1.56], [1, 0.83, 1.01, 1.34, 1.48], [1, 0.71, 0.59, 0.75, 0.93], [1, 0.81, 0.53, 0.44, 0.51]],
+        "note": "With the knee bent the hamstrings contribute less near full hip extension, so the gluteus maximus takes more; with the hip flexed past about 60° it's the other way round (OpenSim model).",
+        "source": "Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079 (Rajagopal2016.osim, OpenSim 4.6: static optimisation over all hip extensors, force × moment arm with force–length; ratio to the knee straight)"
+      }
     },
     {
       "id": "hamstrings",
@@ -65,7 +72,14 @@
       "weight": [[-25, 0.5], [90, 0.8]],
       "note": "Help extend the hip, more so when it is bent. With the knee bent (kneeling) they are shorter and help less, which these weights ignore.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "proximal", "along": [0.12, 0.4], "offset": -0.045, "w": 0.06, "layer": 1}
+      "draw": {"seg": "proximal", "along": [0.12, 0.4], "offset": -0.045, "w": 0.06, "layer": 1},
+      "kneeFactor": {
+        "hip": [-20, 0, 20, 40, 60, 90],
+        "knee": [0, 30, 60, 90, 120],
+        "factor": [[1, 0.5, 0.12, 0.04, 0.03], [1, 0.75, 0.29, 0.1, 0.04], [1, 0.96, 0.69, 0.27, 0.16], [1, 1.02, 1, 0.75, 0.46], [1, 1.12, 1.13, 1.11, 0.95], [1, 1.83, 2.12, 2.13, 2.13]],
+        "note": "Near full hip extension the hamstrings drop out as the knee bends (OpenSim model: about 10% of their straight-knee share at 90° of knee bend with the hip straight); with the hip flexed (start of the kneeling kickback) a bent knee puts them at a better length and they take more.",
+        "source": "Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079 (Rajagopal2016.osim, OpenSim 4.6: static optimisation over all hip extensors, force × moment arm with force–length; ratio to the knee straight)"
+      }
     },
     {
       "id": "adductor-magnus",
@@ -76,7 +90,14 @@
       "driver": "jointEffort",
       "weight": [[-25, 0.2], [90, 0.6]],
       "note": "Its rear part is a strong hip extensor when the hip is bent.",
-      "source": "TODO: check against EMG literature"
+      "source": "TODO: check against EMG literature",
+      "kneeFactor": {
+        "hip": [-20, 0, 20, 40, 60, 90],
+        "knee": [0, 30, 60, 90, 120],
+        "factor": [[1, 1.01, 0.96, 0.93, 0.92], [1, 1.14, 1.18, 1.14, 1.11], [1, 1.15, 1.45, 1.55, 1.56], [1, 0.83, 1.01, 1.34, 1.48], [1, 0.71, 0.59, 0.75, 0.93], [1, 0.81, 0.53, 0.44, 0.51]],
+        "note": "Changes with the knee bend only through the share it takes from the hamstrings (one-joint muscle).",
+        "source": "Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079 (Rajagopal2016.osim, OpenSim 4.6: static optimisation over all hip extensors, force × moment arm with force–length; ratio to the knee straight)"
+      }
     }
   ],
   "phases": [
@@ -94,22 +115,38 @@
       "name": "Standing cable kickback",
       "equipment": "Cable, ankle cuff",
       "posture": "standing",
-      "load": {"type": "cable", "pulley": {"x": 0.5, "y": -0.85}},
+      "load": {
+        "type": "cable",
+        "pulley": {"x": 0.5, "y": -0.85}
+      },
       "adjustablePulley": true,
       "defaultLoadKg": 5,
-      "notes": "Standing on the other leg, cable from a low pulley in front. Use the range from about 30° to −25°; the cable pulls the leg forward all the way, and the leg's own weight helps on the way back."
+      "notes": "Standing on the other leg, cable from a low pulley in front. Use the range from about 30° to −25°; the cable pulls the leg forward all the way, and the leg's own weight helps on the way back.",
+      "params": {"knee": 0},
+      "strengthScale": {
+        "by": "knee",
+        "points": [[15, 1], [90, 0.82]],
+        "note": "Two-joint hamstrings: hip-extension strength by knee flexion, relative to the base curve's test (standing, knee slightly bent ≈ 15°). Yamamoto et al. measured 93 Nm with the knee bent 15° and 76 Nm at 90° (82%), with 2–3× more hamstring EMG at 15° and slightly more gluteus maximus at 90°. Measured prone with the hip straight, applied at every hip angle and every knee bend set with the slider; held flat beyond the two knee angles. Other datasets found smaller (Chen & Franklin's collection: nearly flat) or larger (29–42%) differences.",
+        "source": "Yamamoto Y, Kato H, Fukuda T, Tsuga Y, Miyakawa S (2015). Effect of knee flexion angles during maximum isometric hip extension. Jpn J Phys Fitness Sports Med 64(3):289–294. doi:10.7600/jspfsm.64.289 (Fig. 2, read off: 93 Nm at 15° vs 76 Nm at 90° of knee flexion; 10 men, prone, hip straight)"
+      }
     },
     {
       "id": "kneeling",
       "name": "Kneeling kickback (ankle weight)",
       "equipment": "Ankle weight",
       "posture": "quadruped",
-      "distalBend": -90,
       "gravity": {"x": 1, "y": 0},
       "viewLabel": "Side view (on hands and knees)",
       "load": {"type": "gravity"},
       "defaultLoadKg": 4,
-      "notes": "On hands and knees with the knee bent 90°. Lifting the bent leg works against the leg's own weight too; torque peaks around 45°, when the whole leg is furthest from the hip horizontally."
+      "notes": "On hands and knees with the knee bent 90° (change it with the knee slider). Lifting the bent leg works against the leg's own weight too; torque peaks around 45°, when the whole leg is furthest from the hip horizontally.",
+      "params": {"knee": 90},
+      "strengthScale": {
+        "by": "knee",
+        "points": [[15, 1], [90, 0.82]],
+        "note": "Two-joint hamstrings: hip-extension strength by knee flexion, relative to the base curve's test (standing, knee slightly bent ≈ 15°). Yamamoto et al. measured 93 Nm with the knee bent 15° and 76 Nm at 90° (82%), with 2–3× more hamstring EMG at 15° and slightly more gluteus maximus at 90°. Measured prone with the hip straight, applied at every hip angle and every knee bend set with the slider; held flat beyond the two knee angles. Other datasets found smaller (Chen & Franklin's collection: nearly flat) or larger (29–42%) differences.",
+        "source": "Yamamoto Y, Kato H, Fukuda T, Tsuga Y, Miyakawa S (2015). Effect of knee flexion angles during maximum isometric hip extension. Jpn J Phys Fitness Sports Med 64(3):289–294. doi:10.7600/jspfsm.64.289 (Fig. 2, read off: 93 Nm at 15° vs 76 Nm at 90° of knee flexion; 10 men, prone, hip straight)"
+      }
     },
     {
       "id": "machine",
@@ -126,12 +163,32 @@
         }
       },
       "defaultLoadKg": 10,
-      "notes": "Pad behind the thigh above the knee. Illustrative cam that keeps the load on through hip extension."
+      "notes": "Pad behind the thigh above the knee. Illustrative cam that keeps the load on through hip extension.",
+      "params": {"knee": 0},
+      "strengthScale": {
+        "by": "knee",
+        "points": [[15, 1], [90, 0.82]],
+        "note": "Two-joint hamstrings: hip-extension strength by knee flexion, relative to the base curve's test (standing, knee slightly bent ≈ 15°). Yamamoto et al. measured 93 Nm with the knee bent 15° and 76 Nm at 90° (82%), with 2–3× more hamstring EMG at 15° and slightly more gluteus maximus at 90°. Measured prone with the hip straight, applied at every hip angle and every knee bend set with the slider; held flat beyond the two knee angles. Other datasets found smaller (Chen & Franklin's collection: nearly flat) or larger (29–42%) differences.",
+        "source": "Yamamoto Y, Kato H, Fukuda T, Tsuga Y, Miyakawa S (2015). Effect of knee flexion angles during maximum isometric hip extension. Jpn J Phys Fitness Sports Med 64(3):289–294. doi:10.7600/jspfsm.64.289 (Fig. 2, read off: 93 Nm at 15° vs 76 Nm at 90° of knee flexion; 10 men, prone, hip straight)"
+      }
     }
   ],
   "wger": {
     "exerciseId": 1723,
     "name": "Glute Kickback (Machine)",
     "note": "Checked against wger's public exercise list (id = the number in the page address)."
-  }
+  },
+  "placement": [
+    {
+      "key": "knee",
+      "label": "Knee bend",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "°",
+      "scale": 1,
+      "distalBend": true,
+      "hint": "0° = leg straight, 90° = the kneeling kickback's bend. With the knee bent the hamstrings are already short (they also bend the knee), so near full hip extension they add little and the gluteus maximus does the work; the ankle load also comes closer to the hip."
+    }
+  ]
 }

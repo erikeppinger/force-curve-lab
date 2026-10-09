@@ -137,7 +137,8 @@
       "weight": [[0, 0.8], [135, 0.8]],
       "note": "Hip extensors, but the knee bends with the hip here, so they lengthen less than in a Romanian deadlift.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "thigh", "along": [0.06, 0.34], "offset": 0.045, "w": 0.055}
+      "draw": {"seg": "thigh", "along": [0.06, 0.34], "offset": 0.045, "w": 0.055},
+      "draw3d": {"seg": "thigh", "side": "posterior", "along": [0.12, 0.36], "offset": 0.06, "w": 0.06}
     },
     {
       "id": "gluteus-maximus",
@@ -150,7 +151,8 @@
       "weight": [[0, 0.8], [90, 1], [135, 1]],
       "note": "Main hip extensor.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "thigh", "along": [0.33, 0.47], "offset": 0.06, "w": 0.09}
+      "draw": {"seg": "thigh", "along": [0.33, 0.47], "offset": 0.06, "w": 0.09},
+      "draw3d": {"seg": "thigh", "side": "posterior", "along": [0, 0.12], "offset": 0.06, "w": 0.09}
     },
     {
       "id": "quadriceps",
@@ -164,7 +166,8 @@
       "weight": [[0, 1], [130, 1]],
       "note": "Knee extensors: their share follows the knee torque, which is small in a conventional pull and much larger with a trap bar.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "thigh", "along": [0.08, 0.36], "offset": -0.05, "w": 0.065}
+      "draw": {"seg": "thigh", "along": [0.08, 0.36], "offset": -0.05, "w": 0.065},
+      "draw3d": {"seg": "thigh", "side": "anterior", "along": [0.08, 0.36], "offset": 0.05, "w": 0.065}
     },
     {
       "id": "adductor-magnus",
@@ -176,7 +179,8 @@
       "joint": "hip",
       "weight": [[0, 0.3], [90, 0.8], [135, 0.9]],
       "note": "Rear part extends the hip, more so when it is deeply bent.",
-      "source": "TODO: check against EMG literature"
+      "source": "TODO: check against EMG literature",
+      "draw3d": {"seg": "thigh", "side": "medial", "along": [0.2, 0.36], "offset": 0.045, "w": 0.05}
     },
     {
       "id": "erector-spinae",
@@ -190,7 +194,8 @@
       "weight": [[0, 0.6], [90, 0.9], [135, 0.9]],
       "note": "Hold the spine straight against a long lever. Approximation: driven by the hip's effort.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "trunk", "along": [0.1, 0.45], "offset": 0.08, "w": 0.05}
+      "draw": {"seg": "trunk", "along": [0.1, 0.45], "offset": 0.08, "w": 0.05},
+      "draw3d": {"seg": "trunk", "side": "posterior", "along": [0.05, 0.3], "offset": 0.1, "w": 0.05}
     },
     {
       "id": "calves",
@@ -204,7 +209,8 @@
       "weight": [[-45, 1], [40, 1]],
       "note": "Plantarflexors: keep the shin from tipping forward.",
       "source": "TODO: check against EMG literature",
-      "draw": {"seg": "shank", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055}
+      "draw": {"seg": "shank", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055},
+      "draw3d": {"seg": "shank", "side": "posterior", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055}
     },
     {
       "id": "adductors",
@@ -247,7 +253,8 @@
       "weight": [[0, 1], [160, 1]],
       "note": "Piriformis, obturators and gemelli (with the glutes) resist the thigh turning inwards.",
       "source": "TODO: check against EMG literature",
-      "sign": 1
+      "sign": 1,
+      "draw3d": {"seg": "thigh", "side": "posterior", "along": [-0.04, 0.03], "offset": 0.07, "w": 0.05}
     }
   ],
   "variants": [

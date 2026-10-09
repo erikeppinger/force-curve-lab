@@ -32,17 +32,25 @@ function el(name, attrs, parent) {
 export function scene3d(exercise, result, activation) {
   const prims = [...result.scene];
   const line = (a, b, w, cls, extra) => prims.push({ kind: "line", a, b, w, cls, ...extra });
-  // Muscles of the right limb, on the side of the segment the JSON names.
+  // Muscles on the side of the segment the JSON names: the right limb's, mirrored onto the left one
+  // (both work alike) unless the lift is asymmetric (split squat: front leg only). Trunk muscles
+  // run as a strip on each side of the spine.
   const act = Object.fromEntries(activation.map((m) => [m.id, m.value ?? 0]));
   const neg = (d) => v3(-d.x, -d.y, -d.z);
+  const mirrorZ = (p) => v3(p.x, p.y, -p.z);
   for (const m of exercise.muscles.filter((x) => x.draw3d && result.frames[x.draw3d.seg])) {
     const d = m.draw3d, fr = result.frames[d.seg];
     const dir = unit3(sub3(fr.to, fr.from));
     const off = { anterior: fr.anterior, posterior: neg(fr.anterior), lateral: fr.lateral, medial: neg(fr.lateral) }[d.side];
     const a = add3(add3(fr.from, dir, d.along[0]), off, d.offset);
     const b = add3(add3(fr.from, dir, d.along[1]), off, d.offset);
-    line(a, b, d.w, "muscle-base", { title: m.name });
-    line(a, b, d.w, "muscle-on", { opacity: act[m.id], title: `${m.name}: ${Math.round(act[m.id] * 100)}%` });
+    const trunk = d.seg === "trunk";
+    const sides = trunk ? [[add3(a, fr.lateral, d.spread ?? 0.06), add3(b, fr.lateral, d.spread ?? 0.06)], [add3(a, fr.lateral, -(d.spread ?? 0.06)), add3(b, fr.lateral, -(d.spread ?? 0.06))]]
+      : result.asymmetric ? [[a, b]] : [[a, b], [mirrorZ(a), mirrorZ(b)]];
+    for (const [p, q] of sides) {
+      line(p, q, d.w, "muscle-base", { title: m.name });
+      line(p, q, d.w, "muscle-on", { opacity: act[m.id], title: `${m.name}: ${Math.round(act[m.id] * 100)}%` });
+    }
   }
   // External forces (the plate, the floor, the bar) and each joint's moment arm to the main one.
   for (const { at, dir } of result.forces) {
@@ -76,7 +84,8 @@ export function renderView3d(svg, prims, cam, V) {
   svg.replaceChildren();
   const px = (p) => { const q = project(p, cam); return { x: (q.x - V.x0) * S, y: (V.y1 - q.y) * S, depth: q.depth }; };
   const depthOf = (p) => (p.kind === "line" ? (px(p.a).depth + px(p.b).depth) / 2 : p.kind === "dot" ? px(p.c).depth : p.pts.reduce((s, q) => s + px(q).depth, 0) / p.pts.length);
-  const sorted = prims.map((p) => ({ p, d: depthOf(p) + (p.top ? 100 : 0) })).sort((a, b) => a.d - b.d);
+  // `top`: drawn over the body (true = forces and labels; a number = a smaller lift, e.g. muscles).
+  const sorted = prims.map((p) => ({ p, d: depthOf(p) + (p.top === true ? 100 : p.top || 0) })).sort((a, b) => a.d - b.d);
   for (const { p } of sorted) {
     if (p.kind === "poly") {
       el("polygon", { points: p.pts.map((q) => { const r = px(q); return `${r.x.toFixed(1)},${r.y.toFixed(1)}`; }).join(" "), class: p.cls }, svg);
