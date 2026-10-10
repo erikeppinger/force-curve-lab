@@ -50,7 +50,8 @@ for (const id of ids) {
           for (const x of finger ? [lo, hi] : [lo, (lo + hi) / 2, hi]) {
             const o = { ...st, body, placement: pl ? { ...v.params, ...pl } : undefined, pulley: v.load?.pulley };
             const r = finger ? analyzeEdge(ex, v, x, o) : ex.model === "pinch" ? analyzePinch(ex, ex.pincer.arms, v, x, o) : ex.model === "multi" ? analyzeMulti(ex, v, x, o) : analyze(ex, v, x, o);
-            const bad = nonFinite(r);
+            // Pinch lift: a block width the hand can't hold at all has an infinite effort.
+            const bad = nonFinite(ex.model === "pinch" ? { ...r, effort: Number.isFinite(r.effort) || r.maxBlockKg === 0 ? 0 : r.effort } : r);
             assert.equal(bad, null, `${v.id} @${x}: ${bad}`);
             for (const m of muscleActivation(ex, v, r, x)) {
               if (m.value != null) assert.ok(m.value >= 0 && m.value <= 1, `${v.id} @${x}: ${m.id} = ${m.value}`);

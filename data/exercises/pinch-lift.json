@@ -7,8 +7,8 @@
   "view": "front",
   "angleLabel": "Block width",
   "angleUnit": "mm",
-  "angleRange": [40, 80],
-  "angleNote": "The slider sets the block's width (thickness between the thumb's face and the fingers' face). The thumb and index finger take the postures measured on objects of that width (Vigouroux et al. 2011, 35–75 mm; held constant beyond). How hard the hand can squeeze is taken as the same across the range (measured at 5 and 8 cm).",
+  "angleRange": [20, 110],
+  "angleNote": "The slider sets the block's width (thickness between the thumb's face and the fingers' face). The fingers take the postures measured on 3.5–7.5 cm objects (Vigouroux et al. 2011; held at the nearest end outside that range). The thumb's base is set in the ARMS hand model so that the thumb pad sits that far from the finger pads (closing for narrow blocks, opening for wide ones); its muscles' leverage and force at that length come from the model. In the whole-hand model this makes too narrow and too wide blocks harder; climbers squeezed 5 and 8 cm holds about equally hard.",
   "defaults": {"loadKg": 15, "variant": "four-fingers", "bodyMassKg": 70, "width": 60},
   "ui": {"load": [2, 60, 1]},
   "pinch": {
@@ -34,7 +34,7 @@
     "thumb": {"mcp": 3.5, "ip": 13.3},
     "padAlong": 0.6,
     "padDepth": 0.007,
-    "postureNote": "Index finger MCP (55.6° → 38.6°), PIP (22.1°, 17.2°, 12.6°, 11.2°, 13.8°) and DIP (20.9° → 29.6°) and thumb MP 3.5° and IP 13.3° (the same at every width), measured on objects 3.5–7.5 cm wide held with a light, self-chosen grip (10 participants); MCP and DIP linear between the two widths reported. The thumb's base (CMC) is kept at the ARMS model's neutral: the measured angle (11–19°) uses a different zero and lies outside the model's range. Moment arms and muscle forces: the ARMS hand model at these postures (NON-COMMERCIAL use only). Segment lengths: ARMS (thumb metacarpal and proximal phalanx, index proximal and middle phalanx); distal phalanges estimates.",
+    "postureNote": "Index finger MCP (55.6° → 38.6°), PIP (22.1°, 17.2°, 12.6°, 11.2°, 13.8°) and DIP (20.9° → 29.6°) and thumb MP 3.5° and IP 13.3° (the same at every width), measured on objects 3.5–7.5 cm wide held with a light, self-chosen grip (10 participants); MCP and DIP linear between the two widths reported. The thumb's base (CMC flexion and abduction) is found in the ARMS model for each width (20–110 mm): the posture nearest neutral that puts the thumb pad the block's width plus 16 mm of soft tissue (estimate) from the index pad (pad points estimated on the bone chain; tools/arms_pinch_span.py). Moment arms and muscle forces: the ARMS hand model at these postures (NON-COMMERCIAL use only). Segment lengths: ARMS (thumb metacarpal and proximal phalanx, index proximal and middle phalanx); distal phalanges estimates.",
     "postureSource": "Vigouroux L, Domalain M, Berton E (2011). Effect of object width on muscle and joint forces during thumb-index finger grasping. J Appl Biomech 27(3):173–180; moment arms: McFarland DC, Binder-Markey BI, Nichols JA, Wohlman SJ, de Bruin M, Murray WM (2021). A musculoskeletal model of the hand and wrist capable of simulating functional tasks. bioRxiv 2021.12.28.474357 (ARMS model, NON-COMMERCIAL use only)",
     "fingers": {
       "index": {"proximal": 0.0426, "middle": 0.0251, "distal": 0.0187},
@@ -146,13 +146,18 @@
   "phases": [
     {
       "name": "Narrow",
-      "range": [40, 55],
-      "text": "Index knuckle bent more, thumb nearly straight along its face."
+      "range": [20, 45],
+      "text": "The thumb's base closes; the fingers keep the narrowest measured posture (35 mm) here."
+    },
+    {
+      "name": "Medium",
+      "range": [45, 80],
+      "text": "The range pinch blocks are usually made in; climbers squeezed 5 and 8 cm holds equally hard."
     },
     {
       "name": "Wide",
-      "range": [55, 80],
-      "text": "The index knuckle opens; the fingertip bends more to stay on the face."
+      "range": [80, 110],
+      "text": "The thumb's base opens far: its long flexor and the adductor work at an unfavourable length and lose force."
     }
   ],
   "variants": [

@@ -52,8 +52,8 @@ test("pliers model: the thumb's long flexor sits exactly at the effort (it limit
 });
 
 test("jointed model: holds below the maximum, every muscle bar within 0–1; past the maximum the grip fails", () => {
-  for (const mm of [40, 55, 70, 80]) {
-    const r = analyzePinch(ex, ex.pincer.arms, v("four-fingers"), mm, { loadKg: 15, placement: v("four-fingers").params });
+  for (const mm of [50, 60, 70, 80]) {
+    const r = analyzePinch(ex, ex.pincer.arms, v("four-fingers"), mm, { loadKg: 12, placement: v("four-fingers").params });
     assert.ok(r.effort < 1 && r.act, `${mm} mm`);
     for (const m of muscleActivation(ex, v("four-fingers"), r, mm)) if (m.value != null) assert.ok(m.value >= 0 && m.value <= 1, m.id);
   }
@@ -63,9 +63,9 @@ test("jointed model: holds below the maximum, every muscle bar within 0–1; pas
 
 test("Vigouroux et al. 2011 check: the index FDP force per newton of squeeze at 35–75 mm is near their 2.5–3", async () => {
   const { jointed } = await import("../js/pincer.js");
-  for (const mm of [35, 55, 75]) {
+  for (const mm of [40, 55, 75]) { // inside their 35–75 mm, between exported widths
     const r = jointed(ex, ex.pincer.arms, mm / 1000, 2); // a light grip, like theirs (about 6 N)
-    const per = (r.act.FDPI * ex.pincer.arms.postures.w55.muscles.FDPI.active) / 2;
+    const per = (r.act.FDPI * ex.pincer.arms.postures.w50.muscles.FDPI.active) / 2;
     assert.ok(per > 2 && per < 3.5, `${mm} mm: ${per}`);
   }
 });

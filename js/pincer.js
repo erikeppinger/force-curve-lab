@@ -44,11 +44,15 @@ export function boundedLeastSquares(cols, b, cost, lo, hi) {
   // activation on its lower bound, so the first Newton step has no curvature to work with.
   const s0 = Math.max(1e-12, ...cols.map((col, j) => dot(col, col) / cost[j]));
   let y = solveN(b.map((_, p) => b.map((_, q) => cols.reduce((s, col, j) => s + (col[p] * col[q]) / cost[j], 0) + (p === q ? 1e-9 * s0 : 0))), b);
+  // Stop when converged, or when the residual stalls (an infeasible problem: no point iterating).
+  let bestG = Infinity, since = 0;
   for (let it = 0; it < 300; it++) {
     const t = cols.map((col) => dot(col, y));
     const x = t.map((tj, j) => xOf(j, tj));
     const g = b.map((bq, q) => cols.reduce((s, col, j) => s + col[q] * x[j], 0) - bq);
-    if (Math.hypot(...g) < 1e-9 * nb) break;
+    const gn = Math.hypot(...g);
+    if (gn < 1e-9 * nb) break;
+    if (gn < bestG * 0.999) { bestG = gn; since = 0; } else if (++since > 25 && gn > 1e-3 * nb) break;
     const scale = Math.max(1e-12, ...cols.map((col, j) => dot(col, col) / cost[j]));
     const Hm = b.map((_, p) => b.map((_, q) => cols.reduce((s, col, j) => s + (x[j] > lo[j] && x[j] < hi[j] ? (col[p] * col[q]) / cost[j] : 0), 0) + (p === q ? 1e-9 * scale : 0)));
     const d = solveN(Hm, g).map((v) => -v);

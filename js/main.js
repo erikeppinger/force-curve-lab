@@ -498,7 +498,7 @@ function setExercise(id, h = {}) {
   $("edge-view-hint").hidden = !finger;
   $("torque-title").textContent = pinch ? "Squeeze needed vs the most the hand squeezes" : finger ? "Deep flexor (FDP) tension per finger, hold by hold" : "Resistance vs strength";
   $("effort-title").textContent = pinch ? "Effort across block widths" : finger ? "A2 pulley load per finger" : "Effort across the range";
-  $("effort-hint").textContent = pinch ? "Squeeze needed ÷ the most this hand squeezes. With friction proportional to the squeeze (n = 1), the width doesn't change it; it changes which muscles carry the load (see the muscles)." : finger ? "As a share of the A2 pulley's breaking load in cadaver tests (Lin et al. 1990, per finger): a guide to scale, not a safety limit. A finger off the edge shows 0." : "Joint torque ÷ strength at each angle. The peak is the sticking point.";
+  $("effort-hint").textContent = pinch ? "Block ÷ the largest block this hand holds at each width. Whole hand: the thumb's base opens or closes with the width (posture found in the ARMS model), which changes its muscles' leverage and how much force they can make at that length: too narrow or too wide is harder. The simpler models keep the measured maximum the same at every width." : finger ? "As a share of the A2 pulley's breaking load in cadaver tests (Lin et al. 1990, per finger): a guide to scale, not a safety limit. A finger off the edge shows 0." : "Joint torque ÷ strength at each angle. The peak is the sticking point.";
   buildLegend(ex);
   applyRange(ex.variants.find((v) => v.id === ex.defaults.variant) ?? ex.variants[0]);
 
