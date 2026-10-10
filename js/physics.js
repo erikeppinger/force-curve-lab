@@ -169,7 +169,7 @@ export function analyze(exercise, variant0, angleDeg, opts) {
   const capacity = interp(exercise.strengthCurve.points, angleDeg) * peakTorqueNm * strengthScale;
   const effort = Math.max(0, jointTorque) / capacity;
 
-  return { pose: p, force: f, limbs, jointTorque, loadTorque, limbTorque, stabiliserDemand, momentArm, momentArmFoot, capacity, effort, strengthScale, ...(hip ? { hip } : {}), ...(bendSpec ? { knee: bendVal } : {}) };
+  return { pose: p, force: f, limbs, jointTorque, loadTorque, limbTorque, stabiliserDemand, momentArm, momentArmFoot, capacity, effort, strengthScale, placement: opts.placement, ...(hip ? { hip } : {}), ...(bendSpec ? { knee: bendVal } : {}) };
 }
 
 /** The variant's strength factor: `strengthScale.points` (by joint angle, or by `at[sc.by]`) or `.factor`; 1 if none. */

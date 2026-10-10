@@ -484,3 +484,6 @@ svg.scrub { cursor: ew-resize; touch-action: pan-y; }
 .dock .grow { flex: 1; min-width: 0; }
 .dock input[type="range"] { width: 100%; }
 body.dock-on { padding-bottom: 76px; }
+#figure .inset-box { fill: var(--card); stroke: var(--border); }
+#figure .inset-foot { fill: var(--body); stroke: var(--body-edge); stroke-width: 1.5; }
+#figure .inset-label { font-size: 11px; }

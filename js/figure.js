@@ -243,6 +243,27 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
   const defs = el("defs", {}, svg);
   const mk = el("marker", { id: "arrow", viewBox: "0 0 10 10", refX: 5, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto-start-reverse" }, defs);
   el("path", { d: "M0,0 L10,5 L0,10 z", class: "arrowhead" }, mk);
+
+  // Toes in / out (calf raise): both feet from above in the top corner, turned by the slider.
+  const footSpec = exercise.placement?.find((s) => s.key === "footAngle" && (!s.variants || s.variants.includes(variant.id)));
+  if (footSpec) footInset(svg, (V.x1 - V.x0) * S, Number(result.placement?.footAngle ?? variant.params?.footAngle ?? 0));
+}
+
+/** Two feet seen from above, heels together-ish, each turned out by `deg` (negative = in). */
+function footInset(svg, width, deg) {
+  // Extra room to the right of the figure, so the inset never covers the leg.
+  const [x, y, w, h] = svg.getAttribute("viewBox").split(" ").map(Number);
+  svg.setAttribute("viewBox", `${x} ${y} ${w + 100} ${Math.max(h, 100)}`);
+  const g = el("g", { class: "foot-inset", transform: `translate(${width + 8}, 8)` }, svg);
+  el("rect", { x: 0, y: 0, width: 84, height: 84, rx: 8, class: "inset-box" }, g);
+  // One foot outline (heel at the origin, toes towards −y), 50 long, 20 wide at the ball.
+  const foot = "M0,0 C-8,0 -9,-12 -8,-24 C-8,-36 -11,-44 -7,-50 C-3,-54 5,-54 8,-49 C11,-42 9,-30 8,-22 C7,-10 7,0 0,0 Z";
+  for (const side of [-1, 1]) {
+    // Right foot (side +1) turns clockwise when the toes go out; the left mirrors it.
+    el("path", { d: foot, class: "inset-foot", transform: `translate(${42 + side * 16}, 70) rotate(${side * deg}) scale(${side}, 1)` }, g);
+  }
+  const label = el("text", { x: 42, y: 80, class: "fig-label inset-label", "text-anchor": "middle" }, g);
+  label.textContent = deg === 0 ? "toes forward" : `toes ${deg > 0 ? "out" : "in"} ${Math.abs(deg)}°`;
 }
 
 // ---------- multi-joint figure (world frame: x forward, y up, floor at y = 0) ----------

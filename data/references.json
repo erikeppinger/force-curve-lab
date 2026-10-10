@@ -146,6 +146,14 @@
       "usedFor": "Calf strength and gastrocnemius EMG, knee straight vs bent."
     },
     {
+      "key": "Cibulka 2017",
+      "match": "Cibulka M, Wenthe A",
+      "group": "Muscle activity",
+      "citation": "Cibulka M, Wenthe A, Boyle Z, Callier D, Schwerdt A, Jarman D, Strube MJ (2017). Variation in medial and lateral gastrocnemius muscle activity with foot position. Int J Sports Phys Ther 12(2):233–241. Open access (PMC5380866).",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC5380866/",
+      "usedFor": "Calf raise: the shift between the gastrocnemius heads with the toes turned in or out (standing heel rise, surface EMG, 33 participants)."
+    },
+    {
       "key": "Kovács 2024",
       "match": "Kovács B",
       "group": "Two-joint muscles and grip",

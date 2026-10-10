@@ -26,6 +26,9 @@ Papers identified but not here yet. Citations were seen elsewhere, so check the 
 | 14 | Not reachable: Radwin RG et al. (1992), five-finger pinch at 45 and 65 mm spans (the lab's PDF link returns 404; submaximal forces only) | Finger share in a wide pinch. |
 | 15 | Not obtained: Domalain M et al. (2008), Ergonomics 51(9) (no open copy found) | Width and grip force (behind 1). |
 
+| 16 | Riemann BL, Limbaugh GK, Eitner JD, LeFavi RG (2011). Medial and lateral gastrocnemius activation differences during heel-raise exercise with three different foot positions. J Strength Cond Res 25(3):634–639. doi:10.1519/JSC.0b013e3181cc22b8 (paywalled; only the 2009 conference abstract is open) | Calf raise toes in/out: head activation by phase (lifting vs lowering). |
+| 17 | Nunes JP, Costa BDV, Kassiano W, Kunevaliki G, Castro-e-Souza P, Rodacki ALF, Fortes LS, Cyrino ES (2020). Different foot positioning during calf training to induce portion-specific gastrocnemius muscle hypertrophy. J Strength Cond Res 34(8):2347–2351. doi:10.1519/JSC.0000000000003674 (paywalled) | Calf raise toes in/out: does the head shift change growth? |
+
 ## To find (no paper identified yet)
 
 | # | What | Why | Meanwhile |
