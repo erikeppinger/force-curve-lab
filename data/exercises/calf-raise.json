@@ -47,12 +47,12 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "weight": [[-20, 1], [40, 0.85]],
-      "note": "Crosses the knee too: with the knee bent (seated) it is slack and contributes much less. Turning the toes out shifts a little more of the work to this inner head (about +2% at full outward rotation; the difference between the heads was significant only toes out).",
-      "source": "Weights: TODO. Knee-angle effect: Baptista MT, Nascimento FXM, Nardes LK, Matta TT, Oliveira LF (2014). Influência de posições do joelho no torque e atividade mioelétrica do tríceps sural na flexão plantar isométrica máxima. Rev Bras Educ Fís Esporte 28(2):197–202. doi:10.1590/1807-55092014000200197; Kovács B, Csala D, Yang S, Tihanyi J, Gu Y, Hortobágyi T (2024). Knee position affects medial gastrocnemius and soleus activation during dynamic plantarflexion: no evidence for an inter-muscle compensation in healthy young adults. Biol Open 13:bio061810. doi:10.1242/bio.061810; head shares by foot position: Cibulka M, Wenthe A, Boyle Z, Callier D, Schwerdt A, Jarman D, Strube MJ (2017). Variation in medial and lateral gastrocnemius muscle activity with foot position. Int J Sports Phys Ther 12(2):233–241 (Table 2: standing heel rise, % MVIC; 33 participants)",
+      "note": "Crosses the knee too: with the knee bent (seated) it is slack and contributes much less. Turning the toes out shifts a little more of the work to this inner head (about +2% at full outward rotation; the difference between the heads was significant only toes out). Training with the toes out at 45° thickened this head 8.4% in 9 weeks, toes in 3.8%.",
+      "source": "Weights: TODO. Knee-angle effect: Baptista MT, Nascimento FXM, Nardes LK, Matta TT, Oliveira LF (2014). Influência de posições do joelho no torque e atividade mioelétrica do tríceps sural na flexão plantar isométrica máxima. Rev Bras Educ Fís Esporte 28(2):197–202. doi:10.1590/1807-55092014000200197; Kovács B, Csala D, Yang S, Tihanyi J, Gu Y, Hortobágyi T (2024). Knee position affects medial gastrocnemius and soleus activation during dynamic plantarflexion: no evidence for an inter-muscle compensation in healthy young adults. Biol Open 13:bio061810. doi:10.1242/bio.061810; head shares by foot position: Cibulka M, Wenthe A, Boyle Z, Callier D, Schwerdt A, Jarman D, Strube MJ (2017). Variation in medial and lateral gastrocnemius muscle activity with foot position. Int J Sports Phys Ther 12(2):233–241 (Table 2: standing heel rise, % MVIC; 33 participants); direction confirmed under load (130–135% body mass, both phases): Riemann BL, Limbaugh GK, Eitner JD, LeFavi RG (2011). Medial and lateral gastrocnemius activation differences during heel-raise exercise with three different foot positions. J Strength Cond Res 25(3):634–639. doi:10.1519/JSC.0b013e3181cc22b8; growth: Nunes JP, Costa BDV, Kassiano W, Kunevaliki G, Castro-e-Souza P, Rodacki ALF, Fortes LS, Cyrino ES (2020). Different foot positioning during calf training to induce portion-specific gastrocnemius muscle hypertrophy. J Strength Cond Res 34(8):2347–2351. doi:10.1519/JSC.0000000000003674",
       "draw": {"seg": "proximal", "along": [0.05, 0.22], "offset": -0.045, "w": 0.07, "layer": 1},
       "placementFactor": {
         "key": "footAngle",
-        "points": [[-30, 0.978], [0, 1], [30, 1.022]]
+        "points": [[-45, 0.978], [0, 1], [45, 1.022]]
       }
     },
     {
@@ -64,12 +64,12 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "weight": [[-20, 0.9], [40, 0.765]],
-      "note": "The outer head: in a standing heel rise it works at about 90% of the inner head's level. Turning the toes in shifts a little more of the work to it (about +1%; not significant in this study).",
-      "source": "Relative level and foot position: Cibulka M, Wenthe A, Boyle Z, Callier D, Schwerdt A, Jarman D, Strube MJ (2017). Variation in medial and lateral gastrocnemius muscle activity with foot position. Int J Sports Phys Ther 12(2):233–241 (Table 2: standing heel rise, % MVIC; 33 participants); knee-angle effect as for the medial head",
+      "note": "The outer head: in a standing heel rise it works at about 90% of the inner head's level. Turning the toes in shifts a little more of the work to it (about +1% by EMG; under heavier load the outer head was significantly more active toes in). Training with the toes in at 45° thickened this head 9.1% in 9 weeks, toes out 5.5%.",
+      "source": "Relative level and foot position: Cibulka M, Wenthe A, Boyle Z, Callier D, Schwerdt A, Jarman D, Strube MJ (2017). Variation in medial and lateral gastrocnemius muscle activity with foot position. Int J Sports Phys Ther 12(2):233–241 (Table 2: standing heel rise, % MVIC; 33 participants); knee-angle effect as for the medial head; direction confirmed under load (130–135% body mass, both phases): Riemann BL, Limbaugh GK, Eitner JD, LeFavi RG (2011). Medial and lateral gastrocnemius activation differences during heel-raise exercise with three different foot positions. J Strength Cond Res 25(3):634–639. doi:10.1519/JSC.0b013e3181cc22b8; growth: Nunes JP, Costa BDV, Kassiano W, Kunevaliki G, Castro-e-Souza P, Rodacki ALF, Fortes LS, Cyrino ES (2020). Different foot positioning during calf training to induce portion-specific gastrocnemius muscle hypertrophy. J Strength Cond Res 34(8):2347–2351. doi:10.1519/JSC.0000000000003674",
       "draw": {"seg": "proximal", "along": [0.05, 0.22], "offset": -0.045, "w": 0.07, "layer": 1},
       "placementFactor": {
         "key": "footAngle",
-        "points": [[-30, 1.013], [0, 1], [30, 0.987]]
+        "points": [[-45, 1.013], [0, 1], [45, 0.987]]
       }
     },
     {
@@ -159,13 +159,13 @@
     {
       "key": "footAngle",
       "label": "Toes in / out (+ = out)",
-      "min": -30,
-      "max": 30,
+      "min": -45,
+      "max": 45,
       "step": 5,
       "unit": "°",
       "scale": 1,
       "variants": ["single-leg", "two-leg"],
-      "hint": "Turning the whole leg so the toes point in or out. It doesn't change the ankle's leverage (the leg and foot turn together), so the load is the same. Surface EMG shows a small shift between the gastrocnemius heads: toes out favours the inner (medial) head, toes in the outer (lateral) one, by a few percent at full rotation. The angle of 'full rotation' wasn't measured; ±30° is an estimate. Whether this changes how each head grows is debated (one training study reports head-specific growth)."
+      "hint": "Turning the whole leg so the toes point in or out (in the studies: as far as possible, or 45°). It doesn't change the ankle's leverage (the leg and foot turn together), so the load is the same. Surface EMG shows a small shift between the gastrocnemius heads: toes out favours the inner (medial) head, toes in the outer (lateral) one, by a few percent. Over 9 weeks of calf training the shift showed in growth: the inner head thickened 8.4% with toes out vs 3.8% with toes in, the outer head 9.1% with toes in vs 5.5% with toes out (toes forward: 5.8% and 6.4%)."
     }
   ]
 }

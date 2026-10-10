@@ -89,7 +89,7 @@ const variantOf = (ex) => (id) => ex.variants.find((x) => x.id === id);
 
   test("calf raise toes in / out: the ankle torque is unchanged; the gastrocnemius heads shift by Cibulka et al.'s ratios", () => {
     const at = (deg) => { const o = { ...opts, placement: { footAngle: deg } }; const r = analyze(ex, v("single-leg"), 10, o); return { r, act: Object.fromEntries(muscleActivation(ex, v("single-leg"), r, 10).map((m) => [m.id, m.value])) }; };
-    const [inn, mid, out] = [at(-30), at(0), at(30)];
+    const [inn, mid, out] = [at(-45), at(0), at(45)];
     close(inn.r.jointTorque, mid.r.jointTorque);
     close(out.r.jointTorque, mid.r.jointTorque);
     // Standing heel rise, % MVIC: toes in MG 75.8 / LG 70.7, toes out MG 79.2 / LG 68.9.

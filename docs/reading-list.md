@@ -26,8 +26,12 @@ Papers identified but not here yet. Citations were seen elsewhere, so check the 
 | 14 | Not reachable: Radwin RG et al. (1992), five-finger pinch at 45 and 65 mm spans (the lab's PDF link returns 404; submaximal forces only) | Finger share in a wide pinch. |
 | 15 | Not obtained: Domalain M et al. (2008), Ergonomics 51(9) (no open copy found) | Width and grip force (behind 1). |
 
-| 16 | Riemann BL, Limbaugh GK, Eitner JD, LeFavi RG (2011). Medial and lateral gastrocnemius activation differences during heel-raise exercise with three different foot positions. J Strength Cond Res 25(3):634–639. doi:10.1519/JSC.0b013e3181cc22b8 (paywalled; only the 2009 conference abstract is open) | Calf raise toes in/out: head activation by phase (lifting vs lowering). |
-| 17 | Nunes JP, Costa BDV, Kassiano W, Kunevaliki G, Castro-e-Souza P, Rodacki ALF, Fortes LS, Cyrino ES (2020). Different foot positioning during calf training to induce portion-specific gastrocnemius muscle hypertrophy. J Strength Cond Res 34(8):2347–2351. doi:10.1519/JSC.0000000000003674 (paywalled) | Calf raise toes in/out: does the head shift change growth? |
+| 16 | ✅ here, used (calf raise): Riemann BL, Limbaugh GK, Eitner JD, LeFavi RG (2011). Medial and lateral gastrocnemius activation differences during heel-raise exercise with three different foot positions. J Strength Cond Res 25(3):634–639. doi:10.1519/JSC.0b013e3181cc22b8  | Calf raise toes in/out: head activation by phase (lifting vs lowering). |
+| 17 | ✅ here, used (calf raise): Nunes JP, Costa BDV, Kassiano W, Kunevaliki G, Castro-e-Souza P, Rodacki ALF, Fortes LS, Cyrino ES (2020). Different foot positioning during calf training to induce portion-specific gastrocnemius muscle hypertrophy. J Strength Cond Res 34(8):2347–2351. doi:10.1519/JSC.0000000000003674 | Calf raise toes in/out: does the head shift change growth? |
+
+| 18 | ✅ here, used (edge-lift strength scale): Torr O, Randall T, Knowles R, Giles D, Atkins S (2022). Reliability and validity of a method for the assessment of sport rock climbers' isometric finger strength. J Strength Cond Res 36(8):2277–2282. doi:10.1519/JSC.0000000000003548 | One-arm hangs on a 20 mm rung, 421 climbers: about 80–85% of body mass. |
+| 19 | ✅ here, read (not used): Baláš J, Pecha O, Martin AJ, Cochrane D (2012). Hand-arm strength and endurance as predictors of climbing performance. Eur J Sport Sci 12(1):16–25. doi:10.1080/17461391.2010.546431 | Handgrip and finger endurance, not edge strength. |
+| 20 | ⚠️ wrong file: IJSPP 2021-0570 in the papers folder is a rugby study (Scott et al., complex training and muscle architecture), not a climbing paper | — |
 
 ## To find (no paper identified yet)
 

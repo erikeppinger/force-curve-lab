@@ -154,6 +154,22 @@
       "usedFor": "Calf raise: the shift between the gastrocnemius heads with the toes turned in or out (standing heel rise, surface EMG, 33 participants)."
     },
     {
+      "key": "Riemann 2011",
+      "match": "Riemann BL, Limbaugh GK",
+      "group": "Muscle activity",
+      "citation": "Riemann BL, Limbaugh GK, Eitner JD, LeFavi RG (2011). Medial and lateral gastrocnemius activation differences during heel-raise exercise with three different foot positions. J Strength Cond Res 25(3):634–639.",
+      "url": "https://doi.org/10.1519/JSC.0b013e3181cc22b8",
+      "usedFor": "Calf raise: the head shift with the toes in or out, confirmed with 130–135% body mass in the lifting and the lowering phase (20 participants)."
+    },
+    {
+      "key": "Nunes 2020",
+      "match": "Nunes JP, Costa BDV",
+      "group": "Muscle activity",
+      "citation": "Nunes JP, Costa BDV, Kassiano W, Kunevaliki G, Castro-e-Souza P, Rodacki ALF, Fortes LS, Cyrino ES (2020). Different foot positioning during calf training to induce portion-specific gastrocnemius muscle hypertrophy. J Strength Cond Res 34(8):2347–2351.",
+      "url": "https://doi.org/10.1519/JSC.0000000000003674",
+      "usedFor": "Calf raise: head-specific growth with the toes in or out at 45° (9 weeks, ultrasound muscle thickness)."
+    },
+    {
       "key": "Kovács 2024",
       "match": "Kovács B",
       "group": "Two-joint muscles and grip",
@@ -327,6 +343,14 @@
       "citation": "Ferrer-Uris B, Arias D, Torrado P, Marina M, Busquets A (2023). Exploring forearm muscle coordination and training applications of various grip positions during maximal isometric finger dead-hangs in rock climbers. PeerJ 11:e15464.",
       "url": "https://doi.org/10.7717/peerj.15464",
       "usedFor": "Edge lift: direction check of the FDP/FDS split (surface EMG in maximal dead-hangs: more FDS in the crimp than the slope grip, FDP about the same)."
+    },
+    {
+      "key": "Torr 2022",
+      "match": "Torr O, Randall T",
+      "group": "Two-joint muscles and grip",
+      "citation": "Torr O, Randall T, Knowles R, Giles D, Atkins S (2022). Reliability and validity of a method for the assessment of sport rock climbers' isometric finger strength. J Strength Cond Res 36(8):2277–2282 (online 2020).",
+      "url": "https://doi.org/10.1519/JSC.0000000000003548",
+      "usedFor": "Edge lift: calibration of the strength scale (one-arm hangs on a 20 mm rung, 421 intermediate to elite climbers: about 80–85% of body mass)."
     },
     {
       "key": "Rajagopal 2016",

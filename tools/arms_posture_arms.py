@@ -23,7 +23,7 @@ for i in range(cs.getSize()):
     cs.get(i).setClamped(state, False)
 muscles = model.getMuscles()
 bodies = model.getBodySet()
-COORDS = ["cmc_flexion", "cmc_abduction", "mp_flexion", "ip_flexion", "2mcp_flexion", "2pm_flexion", "2md_flexion"]
+COORDS = ["cmc_flexion", "cmc_abduction", "mp_flexion", "ip_flexion"] + [f"{d}{j}_flexion" for d in "2345" for j in ("mcp", "pm", "md")]
 names = [muscles.get(i).getName() for i in range(muscles.getSize())]
 
 

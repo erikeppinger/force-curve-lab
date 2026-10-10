@@ -35,7 +35,15 @@
     "padAlong": 0.6,
     "padDepth": 0.007,
     "postureNote": "Index finger MCP (55.6° → 38.6°), PIP (22.1°, 17.2°, 12.6°, 11.2°, 13.8°) and DIP (20.9° → 29.6°) and thumb MP 3.5° and IP 13.3° (the same at every width), measured on objects 3.5–7.5 cm wide held with a light, self-chosen grip (10 participants); MCP and DIP linear between the two widths reported. The thumb's base (CMC) is kept at the ARMS model's neutral: the measured angle (11–19°) uses a different zero and lies outside the model's range. Moment arms and muscle forces: the ARMS hand model at these postures (NON-COMMERCIAL use only). Segment lengths: ARMS (thumb metacarpal and proximal phalanx, index proximal and middle phalanx); distal phalanges estimates.",
-    "postureSource": "Vigouroux L, Domalain M, Berton E (2011). Effect of object width on muscle and joint forces during thumb-index finger grasping. J Appl Biomech 27(3):173–180; moment arms: McFarland DC, Binder-Markey BI, Nichols JA, Wohlman SJ, de Bruin M, Murray WM (2021). A musculoskeletal model of the hand and wrist capable of simulating functional tasks. bioRxiv 2021.12.28.474357 (ARMS model, NON-COMMERCIAL use only)"
+    "postureSource": "Vigouroux L, Domalain M, Berton E (2011). Effect of object width on muscle and joint forces during thumb-index finger grasping. J Appl Biomech 27(3):173–180; moment arms: McFarland DC, Binder-Markey BI, Nichols JA, Wohlman SJ, de Bruin M, Murray WM (2021). A musculoskeletal model of the hand and wrist capable of simulating functional tasks. bioRxiv 2021.12.28.474357 (ARMS model, NON-COMMERCIAL use only)",
+    "fingers": {
+      "index": {"proximal": 0.0426, "middle": 0.0251, "distal": 0.0187},
+      "middle": {"proximal": 0.0462, "middle": 0.0292, "distal": 0.0186},
+      "ring": {"proximal": 0.0431, "middle": 0.0272, "distal": 0.0185},
+      "little": {"proximal": 0.0344, "middle": 0.0194, "distal": 0.0168}
+    },
+    "fingersNote": "Bone lengths of the middle, ring and little finger: the index finger's (ARMS) scaled by each finger's ratio to the index in Lin et al. 1989 (10 hands).",
+    "fingersSource": "Lin GT, Amadio PC, An KN, Cooney WP (1989). Functional anatomy of the human digital flexor pulley system. J Hand Surg Am 14(6):949–956 (Table I)"
   },
   "placement": [
     {

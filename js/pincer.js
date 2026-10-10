@@ -40,7 +40,10 @@ export function boundedLeastSquares(cols, b, cost, lo, hi) {
   const H = (j, t) => { const x = xOf(j, t); return t * x - (cost[j] * x * x) / 2; }; // conjugate of the bounded quadratic
   const phi = (y) => cols.reduce((s, col, j) => s + H(j, dot(col, y)), 0) - dot(b, y);
   const nb = Math.hypot(...b) || 1;
-  let y = new Array(m).fill(0);
+  // Start from the unconstrained optimum (every muscle free): starting at y = 0 leaves every
+  // activation on its lower bound, so the first Newton step has no curvature to work with.
+  const s0 = Math.max(1e-12, ...cols.map((col, j) => dot(col, col) / cost[j]));
+  let y = solveN(b.map((_, p) => b.map((_, q) => cols.reduce((s, col, j) => s + (col[p] * col[q]) / cost[j], 0) + (p === q ? 1e-9 * s0 : 0))), b);
   for (let it = 0; it < 300; it++) {
     const t = cols.map((col) => dot(col, y));
     const x = t.map((tj, j) => xOf(j, tj));
@@ -114,20 +117,29 @@ function musclesAt(data, w) {
     arms: Object.fromEntries(Object.keys(A[n].arms).map((c) => [c, mix(A[n].arms[c], B[n].arms[c])])) }]));
 }
 
-/** Flexion moments (N·m per N of squeeze) the muscles must supply: index MCP, PIP, DIP, then thumb base, MCP, IP. */
-function needPerNewton(G) {
-  const need = (d) => { const f = { x: -d.volar.x, y: -d.volar.y }; return d.joints.map((j) => -cross(sub(d.pad, j), f)); };
-  return [...need(G.index), ...need(G.thumb)];
+/**
+ * Flexion moments (N·m per N of squeeze) the muscles of one digit must supply, proximal joint
+ * first. The block presses the pad along its normal (1 N) and, holding the block's weight by
+ * friction, pulls it towards the fingertip by `slip` N (the friction used per newton of squeeze:
+ * μ when the hand squeezes no harder than it must). Digits point down the block's faces.
+ */
+function digitNeed(d, slip = 0) {
+  const f = { x: -d.volar.x + slip * Math.cos(d.phi), y: -d.volar.y + slip * Math.sin(d.phi) };
+  return d.joints.map((j) => -cross(sub(d.pad, j), f));
+}
+/** Index MCP, PIP, DIP, then thumb base, MCP, IP; `slip` = {index, thumb}. */
+function needPerNewton(G, slip = {}) {
+  return [...digitNeed(G.index, slip.index ?? 0), ...digitNeed(G.thumb, slip.thumb ?? 0)];
 }
 
 /**
  * Level 0, pliers: rigid jaws on the index MCP and the thumb base, FDP and FPL. Muscle force =
  * squeeze × lever ÷ tendon moment arm; the weaker jaw sets the maximum squeeze.
  */
-export function pliers(ex, data, w) {
+export function pliers(ex, data, w, slip = {}) {
   const G = pincerGeometry(ex, w);
   if (!G) return null;
-  const M = musclesAt(data, w), need = needPerNewton(G);
+  const M = musclesAt(data, w), need = needPerNewton(G, slip);
   const jaws = [
     { id: "index", muscle: "FDPI", lever: need[0], arm: M.FDPI.arms["2mcp_flexion"], force: M.FDPI.active },
     { id: "thumb", muscle: "FPL", lever: need[3], arm: M.FPL.arms.cmc_flexion, force: M.FPL.active },
@@ -140,17 +152,86 @@ export function pliers(ex, data, w) {
  * {index, thumb} when the index finger carries only its share of the thumb's), by the index and
  * thumb muscles (least summed squared activation, 0–1). Returns activations and whether it holds.
  */
-export function jointed(ex, data, w, squeezeN) {
+export function jointed(ex, data, w, squeezeN, slip = {}) {
   const sq = typeof squeezeN === "number" ? { index: squeezeN, thumb: squeezeN } : squeezeN;
   const G = pincerGeometry(ex, w);
   if (!G) return null;
-  const M = musclesAt(data, w), need = needPerNewton(G);
+  const M = musclesAt(data, w), need = needPerNewton(G, slip);
   const coords = [...INDEX_COORDS, ...THUMB_COORDS];
   const names = [...INDEX_MUSCLES, ...THUMB_MUSCLES].filter((n) => M[n]);
   const cols = names.map((n) => coords.map((c) => M[n].arms[c] * M[n].active));
   const b = need.map((v, k) => v * (k < 3 ? sq.index : sq.thumb));
   const { x, residual } = boundedLeastSquares(cols, b, cols.map(() => 1), cols.map(() => 0), cols.map(() => 1));
   return { geometry: G, act: Object.fromEntries(names.map((n, j) => [n, x[j]])), holds: residual < 1e-3, need: b };
+}
+
+/** ARMS names per finger: digit number (coordinates) and muscle suffix. */
+export const FINGERS = { index: { d: "2", s: "I" }, middle: { d: "3", s: "M" }, ring: { d: "4", s: "R" }, little: { d: "5", s: "L" } };
+/** Muscles acting on the fingers in ARMS (wrist muscles left out: the wrist isn't balanced here). */
+const FINGER_MUSCLES = ["FDPI", "FDPM", "FDPR", "FDPL", "FDSI", "FDSM", "FDSR", "FDSL", "EDCI", "EDCM", "EDCR", "EDCL", "EIP", "EDM",
+  "LUMI", "LUMM", "LUMR", "LUML", "1stDI_MC2", "2ndDI", "3rdDI", "4thDI", "1stPI", "2ndPI", "3rdPI", "ADM", "FDM"];
+
+/**
+ * Level 2, the whole hand: the thumb against `fingers` (ids from FINGERS), each finger its own
+ * planar chain (its own bone lengths, ARMS moment arms and muscle forces; every finger in the
+ * index finger's measured posture, an estimate), all sharing the squeeze N. The fingers share no
+ * muscles (each has its own flexor slips, extensor and small muscles; the deep flexor's common
+ * belly isn't modelled here), so least summed squared activation splits exactly: finger i alone
+ * costs c_i·N_i² (c_i from its own balance at 1 N), and the total is least with N_i ∝ 1/c_i.
+ * Every joint of every digit is balanced. Returns activations, each finger's share and whether
+ * it holds.
+ */
+const unitCache = new Map();
+/** Posture offsets tried per joint (degrees) and the penalty per degree² for leaving the measured posture. */
+const OFFSETS = [-20, -10, 0, 10, 20];
+const STRAY = 1e-6;
+/**
+ * One finger at width w: the posture near the measured one (index finger's angles ± 20° per
+ * joint) in which its muscles balance a 1 N squeeze with the least summed squared activation
+ * (plus a small penalty for straying); its own muscles only. Fingers whose tendons can't balance
+ * the index finger's exact angles (the knuckle bends too much for the middle joints) settle where
+ * they can, as real fingers do.
+ */
+function fingerUnit(ex, data, w, id, slip = 0) {
+  const key = `${ex.id}|${w}|${id}|${slip}`;
+  if (!unitCache.has(key)) {
+    const P = ex.pincer, a0 = pincerGeometry(ex, w).angles.index, L = P.fingers?.[id] ?? P.lengths.index;
+    const M = musclesAt(data, w);
+    const rows = ["mcp", "pm", "md"].map((j) => `${FINGERS[id].d}${j}_flexion`);
+    const names = FINGER_MUSCLES.filter((n) => M[n] && rows.some((r) => Math.abs(M[n].arms[r] ?? 0) > 1e-6));
+    const cols = names.map((n) => rows.map((r) => (M[n].arms[r] ?? 0) * M[n].active));
+    const at = (dm, dp, dd) => {
+      const ang = { mcp: a0.mcp + dm, pip: Math.max(0, a0.pip + dp), dip: a0.dip + dd };
+      const need = digitNeed(chain([L.proximal, L.middle, L.distal], [ang.mcp, ang.pip, ang.dip], P.padAlong, P.padDepth), slip);
+      const solve = (N) => { const { x, residual } = boundedLeastSquares(cols, need.map((v) => v * N), cols.map(() => 1), cols.map(() => 0), cols.map(() => 1)); return { act: Object.fromEntries(names.map((n, j) => [n, x[j]])), holds: residual < 1e-3, cost: x.reduce((s, v) => s + v * v, 0) }; };
+      const u = solve(1);
+      return { ang, solve, cost: u.cost, holds: u.holds, score: u.cost + STRAY * (dm * dm + dp * dp + dd * dd) };
+    };
+    let best = at(0, 0, 0);
+    if (!best.holds) best = { ...best, score: Infinity };
+    for (const dm of OFFSETS) for (const dp of OFFSETS) for (const dd of OFFSETS) {
+      const t = at(dm, dp, dd);
+      if (t.holds && t.score < best.score) best = t;
+    }
+    unitCache.set(key, best);
+  }
+  return unitCache.get(key);
+}
+
+export function fullHand(ex, data, w, squeezeN, fingers = Object.keys(FINGERS), slip = {}) {
+  const units = fingers.map((id) => fingerUnit(ex, data, w, id, slip.finger ?? 0));
+  const inv = units.map((u) => 1 / u.cost), sum = inv.reduce((a, b) => a + b, 0);
+  const share = Object.fromEntries(fingers.map((id, i) => [id, inv[i] / sum]));
+  const parts = fingers.map((id, i) => units[i].solve(squeezeN * share[id]));
+  // The thumb: its three joints against the whole squeeze (as in level 1, without the index finger).
+  const G = pincerGeometry(ex, w), M = musclesAt(data, w);
+  const tn = digitNeed(G.thumb, slip.thumb ?? 0);
+  const tNames = THUMB_MUSCLES.filter((n) => M[n]);
+  const tCols = tNames.map((n) => THUMB_COORDS.map((c) => M[n].arms[c] * M[n].active));
+  const t = boundedLeastSquares(tCols, tn.map((v) => v * squeezeN), tCols.map(() => 1), tCols.map(() => 0), tCols.map(() => 1));
+  const act = Object.assign({}, ...parts.map((p) => p.act), Object.fromEntries(tNames.map((n, j) => [n, t.x[j]])));
+  const postures = Object.fromEntries(fingers.map((id, i) => [id, units[i].ang]));
+  return { geometry: G, act, share, postures, holds: t.residual < 1e-3 && parts.every((p) => p.holds) };
 }
 
 /** The largest squeeze (N) the jointed pincer holds at width w (bisection). */
