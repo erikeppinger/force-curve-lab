@@ -8,6 +8,7 @@ import { analyze } from "../js/physics.js";
 import { analyzeMulti } from "../js/multijoint.js";
 import { analyzeEdge, liftProfile } from "../js/finger.js";
 import { muscleActivation } from "../js/muscles.js";
+import { analyzePinch } from "../js/pinchlift.js";
 
 const body = JSON.parse(readFileSync(new URL("../data/body.json", import.meta.url)));
 const dir = new URL("../data/exercises/", import.meta.url);
@@ -37,7 +38,9 @@ for (const id of ids) {
     if (ex.hipModel) ex.hipModel.geometry = JSON.parse(readFileSync(new URL(`../${ex.hipModel.data}`, import.meta.url)));
     const [lo, hi] = ex.angleRange;
     const spec = ex.placement ?? [];
-    const placements = [undefined, Object.fromEntries(spec.map((s) => [s.key, s.min])), Object.fromEntries(spec.map((s) => [s.key, s.max])),
+    if (ex.pincer) ex.pincer.arms = JSON.parse(readFileSync(new URL(`../${ex.pincer.data}`, import.meta.url)));
+    const end = (s, i) => (s.type === "choice" ? s.options.at(i)[0] : i === 0 ? s.min : s.max);
+    const placements = [undefined, Object.fromEntries(spec.map((s) => [s.key, end(s, 0)])), Object.fromEntries(spec.map((s) => [s.key, end(s, -1)])),
       Object.fromEntries(spec.filter((s) => s.auto).map((s) => [s.key, "auto"]))];
     const finger = ex.model === "finger";
     for (const v of ex.variants) {
@@ -45,7 +48,7 @@ for (const id of ids) {
         for (const st of settings) {
           for (const x of finger ? [lo, hi] : [lo, (lo + hi) / 2, hi]) {
             const o = { ...st, body, placement: pl ? { ...v.params, ...pl } : undefined, pulley: v.load?.pulley };
-            const r = finger ? analyzeEdge(ex, v, x, o) : ex.model === "multi" ? analyzeMulti(ex, v, x, o) : analyze(ex, v, x, o);
+            const r = finger ? analyzeEdge(ex, v, x, o) : ex.model === "pinch" ? analyzePinch(ex, ex.pincer.arms, v, x, o) : ex.model === "multi" ? analyzeMulti(ex, v, x, o) : analyze(ex, v, x, o);
             const bad = nonFinite(r);
             assert.equal(bad, null, `${v.id} @${x}: ${bad}`);
             for (const m of muscleActivation(ex, v, r, x)) {

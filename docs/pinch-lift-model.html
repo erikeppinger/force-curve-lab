@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pinch Lift Model</title>
+<meta name="description" content="How the Force Curve Lab pinch-lift model works: friction, the squeeze, the measured maximum, the wrist and the thumb–finger muscle model, with every assumption and source.">
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #ffffff; --text: #1d2330; --muted: #5b6475; --border: #dde1e8;
+    --accent: #2f6fdb; --est: #9a5b00; --est-bg: #fff4e0; --code-bg: #eef1f6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12151b; --card: #1a1f27; --text: #e6e9ef; --muted: #9aa3b2; --border: #2c3340;
+      --accent: #6b9cf0; --est: #f0b45a; --est-bg: #2e2516; --code-bg: #232a35;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #12151b; --card: #1a1f27; --text: #e6e9ef; --muted: #9aa3b2; --border: #2c3340;
+    --accent: #6b9cf0; --est: #f0b45a; --est-bg: #2e2516; --code-bg: #232a35;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 820px; margin: 0 auto; padding: 24px 16px 64px; }
+  h1 { font-size: 1.8rem; line-height: 1.25; margin: 8px 0 4px; }
+  h2 { font-size: 1.3rem; margin: 36px 0 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+  h3 { font-size: 1.05rem; margin: 24px 0 6px; }
+  p, li { max-width: 72ch; }
+  a { color: var(--accent); }
+  .lede { color: var(--muted); font-size: 1.05rem; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; margin: 14px 0; }
+  .eq { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; background: var(--code-bg); border-radius: 6px; padding: 8px 12px; overflow-x: auto; white-space: pre; font-size: 0.92rem; }
+  code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; background: var(--code-bg); border-radius: 4px; padding: 0 4px; font-size: 0.92em; }
+  .est { background: var(--est-bg); color: var(--est); border-radius: 4px; padding: 0 5px; font-size: 0.82em; font-weight: 600; white-space: nowrap; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.92rem; margin: 8px 0; }
+  th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; }
+  .table-wrap { overflow-x: auto; }
+  .muted { color: var(--muted); }
+  nav.toc { font-size: 0.95rem; }
+  nav.toc ol { margin: 4px 0; padding-left: 22px; }
+  .back { font-size: 0.95rem; }
+</style>
+</head>
+<body>
+<main>
+<p class="back"><a href="../#ex=pinch-lift">← Back to the pinch lift in Force Curve Lab</a></p>
+<h1>How the pinch-lift model works</h1>
+<p class="lede">The pinch-lift page estimates how hard the hand has to squeeze a pinch block to hold it, how close that is to the most a hand can squeeze, and which muscles carry the load. It combines friction, one measured maximum and a thumb–finger muscle model. This page lists every step and every assumption so it can be checked.</p>
+
+<div class="card">
+  <strong>What it is and isn't.</strong> A teaching tool. The size of the maximum comes from one measurement in climbers; how the squeeze follows from the block's weight is plain friction physics; which muscles carry it comes from a hand model that is too weak on its own and is therefore scaled to that measurement. Each number is either measured in a cited study or marked <span class="est">estimate</span>. It isn't medical or training advice.
+</div>
+
+<nav class="toc card" aria-label="Contents">
+  <strong>Contents</strong>
+  <ol>
+    <li><a href="#setup">The set-up being modelled</a></li>
+    <li><a href="#squeeze">From the block's weight to the squeeze</a></li>
+    <li><a href="#capacity">The most a hand squeezes</a></li>
+    <li><a href="#muscles">Which muscles carry it</a></li>
+    <li><a href="#checks">Checks</a></li>
+    <li><a href="#limits">What it leaves out</a></li>
+    <li><a href="#sources">Sources</a></li>
+  </ol>
+</nav>
+
+<h2 id="setup">1. The set-up being modelled</h2>
+<p>A block hangs from a loading pin under one hand. The thumb presses one vertical face, the fingers the opposite one. Nothing hooks under anything: the block's weight is held only by friction, so the hand must squeeze. The slider sets the block's width, 40–80 mm. Two grips are offered: the thumb against four fingers (the usual pinch-block grip) and against two (like a palmar or 3-point pinch on a gauge).</p>
+
+<h2 id="squeeze">2. From the block's weight to the squeeze</h2>
+<p><strong>Equal squeeze on both faces.</strong> The faces are vertical and parallel, so the block's sideways balance makes the thumb press exactly as hard as all the fingers together. Call that squeeze N. The thumb carries all of it; each of k fingers carries N/k.</p>
+<p><strong>Friction per contact patch.</strong> Skin isn't a rigid solid. Its friction can grow less than in proportion to the pressing force (Adams et al. 2013):</p>
+<div class="eq">F_patch = μ · N0 · (N_patch / N0)^n        N0 = 10 N,  2/3 ≤ n ≤ 1</div>
+<ul>
+  <li><strong>n = 1</strong> (the default) is Amontons' law: friction = μ × pressing force. Dry or chalked skin on a rough surface behaves like this, because above about 2 N the finger pad's contact area stops growing as the tissue presses against the bone (Adams et al.; Dzidek et al. 2017). Then the squeeze needed is simply <code>N = weight ÷ (2μ)</code>, however many fingers share it.</li>
+  <li><strong>n &lt; 1</strong> describes moist skin or smooth surfaces, where skin behaves more like rubber. Spreading the same squeeze over more patches then holds more: with n = 0.8, four fingers give about 1.32× the friction of one. That is how more contact helps. Huang et al. saw strong climbers press the thenar eminence onto a pinch hold to enlarge the contact.</li>
+</ul>
+<p>Both faces together hold <code>μ·N0·(N/N0)^n·(1 + k^(1−n))</code>, which is solved for N.</p>
+<p><strong>The coefficient μ is a slider</strong> (default 0.6 <span class="est">estimate</span>). Measured values vary widely: a fingertip on rock up to 2.5–3.3 at most (Li et al. 2001), 0.56–0.86 used on gym holds (Fuss et al. 2020). With μ = 0.6 and the default capacity, the maximum block comes out at about 24 kg, the same order as climbers' reports for the Lattice pinch block (about 20 kg counted as strong; forum reports, not a study).</p>
+
+<h2 id="capacity">3. The most a hand squeezes</h2>
+<p>Huang et al. (2026) measured the maximal whole-hand pinch of wooden pinch holds 5 and 8 cm wide with pressure mats in 22 advanced climbers (11 men, 11 women, about 60 kg): 398 ± 118 N and 377 ± 125 N, with no significant difference between the widths; the stronger half squeezed about 20% more. The paper reports the force "exerted on the holds by the hand" without saying whether it sums both faces. The model reads it as the sum (thumb side + finger side), so one face takes half: <strong>about 194 N</strong>, the 100% strength setting <span class="est">reading of the paper</span>. Read as one face, the maximum would double.</p>
+<p>For comparison, a pinch gauge between the thumb pad and two finger pads (palmar or 3-point pinch) gives about 104 N in adult men and 73 N in women (Mathiowetz et al. 1985, all ages), and 83–107 N in men aged 18–65 in a recent sample (Massy-Westropp et al. 2023). Climbers pressing a wooden hold with the whole hand reaching about twice that is plausible.</p>
+<p><strong>Width.</strong> The maximum is taken as the same over 40–80 mm, because Huang et al. found no difference between 5 and 8 cm <span class="est">outside 50–80 mm this is an extrapolation</span>.</p>
+<p><strong>Wrist.</strong> Flexing the wrist costs pinch force: about 25% less with the wrist flexed about 38°, no loss when it is extended (Goislard de Monsabert et al. 2023, 18 participants). The model takes the loss as linear from 0° to 38° and constant beyond <span class="est">estimate</span>. Their analysis puts the loss mainly on the finger <em>extensors</em>, which co-contract to balance the wrist and are shortened when it flexes. In four-finger pressing (closer to an edge) the wrist barely mattered, which is why the edge lift has no such factor.</p>
+<div class="eq">effort = N ÷ (194 N × strength % × wrist factor)        max block = the weight that squeeze holds</div>
+
+<h2 id="muscles">4. Which muscles carry it</h2>
+<p>The thumb and the index finger are modelled as planar chains, each in its own plane, pressed by the squeeze along its pad's normal (the index finger stands for each finger, carrying N/k). The postures come from Vigouroux et al. (2011): index MCP 55.6° → 38.6°, PIP 22.1° → 13.8°, DIP 20.9° → 29.6°, thumb MP 3.5°, IP 13.3°, measured on objects 3.5–7.5 cm wide held with a light, self-chosen grip; the thumb's base is kept at the hand model's neutral. Moment arms and muscle forces come from the ARMS hand and wrist model (McFarland et al. 2021, OpenSim) at these postures. <strong>ARMS is licensed for non-commercial use only.</strong></p>
+<ul>
+  <li><strong>Pliers:</strong> each digit a rigid jaw closed by one long flexor: FPL for the thumb, FDP for the finger. Muscle force = squeeze × lever ÷ tendon moment arm.</li>
+  <li><strong>Jointed:</strong> every joint of both digits (index MCP, PIP, DIP; thumb base, MCP, IP) balanced by all their muscles, shared by least summed squared activation (static optimisation), within 0–100% of each muscle's force.</li>
+</ul>
+<p>On its own the planar model fails at a far smaller squeeze than a real hand (15–25 N in the jointed version): the small thumb muscles and the extensors that must hold the joints against the flexors run out first, and the thumb's opposition and the other fingers' help aren't in it. So at each width it is scaled so that it fails exactly at the measured maximum. It then shows how the load spreads over the muscles, not how strong the hand is <span class="est">scaling</span>.</p>
+
+<h2 id="checks">5. Checks</h2>
+<ul>
+  <li><strong>Flexor force per newton of squeeze.</strong> At light loads the jointed model asks the index finger's FDP for about 2.7–3.0 N per newton of squeeze at 35–75 mm; Vigouroux et al. (2011) estimated 2.5–3.0 with their own EMG-driven model. A test keeps it in this band.</li>
+  <li><strong>The thumb limits the four-finger pinch.</strong> In the pliers model the thumb's FPL reaches its limit first: each finger carries only a quarter of the squeeze.</li>
+  <li><strong>Friction physics.</strong> Tests check the hand-computable case (n = 1: N = weight ÷ 2μ), equal friction on both faces, and that more fingers help only when n &lt; 1.</li>
+</ul>
+
+<h2 id="limits">6. What it leaves out</h2>
+<ul>
+  <li>Thumb opposition and the out-of-plane forces of a real pinch (each digit is planar).</li>
+  <li>The palm and the thenar eminence pressing the block, and contact along the whole fingers on wide blocks: their extra contact only counts through the friction law (n &lt; 1).</li>
+  <li>Lifting off and setting down (the block's acceleration), and the block swinging or tilting under the hand.</li>
+  <li>How the posture changes under a maximal load: the postures are from light grips. Under load the thumb's tip joint may give, the fingers may flatten onto the face.</li>
+  <li>Women's and men's different maxima: 100% is the mixed group's mean; use the strength slider.</li>
+</ul>
+
+<h2 id="sources">7. Sources</h2>
+<ul>
+  <li>Adams MJ, Johnson SA, Lefèvre P, Lévesque V, Hayward V, André T, Thonnard JL (2013). Finger pad friction and its role in grip and touch. <i>J R Soc Interface</i> 10(80):20120467. doi:10.1098/rsif.2012.0467</li>
+  <li>Dzidek BM, Adams MJ, Andrews JW, Zhang Z, Johnson SA (2017). Contact mechanics of the human finger pad under compressive loads. <i>J R Soc Interface</i> 14(127):20160935. doi:10.1098/rsif.2016.0935</li>
+  <li>Fuss FK, Weizman Y, Niegl G, Tan AM (2020). Climbers' perception of hold surface properties: roughness versus slip resistance. <i>Front Psychol</i> 11:252. doi:10.3389/fpsyg.2020.00252</li>
+  <li>Goislard de Monsabert B, Caumes M, Berton E, Vigouroux L (2023). Influence of force-length relationship and task-specific constraints on finger force-generating capacities. <i>Ann Biomed Eng</i>. doi:10.1007/s10439-023-03276-0</li>
+  <li>Huang Y, Li S, Peng Y, Yu J, Chen R, Ding X, et al. (2026). Mechanics and muscular activity characteristics of the pinch grip across varying hold widths and climber skill levels. <i>J Sports Sci</i> 44(4):431–442. doi:10.1080/02640414.2025.2585743</li>
+  <li>Li FX, Margetts S, Fowler I (2001). Use of 'chalk' in rock climbing: sine qua non or myth? <i>J Sports Sci</i> 19(6):427–432. doi:10.1080/026404101300149375</li>
+  <li>Massy-Westropp C, Massy-Westropp N, Wechalekar H (2023). Normative values for pinch strength: relationship with joint hypermobility as measured with the Beighton criteria. <i>J Hand Surg Glob Online</i> 5(3):272–276. doi:10.1016/j.jhsg.2023.01.007</li>
+  <li>Mathiowetz V, Kashman N, Volland G, Weber K, Dowe M, Rogers S (1985). Grip and pinch strength: normative data for adults. <i>Arch Phys Med Rehabil</i> 66(2):69–72.</li>
+  <li>McFarland DC, Binder-Markey BI, Nichols JA, Wohlman SJ, de Bruin M, Murray WM (2021). A musculoskeletal model of the hand and wrist capable of simulating functional tasks. <i>bioRxiv</i> 2021.12.28.474357 (ARMS model; non-commercial use only).</li>
+  <li>Vigouroux L, Domalain M, Berton E (2011). Effect of object width on muscle and joint forces during thumb-index finger grasping. <i>J Appl Biomech</i> 27(3):173–180. doi:10.1123/jab.27.3.173</li>
+</ul>
+<p class="muted">The source code and data files are open: <code>js/pinchlift.js</code> (friction, capacity, scaling), <code>js/pincer.js</code> (the thumb–finger model), <code>data/exercises/pinch-lift.json</code> (every number with its note and source) and <code>data/opensim/arms-pincer.json</code> (the ARMS export, non-commercial).</p>
+<p class="back"><a href="../#ex=pinch-lift">← Back to the pinch lift</a></p>
+</main>
+</body>
+</html>

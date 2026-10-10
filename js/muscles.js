@@ -29,6 +29,15 @@ export function muscleActivation(exercise, variant, result, angleDeg) {
       tension: result.tendons[m.tendon],
     }));
   }
+  // Pinch lift: the pincer model's activations (scaled to the measured maximum), the largest of a
+  // group's parts; a grip that fails puts every working muscle at its limit.
+  if (exercise.model === "pinch") {
+    return exercise.muscles.map((m) => {
+      const parts = m.parts.filter((p) => result.act == null || p in result.act);
+      if (!parts.length) return { ...m, value: null };
+      return { ...m, value: result.act == null ? 1 : Math.min(1, Math.max(0, ...parts.map((p) => result.act[p]))) };
+    });
+  }
   if (exercise.model === "multi") {
     return exercise.muscles.map((m) => {
       if (m.driver === "none") return { ...m, value: null };
@@ -56,7 +65,9 @@ export function muscleActivation(exercise, variant, result, angleDeg) {
     // `kneeFactor`: the weight's change with the knee bend (e.g. the kickback's hamstrings), on a
     // hip × knee grid, bilinear and held at the edges.
     const kf = m.kneeFactor && result.knee != null ? grid2(m.kneeFactor, angleDeg, result.knee) : 1;
-    const value = Math.min(1, Math.max(0, demand * interp(m.weight, angleDeg) * mod * kf));
+    // `placementFactor`: the weight's change with a placement slider (e.g. the calf raise's toe angle).
+    const pf = m.placementFactor ? interp(m.placementFactor.points, Number(result.placement?.[m.placementFactor.key] ?? variant.params?.[m.placementFactor.key] ?? 0)) : 1;
+    const value = Math.min(1, Math.max(0, demand * interp(m.weight, angleDeg) * mod * kf * pf));
     return { ...m, value };
   });
 }

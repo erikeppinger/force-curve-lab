@@ -231,7 +231,15 @@
       "group": "Exercise biomechanics",
       "citation": "Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592.",
       "url": "https://doi.org/10.1016/j.jbiomech.2005.08.027",
-      "usedFor": "Edge lift: open-hand and full-crimp finger postures, where the edge presses, the passive moment of the bent-back fingertip joint, and the reference tendon tensions; its FDP:FDS ratios and pulley loads are the model’s check."
+      "usedFor": "Edge lift: the slope-grip posture for comparison, the crimp posture of the model's check, where the edge presses, the passive moment of the bent-back fingertip joint, and the reference tendon tensions; its FDP:FDS ratios and pulley loads are the model’s check."
+    },
+    {
+      "key": "Fischer 2024",
+      "match": "Fischer G, Schneeberger M",
+      "group": "Exercise biomechanics",
+      "citation": "Fischer G, Schneeberger M, Petter SA, Scheibler AG, Wolf P, Calcagni M, Schweizer A, Reissner L (2024). Motion analysis of the wrist and finger joints in sport climbing. Bioengineering 11(4):370. Open access (CC BY 4.0).",
+      "url": "https://doi.org/10.3390/bioengineering11040370",
+      "usedFor": "Edge lift: the open-hand, half-crimp and full-crimp postures (middle finger, motion capture of elite climbers holding a 23 mm edge during climbing moves)."
     },
     {
       "key": "Schweizer 2001",
@@ -351,6 +359,62 @@
       "citation": "Fuss FK, Weizman Y, Niegl G, Tan AM (2020). Climbers' perception of hold surface properties: roughness versus slip resistance. Front Psychol 11:252.",
       "url": "https://doi.org/10.3389/fpsyg.2020.00252",
       "usedFor": "Edge lift: friction climbers actually use on hold surfaces (0.56–0.86) and what a 29° sloping surface needs (0.55)."
+    },
+    {
+      "key": "Dzidek 2017",
+      "match": "Dzidek BM",
+      "group": "Two-joint muscles and grip",
+      "citation": "Dzidek BM, Adams MJ, Andrews JW, Zhang Z, Johnson SA (2017). Contact mechanics of the human finger pad under compressive loads. J R Soc Interface 14(127):20160935.",
+      "url": "https://doi.org/10.1098/rsif.2016.0935",
+      "usedFor": "Edge lift: why the friction coefficient is held constant (on rough surfaces the finger pad's friction doesn't depend on the pressing force)."
+    },
+    {
+      "key": "Adams 2013",
+      "match": "Adams MJ, Johnson SA",
+      "group": "Two-joint muscles and grip",
+      "citation": "Adams MJ, Johnson SA, Lefèvre P, Lévesque V, Hayward V, André T, Thonnard JL (2013). Finger pad friction and its role in grip and touch. J R Soc Interface 10(80):20120467. Open access.",
+      "url": "https://doi.org/10.1098/rsif.2012.0467",
+      "usedFor": "Edge lift: the finger pad's contact area saturating above about 2 N, and the two-term (area + load) friction law that the pinch model builds on."
+    },
+    {
+      "key": "Huang 2026",
+      "match": "Huang Y, Li S, Peng Y",
+      "group": "Two-joint muscles and grip",
+      "citation": "Huang Y, Li S, Peng Y, Yu J, Chen R, Ding X, et al. (2026). Mechanics and muscular activity characteristics of the pinch grip across varying hold widths and climber skill levels. J Sports Sci 44(4):431–442.",
+      "url": "https://doi.org/10.1080/02640414.2025.2585743",
+      "usedFor": "Pinch lift: the maximal squeeze (whole-hand pinch of 5 and 8 cm wooden holds in 22 advanced climbers, no width difference), and the thenar eminence pressed on to enlarge the contact."
+    },
+    {
+      "key": "Mathiowetz 1985",
+      "match": "Mathiowetz V, Kashman N",
+      "group": "Two-joint muscles and grip",
+      "citation": "Mathiowetz V, Kashman N, Volland G, Weber K, Dowe M, Rogers S (1985). Grip and pinch strength: normative data for adults. Arch Phys Med Rehabil 66(2):69–72.",
+      "url": null,
+      "usedFor": "Pinch lift: comparison of the climbers' squeeze with the palmar (3-point) pinch of untrained adults (men about 104 N, women 73 N)."
+    },
+    {
+      "key": "Massy-Westropp 2023",
+      "match": "Massy-Westropp C",
+      "group": "Two-joint muscles and grip",
+      "citation": "Massy-Westropp C, Massy-Westropp N, Wechalekar H (2023). Normative values for pinch strength: relationship with joint hypermobility as measured with the Beighton criteria. J Hand Surg Glob Online 5(3):272–276. Open access.",
+      "url": "https://doi.org/10.1016/j.jhsg.2023.01.007",
+      "usedFor": "Pinch lift: a recent sample of 3-point pinch norms for comparison (men 83–107 N by age)."
+    },
+    {
+      "key": "Vigouroux 2011",
+      "match": "Vigouroux L, Domalain M",
+      "group": "Exercise biomechanics",
+      "citation": "Vigouroux L, Domalain M, Berton E (2011). Effect of object width on muscle and joint forces during thumb-index finger grasping. J Appl Biomech 27(3):173–180.",
+      "url": "https://doi.org/10.1123/jab.27.3.173",
+      "usedFor": "Pinch lift: the thumb and index finger postures on objects 3.5–7.5 cm wide; its flexor force per newton of grip is the model's check."
+    },
+    {
+      "key": "Goislard de Monsabert 2023",
+      "match": "Goislard de Monsabert B, Caumes M",
+      "group": "Two-joint muscles and grip",
+      "citation": "Goislard de Monsabert B, Caumes M, Berton E, Vigouroux L (2023). Influence of force-length relationship and task-specific constraints on finger force-generating capacities. Ann Biomed Eng. Read as the accepted manuscript (arXiv 2306.12842).",
+      "url": "https://doi.org/10.1007/s10439-023-03276-0",
+      "usedFor": "Pinch lift: the wrist factor (pinch force about 25% lower with the wrist flexed about 38°, unchanged in extension; four-finger pressing barely affected)."
     },
     {
       "key": "Dostal 1986",

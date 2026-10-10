@@ -1,0 +1,165 @@
+{
+  "id": "pinch-lift",
+  "name": "Pinch block lift (one hand)",
+  "technique": "A block hanging from a loading pin, held between the thumb on one face and the fingers on the other, arm straight at the side, the lift driven by the legs. The block's weight is held only by friction, so the hand must squeeze it: the more slippery the block, the harder. Chalk, a dry hand and a clean block help. Width changes the posture of the thumb and fingers; within 5–8 cm climbers measured no difference in how hard they could squeeze.",
+  "model": "pinch",
+  "joint": "Thumb–finger pinch",
+  "view": "front",
+  "angleLabel": "Block width",
+  "angleUnit": "mm",
+  "angleRange": [40, 80],
+  "angleNote": "The slider sets the block's width (thickness between the thumb's face and the fingers' face). The thumb and index finger take the postures measured on objects of that width (Vigouroux et al. 2011, 35–75 mm; held constant beyond). How hard the hand can squeeze is taken as the same across the range (measured at 5 and 8 cm).",
+  "defaults": {"loadKg": 15, "variant": "four-fingers", "bodyMassKg": 70, "width": 60},
+  "ui": {"load": [2, 60, 1]},
+  "pinch": {
+    "capacity": 194,
+    "capacityNote": "The most one face of the block is pressed with (N): maximal whole-hand pinch of wooden pinch holds, measured with pressure mats in 22 advanced climbers (11 men, 11 women, about 60 kg): 377 N at 8 cm and 398 N at 5 cm, no significant difference; taken here as summed over both faces (thumb side + finger side), so about 194 N per face. Strong climbers squeezed about 20% more. For comparison, a pinch gauge between thumb pad and two finger pads (3-point or palmar pinch) gives about 104 N in adult men and 73 N in women (all ages), 83–107 N in men aged 18–65 in a recent sample.",
+    "capacitySource": "Huang Y, Li S, Peng Y, Yu J, Chen R, Ding X, et al. (2026). Mechanics and muscular activity characteristics of the pinch grip across varying hold widths and climber skill levels. J Sports Sci 44(4):431–442. doi:10.1080/02640414.2025.2585743 (Table 5); gauge comparison: Mathiowetz V, Kashman N, Volland G, Weber K, Dowe M, Rogers S (1985). Grip and pinch strength: normative data for adults. Arch Phys Med Rehabil 66(2):69–72 (Table 5, palmar pinch); Massy-Westropp C, Massy-Westropp N, Wechalekar H (2023). Normative values for pinch strength: relationship with joint hypermobility as measured with the Beighton criteria. J Hand Surg Glob Online 5(3):272–276. doi:10.1016/j.jhsg.2023.01.007 (Table 1, three-point pinch)",
+    "frictionNote": "Each contact patch holds μ·N0·(Ni/N0)^n, N0 = 10 N: with n = 1 (Amontons' law, dry or chalked skin on a rough surface; above about 2 N the pad's contact area stops growing) the friction is μ × squeeze, however many fingers share it. With n < 1 (moist skin, smooth surfaces: 2/3 ≤ n ≤ 1) friction grows less than the pressing force, so spreading one squeeze over more patches (more fingers, the thenar eminence pressed on) holds more. Strong climbers were seen pressing the thenar eminence onto the hold to enlarge the contact.",
+    "frictionSource": "Adams MJ, Johnson SA, Lefèvre P, Lévesque V, Hayward V, André T, Thonnard JL (2013). Finger pad friction and its role in grip and touch. J R Soc Interface 10(80):20120467. doi:10.1098/rsif.2012.0467; thenar contact: Huang Y, Li S, Peng Y, Yu J, Chen R, Ding X, et al. (2026). Mechanics and muscular activity characteristics of the pinch grip across varying hold widths and climber skill levels. J Sports Sci 44(4):431–442. doi:10.1080/02640414.2025.2585743 (Table 5)",
+    "wristNote": "Wrist flexion lowers the pinch force: about 25% less with the wrist flexed about 38°, no loss in extension (18 participants, isometric pinch on a 5.5 cm sensor). Linear between 0° and 38° and held beyond (estimate). The loss comes mainly from the finger extensors' length (they co-contract to balance the wrist).",
+    "wristSource": "Goislard de Monsabert B, Caumes M, Berton E, Vigouroux L (2023). Influence of force-length relationship and task-specific constraints on finger force-generating capacities. Ann Biomed Eng. doi:10.1007/s10439-023-03276-0"
+  },
+  "pincer": {
+    "data": "data/opensim/arms-pincer.json",
+    "lengths": {
+      "index": {"proximal": 0.0426, "middle": 0.0251, "distal": 0.0187},
+      "thumb": {"metacarpal": 0.0446, "proximal": 0.0311, "distal": 0.025}
+    },
+    "index": {
+      "mcp": [[35, 55.6], [75, 38.6]],
+      "pip": [[35, 22.1], [45, 17.2], [55, 12.6], [65, 11.2], [75, 13.8]],
+      "dip": [[35, 20.9], [75, 29.6]]
+    },
+    "thumb": {"mcp": 3.5, "ip": 13.3},
+    "padAlong": 0.6,
+    "padDepth": 0.007,
+    "postureNote": "Index finger MCP (55.6° → 38.6°), PIP (22.1°, 17.2°, 12.6°, 11.2°, 13.8°) and DIP (20.9° → 29.6°) and thumb MP 3.5° and IP 13.3° (the same at every width), measured on objects 3.5–7.5 cm wide held with a light, self-chosen grip (10 participants); MCP and DIP linear between the two widths reported. The thumb's base (CMC) is kept at the ARMS model's neutral: the measured angle (11–19°) uses a different zero and lies outside the model's range. Moment arms and muscle forces: the ARMS hand model at these postures (NON-COMMERCIAL use only). Segment lengths: ARMS (thumb metacarpal and proximal phalanx, index proximal and middle phalanx); distal phalanges estimates.",
+    "postureSource": "Vigouroux L, Domalain M, Berton E (2011). Effect of object width on muscle and joint forces during thumb-index finger grasping. J Appl Biomech 27(3):173–180; moment arms: McFarland DC, Binder-Markey BI, Nichols JA, Wohlman SJ, de Bruin M, Murray WM (2021). A musculoskeletal model of the hand and wrist capable of simulating functional tasks. bioRxiv 2021.12.28.474357 (ARMS model, NON-COMMERCIAL use only)"
+  },
+  "placement": [
+    {
+      "key": "mu",
+      "label": "Skin–block friction (μ)",
+      "min": 0.3,
+      "max": 2,
+      "step": 0.05,
+      "unit": "",
+      "scale": 1,
+      "decimals": 2,
+      "hint": "How much of the squeeze the skin turns into grip. Chalked skin on wood is often around 0.5–1; measured values vary widely (fingertip on rock up to 2.5–3.3; 0.56–0.86 used on gym holds). The block's weight needs a squeeze of weight ÷ (2μ) with n = 1."
+    },
+    {
+      "key": "n",
+      "label": "Friction load index (n)",
+      "min": 0.67,
+      "max": 1,
+      "step": 0.01,
+      "unit": "",
+      "scale": 1,
+      "decimals": 2,
+      "hint": "1: friction grows in step with the squeeze (dry, chalked skin; rough surfaces). Below 1 (moist skin, smooth blocks) it grows more slowly, so a squeeze spread over more fingers and more skin holds more: the reason more contact can help."
+    },
+    {
+      "key": "wrist",
+      "label": "Wrist (+ = flexed)",
+      "min": -40,
+      "max": 40,
+      "step": 1,
+      "unit": "°",
+      "scale": 1,
+      "hint": "Flexing the wrist costs pinch force: about 25% at 38° (Goislard de Monsabert et al.); extending it costs nothing."
+    },
+    {
+      "key": "level",
+      "label": "Hand model",
+      "type": "choice",
+      "options": [["pliers", "Pliers: one flexor per digit"], ["jointed", "Jointed: every joint balanced"]],
+      "hint": "Pliers: the thumb and index finger as rigid jaws, each closed by one long flexor (FPL, FDP). Jointed: every joint of both digits balanced by all their muscles (ARMS hand model), so the small thumb muscles and the extensors join in. Both are scaled to the measured maximum; the choice changes which muscles carry the load, not the maximum block."
+    }
+  ],
+  "muscles": [
+    {
+      "id": "fpl",
+      "name": "Flexor pollicis longus",
+      "region": "forearm",
+      "role": "Prime mover",
+      "parts": ["FPL"],
+      "note": "The thumb's long flexor, from the forearm to the thumb tip: presses the thumb onto its face of the block."
+    },
+    {
+      "id": "thenar",
+      "name": "Thenar muscles (opponens, flexor and abductor pollicis brevis)",
+      "role": "Prime mover",
+      "parts": ["OPP", "FPB", "APB"],
+      "note": "The ball of the thumb: holds the thumb's base and first joint against the squeeze. Small, so in the jointed model they are among the first to reach their limit."
+    },
+    {
+      "id": "adductor",
+      "name": "Adductor pollicis",
+      "role": "Synergist",
+      "parts": ["ADPt", "ADPo"],
+      "note": "Pulls the thumb towards the index finger."
+    },
+    {
+      "id": "fdp",
+      "name": "Flexor digitorum profundus",
+      "region": "forearm",
+      "role": "Prime mover",
+      "parts": ["FDPI"],
+      "note": "Bends the fingertips: presses the finger pads onto their face. Each finger carries only its share of the squeeze."
+    },
+    {
+      "id": "fds",
+      "name": "Flexor digitorum superficialis",
+      "region": "forearm",
+      "role": "Synergist",
+      "parts": ["FDSI"],
+      "note": "Bends the middle joints."
+    },
+    {
+      "id": "interossei",
+      "name": "Interossei and lumbricals",
+      "role": "Synergist",
+      "parts": ["1stDI_MC2", "1stPI", "LUMI", "1stDI_MC1"],
+      "note": "Small hand muscles at the knuckles; the first dorsal interosseous also steadies the thumb."
+    },
+    {
+      "id": "extensors",
+      "name": "Thumb and finger extensors (co-contraction)",
+      "region": "forearm",
+      "regionPath": ["edc", "apl-epb"],
+      "role": "Stabiliser",
+      "parts": ["EPL", "EPB", "APL", "EDCI", "EIP"],
+      "note": "Work against the flexors to keep the joints from collapsing: in the jointed model the thumb's long extensor is one of the limits."
+    }
+  ],
+  "phases": [
+    {
+      "name": "Narrow",
+      "range": [40, 55],
+      "text": "Index knuckle bent more, thumb nearly straight along its face."
+    },
+    {
+      "name": "Wide",
+      "range": [55, 80],
+      "text": "The index knuckle opens; the fingertip bends more to stay on the face."
+    }
+  ],
+  "variants": [
+    {
+      "id": "four-fingers",
+      "name": "Thumb against four fingers",
+      "equipment": "Pinch block on a loading pin",
+      "notes": "The usual pinch-block grip: the thumb on one face, all four fingers on the other. The thumb carries the whole squeeze alone; each finger carries a quarter of it.",
+      "params": {"fingers": 4, "mu": 0.6, "n": 1, "wrist": 0, "level": "jointed"}
+    },
+    {
+      "id": "two-fingers",
+      "name": "Thumb against two fingers",
+      "equipment": "Pinch block on a loading pin",
+      "notes": "Thumb against index and middle finger, like a palmar (3-point) pinch on a gauge. With n = 1 friction is unchanged; each finger carries half the squeeze.",
+      "params": {"fingers": 2, "mu": 0.6, "n": 1, "wrist": 0, "level": "jointed"}
+    }
+  ]
+}

@@ -1,0 +1,4595 @@
+{
+ "licence": "Derived from the ARMS hand and wrist model (McFarland DC, Binder-Markey BI, Nichols JA, Wohlman SJ, de Bruin M, Murray WM (2021). bioRxiv 2021.12.28.474357): NON-COMMERCIAL use only.",
+ "coords": [
+  "cmc_flexion",
+  "cmc_abduction",
+  "mp_flexion",
+  "ip_flexion",
+  "2mcp_flexion",
+  "2pm_flexion",
+  "2md_flexion"
+ ],
+ "postures": {
+  "w2": {
+   "pose": {
+    "2mcp_flexion": 48.5,
+    "2pm_flexion": 54.1,
+    "2md_flexion": 39.9,
+    "mp_flexion": 13.9,
+    "ip_flexion": 46.8
+   },
+   "muscles": {
+    "ECRL": {
+     "active": 295.73,
+     "max": 337.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECRB": {
+     "active": 245.45,
+     "max": 252.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECU": {
+     "active": 192.43,
+     "max": 192.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCR": {
+     "active": 347.71,
+     "max": 407.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCU": {
+     "active": 221.42,
+     "max": 479.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "PL": {
+     "active": 80.49,
+     "max": 101,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSL": {
+     "active": 75.01,
+     "max": 75.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSR": {
+     "active": 170.78,
+     "max": 171.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSM": {
+     "active": 256.87,
+     "max": 258.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSI": {
+     "active": 153.99,
+     "max": 162.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.011816,
+      "2pm_flexion": 0.007548,
+      "2md_flexion": 0
+     }
+    },
+    "FDPL": {
+     "active": 234.5,
+     "max": 236.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPR": {
+     "active": 171.61,
+     "max": 172.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPM": {
+     "active": 211.24,
+     "max": 212.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPI": {
+     "active": 178.37,
+     "max": 197.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.010475,
+      "2pm_flexion": 0.007971,
+      "2md_flexion": 0.00434
+     }
+    },
+    "EDCL": {
+     "active": 39.38,
+     "max": 39.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCR": {
+     "active": 109.05,
+     "max": 109.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCM": {
+     "active": 94.27,
+     "max": 94.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCI": {
+     "active": 47.21,
+     "max": 48.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.007889,
+      "2pm_flexion": -0.003894,
+      "2md_flexion": -0.002855
+     }
+    },
+    "EDM": {
+     "active": 72.3,
+     "max": 72.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EIP": {
+     "active": 36.09,
+     "max": 47.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.007541,
+      "2pm_flexion": -0.003896,
+      "2md_flexion": -0.002725
+     }
+    },
+    "EPL": {
+     "active": 87.8,
+     "max": 88.3,
+     "arms": {
+      "cmc_flexion": -0.00858,
+      "cmc_abduction": -0.009014,
+      "mp_flexion": -0.010137,
+      "ip_flexion": -0.00439,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EPB": {
+     "active": 45.27,
+     "max": 46,
+     "arms": {
+      "cmc_flexion": -0.014794,
+      "cmc_abduction": 0.003008,
+      "mp_flexion": -0.009553,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPL": {
+     "active": 199.14,
+     "max": 201,
+     "arms": {
+      "cmc_flexion": 0.015625,
+      "cmc_abduction": -0.000018,
+      "mp_flexion": 0.012337,
+      "ip_flexion": 0.007944,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APL": {
+     "active": 114.17,
+     "max": 116.7,
+     "arms": {
+      "cmc_flexion": -0.006802,
+      "cmc_abduction": 0.006501,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APB": {
+     "active": 34.43,
+     "max": 34.5,
+     "arms": {
+      "cmc_flexion": -0.004056,
+      "cmc_abduction": 0.005832,
+      "mp_flexion": -0.001221,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPB": {
+     "active": 33.31,
+     "max": 33.5,
+     "arms": {
+      "cmc_flexion": 0.0057,
+      "cmc_abduction": -0.001757,
+      "mp_flexion": 0.005283,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "OPP": {
+     "active": 51.63,
+     "max": 51.8,
+     "arms": {
+      "cmc_flexion": 0.004127,
+      "cmc_abduction": 0.001236,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPt": {
+     "active": 56.57,
+     "max": 59.9,
+     "arms": {
+      "cmc_flexion": 0.00011,
+      "cmc_abduction": -0.007878,
+      "mp_flexion": 0.007868,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPo": {
+     "active": 95.17,
+     "max": 102.1,
+     "arms": {
+      "cmc_flexion": 0.00026,
+      "cmc_abduction": -0.005447,
+      "mp_flexion": 0.008133,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADM": {
+     "active": 45.1,
+     "max": 45.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDM": {
+     "active": 27.35,
+     "max": 27.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stPI": {
+     "active": 37.51,
+     "max": 38.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.003353,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndPI": {
+     "active": 32.7,
+     "max": 33,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdPI": {
+     "active": 30.68,
+     "max": 31,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC1": {
+     "active": 58.47,
+     "max": 60.7,
+     "arms": {
+      "cmc_flexion": 0.006385,
+      "cmc_abduction": -0.003437,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.002831,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC2": {
+     "active": 14.92,
+     "max": 15.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.005385,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndDI": {
+     "active": 67.4,
+     "max": 68.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdDI": {
+     "active": 47.6,
+     "max": 48.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "4thDI": {
+     "active": 45.61,
+     "max": 46.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUML": {
+     "active": 3.05,
+     "max": 3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMR": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMM": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMI": {
+     "active": 5.45,
+     "max": 5.6,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.009478,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    }
+   }
+  },
+  "w10": {
+   "pose": {
+    "2mcp_flexion": 48.4,
+    "2pm_flexion": 48.5,
+    "2md_flexion": 40.7,
+    "mp_flexion": 13.9,
+    "ip_flexion": 46.8
+   },
+   "muscles": {
+    "ECRL": {
+     "active": 295.73,
+     "max": 337.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECRB": {
+     "active": 245.45,
+     "max": 252.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECU": {
+     "active": 192.43,
+     "max": 192.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCR": {
+     "active": 347.71,
+     "max": 407.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCU": {
+     "active": 221.42,
+     "max": 479.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "PL": {
+     "active": 80.49,
+     "max": 101,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSL": {
+     "active": 75.01,
+     "max": 75.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSR": {
+     "active": 170.78,
+     "max": 171.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSM": {
+     "active": 256.87,
+     "max": 258.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSI": {
+     "active": 154.67,
+     "max": 162.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.011815,
+      "2pm_flexion": 0.007705,
+      "2md_flexion": 0
+     }
+    },
+    "FDPL": {
+     "active": 234.5,
+     "max": 236.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPR": {
+     "active": 171.61,
+     "max": 172.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPM": {
+     "active": 211.24,
+     "max": 212.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPI": {
+     "active": 179.31,
+     "max": 197.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.010474,
+      "2pm_flexion": 0.007846,
+      "2md_flexion": 0.00436
+     }
+    },
+    "EDCL": {
+     "active": 39.38,
+     "max": 39.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCR": {
+     "active": 109.05,
+     "max": 109.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCM": {
+     "active": 94.27,
+     "max": 94.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCI": {
+     "active": 47.6,
+     "max": 48.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.007894,
+      "2pm_flexion": -0.003935,
+      "2md_flexion": -0.00283
+     }
+    },
+    "EDM": {
+     "active": 72.3,
+     "max": 72.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EIP": {
+     "active": 36.76,
+     "max": 47.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.007545,
+      "2pm_flexion": -0.003941,
+      "2md_flexion": -0.0027
+     }
+    },
+    "EPL": {
+     "active": 87.8,
+     "max": 88.3,
+     "arms": {
+      "cmc_flexion": -0.00858,
+      "cmc_abduction": -0.009014,
+      "mp_flexion": -0.010137,
+      "ip_flexion": -0.00439,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EPB": {
+     "active": 45.27,
+     "max": 46,
+     "arms": {
+      "cmc_flexion": -0.014794,
+      "cmc_abduction": 0.003008,
+      "mp_flexion": -0.009553,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPL": {
+     "active": 199.14,
+     "max": 201,
+     "arms": {
+      "cmc_flexion": 0.015625,
+      "cmc_abduction": -0.000018,
+      "mp_flexion": 0.012337,
+      "ip_flexion": 0.007944,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APL": {
+     "active": 114.17,
+     "max": 116.7,
+     "arms": {
+      "cmc_flexion": -0.006802,
+      "cmc_abduction": 0.006501,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APB": {
+     "active": 34.43,
+     "max": 34.5,
+     "arms": {
+      "cmc_flexion": -0.004056,
+      "cmc_abduction": 0.005832,
+      "mp_flexion": -0.001221,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPB": {
+     "active": 33.31,
+     "max": 33.5,
+     "arms": {
+      "cmc_flexion": 0.0057,
+      "cmc_abduction": -0.001757,
+      "mp_flexion": 0.005283,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "OPP": {
+     "active": 51.63,
+     "max": 51.8,
+     "arms": {
+      "cmc_flexion": 0.004127,
+      "cmc_abduction": 0.001236,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPt": {
+     "active": 56.57,
+     "max": 59.9,
+     "arms": {
+      "cmc_flexion": 0.00011,
+      "cmc_abduction": -0.007878,
+      "mp_flexion": 0.007868,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPo": {
+     "active": 95.17,
+     "max": 102.1,
+     "arms": {
+      "cmc_flexion": 0.00026,
+      "cmc_abduction": -0.005447,
+      "mp_flexion": 0.008133,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADM": {
+     "active": 45.1,
+     "max": 45.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDM": {
+     "active": 27.35,
+     "max": 27.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stPI": {
+     "active": 37.51,
+     "max": 38.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.00335,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndPI": {
+     "active": 32.7,
+     "max": 33,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdPI": {
+     "active": 30.68,
+     "max": 31,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC1": {
+     "active": 58.48,
+     "max": 60.7,
+     "arms": {
+      "cmc_flexion": 0.006385,
+      "cmc_abduction": -0.003437,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.002832,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC2": {
+     "active": 14.92,
+     "max": 15.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.005384,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndDI": {
+     "active": 67.4,
+     "max": 68.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdDI": {
+     "active": 47.6,
+     "max": 48.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "4thDI": {
+     "active": 45.61,
+     "max": 46.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUML": {
+     "active": 3.05,
+     "max": 3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMR": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMM": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMI": {
+     "active": 5.45,
+     "max": 5.6,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.009474,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    }
+   }
+  },
+  "w30": {
+   "pose": {
+    "2mcp_flexion": 40.8,
+    "2pm_flexion": 44.9,
+    "2md_flexion": 38.2,
+    "mp_flexion": 13.9,
+    "ip_flexion": 46.8
+   },
+   "muscles": {
+    "ECRL": {
+     "active": 295.73,
+     "max": 337.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECRB": {
+     "active": 245.45,
+     "max": 252.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECU": {
+     "active": 192.43,
+     "max": 192.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCR": {
+     "active": 347.71,
+     "max": 407.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCU": {
+     "active": 221.42,
+     "max": 479.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "PL": {
+     "active": 80.49,
+     "max": 101,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSL": {
+     "active": 75.01,
+     "max": 75.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSR": {
+     "active": 170.78,
+     "max": 171.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSM": {
+     "active": 256.87,
+     "max": 258.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSI": {
+     "active": 156.46,
+     "max": 162.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.011675,
+      "2pm_flexion": 0.007776,
+      "2md_flexion": 0
+     }
+    },
+    "FDPL": {
+     "active": 234.5,
+     "max": 236.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPR": {
+     "active": 171.61,
+     "max": 172.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPM": {
+     "active": 211.24,
+     "max": 212.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPI": {
+     "active": 181.86,
+     "max": 197.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.010363,
+      "2pm_flexion": 0.007787,
+      "2md_flexion": 0.004296
+     }
+    },
+    "EDCL": {
+     "active": 39.38,
+     "max": 39.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCR": {
+     "active": 109.05,
+     "max": 109.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCM": {
+     "active": 94.27,
+     "max": 94.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCI": {
+     "active": 48.48,
+     "max": 48.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.00824,
+      "2pm_flexion": -0.003964,
+      "2md_flexion": -0.002907
+     }
+    },
+    "EDM": {
+     "active": 72.3,
+     "max": 72.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EIP": {
+     "active": 39.36,
+     "max": 47.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.007966,
+      "2pm_flexion": -0.003971,
+      "2md_flexion": -0.002778
+     }
+    },
+    "EPL": {
+     "active": 87.8,
+     "max": 88.3,
+     "arms": {
+      "cmc_flexion": -0.00858,
+      "cmc_abduction": -0.009014,
+      "mp_flexion": -0.010137,
+      "ip_flexion": -0.00439,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EPB": {
+     "active": 45.27,
+     "max": 46,
+     "arms": {
+      "cmc_flexion": -0.014794,
+      "cmc_abduction": 0.003008,
+      "mp_flexion": -0.009553,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPL": {
+     "active": 199.14,
+     "max": 201,
+     "arms": {
+      "cmc_flexion": 0.015625,
+      "cmc_abduction": -0.000018,
+      "mp_flexion": 0.012337,
+      "ip_flexion": 0.007944,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APL": {
+     "active": 114.17,
+     "max": 116.7,
+     "arms": {
+      "cmc_flexion": -0.006802,
+      "cmc_abduction": 0.006501,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APB": {
+     "active": 34.43,
+     "max": 34.5,
+     "arms": {
+      "cmc_flexion": -0.004056,
+      "cmc_abduction": 0.005832,
+      "mp_flexion": -0.001221,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPB": {
+     "active": 33.31,
+     "max": 33.5,
+     "arms": {
+      "cmc_flexion": 0.0057,
+      "cmc_abduction": -0.001757,
+      "mp_flexion": 0.005283,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "OPP": {
+     "active": 51.63,
+     "max": 51.8,
+     "arms": {
+      "cmc_flexion": 0.004127,
+      "cmc_abduction": 0.001236,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPt": {
+     "active": 56.57,
+     "max": 59.9,
+     "arms": {
+      "cmc_flexion": 0.00011,
+      "cmc_abduction": -0.007878,
+      "mp_flexion": 0.007868,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPo": {
+     "active": 95.17,
+     "max": 102.1,
+     "arms": {
+      "cmc_flexion": 0.00026,
+      "cmc_abduction": -0.005447,
+      "mp_flexion": 0.008133,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADM": {
+     "active": 45.1,
+     "max": 45.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDM": {
+     "active": 27.35,
+     "max": 27.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stPI": {
+     "active": 37.71,
+     "max": 38.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.003114,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndPI": {
+     "active": 32.7,
+     "max": 33,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdPI": {
+     "active": 30.68,
+     "max": 31,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC1": {
+     "active": 58.95,
+     "max": 60.7,
+     "arms": {
+      "cmc_flexion": 0.006385,
+      "cmc_abduction": -0.003437,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.002837,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC2": {
+     "active": 15.05,
+     "max": 15.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.005254,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndDI": {
+     "active": 67.4,
+     "max": 68.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdDI": {
+     "active": 47.6,
+     "max": 48.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "4thDI": {
+     "active": 45.61,
+     "max": 46.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUML": {
+     "active": 3.05,
+     "max": 3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMR": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMM": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMI": {
+     "active": 5.5,
+     "max": 5.6,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.009193,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    }
+   }
+  },
+  "w35": {
+   "pose": {
+    "2mcp_flexion": 55.6,
+    "2pm_flexion": 22.1,
+    "2md_flexion": 20.9,
+    "mp_flexion": 3.5,
+    "ip_flexion": 13.3
+   },
+   "muscles": {
+    "ECRL": {
+     "active": 295.73,
+     "max": 337.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECRB": {
+     "active": 245.45,
+     "max": 252.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECU": {
+     "active": 192.43,
+     "max": 192.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCR": {
+     "active": 347.71,
+     "max": 407.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCU": {
+     "active": 221.42,
+     "max": 479.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "PL": {
+     "active": 80.49,
+     "max": 101,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSL": {
+     "active": 75.01,
+     "max": 75.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSR": {
+     "active": 170.78,
+     "max": 171.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSM": {
+     "active": 256.87,
+     "max": 258.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSI": {
+     "active": 156.53,
+     "max": 162.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.011931,
+      "2pm_flexion": 0.007873,
+      "2md_flexion": 0
+     }
+    },
+    "FDPL": {
+     "active": 234.5,
+     "max": 236.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPR": {
+     "active": 171.61,
+     "max": 172.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPM": {
+     "active": 211.24,
+     "max": 212.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPI": {
+     "active": 183.72,
+     "max": 197.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.010564,
+      "2pm_flexion": 0.007443,
+      "2md_flexion": 0.003792
+     }
+    },
+    "EDCL": {
+     "active": 39.38,
+     "max": 39.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCR": {
+     "active": 109.05,
+     "max": 109.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCM": {
+     "active": 94.27,
+     "max": 94.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCI": {
+     "active": 48.6,
+     "max": 48.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.007572,
+      "2pm_flexion": -0.004524,
+      "2md_flexion": -0.003415
+     }
+    },
+    "EDM": {
+     "active": 72.3,
+     "max": 72.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EIP": {
+     "active": 40.48,
+     "max": 47.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.007236,
+      "2pm_flexion": -0.004449,
+      "2md_flexion": -0.003302
+     }
+    },
+    "EPL": {
+     "active": 87.4,
+     "max": 88.3,
+     "arms": {
+      "cmc_flexion": -0.00858,
+      "cmc_abduction": -0.009014,
+      "mp_flexion": -0.009337,
+      "ip_flexion": -0.005212,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EPB": {
+     "active": 44.76,
+     "max": 46,
+     "arms": {
+      "cmc_flexion": -0.014794,
+      "cmc_abduction": 0.003008,
+      "mp_flexion": -0.00926,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPL": {
+     "active": 193.56,
+     "max": 201,
+     "arms": {
+      "cmc_flexion": 0.015625,
+      "cmc_abduction": -0.000018,
+      "mp_flexion": 0.01125,
+      "ip_flexion": 0.008567,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APL": {
+     "active": 114.17,
+     "max": 116.7,
+     "arms": {
+      "cmc_flexion": -0.006802,
+      "cmc_abduction": 0.006501,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APB": {
+     "active": 34.43,
+     "max": 34.5,
+     "arms": {
+      "cmc_flexion": -0.003769,
+      "cmc_abduction": 0.005967,
+      "mp_flexion": -0.002551,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPB": {
+     "active": 33.33,
+     "max": 33.5,
+     "arms": {
+      "cmc_flexion": 0.005573,
+      "cmc_abduction": -0.001757,
+      "mp_flexion": 0.005668,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "OPP": {
+     "active": 51.63,
+     "max": 51.8,
+     "arms": {
+      "cmc_flexion": 0.004127,
+      "cmc_abduction": 0.001236,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPt": {
+     "active": 57.11,
+     "max": 59.9,
+     "arms": {
+      "cmc_flexion": 0.000394,
+      "cmc_abduction": -0.007585,
+      "mp_flexion": 0.007935,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPo": {
+     "active": 97.17,
+     "max": 102.1,
+     "arms": {
+      "cmc_flexion": 0.000507,
+      "cmc_abduction": -0.005303,
+      "mp_flexion": 0.00805,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADM": {
+     "active": 45.1,
+     "max": 45.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDM": {
+     "active": 27.35,
+     "max": 27.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stPI": {
+     "active": 37.27,
+     "max": 38.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.003541,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndPI": {
+     "active": 32.7,
+     "max": 33,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdPI": {
+     "active": 30.68,
+     "max": 31,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC1": {
+     "active": 58.03,
+     "max": 60.7,
+     "arms": {
+      "cmc_flexion": 0.006385,
+      "cmc_abduction": -0.003437,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.002779,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC2": {
+     "active": 14.79,
+     "max": 15.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.005431,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndDI": {
+     "active": 67.4,
+     "max": 68.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdDI": {
+     "active": 47.6,
+     "max": 48.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "4thDI": {
+     "active": 45.61,
+     "max": 46.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUML": {
+     "active": 3.05,
+     "max": 3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMR": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMM": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMI": {
+     "active": 5.41,
+     "max": 5.6,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.009675,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    }
+   }
+  },
+  "w45": {
+   "pose": {
+    "2mcp_flexion": 51.4,
+    "2pm_flexion": 17.2,
+    "2md_flexion": 23.1,
+    "mp_flexion": 3.5,
+    "ip_flexion": 13.3
+   },
+   "muscles": {
+    "ECRL": {
+     "active": 295.73,
+     "max": 337.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECRB": {
+     "active": 245.45,
+     "max": 252.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECU": {
+     "active": 192.43,
+     "max": 192.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCR": {
+     "active": 347.71,
+     "max": 407.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCU": {
+     "active": 221.42,
+     "max": 479.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "PL": {
+     "active": 80.49,
+     "max": 101,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSL": {
+     "active": 75.01,
+     "max": 75.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSR": {
+     "active": 170.78,
+     "max": 171.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSM": {
+     "active": 256.87,
+     "max": 258.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSI": {
+     "active": 157.88,
+     "max": 162.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.011867,
+      "2pm_flexion": 0.007834,
+      "2md_flexion": 0
+     }
+    },
+    "FDPL": {
+     "active": 234.5,
+     "max": 236.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPR": {
+     "active": 171.61,
+     "max": 172.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPM": {
+     "active": 211.24,
+     "max": 212.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPI": {
+     "active": 185.22,
+     "max": 197.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.010514,
+      "2pm_flexion": 0.007376,
+      "2md_flexion": 0.003862
+     }
+    },
+    "EDCL": {
+     "active": 39.38,
+     "max": 39.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCR": {
+     "active": 109.05,
+     "max": 109.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCM": {
+     "active": 94.27,
+     "max": 94.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCI": {
+     "active": 48.69,
+     "max": 48.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.007759,
+      "2pm_flexion": -0.004738,
+      "2md_flexion": -0.003353
+     }
+    },
+    "EDM": {
+     "active": 72.3,
+     "max": 72.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EIP": {
+     "active": 41.94,
+     "max": 47.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.007415,
+      "2pm_flexion": -0.004663,
+      "2md_flexion": -0.003238
+     }
+    },
+    "EPL": {
+     "active": 87.4,
+     "max": 88.3,
+     "arms": {
+      "cmc_flexion": -0.00858,
+      "cmc_abduction": -0.009014,
+      "mp_flexion": -0.009337,
+      "ip_flexion": -0.005212,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EPB": {
+     "active": 44.76,
+     "max": 46,
+     "arms": {
+      "cmc_flexion": -0.014794,
+      "cmc_abduction": 0.003008,
+      "mp_flexion": -0.00926,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPL": {
+     "active": 193.56,
+     "max": 201,
+     "arms": {
+      "cmc_flexion": 0.015625,
+      "cmc_abduction": -0.000018,
+      "mp_flexion": 0.01125,
+      "ip_flexion": 0.008567,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APL": {
+     "active": 114.17,
+     "max": 116.7,
+     "arms": {
+      "cmc_flexion": -0.006802,
+      "cmc_abduction": 0.006501,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APB": {
+     "active": 34.43,
+     "max": 34.5,
+     "arms": {
+      "cmc_flexion": -0.003769,
+      "cmc_abduction": 0.005967,
+      "mp_flexion": -0.002551,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPB": {
+     "active": 33.33,
+     "max": 33.5,
+     "arms": {
+      "cmc_flexion": 0.005573,
+      "cmc_abduction": -0.001757,
+      "mp_flexion": 0.005668,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "OPP": {
+     "active": 51.63,
+     "max": 51.8,
+     "arms": {
+      "cmc_flexion": 0.004127,
+      "cmc_abduction": 0.001236,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPt": {
+     "active": 57.11,
+     "max": 59.9,
+     "arms": {
+      "cmc_flexion": 0.000394,
+      "cmc_abduction": -0.007585,
+      "mp_flexion": 0.007935,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPo": {
+     "active": 97.17,
+     "max": 102.1,
+     "arms": {
+      "cmc_flexion": 0.000507,
+      "cmc_abduction": -0.005303,
+      "mp_flexion": 0.00805,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADM": {
+     "active": 45.1,
+     "max": 45.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDM": {
+     "active": 27.35,
+     "max": 27.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stPI": {
+     "active": 37.42,
+     "max": 38.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.003434,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndPI": {
+     "active": 32.7,
+     "max": 33,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdPI": {
+     "active": 30.68,
+     "max": 31,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC1": {
+     "active": 58.29,
+     "max": 60.7,
+     "arms": {
+      "cmc_flexion": 0.006385,
+      "cmc_abduction": -0.003437,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.002815,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC2": {
+     "active": 14.87,
+     "max": 15.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.005413,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndDI": {
+     "active": 67.4,
+     "max": 68.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdDI": {
+     "active": 47.6,
+     "max": 48.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "4thDI": {
+     "active": 45.61,
+     "max": 46.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUML": {
+     "active": 3.05,
+     "max": 3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMR": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMM": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMI": {
+     "active": 5.43,
+     "max": 5.6,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.009567,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    }
+   }
+  },
+  "w55": {
+   "pose": {
+    "2mcp_flexion": 47.1,
+    "2pm_flexion": 12.6,
+    "2md_flexion": 25.3,
+    "mp_flexion": 3.5,
+    "ip_flexion": 13.3
+   },
+   "muscles": {
+    "ECRL": {
+     "active": 295.73,
+     "max": 337.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECRB": {
+     "active": 245.45,
+     "max": 252.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECU": {
+     "active": 192.43,
+     "max": 192.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCR": {
+     "active": 347.71,
+     "max": 407.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCU": {
+     "active": 221.42,
+     "max": 479.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "PL": {
+     "active": 80.49,
+     "max": 101,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSL": {
+     "active": 75.01,
+     "max": 75.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSR": {
+     "active": 170.78,
+     "max": 171.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSM": {
+     "active": 256.87,
+     "max": 258.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSI": {
+     "active": 159.17,
+     "max": 162.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.011792,
+      "2pm_flexion": 0.007784,
+      "2md_flexion": 0
+     }
+    },
+    "FDPL": {
+     "active": 234.5,
+     "max": 236.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPR": {
+     "active": 171.61,
+     "max": 172.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPM": {
+     "active": 211.24,
+     "max": 212.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPI": {
+     "active": 186.68,
+     "max": 197.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.010456,
+      "2pm_flexion": 0.007314,
+      "2md_flexion": 0.00393
+     }
+    },
+    "EDCL": {
+     "active": 39.38,
+     "max": 39.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCR": {
+     "active": 109.05,
+     "max": 109.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCM": {
+     "active": 94.27,
+     "max": 94.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCI": {
+     "active": 48.73,
+     "max": 48.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.007953,
+      "2pm_flexion": -0.004931,
+      "2md_flexion": -0.003291
+     }
+    },
+    "EDM": {
+     "active": 72.3,
+     "max": 72.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EIP": {
+     "active": 43.4,
+     "max": 47.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.007602,
+      "2pm_flexion": -0.004856,
+      "2md_flexion": -0.003173
+     }
+    },
+    "EPL": {
+     "active": 87.4,
+     "max": 88.3,
+     "arms": {
+      "cmc_flexion": -0.00858,
+      "cmc_abduction": -0.009014,
+      "mp_flexion": -0.009337,
+      "ip_flexion": -0.005212,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EPB": {
+     "active": 44.76,
+     "max": 46,
+     "arms": {
+      "cmc_flexion": -0.014794,
+      "cmc_abduction": 0.003008,
+      "mp_flexion": -0.00926,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPL": {
+     "active": 193.56,
+     "max": 201,
+     "arms": {
+      "cmc_flexion": 0.015625,
+      "cmc_abduction": -0.000018,
+      "mp_flexion": 0.01125,
+      "ip_flexion": 0.008567,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APL": {
+     "active": 114.17,
+     "max": 116.7,
+     "arms": {
+      "cmc_flexion": -0.006802,
+      "cmc_abduction": 0.006501,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APB": {
+     "active": 34.43,
+     "max": 34.5,
+     "arms": {
+      "cmc_flexion": -0.003769,
+      "cmc_abduction": 0.005967,
+      "mp_flexion": -0.002551,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPB": {
+     "active": 33.33,
+     "max": 33.5,
+     "arms": {
+      "cmc_flexion": 0.005573,
+      "cmc_abduction": -0.001757,
+      "mp_flexion": 0.005668,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "OPP": {
+     "active": 51.63,
+     "max": 51.8,
+     "arms": {
+      "cmc_flexion": 0.004127,
+      "cmc_abduction": 0.001236,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPt": {
+     "active": 57.11,
+     "max": 59.9,
+     "arms": {
+      "cmc_flexion": 0.000394,
+      "cmc_abduction": -0.007585,
+      "mp_flexion": 0.007935,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPo": {
+     "active": 97.17,
+     "max": 102.1,
+     "arms": {
+      "cmc_flexion": 0.000507,
+      "cmc_abduction": -0.005303,
+      "mp_flexion": 0.00805,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADM": {
+     "active": 45.1,
+     "max": 45.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDM": {
+     "active": 27.35,
+     "max": 27.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stPI": {
+     "active": 37.55,
+     "max": 38.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.003312,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndPI": {
+     "active": 32.7,
+     "max": 33,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdPI": {
+     "active": 30.68,
+     "max": 31,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC1": {
+     "active": 58.56,
+     "max": 60.7,
+     "arms": {
+      "cmc_flexion": 0.006385,
+      "cmc_abduction": -0.003437,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.002836,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC2": {
+     "active": 14.94,
+     "max": 15.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.005367,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndDI": {
+     "active": 67.4,
+     "max": 68.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdDI": {
+     "active": 47.6,
+     "max": 48.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "4thDI": {
+     "active": 45.61,
+     "max": 46.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUML": {
+     "active": 3.05,
+     "max": 3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMR": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMM": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMI": {
+     "active": 5.46,
+     "max": 5.6,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.009431,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    }
+   }
+  },
+  "w65": {
+   "pose": {
+    "2mcp_flexion": 42.9,
+    "2pm_flexion": 11.2,
+    "2md_flexion": 27.4,
+    "mp_flexion": 3.5,
+    "ip_flexion": 13.3
+   },
+   "muscles": {
+    "ECRL": {
+     "active": 295.73,
+     "max": 337.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECRB": {
+     "active": 245.45,
+     "max": 252.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECU": {
+     "active": 192.43,
+     "max": 192.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCR": {
+     "active": 347.71,
+     "max": 407.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCU": {
+     "active": 221.42,
+     "max": 479.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "PL": {
+     "active": 80.49,
+     "max": 101,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSL": {
+     "active": 75.01,
+     "max": 75.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSR": {
+     "active": 170.78,
+     "max": 171.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSM": {
+     "active": 256.87,
+     "max": 258.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSI": {
+     "active": 160.04,
+     "max": 162.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.011715,
+      "2pm_flexion": 0.007766,
+      "2md_flexion": 0
+     }
+    },
+    "FDPL": {
+     "active": 234.5,
+     "max": 236.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPR": {
+     "active": 171.61,
+     "max": 172.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPM": {
+     "active": 211.24,
+     "max": 212.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPI": {
+     "active": 187.63,
+     "max": 197.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.010395,
+      "2pm_flexion": 0.007298,
+      "2md_flexion": 0.003993
+     }
+    },
+    "EDCL": {
+     "active": 39.38,
+     "max": 39.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCR": {
+     "active": 109.05,
+     "max": 109.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCM": {
+     "active": 94.27,
+     "max": 94.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCI": {
+     "active": 48.73,
+     "max": 48.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.008144,
+      "2pm_flexion": -0.004988,
+      "2md_flexion": -0.00323
+     }
+    },
+    "EDM": {
+     "active": 72.3,
+     "max": 72.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EIP": {
+     "active": 44.35,
+     "max": 47.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.007831,
+      "2pm_flexion": -0.004913,
+      "2md_flexion": -0.00311
+     }
+    },
+    "EPL": {
+     "active": 87.4,
+     "max": 88.3,
+     "arms": {
+      "cmc_flexion": -0.00858,
+      "cmc_abduction": -0.009014,
+      "mp_flexion": -0.009337,
+      "ip_flexion": -0.005212,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EPB": {
+     "active": 44.76,
+     "max": 46,
+     "arms": {
+      "cmc_flexion": -0.014794,
+      "cmc_abduction": 0.003008,
+      "mp_flexion": -0.00926,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPL": {
+     "active": 193.56,
+     "max": 201,
+     "arms": {
+      "cmc_flexion": 0.015625,
+      "cmc_abduction": -0.000018,
+      "mp_flexion": 0.01125,
+      "ip_flexion": 0.008567,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APL": {
+     "active": 114.17,
+     "max": 116.7,
+     "arms": {
+      "cmc_flexion": -0.006802,
+      "cmc_abduction": 0.006501,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APB": {
+     "active": 34.43,
+     "max": 34.5,
+     "arms": {
+      "cmc_flexion": -0.003769,
+      "cmc_abduction": 0.005967,
+      "mp_flexion": -0.002551,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPB": {
+     "active": 33.33,
+     "max": 33.5,
+     "arms": {
+      "cmc_flexion": 0.005573,
+      "cmc_abduction": -0.001757,
+      "mp_flexion": 0.005668,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "OPP": {
+     "active": 51.63,
+     "max": 51.8,
+     "arms": {
+      "cmc_flexion": 0.004127,
+      "cmc_abduction": 0.001236,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPt": {
+     "active": 57.11,
+     "max": 59.9,
+     "arms": {
+      "cmc_flexion": 0.000394,
+      "cmc_abduction": -0.007585,
+      "mp_flexion": 0.007935,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPo": {
+     "active": 97.17,
+     "max": 102.1,
+     "arms": {
+      "cmc_flexion": 0.000507,
+      "cmc_abduction": -0.005303,
+      "mp_flexion": 0.00805,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADM": {
+     "active": 45.1,
+     "max": 45.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDM": {
+     "active": 27.35,
+     "max": 27.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stPI": {
+     "active": 37.66,
+     "max": 38.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.003183,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndPI": {
+     "active": 32.7,
+     "max": 33,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdPI": {
+     "active": 30.68,
+     "max": 31,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC1": {
+     "active": 58.82,
+     "max": 60.7,
+     "arms": {
+      "cmc_flexion": 0.006385,
+      "cmc_abduction": -0.003437,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.00284,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC2": {
+     "active": 15.01,
+     "max": 15.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.005298,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndDI": {
+     "active": 67.4,
+     "max": 68.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdDI": {
+     "active": 47.6,
+     "max": 48.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "4thDI": {
+     "active": 45.61,
+     "max": 46.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUML": {
+     "active": 3.05,
+     "max": 3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMR": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMM": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMI": {
+     "active": 5.49,
+     "max": 5.6,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.009277,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    }
+   }
+  },
+  "w75": {
+   "pose": {
+    "2mcp_flexion": 38.6,
+    "2pm_flexion": 13.8,
+    "2md_flexion": 29.6,
+    "mp_flexion": 3.5,
+    "ip_flexion": 13.3
+   },
+   "muscles": {
+    "ECRL": {
+     "active": 295.73,
+     "max": 337.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECRB": {
+     "active": 245.45,
+     "max": 252.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ECU": {
+     "active": 192.43,
+     "max": 192.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCR": {
+     "active": 347.71,
+     "max": 407.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FCU": {
+     "active": 221.42,
+     "max": 479.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "PL": {
+     "active": 80.49,
+     "max": 101,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSL": {
+     "active": 75.01,
+     "max": 75.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSR": {
+     "active": 170.78,
+     "max": 171.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSM": {
+     "active": 256.87,
+     "max": 258.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDSI": {
+     "active": 160.44,
+     "max": 162.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.011631,
+      "2pm_flexion": 0.007798,
+      "2md_flexion": 0
+     }
+    },
+    "FDPL": {
+     "active": 234.5,
+     "max": 236.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPR": {
+     "active": 171.61,
+     "max": 172.9,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPM": {
+     "active": 211.24,
+     "max": 212.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDPI": {
+     "active": 187.98,
+     "max": 197.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.010329,
+      "2pm_flexion": 0.007331,
+      "2md_flexion": 0.004058
+     }
+    },
+    "EDCL": {
+     "active": 39.38,
+     "max": 39.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCR": {
+     "active": 109.05,
+     "max": 109.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCM": {
+     "active": 94.27,
+     "max": 94.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EDCI": {
+     "active": 48.73,
+     "max": 48.8,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.008341,
+      "2pm_flexion": -0.004882,
+      "2md_flexion": -0.003166
+     }
+    },
+    "EDM": {
+     "active": 72.3,
+     "max": 72.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EIP": {
+     "active": 44.76,
+     "max": 47.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": -0.008104,
+      "2pm_flexion": -0.004806,
+      "2md_flexion": -0.003043
+     }
+    },
+    "EPL": {
+     "active": 87.4,
+     "max": 88.3,
+     "arms": {
+      "cmc_flexion": -0.00858,
+      "cmc_abduction": -0.009014,
+      "mp_flexion": -0.009337,
+      "ip_flexion": -0.005212,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "EPB": {
+     "active": 44.76,
+     "max": 46,
+     "arms": {
+      "cmc_flexion": -0.014794,
+      "cmc_abduction": 0.003008,
+      "mp_flexion": -0.00926,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPL": {
+     "active": 193.56,
+     "max": 201,
+     "arms": {
+      "cmc_flexion": 0.015625,
+      "cmc_abduction": -0.000018,
+      "mp_flexion": 0.01125,
+      "ip_flexion": 0.008567,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APL": {
+     "active": 114.17,
+     "max": 116.7,
+     "arms": {
+      "cmc_flexion": -0.006802,
+      "cmc_abduction": 0.006501,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "APB": {
+     "active": 34.43,
+     "max": 34.5,
+     "arms": {
+      "cmc_flexion": -0.003769,
+      "cmc_abduction": 0.005967,
+      "mp_flexion": -0.002551,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FPB": {
+     "active": 33.33,
+     "max": 33.5,
+     "arms": {
+      "cmc_flexion": 0.005573,
+      "cmc_abduction": -0.001757,
+      "mp_flexion": 0.005668,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "OPP": {
+     "active": 51.63,
+     "max": 51.8,
+     "arms": {
+      "cmc_flexion": 0.004127,
+      "cmc_abduction": 0.001236,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPt": {
+     "active": 57.11,
+     "max": 59.9,
+     "arms": {
+      "cmc_flexion": 0.000394,
+      "cmc_abduction": -0.007585,
+      "mp_flexion": 0.007935,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADPo": {
+     "active": 97.17,
+     "max": 102.1,
+     "arms": {
+      "cmc_flexion": 0.000507,
+      "cmc_abduction": -0.005303,
+      "mp_flexion": 0.00805,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "ADM": {
+     "active": 45.1,
+     "max": 45.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "FDM": {
+     "active": 27.35,
+     "max": 27.4,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stPI": {
+     "active": 37.75,
+     "max": 38.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.00304,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndPI": {
+     "active": 32.7,
+     "max": 33,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdPI": {
+     "active": 30.68,
+     "max": 31,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC1": {
+     "active": 59.08,
+     "max": 60.7,
+     "arms": {
+      "cmc_flexion": 0.006385,
+      "cmc_abduction": -0.003437,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.002829,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "1stDI_MC2": {
+     "active": 15.09,
+     "max": 15.5,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.005203,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "2ndDI": {
+     "active": 67.4,
+     "max": 68.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "3rdDI": {
+     "active": 47.6,
+     "max": 48.3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "4thDI": {
+     "active": 45.61,
+     "max": 46.2,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUML": {
+     "active": 3.05,
+     "max": 3,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMR": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMM": {
+     "active": 4.06,
+     "max": 4.1,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    },
+    "LUMI": {
+     "active": 5.51,
+     "max": 5.6,
+     "arms": {
+      "cmc_flexion": 0,
+      "cmc_abduction": 0,
+      "mp_flexion": 0,
+      "ip_flexion": 0,
+      "2mcp_flexion": 0.0091,
+      "2pm_flexion": 0,
+      "2md_flexion": 0
+     }
+    }
+   }
+  }
+ },
+ "lengths": {
+  "thumb": {
+   "metacarpal": 0.0446,
+   "proximal": 0.0311
+  },
+  "index": {
+   "metacarpal": 0.0287,
+   "proximal": 0.0426,
+   "middle": 0.0251
+  }
+ },
+ "widths": {
+  "w2": 2,
+  "w10": 10,
+  "w30": 30,
+  "w35": 35,
+  "w45": 45,
+  "w55": 55,
+  "w65": 65,
+  "w75": 75
+ }
+}

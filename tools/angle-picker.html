@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Angle Picker</title>
+<!--
+  Joint angles from a photo or video frame, for checking the edge-lift and pinch postures.
+  Not part of the site. Open the file in a browser (or via npm start: /tools/angle-picker.html),
+  paste or drop an image, click the joints. Images stay in the browser; only the angles and the
+  source link are copied out. No dependencies.
+-->
+<style>
+:root {
+  --f-index: #2f6fdb; --f-middle: #8e44ad; --f-ring: #1e8a5a; --f-little: #c0661a; --f-thumb: #c0392b; --f-hand: #555; --f-edge: #111;
+  --bg: #f6f5f2; --card: #fff; --text: #1d1f23; --muted: #62676f; --border: #e2e0da; --accent: #2f6fdb;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #16181b; --card: #1f2226; --text: #e8e6e1; --muted: #9aa0a8; --border: #33373d; --accent: #6b9cf0; --f-hand: #bbb; --f-edge: #eee; }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 system-ui, sans-serif; }
+main { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px; padding: 16px; }
+@media (max-width: 900px) { main { grid-template-columns: minmax(0, 1fr); } }
+main > * { min-width: 0; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+h1 { font-size: 18px; margin: 0 0 4px; } h2 { font-size: 15px; margin: 12px 0 6px; }
+small, .muted { color: var(--muted); }
+#stage { position: relative; overflow: auto; max-height: 80vh; border: 1px dashed var(--border); border-radius: 8px; min-height: 240px; display: grid; place-items: center; }
+#stage.has { display: block; place-items: normal; }
+#drop { color: var(--muted); padding: 24px; text-align: center; }
+canvas { display: block; cursor: crosshair; touch-action: none; }
+.row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 6px 0; }
+button, select, input { font: inherit; color: inherit; background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 5px 9px; min-height: 34px; }
+button.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+input[type=text], input[type=url] { width: 100%; }
+label { display: block; margin: 4px 0; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+td, th { padding: 3px 6px; border-bottom: 1px solid var(--border); text-align: right; }
+td:first-child, th:first-child { text-align: left; }
+#next { font-weight: 600; }
+textarea { width: 100%; min-height: 110px; font: 12px/1.35 ui-monospace, monospace; background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 6px; }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+</style>
+</head>
+<body>
+<main>
+  <section class="card">
+    <h1>Angle picker</h1>
+    <small>Paste (Ctrl+V), drop or open a photo or a paused video frame. Choose a part, then click its points in order. Drag a point to move it; Undo removes the last one. Best: the camera looking along the edge, at right angles to the fingers.</small>
+    <div class="row">
+      <input type="file" id="file" accept="image/*">
+      <input type="url" id="url" placeholder="or an image URL" style="width:16em">
+      <label style="display:inline">Zoom <input type="range" id="zoom" min="0.25" max="4" step="0.05" value="1" style="vertical-align:middle"></label>
+      <output id="zoom-out">fit</output>
+    </div>
+    <div id="stage"><div id="drop">Paste, drop or open an image</div></div>
+  </section>
+  <aside class="card">
+    <h2>Part</h2>
+    <div class="row" id="parts"></div>
+    <div class="row"><span id="next"></span></div>
+    <div class="row">
+      <button id="skip" title="Point not visible: leave it out">Skip point</button>
+      <button id="undo">Undo</button>
+      <button id="clear-part">Clear part</button>
+      <button id="flip" title="Flexion = turning towards the palm; flip if the angles come out with the wrong sign">Flip sign</button>
+    </div>
+    <h2>Angles (degrees, flexion +)</h2>
+    <table id="angles"></table>
+    <small id="lengths"></small>
+    <h2>Record</h2>
+    <label>Grip / exercise <input type="text" id="grip" placeholder="e.g. pinch block, open hand 20 mm"></label>
+    <label>Source (link) <input type="url" id="source" placeholder="https://…"></label>
+    <label>View <select id="view"><option>side (along the edge)</option><option>front</option><option>oblique</option></select></label>
+    <label>Notes <input type="text" id="notes" placeholder="wrist flexed, index off the edge, …"></label>
+    <label>Scale: the Scale part's two points are <input type="text" id="scale-mm" placeholder="mm (optional)" style="width:7em"> mm apart</label>
+    <div class="row"><button id="add">Add to list</button><button id="new-image">Next image (keep list)</button></div>
+    <h2>List <small id="count"></small></h2>
+    <textarea id="out" readonly></textarea>
+    <div class="row"><button id="copy-csv">Copy CSV</button><button id="copy-json">Copy JSON</button><button id="clear-list">Clear list</button></div>
+    <small>Kept in this browser only. Angles from photos are rough (camera tilt, skin outlines vs joint centres: ±5–10°); several climbers per grip give a range.</small>
+  </aside>
+</main>
+<script type="module">
+// Each part is a chain of named points; an angle sits at every point with a point before and after.
+const PARTS = {
+  hand: { label: "Forearm + wrist", color: "--f-hand", points: ["forearm", "wrist"] },
+  index: { label: "Index", color: "--f-index", points: ["MCP", "PIP", "DIP", "tip"] },
+  middle: { label: "Middle", color: "--f-middle", points: ["MCP", "PIP", "DIP", "tip"] },
+  ring: { label: "Ring", color: "--f-ring", points: ["MCP", "PIP", "DIP", "tip"] },
+  little: { label: "Little", color: "--f-little", points: ["MCP", "PIP", "DIP", "tip"] },
+  thumb: { label: "Thumb", color: "--f-thumb", points: ["CMC", "MCP", "IP", "tip"] },
+  edge: { label: "Edge / block face", color: "--f-edge", points: ["edge A", "edge B"] },
+  scale: { label: "Scale", color: "--accent", points: ["scale A", "scale B"] },
+};
+const FINGERS = ["index", "middle", "ring", "little"];
+const $ = (id) => document.getElementById(id);
+const css = (v) => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const store = { get: (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch { return d; } }, set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+
+let img = null, scale = 1, fit = 1, sign = 1, signManual = false;
+let part = "hand";
+let pts = {}; // part → array of {x, y} | null (skipped), image pixels
+let list = store.get("angle-picker-list", []);
+const canvas = document.createElement("canvas"), ctx = canvas.getContext("2d");
+
+// ---- geometry ----
+const sub = (a, b) => ({ x: a.x - b.x, y: a.y - b.y });
+const len = (a) => Math.hypot(a.x, a.y);
+/** Signed turn (degrees) from segment a→b to b→c; image y points down, so flip for counter-clockwise +. */
+const turn = (a, b, c) => { const u = sub(b, a), v = sub(c, b); return (-Math.atan2(u.x * v.y - u.y * v.x, u.x * v.x + u.y * v.y) * 180) / Math.PI; };
+const lineAngle = (u, v) => { let t = (Math.abs(Math.atan2(u.x * v.y - u.y * v.x, u.x * v.x + u.y * v.y)) * 180) / Math.PI; return t > 90 ? 180 - t : t; };
+
+/** Joint angles of every part, with the current sign (flexion +). */
+function measure(s = sign) {
+  const P = (k) => pts[k] ?? [];
+  const hand = P("hand");
+  const res = { digits: {}, wrist: {} };
+  for (const id of [...FINGERS, "thumb"]) {
+    const names = PARTS[id].points, p = P(id);
+    const chain = id === "thumb" ? p : [hand[1] ?? null, ...p]; // fingers start at the wrist
+    const chainNames = id === "thumb" ? names : ["wrist", ...names];
+    const a = {};
+    for (let i = 1; i < chain.length - 1; i++) if (chain[i - 1] && chain[i] && chain[i + 1]) a[chainNames[i].toLowerCase()] = s * turn(chain[i - 1], chain[i], chain[i + 1]);
+    delete a.wrist;
+    // Wrist flexion from the forearm line to this finger's metacarpal (wrist → MCP).
+    if (id !== "thumb" && hand[0] && hand[1] && p[0]) res.wrist[id] = s * turn(hand[0], hand[1], p[0]);
+    // Distal phalanx (DIP → tip, or IP → tip) against the edge / block face.
+    const e = P("edge"), d0 = p[p.length - 2], d1 = p[p.length - 1];
+    if (e[0] && e[1] && d0 && d1) a.distalToEdge = lineAngle(sub(d1, d0), sub(e[1], e[0]));
+    if (Object.keys(a).length) res.digits[id] = a;
+  }
+  return res;
+}
+
+/** Sign so that PIP / DIP (thumb IP) come out as flexion on average: they rarely bend backwards far. */
+function autoSign() {
+  if (signManual) return;
+  const m = measure(1);
+  let sum = 0;
+  for (const [id, a] of Object.entries(m.digits)) for (const k of id === "thumb" ? ["ip"] : ["pip", "dip"]) if (a[k] != null) sum += a[k];
+  sign = sum < 0 ? -1 : 1;
+}
+
+function segLengths() {
+  const sp = pts.scale ?? [], mm = parseFloat($("scale-mm").value);
+  if (!(sp[0] && sp[1] && mm > 0)) return null;
+  const k = mm / len(sub(sp[1], sp[0]));
+  const out = {};
+  for (const id of [...FINGERS, "thumb"]) {
+    const p = pts[id] ?? [], names = PARTS[id].points, L = [];
+    for (let i = 0; i < p.length - 1; i++) if (p[i] && p[i + 1]) L.push(`${names[i]}–${names[i + 1]} ${(k * len(sub(p[i + 1], p[i]))).toFixed(0)}`);
+    if (L.length) out[id] = L.join(", ");
+  }
+  return out;
+}
+
+// ---- drawing ----
+function draw() {
+  if (!img) return;
+  canvas.width = Math.round(img.naturalWidth * scale);
+  canvas.height = Math.round(img.naturalHeight * scale);
+  ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+  const r = Math.max(4, 5 * Math.min(1.5, Math.max(0.6, scale)));
+  for (const [id, p] of Object.entries(pts)) {
+    const col = css(PARTS[id].color);
+    ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 2.5;
+    const chain = FINGERS.includes(id) ? [pts.hand?.[1] ?? null, ...p] : p;
+    for (let i = 0; i < chain.length - 1; i++) {
+      if (!chain[i] || !chain[i + 1]) continue;
+      ctx.setLineDash(FINGERS.includes(id) && i === 0 ? [6, 5] : []);
+      ctx.beginPath(); ctx.moveTo(chain[i].x * scale, chain[i].y * scale); ctx.lineTo(chain[i + 1].x * scale, chain[i + 1].y * scale); ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    for (const q of p) if (q) { ctx.beginPath(); ctx.arc(q.x * scale, q.y * scale, r, 0, 2 * Math.PI); ctx.fill(); ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.5; ctx.stroke(); }
+  }
+}
+
+function render() {
+  autoSign();
+  draw();
+  const p = pts[part] ?? [], names = PARTS[part].points;
+  $("next").textContent = p.length < names.length ? `Click: ${PARTS[part].label} — ${names[p.length]}` : `${PARTS[part].label}: done (drag points to adjust)`;
+  for (const b of $("parts").children) b.classList.toggle("on", b.dataset.part === part);
+  const m = measure();
+  const rows = [];
+  const f = (v) => (v == null ? "" : v.toFixed(0));
+  rows.push("<tr><th>Digit</th><th>wrist</th><th>MCP</th><th>PIP / IP</th><th>DIP</th><th>tip∠edge</th></tr>");
+  for (const id of [...FINGERS, "thumb"]) {
+    const a = m.digits[id], w = m.wrist[id];
+    if (!a && w == null) continue;
+    rows.push(`<tr><td><span class="sw" style="background:${css(PARTS[id].color)}"></span>${PARTS[id].label}</td><td>${f(w)}</td><td>${f(a?.mcp)}</td><td>${f(a?.pip ?? a?.ip)}</td><td>${f(a?.dip)}</td><td>${f(a?.distalToEdge)}</td></tr>`);
+  }
+  $("angles").innerHTML = rows.length > 1 ? rows.join("") : "<tr><td class=muted>No angles yet</td></tr>";
+  const L = segLengths();
+  $("lengths").textContent = L ? `Lengths (mm, between clicked joint points): ${Object.entries(L).map(([k, v]) => `${k}: ${v}`).join("; ")}` : "";
+  $("flip").textContent = sign > 0 ? "Flip sign" : "Flip sign (flipped)";
+  renderList();
+}
+
+function renderList() {
+  $("count").textContent = list.length ? `(${list.length})` : "";
+  $("out").value = toCSV();
+}
+
+// ---- input ----
+function at(e) { const b = canvas.getBoundingClientRect(); return { x: (e.clientX - b.left) / scale, y: (e.clientY - b.top) / scale }; }
+function nearest(q) {
+  let best = null, dmin = 10 / scale;
+  for (const [id, p] of Object.entries(pts)) p.forEach((r, i) => { if (r) { const d = len(sub(r, q)); if (d < dmin) { dmin = d; best = { id, i }; } } });
+  return best;
+}
+let drag = null;
+canvas.addEventListener("pointerdown", (e) => {
+  const q = at(e), hit = nearest(q);
+  if (hit) { drag = hit; canvas.setPointerCapture(e.pointerId); return; }
+  const p = (pts[part] ??= []);
+  if (p.length < PARTS[part].points.length) { p.push(q); advance(); render(); }
+});
+canvas.addEventListener("pointermove", (e) => { if (!drag) return; pts[drag.id][drag.i] = at(e); render(); });
+canvas.addEventListener("pointerup", () => { drag = null; });
+/** After a part is complete, move on to the next part that still has points to place. */
+function advance() {
+  const p = pts[part] ?? [];
+  if (p.length < PARTS[part].points.length) return;
+  const order = Object.keys(PARTS), i = order.indexOf(part);
+  for (const k of [...order.slice(i + 1), ...order.slice(0, i)]) if ((pts[k] ?? []).length < PARTS[k].points.length && k !== "scale") { part = k; return; }
+}
+
+for (const [id, d] of Object.entries(PARTS)) {
+  const b = document.createElement("button");
+  b.dataset.part = id;
+  b.innerHTML = `<span class="sw" style="background:${css(d.color)}"></span>${d.label}`;
+  b.addEventListener("click", () => { part = id; render(); });
+  $("parts").append(b);
+}
+$("skip").addEventListener("click", () => { const p = (pts[part] ??= []); if (p.length < PARTS[part].points.length) { p.push(null); advance(); render(); } });
+$("undo").addEventListener("click", () => { const p = pts[part] ?? []; if (p.length) p.pop(); render(); });
+$("clear-part").addEventListener("click", () => { pts[part] = []; render(); });
+$("flip").addEventListener("click", () => { signManual = true; sign = -sign; render(); });
+$("scale-mm").addEventListener("input", render);
+
+function load(file) {
+  if (!file || !file.type.startsWith("image/")) return;
+  loadUrl(URL.createObjectURL(file));
+}
+/** Load an image by URL (a pasted file's object URL, or a web image: drawn, never read back). */
+function loadUrl(url) {
+  const im = new Image();
+  im.referrerPolicy = "no-referrer";
+  im.onload = () => {
+    img = im; pts = {}; part = "hand"; signManual = false;
+    const stage = $("stage");
+    stage.classList.add("has");
+    stage.replaceChildren(canvas);
+    fit = Math.min(1, (stage.clientWidth - 4) / im.naturalWidth);
+    scale = fit; $("zoom").value = 1; $("zoom-out").textContent = "fit";
+    render();
+  };
+  im.src = url;
+}
+$("file").addEventListener("change", (e) => load(e.target.files[0]));
+$("url").addEventListener("change", (e) => { if (e.target.value) { loadUrl(e.target.value); $("source").value = e.target.value; } });
+// Scripted use (measuring a batch of images): picker.load(url), picker.set(part, [[x, y] | null, …]) in image pixels, picker.measure().
+window.picker = {
+  load: (url) => new Promise((ok, fail) => { loadUrl(url); const t = setInterval(() => { if (img && img.src === url && img.complete) { clearInterval(t); ok({ w: img.naturalWidth, h: img.naturalHeight }); } }, 50); setTimeout(() => { clearInterval(t); fail(new Error("image did not load")); }, 15000); }),
+  set: (p, list) => { pts[p] = list.map((q) => (q ? { x: q[0], y: q[1] } : null)); render(); },
+  measure: () => measure(),
+  zoom: (z) => { $("zoom").value = z; $("zoom").dispatchEvent(new Event("input")); },
+  /** Magnify the image region x0…x1, y0… (image pixels) to the stage's width and scroll to it. */
+  view: (x0, y0, x1) => { const st = $("stage"); scale = (st.clientWidth - 4) / (x1 - x0); draw(); st.scrollLeft = x0 * scale; st.scrollTop = y0 * scale; window.scrollTo(0, st.getBoundingClientRect().top + scrollY); },
+  /** Image pixels of a point on the screen (viewport coordinates). */
+  at: (sx, sy) => { const b = canvas.getBoundingClientRect(); return [Math.round((sx - b.left) / scale), Math.round((sy - b.top) / scale)]; },
+};
+document.addEventListener("paste", (e) => { const it = [...(e.clipboardData?.items ?? [])].find((i) => i.type.startsWith("image/")); if (it) load(it.getAsFile()); });
+$("stage").addEventListener("dragover", (e) => e.preventDefault());
+$("stage").addEventListener("drop", (e) => { e.preventDefault(); load(e.dataTransfer.files[0]); });
+$("zoom").addEventListener("input", (e) => { scale = fit * +e.target.value; $("zoom-out").textContent = `${(+e.target.value).toFixed(2)}×`; draw(); });
+
+// ---- list ----
+function record() {
+  const m = measure();
+  return {
+    grip: $("grip").value.trim(), source: $("source").value.trim(), view: $("view").value, notes: $("notes").value.trim(),
+    wrist: Object.fromEntries(Object.entries(m.wrist).map(([k, v]) => [k, Math.round(v)])),
+    digits: Object.fromEntries(Object.entries(m.digits).map(([k, a]) => [k, Object.fromEntries(Object.entries(a).map(([j, v]) => [j, Math.round(v)]))])),
+    lengths: segLengths(),
+  };
+}
+const COLS = ["grip", "view", "source", "notes", "wrist(middle)", ...FINGERS.flatMap((f) => ["mcp", "pip", "dip", "distalToEdge"].map((j) => `${f}.${j}`)), "thumb.mcp", "thumb.ip", "thumb.distalToEdge"];
+function toCSV() {
+  const q = (v) => (v == null ? "" : /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v));
+  const rows = list.map((r) => COLS.map((c) => {
+    if (c === "wrist(middle)") return r.wrist.middle ?? Object.values(r.wrist)[0];
+    if (c.includes(".")) { const [d, j] = c.split("."); return r.digits[d]?.[j]; }
+    return r[c];
+  }).map(q).join(","));
+  return [COLS.join(","), ...rows].join("\n");
+}
+$("add").addEventListener("click", () => { list.push(record()); store.set("angle-picker-list", list); renderList(); });
+$("new-image").addEventListener("click", () => { img = null; pts = {}; $("stage").classList.remove("has"); $("stage").replaceChildren(Object.assign(document.createElement("div"), { id: "drop", textContent: "Paste, drop or open an image" })); for (const k of ["source", "notes"]) $(k).value = ""; render(); });
+const copy = (t) => navigator.clipboard?.writeText(t).catch(() => {});
+$("copy-csv").addEventListener("click", () => copy(toCSV()));
+$("copy-json").addEventListener("click", () => copy(JSON.stringify(list, null, 1)));
+$("clear-list").addEventListener("click", () => { if (confirm("Clear the whole list?")) { list = []; store.set("angle-picker-list", list); renderList(); } });
+render();
+</script>
+</body>
+</html>
