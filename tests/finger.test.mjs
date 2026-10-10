@@ -237,3 +237,15 @@ test("one lift over time: no force at rest, the block's weight while held, Newto
   // The hold sits at the lift height.
   close(L.at(L.holdAt).y, h);
 });
+
+test("edge friction: a pad meeting the push squarely needs none; at 45° it needs μ = 1; the open hand needs more than the half crimp", async () => {
+  const { frictionNeeded, volar } = await import("../js/finger.js");
+  const phi = 1.2, n = volar(phi);
+  assert.ok(Math.abs(frictionNeeded({ x: -n.x, y: -n.y }, phi)) < 1e-12);
+  const c = Math.SQRT1_2, t = { x: -n.y, y: n.x };
+  assert.ok(Math.abs(frictionNeeded({ x: -c * n.x + c * t.x, y: -c * n.y + c * t.y }, phi) - 1) < 1e-12);
+  assert.equal(frictionNeeded({ x: n.x, y: n.y }, phi), Infinity);
+  const ex = JSON.parse(readFileSync(new URL("../data/exercises/edge-lift.json", import.meta.url)));
+  const need = (id) => { const v = ex.variants.find((x) => x.id === id); return analyzeEdge(ex, v, v.params.pip, { loadKg: 20, bodyMassKg: 75, strengthPct: 100, placement: v.params }).friction.needed; };
+  assert.ok(need("open-hand") > need("half-crimp"), `${need("open-hand")} vs ${need("half-crimp")}`);
+});

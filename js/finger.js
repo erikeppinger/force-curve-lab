@@ -23,6 +23,20 @@ const dir = (phi) => ({ x: Math.sin(phi), y: -Math.cos(phi) });
 export const volar = (phi) => ({ x: Math.cos(phi), y: Math.sin(phi) });
 
 /**
+ * Friction the pad needs: the edge's push (direction u, in the finger's frame) split into the part
+ * pressing into the pad (along the distal phalanx's palm-side normal, taken as the contact normal:
+ * the pad conforms to the edge where it touches) and the part along the pad. Needed coefficient =
+ * along ÷ pressing; Infinity if the push doesn't press into the pad at all. With a constant
+ * coefficient it doesn't depend on the load, only on how the pad meets the edge.
+ */
+export function frictionNeeded(u, phiD) {
+  const n = volar(phiD);
+  const into = -(u.x * n.x + u.y * n.y);
+  const along = Math.abs(u.x * n.y - u.y * n.x);
+  return into > 1e-9 ? along / into : Infinity;
+}
+
+/**
  * Segment end points for a PIP angle (degrees), with the grip's MCP and DIP angles.
  * Contact: the centre of the edge's pressure on the distal phalanx, P.contactFromDip metres from
  * the DIP (default: half the distal phalanx, as Vigouroux et al. assumed).
@@ -396,6 +410,7 @@ export function fingerSet(ex0, P, pipDeg, W, strengthPct = 100, hand = null) {
     f.force = W * f.share;
     f.res = fingerStatics(f.g, f.Pf, f.pose, { x: f.uf.x * f.force, y: f.uf.y * f.force }, f.pose.pipDeg);
     f.sideways = f.force * Math.abs(u.y) * Math.sin(Math.abs(dev));
+    f.friction = frictionNeeded(f.uf, f.pose.phi.d);
   }
   for (const f of fingers) if (f.touches) f.effort = Math.max(f.res.tendons.fdp / f.tmax.fdp, f.res.tendons.fds / f.tmax.fds) * scale;
   // Sideways moment about the middle of the wrist (thumb side positive): each pad's vertical pull
@@ -503,8 +518,12 @@ export function analyzeEdge(ex, v, pipDeg, { loadKg, strengthPct = 100, placemen
   const refT = ex.finger.referenceTension;
   const sum = (get) => set.fingers.reduce((s, f) => s + get(f), 0);
   const rel = (k) => sum((f) => f.res?.tendons[k] ?? 0) / sum((f) => f.tmax[k]);
+  // Friction: the touching finger that needs the most, against the skin–edge coefficient P.mu.
+  const fr = on.reduce((a, f) => (!a || f.friction > a.friction ? f : a), null);
+  const mu = Number(P.mu ?? Infinity);
+  const friction = fr ? { needed: fr.friction, finger: fr, mu, slips: on.filter((f) => f.friction > mu) } : null;
   return {
-    angle: pipDeg, P, set, peak, pulleyPeak,
+    angle: pipDeg, P, set, peak, pulleyPeak, friction,
     maxBlockKg: peak && peak.effort > 0 ? loadKg / peak.effort : Infinity,
     tendons: { fdp: rel("fdp") * refT.fdp, fds: rel("fds") * refT.fds },
     arm: armLoads(ex, P, loadKg, { body, bodyMassKg, strengthPct }),

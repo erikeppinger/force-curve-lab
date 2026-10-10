@@ -337,6 +337,22 @@
       "usedFor": "Edge lift: the Muscles 3D view (bones and muscle paths of the ARMS hand model). NON-COMMERCIAL licence: this view and its data aren't covered by the site's CC BY licence."
     },
     {
+      "key": "Li 2001",
+      "match": "Li FX, Margetts S",
+      "group": "Two-joint muscles and grip",
+      "citation": "Li FX, Margetts S, Fowler I (2001). Use of 'chalk' in rock climbing: sine qua non or myth? J Sports Sci 19(6):427–432.",
+      "url": "https://doi.org/10.1080/026404101300149375",
+      "usedFor": "Edge lift: the friction slider's range (fingertip on rock, maximum static coefficient 2.5–3.3; chalk lowered it)."
+    },
+    {
+      "key": "Fuss 2020",
+      "match": "Fuss FK, Weizman Y",
+      "group": "Two-joint muscles and grip",
+      "citation": "Fuss FK, Weizman Y, Niegl G, Tan AM (2020). Climbers' perception of hold surface properties: roughness versus slip resistance. Front Psychol 11:252.",
+      "url": "https://doi.org/10.3389/fpsyg.2020.00252",
+      "usedFor": "Edge lift: friction climbers actually use on hold surfaces (0.56–0.86) and what a 29° sloping surface needs (0.55)."
+    },
+    {
       "key": "Dostal 1986",
       "match": "Dostal WF, Soderberg GL",
       "group": "Body data",

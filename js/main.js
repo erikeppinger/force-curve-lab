@@ -165,7 +165,7 @@ function setPlacement(v, override = {}) {
     const out = document.createElement("output");
     const isAuto = () => state.placement[s.key] === "auto";
     const input = Object.assign(document.createElement("input"), { type: "range", min: s.min, max: s.max, step: s.step, value: isAuto() ? 0 : state.placement[s.key] });
-    const show = () => { out.textContent = isAuto() ? "auto" : `${Math.round(state.placement[s.key] * s.scale)} ${s.unit}`; input.disabled = isAuto(); };
+    const show = () => { out.textContent = isAuto() ? "auto" : `${s.decimals != null ? (state.placement[s.key] * s.scale).toFixed(s.decimals) : Math.round(state.placement[s.key] * s.scale)} ${s.unit}`.trim(); input.disabled = isAuto(); };
     input.addEventListener("input", () => { state.placement[s.key] = +input.value; show(); writeHash(); renderSoon(); });
     label.append(`${s.label} `, out, input);
     if (s.hint) label.append(Object.assign(document.createElement("small"), { className: "slider-hint", textContent: s.hint }));
@@ -709,6 +709,7 @@ function renderFinger() {
     card("Hardest finger", r.peak ? `${r.peak.label} ${Math.round(r.peak.effort * 100)}%` : "—", r.peak?.effort > 1 ? "over" : ""),
     card("Highest pulley", r.pulleyPeak ? `${r.pulleyPeak.finger.label} ${r.pulleyPeak.pulley} ${Math.round(r.pulleyPeak.share * 100)}%` : "—", r.pulleyPeak?.share > 0.6 ? "warn" : ""),
     card("Wrist sideways", `${Math.abs(set.wristSide).toFixed(1)} Nm`),
+    ...(r.friction ? [card("Friction needed", `μ ${Number.isFinite(r.friction.needed) ? r.friction.needed.toFixed(2) : "—"} (${r.friction.finger.label.toLowerCase()})`, r.friction.slips.length ? "over" : r.friction.needed > 0.8 * r.friction.mu ? "warn" : "")] : []),
     card("Shoulder / elbow", `${Math.round(armPeak * 100)}%`, armPeak > 1 ? "over" : ""),
   );
 
@@ -776,8 +777,11 @@ function renderFinger() {
   });
 
   // Notes under the figure
-  $("ro-warning").hidden = !(r.peak?.effort > 1);
-  $("ro-warning").textContent = `More than the ${r.peak?.label.toLowerCase()} finger's typical maximum: the grip would open here.`;
+  const slip = r.friction?.slips ?? [];
+  $("ro-warning").hidden = !(r.peak?.effort > 1) && !slip.length;
+  $("ro-warning").textContent = r.peak?.effort > 1
+    ? `More than the ${r.peak?.label.toLowerCase()} finger's typical maximum: the grip would open here.`
+    : `${slip.map((f) => f.label).join(", ")} would slip: needs μ ${Math.max(...slip.map((f) => f.friction)).toFixed(2)}, more than the skin–edge friction set (${r.friction?.mu.toFixed(2)}). The steeper a pad meets the edge (open hand, the shorter little finger), the more friction it needs.`;
   const info = [];
   const turns = [];
   if (Math.abs(set.deviationDeg) >= 1) turns.push(`tilts ${Math.abs(set.deviationDeg).toFixed(0)}° towards the ${set.deviationDeg > 0 ? "little finger" : "thumb"} (wrist deviation or the arm leaning)`);

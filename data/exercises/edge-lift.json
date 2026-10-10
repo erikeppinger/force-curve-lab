@@ -37,7 +37,11 @@
     "crossCheckSource": "Ferrer-Uris B, Arias D, Torrado P, Marina M, Busquets A (2023). Exploring forearm muscle coordination and training applications of various grip positions during maximal isometric finger dead-hangs in rock climbers. PeerJ 11:e15464. doi:10.7717/peerj.15464 (Table 2; CC BY 4.0)",
     "referenceTension": {"fdp": 257.5, "fds": 214.8},
     "referenceTensionNote": "Tendon tension at a maximal one-finger effort (highest group mean of the two grips: FDP in the crimp, FDS in the slope grip), used to scale the muscle bars.",
-    "referenceTensionSource": "Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Table 3)"
+    "referenceTensionSource": "Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Table 3)",
+    "friction": {
+      "note": "Friction check: the edge pushes along the line from the contact towards the wrist; the contact normal is taken as the distal phalanx's palm-side normal (the pad conforms where it touches). Needed coefficient = tangential ÷ normal part of that push; a finger needing more than the slider's μ would slip. Default μ = 1 (estimate between the two studies' values, which measure different things: the most a fingertip can hold vs what climbers used).",
+      "source": "Li FX, Margetts S, Fowler I (2001). Use of 'chalk' in rock climbing: sine qua non or myth? J Sports Sci 19(6):427–432 (fingertip on rock, maximum static coefficient 2.5–3.3; chalk lowered it); Fuss FK, Weizman Y, Niegl G, Tan AM (2020). Climbers' perception of hold surface properties: roughness versus slip resistance. Front Psychol 11:252 (coefficient climbers used on an instrumented hold: averages 0.56–0.86 by surface; a 29° sloping surface needs at least 0.55)"
+    }
   },
   "fingers": {
     "note": "All four fingers on one edge. The fingertips line up on the edge (each pad may sit up to 6 mm deeper or shallower than the middle finger's); every finger keeps close to the grip's PIP and fingertip angles and takes up its length at the knuckle, the ring and little finger also by cupping the palm, and the whole hand may tilt sideways at the wrist (radial/ulnar deviation, −15° to +25°). Where the edge sits under the hand and the hand's tilt are chosen so the four postures together stay closest to the grip (weighted squared angle changes; weights are estimates). Moment arms are An et al.'s index-finger values scaled by each finger's proximal phalanx length (estimate). How the block splits between the fingers isn't fixed by statics: it is shared for least effort (smallest sum of squared tendon tension ÷ reference tension over each finger's FDP and FDS), with the FDP slips of the middle, ring and little finger pulled towards equal relative tension by the quadriga slider. A finger that only just reaches fades out of the split.",
@@ -181,6 +185,17 @@
       "auto": "fits this hand"
     },
     {
+      "key": "mu",
+      "label": "Skin–edge friction (μ)",
+      "min": 0.3,
+      "max": 3,
+      "step": 0.05,
+      "unit": "",
+      "scale": 1,
+      "decimals": 2,
+      "hint": "How much sideways force the pad can take per unit of pressing force before it slips. The edge's push presses into the pad only where the pad faces it squarely; the steeper the fingertip meets the edge (open hand, the shorter little finger), the more of the push has to be held by friction. Measured values vary widely: fingertip on rock up to 2.5–3.3 at most (Li et al.), 0.56–0.86 actually used on gym-hold surfaces (Fuss et al.). With a fixed μ the friction needed doesn't depend on the block's weight; skin friction tends to fall as the pressing force rises (not modelled)."
+    },
+    {
       "key": "quadriga",
       "label": "FDP of middle, ring and little finger linked (quadriga)",
       "min": 0,
@@ -260,7 +275,8 @@
         "quadriga": 0.5,
         "liftTime": 0.6,
         "dipPassiveShare": 0,
-        "maxFingertipN": 78
+        "maxFingertipN": 78,
+        "mu": 1
       },
       "notes": "Fingertip bent, middle joint nearly straight (the 'slope' grip of Vigouroux et al.: DIP 38.8°, PIP 25.9°, MCP −21°). The tendons barely change direction at the pulleys, so A2 carries very little.",
       "source": "Posture: Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027; maximum fingertip force (all four fingers on the hold, slope grip, 78 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
@@ -284,7 +300,8 @@
         "quadriga": 0.5,
         "liftTime": 0.6,
         "dipPassiveShare": 0,
-        "maxFingertipN": 82
+        "maxFingertipN": 82,
+        "mu": 1
       },
       "notes": "Middle joint at about 90°, fingertip in line with the middle phalanx, no thumb. Estimated posture (neither paper measured this grip); the maximum force is taken from the crimp. A grip between half crimp and open hand with all four fingers is often recommended for off-the-wall strength training (Tyler Nelson, via StrengthClimbing); in the 'chisel' variant the index finger stays straight and carries less.",
       "source": "Posture: estimate (TODO); maximum fingertip force (all four fingers on the hold, crimp, 82 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
@@ -308,7 +325,8 @@
         "quadriga": 0.5,
         "liftTime": 0.6,
         "dipPassiveShare": 0.222,
-        "maxFingertipN": 82
+        "maxFingertipN": 82,
+        "mu": 1
       },
       "notes": "Middle joint past 90°, fingertip bent back (the 'crimp' of Vigouroux et al.: DIP −22.6°, PIP 106.5°, MCP −2.6°). With the fingertip bent back, the joint itself carries about a fifth of the DIP moment (22% in their climbers), which spares the FDP. The thumb wrapped over the index finger isn't modelled.",
       "source": "Posture and passive DIP moment: Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Table 2); maximum fingertip force (82 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"

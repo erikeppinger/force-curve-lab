@@ -8,7 +8,14 @@ Papers identified but not here yet. Citations were seen elsewhere, so check the 
 
 | # | Paper | Why |
 |---|---|---|
-| – | Nothing outstanding: the last four (Escamilla 2000, Delp 1999, Dostal 1986, Ferrer-Uris 2023) are here and read. | |
+| 1 | Vigouroux L, Domalain M, Berton E (2011). Effect of object width on muscle and joint forces during thumb–index finger grasping (record: <https://hal.archives-ouvertes.fr/hal-01454846>, no PDF there; ask the authors or a library) | Pinch block and pincer: postures, grip force and modelled muscle forces for five widths, 3.5–7.5 cm; the main flexors keep a steady share of the grip force across widths. Postures to set the model by, muscle shares to check against. |
+| 1b | Domalain M, Vigouroux L, Danion F, Sevrez V, Berton E (2008). Effect of object width on precision grip force and finger posture. Ergonomics 51(9) | Pinch: finger postures and grip force by object width (the measurements behind 1). |
+| 1c | Influence of force–length relationship and task-specific constraints on finger force-generating capacities (open access: <https://arxiv.org/pdf/2306.12842>) | Pinch and edge: how posture limits finger force (model plus measurements). |
+| 2 | ✅ here, used (pincer postures): Shimawaki S et al. (2020), flexion angles of finger joints in two-finger tip pinching using 3D bone models from CT (open access: <https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7501542/>) | Pincer: index and thumb joint angles for 2, 10 and 30 mm objects (the thumb barely changes, the index PIP and MCP open as the object widens). |
+| 3 | Video motion capture of lateral and pulp pinch (open access: <https://pmc.ncbi.nlm.nih.gov/articles/PMC3652995>) | Pincer: thumb and finger joint ranges in pulp pinch. |
+| 4 | ✅ here, used (edge-lift friction): Li FX, Margetts S, Fowler I (2001). Use of "chalk" in rock climbing: sine qua non or myth? J Sports Sci 19(6):427–432 (<https://research.birmingham.ac.uk/en/publications/use-of-chalk-in-rock-climbing-sine-qua-non-or-myth/>) | Friction (pinch block, open hand): fingertip–rock friction coefficient with and without chalk; chalk lowered it in this study. |
+| 5 | ✅ here (values only in figures; load dependence noted): Clarke B et al. (2024), static friction of dry and wet fingertips with and without chalk at 5, 10 and 15 N (White Rose eprints: <https://eprints.whiterose.ac.uk/214893>) | Friction: how it changes with the pressing force, moisture and chalk. |
+| 6 | ✅ here, used (edge-lift friction), published as Fuss FK et al. (2020) *Climbers' perception of hold surface properties: roughness versus slip resistance*: friction between the hand and different surfaces under different conditions and its implication for sport climbing (Frontiers in Psychology 2020: <https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2020.00252/full>) | Friction: coefficients on climbing-hold surfaces (reported 0.53 Teflon to 0.84 rubber with an instrumented hold), powder vs liquid chalk. |
 
 ## To find (no paper identified yet)
 

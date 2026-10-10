@@ -12,7 +12,7 @@ import { muscleActivation } from "../js/muscles.js";
 const body = JSON.parse(readFileSync(new URL("../data/body.json", import.meta.url)));
 const dir = new URL("../data/exercises/", import.meta.url);
 const ids = readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => f.replace(".json", ""));
-const SKIP = new Set(["maxBlockKg", "ratio"]); // Infinity is a legitimate answer there (no load, FDP only)
+const SKIP = new Set(["maxBlockKg", "ratio", "friction", "needed"]); // Infinity is a legitimate answer there (no load, FDP only; a push that doesn't press into the pad)
 
 function nonFinite(o, path = "r", seen = new Set()) {
   if (!o || typeof o !== "object" || seen.has(o)) return null;
