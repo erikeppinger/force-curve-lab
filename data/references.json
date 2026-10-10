@@ -109,8 +109,8 @@
       "key": "Black 1993",
       "match": "Black SJ",
       "group": "Two-joint muscles and grip",
-      "citation": "Black SJ, Woodhouse ML, Suttmiller S, Shall L (1993). Influence of hip position on electromyographic and torque productions in the knee flexors and extensors. J Sport Rehabil 2:26–34.",
-      "url": null,
+      "citation": "Black SJ, Woodhouse ML, Suttmiller S, Shall L (1993). Influence of hip position on electromyographic and torque productions in the knee. J Sport Rehabil 2(1):26–34.",
+      "url": "https://doi.org/10.1123/jsr.2.1.26",
       "usedFor": "Hamstrings weaker supine; knee extension unchanged by hip angle."
     },
     {
@@ -327,6 +327,14 @@
       "citation": "Uhlrich SD, Jackson RW, Seth A, Kolesar JA, Delp SL (2022). Muscle coordination retraining inspired by musculoskeletal simulations reduces knee contact force. Sci Rep 12.",
       "url": "https://doi.org/10.1038/s41598-022-13386-9",
       "usedFor": "Hip abduction and adduction: updated paths of the gluteus medius, gluteus minimus and TFL in the OpenSim leg model, closer to MRI and experimental moment arms (taken from RajagopalLaiUhlrich2023.osim, MIT licence)."
+    },
+    {
+      "key": "McFarland 2021",
+      "match": "McFarland DC, Binder-Markey BI",
+      "group": "Two-joint muscles and grip",
+      "citation": "McFarland DC, Binder-Markey BI, Nichols JA, Wohlman SJ, de Bruin M, Murray WM (2021). A musculoskeletal model of the hand and wrist capable of simulating functional tasks. bioRxiv 2021.12.28.474357.",
+      "url": "https://doi.org/10.1101/2021.12.28.474357",
+      "usedFor": "Edge lift: the Muscles 3D view (bones and muscle paths of the ARMS hand model). NON-COMMERCIAL licence: this view and its data aren't covered by the site's CC BY licence."
     },
     {
       "key": "Dostal 1986",

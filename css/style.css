@@ -188,6 +188,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .muscle-base { stroke: var(--muscle-base); stroke-linecap: round; }
 #figure .muscle-on { stroke: var(--muscle-on); stroke-linecap: round; }
 #figure .muscle-hold { stroke: var(--muscle-hold); stroke-linecap: round; }
+#figure .tendon-idle { stroke: var(--muted); stroke-linecap: round; opacity: 0.45; }
 #figure .weight { fill: var(--equipment); }
 #figure .plate { fill-opacity: 0.3; }
 #figure .handle { fill: var(--cable); }
