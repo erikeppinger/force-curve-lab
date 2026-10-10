@@ -9,6 +9,7 @@ import { loadRegion, regionsOf, viewsFor, renderRegionView, regionValues } from 
 import { analyzeEdge, sampleEdge, idealEdge, liftProfile } from "./finger.js";
 import { renderFingersView, renderHandView, renderArmView } from "./edgefig.js";
 import { hipScene3d } from "./hipmodel.js";
+import { handScene3d } from "./handfig3d.js";
 
 const EXERCISES = [
   "biceps-curl", "triceps-extension", "wrist-curl", "reverse-wrist-curl", "edge-lift", "lateral-raise", "front-raise", "chest-fly", "straight-arm-pulldown",
@@ -85,10 +86,12 @@ async function loadExercise(id) {
   const ex = await res.json();
   // Hip abduction / adduction: the OpenSim muscle geometry their activations and 3D figure use.
   if (ex.hipModel) ex.hipModel.geometry = await fetch(ex.hipModel.data).then((r) => r.json()).catch(() => null);
+  // Edge lift: the ARMS hand model's bones and muscle paths for the 3D hand view (non-commercial).
+  if (ex.handModel) ex.handModel.geometry = await fetch(ex.handModel.data).then((r) => r.json()).catch(() => null);
   return ex;
 }
 /** A 3D figure (drag to turn): the 3D lifts, and single-joint exercises with `figure3d`. */
-const is3d = (ex) => ex.view === "3d" || Boolean(ex.figure3d && ex.hipModel?.geometry);
+const is3d = (ex) => ex.view === "3d" || Boolean(ex.figure3d && ex.hipModel?.geometry) || (ex.model === "finger" && state.edgeView === "muscles" && Boolean(ex.handModel?.geometry));
 
 function fillSelect(sel, items, includeNone) {
   sel.replaceChildren();
@@ -675,6 +678,7 @@ const EDGE_VIEWS = {
   fingers: { label: "The four fingers on the edge, side view: tendons, pulleys and each finger's share of the block", hint: "Each finger in its own posture on the edge (wrist straight above its pad). Tendons drawn thicker the harder they pull (FDP purple, FDS blue); pulleys coloured from green to red by their share of the cadaver breaking load; arrows: each finger's share of the block." },
   hand: { label: "The hand from the front on the edge: each finger's share, the hand's tilt and the wrist's sideways load", hint: "Palm towards you, index finger on the left. Under each finger: its share of the block (arrow) and its effort; dashed = off the edge. The edge's shape under each finger follows the bars in the controls; the curved arrow at the wrist is its sideways load." },
   arm: { label: "The arm holding the block, from the front and from the side, with shoulder and elbow loads", hint: "As taught: the straight arm rests on the front of the hip and the block hangs between the legs, so the shoulder and elbow are only pulled. Turned out or forward from there (sliders), the block acts on a lever at the shoulder and elbow (joints coloured by effort)." },
+  muscles: { label: "The hand in 3D with every muscle along its path in the ARMS hand model, at the grip's preset posture", hint: "Bones and every muscle's path from the ARMS hand model (McFarland et al. 2021; non-commercial use only). The deep and superficial finger flexors are coloured by the load the edge-lift statics puts on them (share of that finger's maximum); the other muscles are shown grey, as paths only. Posture: the grip's preset, not the per-finger fit. Drag to turn." },
 };
 
 /** Edge lift: summary strip, the selected view (fingers, hand, arm), tables and per-finger charts. */
@@ -713,8 +717,14 @@ function renderFinger() {
   for (const b of document.querySelectorAll("[data-edge-view]")) b.setAttribute("aria-selected", String(b.dataset.edgeView === view));
   $("figure").setAttribute("aria-label", EDGE_VIEWS[view].label);
   $("edge-view-hint").textContent = EDGE_VIEWS[view].hint;
-  $("figure-title").textContent = { fingers: "Fingers, side view", hand: "Hand, front view", arm: "Arm and body" }[view];
-  if (view === "fingers") renderFingersView($("figure"), { set, exercise: ex, P, pipDeg: state.angle });
+  $("figure-title").textContent = { fingers: "Fingers, side view", hand: "Hand, front view", arm: "Arm and body", muscles: "Hand muscles, 3D (drag to turn)" }[view];
+  $("view-buttons").hidden = view !== "muscles";
+  $("figure").classList.toggle("draggable", view === "muscles");
+  if (view === "muscles") {
+    const prims = handScene3d(ex.handModel.geometry.postures[v.id] ?? Object.values(ex.handModel.geometry.postures)[0], set.fingers);
+    // Frame the hand (bones, small margin); forearm muscle paths run off the edge and are clipped.
+    renderView3d($("figure"), prims, state.cam, bounds3d([prims.filter((p) => p.bone)], state.cam, 0.025));
+  } else if (view === "fingers") renderFingersView($("figure"), { set, exercise: ex, P, pipDeg: state.angle });
   else if (view === "hand") renderHandView($("figure"), { set, P });
   else renderArmView($("figure"), { arm: r.arm, P, loadKg: state.loadKg });
 

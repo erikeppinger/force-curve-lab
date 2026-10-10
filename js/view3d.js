@@ -65,7 +65,7 @@ export function scene3d(exercise, result, activation) {
 }
 
 /** Screen-space bounds of a set of scenes for a camera. */
-export function bounds3d(scenes, cam) {
+export function bounds3d(scenes, cam, margin = 0.12) {
   const xs = [], ys = [];
   const put = (p, r = 0) => { const q = project(p, cam); xs.push(q.x - r, q.x + r); ys.push(q.y - r, q.y + r); };
   for (const prims of scenes) {
@@ -75,7 +75,7 @@ export function bounds3d(scenes, cam) {
       else p.pts.forEach((q) => put(q));
     }
   }
-  const m = 0.12;
+  const m = margin;
   return { x0: Math.min(...xs) - m, x1: Math.max(...xs) + m, y0: Math.min(...ys) - m, y1: Math.max(...ys) + m };
 }
 
@@ -95,7 +95,7 @@ export function renderView3d(svg, prims, cam, V) {
     } else {
       const A = px(p.a), B = px(p.b);
       // Body segments get a darker edge so a limb in front stands out from the one behind it.
-      if (/(^| )body( |$)/.test(p.cls)) el("line", { x1: A.x, y1: A.y, x2: B.x, y2: B.y, class: p.cls.replace("body", "body-edge"), "stroke-width": p.w * S + 4 }, svg);
+      if (/(^| )body( |$)/.test(p.cls)) el("line", { x1: A.x, y1: A.y, x2: B.x, y2: B.y, class: p.cls.replace("body", "body-edge"), "stroke-width": p.w * S + Math.min(4, 0.3 * p.w * S) }, svg);
       const attrs = { x1: A.x, y1: A.y, x2: B.x, y2: B.y, class: p.cls, "stroke-width": p.w * S };
       if (p.opacity != null) attrs["stroke-opacity"] = p.opacity.toFixed(3);
       if (p.arrow) attrs["marker-end"] = "url(#arrow)";
