@@ -73,8 +73,12 @@ function modelMax(ex, data, w, fingers, level) {
  * straight squeeze (no weight) at 65 mm reaches the measured maximum (ex.pinch.capacity); the
  * fingers keep their own measured reference tensions. Then the squeeze, its split between the
  * fingers and the largest block follow from the balance of every joint.
+ * Strength and wrist scale every muscle alike, so the largest block and the squeeze there scale
+ * in proportion (the balance is linear in the forces): they are found at full strength only. The
+ * page reads them from a table (ex.pincer.whole, written by tools/pinch-table.mjs with
+ * wholeMax below) and interpolates; without the table they are found here by bisection.
  */
-const WHOLE = { 4: ["index", "middle", "ring", "little"], 2: ["index", "middle"] };
+export const WHOLE = { 4: ["index", "middle", "ring", "little"], 2: ["index", "middle"] };
 const calibCache = new Map(), maxCache = new Map();
 function bisect(ok, start, iters = 14) {
   let lo = 0, hi = start;
@@ -82,37 +86,67 @@ function bisect(ok, start, iters = 14) {
   for (let k = 0; k < iters; k++) { const m = (lo + hi) / 2; if (ok(m)) lo = m; else hi = m; }
   return lo;
 }
-function thumbScale(ex, data) {
-  const edge = ex.pincer.fingerModel;
+/** The thumb's strength factor that makes a straight squeeze at 65 mm the measured maximum. */
+export function thumbScale(ex, data) {
+  if (ex.pincer.whole?.thumbScale) return ex.pincer.whole.thumbScale;
   if (!calibCache.has(ex.id)) {
-    const s = bisect((N) => pinchHand(ex, data, edge, 0.065, 0, { squeeze: N }).holds, 4, 24);
+    const s = bisect((N) => pinchHand(ex, data, ex.pincer.fingerModel, 0.065, 0, { squeeze: N }).holds, 4, 24);
     calibCache.set(ex.id, ex.pinch.capacity / s);
   }
   return calibCache.get(ex.id);
 }
+/** Largest weight (N) and the squeeze there at full strength, width w (m), friction mu {thumb, finger}. */
+export function wholeMax(ex, data, w, fingers, mu, iters = 14) {
+  const o = { fingers: WHOLE[fingers], mu, strength: thumbScale(ex, data), fingerStrength: 1 };
+  const Wmax = bisect((x) => pinchHand(ex, data, ex.pincer.fingerModel, w, x, o).holds, Math.max(20, 2 * mu.thumb * ex.pinch.capacity), iters);
+  return { Wmax, squeeze: Wmax > 0 ? pinchHand(ex, data, ex.pincer.fingerModel, w, Wmax * 0.999, o).squeezeN : 0 };
+}
+/** Linear interpolation weights of x on the grid g (held at the ends). */
+function cell(g, x) {
+  if (x <= g[0]) return [0, 0, 0];
+  if (x >= g[g.length - 1]) return [g.length - 1, g.length - 1, 0];
+  let i = 0;
+  while (g[i + 1] < x) i++;
+  return [i, i + 1, (x - g[i]) / (g[i + 1] - g[i])];
+}
+/** wholeMax from the table: trilinear in width, thumb μ and the fingers' μ ÷ the thumb's. */
+function tableMax(t, mm, fingers, mu) {
+  const T = t[fingers];
+  const cs = [cell(t.widths, mm), cell(t.mu, mu.thumb), cell(T.ratio, mu.finger / mu.thumb)];
+  const out = { Wmax: 0, squeeze: 0 };
+  for (let k = 0; k < 8; k++) {
+    let wt = 1;
+    const idx = cs.map(([i0, i1, u], d) => { const hi = (k >> d) & 1; wt *= hi ? u : 1 - u; return hi ? i1 : i0; });
+    if (!wt) continue;
+    const [W, S] = T.max[idx[0]][idx[1]][idx[2]];
+    out.Wmax += wt * W; out.squeeze += wt * S;
+  }
+  return out;
+}
 function analyzeWhole(ex, data, P, w, W, scale) {
-  const edge = ex.pincer.fingerModel, fingers = WHOLE[P.fingers] ?? WHOLE[4];
-  const k = fingers.length;
+  const edge = ex.pincer.fingerModel, k = WHOLE[P.fingers] ? +P.fingers : 4, fingers = WHOLE[k];
   // Friction per patch at the even split of the least squeeze (n < 1: lighter patches grip relatively more).
   const Nmin = squeezeFor(W, { mu: P.mu, n: P.n, fingers: k });
   const muAt = (Np) => (W > 0 && P.n < 1 ? P.mu * (Np / N0) ** (P.n - 1) : P.mu);
   const mu = { thumb: +muAt(Nmin).toFixed(3), finger: +muAt(Nmin / k).toFixed(3) };
-  const o = { fingers, mu, strength: thumbScale(ex, data) * scale, fingerStrength: scale };
-  const key = JSON.stringify([ex.id, w, o]);
-  if (!maxCache.has(key)) {
-    const Wmax = bisect((x) => pinchHand(ex, data, edge, w, x, o).holds, Math.max(20, 2 * P.mu * ex.pinch.capacity));
-    const atMax = pinchHand(ex, data, edge, w, Wmax * 0.999, o);
-    maxCache.set(key, { Wmax, squeezeAtMax: atMax.squeezeN });
+  const t = ex.pincer.whole;
+  let full;
+  if (t) full = tableMax(t, w * 1000, k, mu);
+  else {
+    const key = JSON.stringify([ex.id, w, k, mu]);
+    if (!maxCache.has(key)) { if (maxCache.size > 500) maxCache.clear(); maxCache.set(key, wholeMax(ex, data, w, k, mu)); }
+    full = maxCache.get(key);
   }
-  const { Wmax, squeezeAtMax } = maxCache.get(key);
-  const r = pinchHand(ex, data, edge, w, W, o);
+  const Wmax = full.Wmax * scale, squeezeAtMax = full.squeeze * scale;
+  const r = pinchHand(ex, data, edge, w, Math.min(W, Wmax * 0.999), { fingers, mu, strength: thumbScale(ex, data) * scale, fingerStrength: scale });
   const fN = fingers.reduce((s, id) => s + r.digits[id].N, 0);
+  const holds = W <= Wmax && r.holds;
   return {
-    W, squeezeN: r.squeezeN, minSqueezeN: Nmin, capacityN: squeezeAtMax, effort: Wmax > 0 ? W / Wmax : Infinity, maxBlockKg: Wmax / G,
+    W, squeezeN: holds ? r.squeezeN : Math.max(Nmin, squeezeAtMax), minSqueezeN: Nmin, capacityN: squeezeAtMax, effort: Wmax > 0 ? W / Wmax : Infinity, maxBlockKg: Wmax / G,
     shares: Object.fromEntries(fingers.map((id) => [id, fN > 0 ? r.digits[id].N / fN : 1 / k])),
     perFingerN: fN / k,
     friction: { thumb: r.digits.thumb.T, fingers: fingers.reduce((s, id) => s + r.digits[id].T, 0) },
-    act: W <= Wmax && r.holds ? r.act : null,
+    act: holds ? r.act : null,
   };
 }
 

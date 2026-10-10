@@ -44,7 +44,8 @@
     },
     "fingersNote": "Bone lengths of the middle, ring and little finger: the index finger's (ARMS) scaled by each finger's ratio to the index in Lin et al. 1989 (10 hands).",
     "fingersSource": "Lin GT, Amadio PC, An KN, Cooney WP (1989). Functional anatomy of the human digital flexor pulley system. J Hand Surg Am 14(6):949–956 (Table I)",
-    "fingerData": "data/exercises/edge-lift.json"
+    "fingerData": "data/exercises/edge-lift.json",
+    "wholeData": "data/opensim/pinch-whole.json"
   },
   "placement": [
     {

@@ -8,6 +8,7 @@ import { muscleActivation } from "../js/muscles.js";
 const ex = JSON.parse(readFileSync(new URL("../data/exercises/pinch-lift.json", import.meta.url)));
 ex.pincer.arms = JSON.parse(readFileSync(new URL(`../${ex.pincer.data}`, import.meta.url)));
 ex.pincer.fingerModel = JSON.parse(readFileSync(new URL(`../${ex.pincer.fingerData}`, import.meta.url)));
+ex.pincer.whole = JSON.parse(readFileSync(new URL(`../${ex.pincer.wholeData}`, import.meta.url)));
 const v = (id) => ex.variants.find((x) => x.id === id);
 const close = (a, b, tol = 1e-9) => assert.ok(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)), `${a} vs ${b}`);
 
@@ -90,4 +91,20 @@ test("whole hand: calibrated to the measured squeeze; the middle finger carries 
   assert.ok(r.shares.middle === Math.max(...Object.values(r.shares)), JSON.stringify(r.shares));
   assert.ok(r.squeezeN >= r.minSqueezeN - 1e-6);
   assert.ok(r.maxBlockKg > 15);
+});
+
+test("whole hand: the precomputed table matches the live model (rerun tools/pinch-table.mjs if not); strength scales the max block in proportion", async () => {
+  const { wholeMax, WHOLE } = await import("../js/pinchlift.js");
+  const { pinchHand } = await import("../js/pincer.js");
+  const live = { ...ex, pincer: { ...ex.pincer, whole: null } };
+  for (const [mm, mu, fingers] of [[60, 0.6, 4], [45, 0.6, 4], [85, 1.05, 2]]) {
+    const r = analyzePinch(ex, ex.pincer.arms, v(fingers === 4 ? "four-fingers" : "two-fingers"), mm, { loadKg: 10, placement: { mu } });
+    const { Wmax } = wholeMax(live, ex.pincer.arms, mm / 1000, fingers, { thumb: mu, finger: mu }, 18);
+    close(r.maxBlockKg, Wmax / 9.81, 0.04); // interpolation between table points
+  }
+  // The balance is linear in the forces: half the strength holds about half the weight.
+  const o = (s) => ({ fingers: WHOLE[4], mu: { thumb: 0.6, finger: 0.6 }, strength: ex.pincer.whole.thumbScale * s, fingerStrength: s });
+  const full = ex.pincer.whole[4].max[8][3][0][0]; // 60 mm, μ 0.6, equal friction
+  assert.ok(pinchHand(ex, ex.pincer.arms, ex.pincer.fingerModel, 0.06, 0.49 * full, o(0.5)).holds);
+  assert.ok(!pinchHand(ex, ex.pincer.arms, ex.pincer.fingerModel, 0.06, 0.51 * full, o(0.5)).holds);
 });

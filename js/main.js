@@ -94,6 +94,7 @@ async function loadExercise(id) {
   if (ex.pincer) ex.pincer.arms = await fetch(ex.pincer.data).then((r) => r.json()).catch(() => null);
   // Pinch lift, whole hand: the fingers use the edge lift's finger model.
   if (ex.pincer?.fingerData) ex.pincer.fingerModel = await fetch(ex.pincer.fingerData).then((r) => r.json()).catch(() => null);
+  if (ex.pincer?.wholeData) ex.pincer.whole = await fetch(ex.pincer.wholeData).then((r) => r.json()).catch(() => null);
   return ex;
 }
 /** A 3D figure (drag to turn): the 3D lifts, and single-joint exercises with `figure3d`. */
@@ -883,7 +884,7 @@ function renderPinch() {
   $("ro-warning").hidden = !(r.effort > 1);
   $("ro-warning").textContent = "More squeeze than this hand can give: the block would slip out.";
   const info = [
-    `Friction holds the block: ${Math.round(r.friction.thumb)} N on the thumb's face, ${Math.round(r.friction.fingers)} N on the fingers' face (μ ${(+P.mu).toFixed(2)}${P.n < 1 ? `, load index ${(+P.n).toFixed(2)}` : ""}).`,
+    `${r.effort > 1 && r.minSqueezeN != null ? `At most this hand's squeeze makes ${Math.round(r.friction.thumb + r.friction.fingers)} N of friction; the block needs ${Math.round(r.W)} N. At the maximum` : "Friction holds the block"}: ${Math.round(r.friction.thumb)} N on the thumb's face, ${Math.round(r.friction.fingers)} N on the fingers' face (μ ${(+P.mu).toFixed(2)}${P.n < 1 ? `, load index ${(+P.n).toFixed(2)}` : ""}).`,
     P.wrist > 0 ? `Wrist flexed ${P.wrist}°: ${Math.round((1 - r.capacityN / (ex.pinch.capacity * state.strengthPct / 100)) * 100)}% less squeeze available.` : null,
   ].filter(Boolean);
   $("ro-limb").hidden = false;
