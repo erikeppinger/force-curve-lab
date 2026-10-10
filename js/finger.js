@@ -165,7 +165,7 @@ function fingerStatics(g, P, p, force, pipDeg) {
 }
 
 /** One finger of the set as a finger-data object like ex.finger (moment arms scaled by size). */
-function setFinger(ex, id) {
+export function setFinger(ex, id) {
   const S = ex.fingers, base = ex.finger;
   // Wrist → knuckle: the middle metacarpal less how far this knuckle sits back (the knuckle line).
   const L = S.knuckleBack ? { ...S.lengths[id], metacarpal: S.lengths.middle.metacarpal - S.knuckleBack[id] } : S.lengths[id];
@@ -277,7 +277,7 @@ function solveLinear(H, b) {
 }
 
 /** Reference (maximal) tendon tensions of one finger's FDP and FDS, scaled by muscle size. */
-const refTension = (ex, id) => {
+export const refTension = (ex, id) => {
   const S = ex.fingers, refT = ex.finger.referenceTension;
   return { fdp: refT.fdp * (S.pcsa.fdp[id] / S.pcsa.fdp.middle), fds: refT.fds * (S.pcsa.fds[id] / S.pcsa.fds.middle) };
 };

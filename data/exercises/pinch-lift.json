@@ -43,7 +43,8 @@
       "little": {"proximal": 0.0344, "middle": 0.0194, "distal": 0.0168}
     },
     "fingersNote": "Bone lengths of the middle, ring and little finger: the index finger's (ARMS) scaled by each finger's ratio to the index in Lin et al. 1989 (10 hands).",
-    "fingersSource": "Lin GT, Amadio PC, An KN, Cooney WP (1989). Functional anatomy of the human digital flexor pulley system. J Hand Surg Am 14(6):949–956 (Table I)"
+    "fingersSource": "Lin GT, Amadio PC, An KN, Cooney WP (1989). Functional anatomy of the human digital flexor pulley system. J Hand Surg Am 14(6):949–956 (Table I)",
+    "fingerData": "data/exercises/edge-lift.json"
   },
   "placement": [
     {
@@ -82,8 +83,8 @@
       "key": "level",
       "label": "Hand model",
       "type": "choice",
-      "options": [["pliers", "Pliers: one flexor per digit"], ["jointed", "Jointed: every joint balanced"]],
-      "hint": "Pliers: the thumb and index finger as rigid jaws, each closed by one long flexor (FPL, FDP). Jointed: every joint of both digits balanced by all their muscles (ARMS hand model), so the small thumb muscles and the extensors join in. Both are scaled to the measured maximum; the choice changes which muscles carry the load, not the maximum block."
+      "options": [["pliers", "Pliers: one flexor per digit"], ["jointed", "Thumb and one finger, every joint balanced"], ["whole", "Whole hand with friction"]],
+      "hint": "Pliers: the thumb and index finger as rigid jaws, each closed by one long flexor (FPL, FDP), pressing straight into the faces. Thumb and one finger: every joint of both balanced by all their muscles (ARMS hand model), still pressing straight. Whole hand: the thumb (ARMS) against all fingers (the edge lift's finger model), each pad's force anywhere inside its friction cone: the block's weight pulls the pads towards the fingertips, and the hand chooses how hard to squeeze and how to share the weight so that every joint balances with the least effort. Only this one predicts the finger shares and the squeeze above the friction minimum."
     }
   ],
   "muscles": [
@@ -114,7 +115,7 @@
       "name": "Flexor digitorum profundus",
       "region": "forearm",
       "role": "Prime mover",
-      "parts": ["FDPI"],
+      "parts": ["FDPI", "FDP_index", "FDP_middle", "FDP_ring", "FDP_little"],
       "note": "Bends the fingertips: presses the finger pads onto their face. Each finger carries only its share of the squeeze."
     },
     {
@@ -122,7 +123,7 @@
       "name": "Flexor digitorum superficialis",
       "region": "forearm",
       "role": "Synergist",
-      "parts": ["FDSI"],
+      "parts": ["FDSI", "FDS_index", "FDS_middle", "FDS_ring", "FDS_little"],
       "note": "Bends the middle joints."
     },
     {
@@ -138,7 +139,7 @@
       "region": "forearm",
       "regionPath": ["edc", "apl-epb"],
       "role": "Stabiliser",
-      "parts": ["EPL", "EPB", "APL", "EDCI", "EIP"],
+      "parts": ["EPL", "EPB", "APL", "EDCI", "EIP", "EXT_index", "EXT_middle", "EXT_ring", "EXT_little"],
       "note": "Work against the flexors to keep the joints from collapsing: in the jointed model the thumb's long extensor is one of the limits."
     }
   ],
@@ -160,14 +161,14 @@
       "name": "Thumb against four fingers",
       "equipment": "Pinch block on a loading pin",
       "notes": "The usual pinch-block grip: the thumb on one face, all four fingers on the other. The thumb carries the whole squeeze alone; each finger carries a quarter of it.",
-      "params": {"fingers": 4, "mu": 0.6, "n": 1, "wrist": 0, "level": "jointed"}
+      "params": {"fingers": 4, "mu": 0.6, "n": 1, "wrist": 0, "level": "whole"}
     },
     {
       "id": "two-fingers",
       "name": "Thumb against two fingers",
       "equipment": "Pinch block on a loading pin",
       "notes": "Thumb against index and middle finger, like a palmar (3-point) pinch on a gauge. With n = 1 friction is unchanged; each finger carries half the squeeze.",
-      "params": {"fingers": 2, "mu": 0.6, "n": 1, "wrist": 0, "level": "jointed"}
+      "params": {"fingers": 2, "mu": 0.6, "n": 1, "wrist": 0, "level": "whole"}
     }
   ]
 }

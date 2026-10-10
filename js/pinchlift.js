@@ -17,7 +17,7 @@
 //    fails exactly at the capacity: it shows how the load spreads over the muscles, not how
 //    strong the hand is.
 
-import { jointed, pliers, pincerGeometry } from "./pincer.js";
+import { jointed, pliers, pincerGeometry, pinchHand } from "./pincer.js";
 
 const G = 9.81;
 export const N0 = 10;
@@ -68,12 +68,66 @@ function modelMax(ex, data, w, fingers, level) {
 }
 
 /**
+ * Whole hand (level 2): thumb from ARMS, fingers from the edge-lift finger model, each pad's force
+ * inside its friction cone (pincer.js pinchHand). The thumb's muscles are scaled once so that a
+ * straight squeeze (no weight) at 65 mm reaches the measured maximum (ex.pinch.capacity); the
+ * fingers keep their own measured reference tensions. Then the squeeze, its split between the
+ * fingers and the largest block follow from the balance of every joint.
+ */
+const WHOLE = { 4: ["index", "middle", "ring", "little"], 2: ["index", "middle"] };
+const calibCache = new Map(), maxCache = new Map();
+function bisect(ok, start, iters = 14) {
+  let lo = 0, hi = start;
+  while (ok(hi) && hi < 1e5) { lo = hi; hi *= 2; }
+  for (let k = 0; k < iters; k++) { const m = (lo + hi) / 2; if (ok(m)) lo = m; else hi = m; }
+  return lo;
+}
+function thumbScale(ex, data) {
+  const edge = ex.pincer.fingerModel;
+  if (!calibCache.has(ex.id)) {
+    const s = bisect((N) => pinchHand(ex, data, edge, 0.065, 0, { squeeze: N }).holds, 4, 24);
+    calibCache.set(ex.id, ex.pinch.capacity / s);
+  }
+  return calibCache.get(ex.id);
+}
+function analyzeWhole(ex, data, P, w, W, scale) {
+  const edge = ex.pincer.fingerModel, fingers = WHOLE[P.fingers] ?? WHOLE[4];
+  const k = fingers.length;
+  // Friction per patch at the even split of the least squeeze (n < 1: lighter patches grip relatively more).
+  const Nmin = squeezeFor(W, { mu: P.mu, n: P.n, fingers: k });
+  const muAt = (Np) => (W > 0 && P.n < 1 ? P.mu * (Np / N0) ** (P.n - 1) : P.mu);
+  const mu = { thumb: +muAt(Nmin).toFixed(3), finger: +muAt(Nmin / k).toFixed(3) };
+  const o = { fingers, mu, strength: thumbScale(ex, data) * scale, fingerStrength: scale };
+  const key = JSON.stringify([ex.id, w, o]);
+  if (!maxCache.has(key)) {
+    const Wmax = bisect((x) => pinchHand(ex, data, edge, w, x, o).holds, Math.max(20, 2 * P.mu * ex.pinch.capacity));
+    const atMax = pinchHand(ex, data, edge, w, Wmax * 0.999, o);
+    maxCache.set(key, { Wmax, squeezeAtMax: atMax.squeezeN });
+  }
+  const { Wmax, squeezeAtMax } = maxCache.get(key);
+  const r = pinchHand(ex, data, edge, w, W, o);
+  const fN = fingers.reduce((s, id) => s + r.digits[id].N, 0);
+  return {
+    W, squeezeN: r.squeezeN, minSqueezeN: Nmin, capacityN: squeezeAtMax, effort: Wmax > 0 ? W / Wmax : Infinity, maxBlockKg: Wmax / G,
+    shares: Object.fromEntries(fingers.map((id) => [id, fN > 0 ? r.digits[id].N / fN : 1 / k])),
+    perFingerN: fN / k,
+    friction: { thumb: r.digits.thumb.T, fingers: fingers.reduce((s, id) => s + r.digits[id].T, 0) },
+    act: W <= Wmax && r.holds ? r.act : null,
+  };
+}
+
+/**
  * The lift at block width widthMm. opts: loadKg, strengthPct, placement {mu, n, fingers, wrist,
  * level}. Returns the squeeze, the effort (squeeze ÷ capacity), the maximum block, the friction on
  * each face and the muscle activations at this load (null when the grip fails).
  */
 export function analyzePinch(ex, data, v, widthMm, { loadKg, strengthPct = 100, placement } = {}) {
   const P = { ...v.params, ...placement };
+  if (P.level === "whole") {
+    const w = widthMm / 1000;
+    const scale = (strengthPct / 100) * wristFactor(P.wrist ?? 0);
+    return { widthMm, ...analyzeWhole(ex, data, P, w, loadKg * G, scale), geometry: pincerGeometry(ex, w), level: 2, fingers: P.fingers };
+  }
   const fingers = P.fingers, level = P.level === "pliers" ? 0 : 1;
   const f = { mu: P.mu, n: P.n, fingers };
   const w = widthMm / 1000;
@@ -92,7 +146,7 @@ export function analyzePinch(ex, data, v, widthMm, { loadKg, strengthPct = 100, 
 }
 
 /** The lift across the block-width range (for the charts). */
-export function samplePinch(ex, data, v, opts, step = 5) {
+export function samplePinch(ex, data, v, opts, step = { ...v.params, ...opts?.placement }.level === "whole" ? 10 : 5) {
   const [lo, hi] = ex.angleRange;
   const out = [];
   for (let mm = lo; mm <= hi + 1e-9; mm += step) out.push(analyzePinch(ex, data, v, mm, opts));

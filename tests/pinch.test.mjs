@@ -7,6 +7,7 @@ import { muscleActivation } from "../js/muscles.js";
 
 const ex = JSON.parse(readFileSync(new URL("../data/exercises/pinch-lift.json", import.meta.url)));
 ex.pincer.arms = JSON.parse(readFileSync(new URL(`../${ex.pincer.data}`, import.meta.url)));
+ex.pincer.fingerModel = JSON.parse(readFileSync(new URL(`../${ex.pincer.fingerData}`, import.meta.url)));
 const v = (id) => ex.variants.find((x) => x.id === id);
 const close = (a, b, tol = 1e-9) => assert.ok(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)), `${a} vs ${b}`);
 
@@ -32,7 +33,7 @@ test("wrist: flexion costs up to a quarter at 38°, extension nothing", () => {
 });
 
 test("effort = squeeze ÷ capacity (strength × wrist); max block = 2μ × capacity at n = 1", () => {
-  const r = analyzePinch(ex, ex.pincer.arms, v("four-fingers"), 60, { loadKg: 15, strengthPct: 80, placement: { ...v("four-fingers").params, wrist: 38 } });
+  const r = analyzePinch(ex, ex.pincer.arms, v("four-fingers"), 60, { loadKg: 15, strengthPct: 80, placement: { ...v("four-fingers").params, wrist: 38, level: "jointed" } });
   const cap = ex.pinch.capacity * 0.8 * 0.75;
   close(r.capacityN, cap);
   close(r.effort, r.squeezeN / cap);
@@ -67,4 +68,26 @@ test("Vigouroux et al. 2011 check: the index FDP force per newton of squeeze at 
     const per = (r.act.FDPI * ex.pincer.arms.postures.w55.muscles.FDPI.active) / 2;
     assert.ok(per > 2 && per < 3.5, `${mm} mm: ${per}`);
   }
+});
+
+test("whole hand: friction carries the weight, thumb presses as hard as all fingers, never less than the friction minimum", async () => {
+  const { pinchHand } = await import("../js/pincer.js");
+  const fingers = ["index", "middle", "ring", "little"];
+  const r = pinchHand(ex, ex.pincer.arms, ex.pincer.fingerModel, 0.06, 150, { fingers, mu: { thumb: 0.6, finger: 0.6 }, strength: 15 });
+  assert.ok(r.holds);
+  const T = r.digits.thumb.T + fingers.reduce((s, id) => s + r.digits[id].T, 0);
+  const N = fingers.reduce((s, id) => s + r.digits[id].N, 0);
+  close(T, 150, 2e-3);
+  close(r.digits.thumb.N, N, 2e-3);
+  for (const id of [...fingers, "thumb"]) assert.ok(Math.abs(r.digits[id].T) <= 0.6 * r.digits[id].N + 1e-6, id);
+  assert.ok(r.squeezeN >= 150 / 1.2 - 1e-6);
+});
+
+test("whole hand: calibrated to the measured squeeze; the middle finger carries the largest share", () => {
+  const r = analyzePinch(ex, ex.pincer.arms, v("four-fingers"), 60, { loadKg: 15, placement: v("four-fingers").params });
+  assert.ok(r.effort < 1 && r.act, `effort ${r.effort}`);
+  close(Object.values(r.shares).reduce((s, x) => s + x, 0), 1, 1e-9);
+  assert.ok(r.shares.middle === Math.max(...Object.values(r.shares)), JSON.stringify(r.shares));
+  assert.ok(r.squeezeN >= r.minSqueezeN - 1e-6);
+  assert.ok(r.maxBlockKg > 15);
 });

@@ -39,6 +39,7 @@ for (const id of ids) {
     const [lo, hi] = ex.angleRange;
     const spec = ex.placement ?? [];
     if (ex.pincer) ex.pincer.arms = JSON.parse(readFileSync(new URL(`../${ex.pincer.data}`, import.meta.url)));
+    if (ex.pincer?.fingerData) ex.pincer.fingerModel = JSON.parse(readFileSync(new URL(`../${ex.pincer.fingerData}`, import.meta.url)));
     const end = (s, i) => (s.type === "choice" ? s.options.at(i)[0] : i === 0 ? s.min : s.max);
     const placements = [undefined, Object.fromEntries(spec.map((s) => [s.key, end(s, 0)])), Object.fromEntries(spec.map((s) => [s.key, end(s, -1)])),
       Object.fromEntries(spec.filter((s) => s.auto).map((s) => [s.key, "auto"]))];

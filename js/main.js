@@ -92,6 +92,8 @@ async function loadExercise(id) {
   if (ex.handModel) ex.handModel.geometry = await fetch(ex.handModel.data).then((r) => r.json()).catch(() => null);
   // Pinch lift: the ARMS moment arms and muscle forces at the measured pinch postures (non-commercial).
   if (ex.pincer) ex.pincer.arms = await fetch(ex.pincer.data).then((r) => r.json()).catch(() => null);
+  // Pinch lift, whole hand: the fingers use the edge lift's finger model.
+  if (ex.pincer?.fingerData) ex.pincer.fingerModel = await fetch(ex.pincer.fingerData).then((r) => r.json()).catch(() => null);
   return ex;
 }
 /** A 3D figure (drag to turn): the 3D lifts, and single-joint exercises with `figure3d`. */
@@ -856,11 +858,11 @@ function renderPinch() {
   const P = { ...v.params, ...state.placement };
   $("edge-summary").replaceChildren(
     card("Block", `${state.loadKg} kg`),
-    card("Squeeze needed", `${Math.round(r.squeezeN)} N each side`),
-    card("Most the hand squeezes", `${Math.round(r.capacityN)} N`),
+    card("Squeeze", r.minSqueezeN != null ? `${Math.round(r.squeezeN)} N (friction alone: ${Math.round(r.minSqueezeN)})` : `${Math.round(r.squeezeN)} N each side`),
+    card(r.minSqueezeN != null ? "Squeeze at the max block" : "Most the hand squeezes", `${Math.round(r.capacityN)} N`),
     card("Effort", `${Math.round(r.effort * 100)}%`, r.effort > 1 ? "over" : r.effort > 0.85 ? "warn" : ""),
     card("Max block", `≈ ${Math.round(r.maxBlockKg)} kg`),
-    card("Each finger", `${Math.round(r.perFingerN)} N`),
+    r.shares ? card("Finger shares", Object.entries(r.shares).map(([id, s]) => `${id[0].toUpperCase()} ${Math.round(s * 100)}`).join(" · ") + " %") : card("Each finger", `${Math.round(r.perFingerN)} N`),
   );
   $("figure-title").textContent = "Block and digits, front view";
   $("figure").setAttribute("aria-label", "The pinch block from the front with the thumb and the fingers pressing its faces");
