@@ -11,7 +11,7 @@
 // (world: x forward, y up, z to the right, as in multijoint3d.js); then the scene is turned so the
 // variant's gravity points down (lying, inclined), and stood on the floor.
 
-import { v3, add3, sub3, dot3, cross3, len3, unit3, mirror } from "./multijoint3d.js";
+import { v3, add3, sub3, dot3, cross3, len3, unit3, mirror, HIP_BAR } from "./multijoint3d.js";
 import { gravityOf } from "./physics.js";
 
 const rad = (d) => (d * Math.PI) / 180;
@@ -134,7 +134,8 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
     if (!both) arm(lSh, add3(lSh, v3(0, -L.upperArm - L.forearm, 0)), -1);
   }
   const torso = { part: "torso" };
-  line(add3(P, v3(0, 0, -L.hipHalfWidth)), add3(P, v3(0, 0, L.hipHalfWidth)), 0.16, "body", torso);
+  const hb = L.hipHalfWidth * HIP_BAR; // inside the trunk's outline, as in the 3D lifts
+  line(add3(P, v3(0, 0, -hb)), add3(P, v3(0, 0, hb)), 0.16, "body", torso);
   line(P, S, 0.3, "body", torso);
   line(add3(S, v3(0, 0, -L.shoulderHalfWidth)), add3(S, v3(0, 0, L.shoulderHalfWidth)), 0.1, "body", torso);
   dot(add3(S, v3(0, 0.2, 0)), 0.11, "body", torso);
