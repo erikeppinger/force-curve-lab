@@ -38,6 +38,38 @@ export function planeAxes(plane, yawDeg = 0) {
   return { ex: v3(s, 0, c), ey: v3(0, 1, 0) }; // frontal; + yaw: the plane turned forwards (scapular plane)
 }
 
+/**
+ * The hand and what it holds, for a variant's grip3d: "supinated" (palm forward / up, handle across
+ * the body), "pronated" (palm back / down) or "neutral" (hammer: palm facing in, handle in the
+ * plane of the curl). The palm is drawn on the side it faces; a barbell spans both hands.
+ */
+function grip(variant, chain, t2, m2, both, { line, dot, dir2, Z, type, angleSense }) {
+  const l = Math.hypot(t2.x - m2.x, t2.y - m2.y) || 1;
+  const u = { x: (t2.x - m2.x) / l, y: (t2.y - m2.y) / l };
+  // The forearm's front (flexor) side: the way it turns when the elbow bends.
+  const front = unit3(dir2({ x: -u.y * angleSense, y: u.x * angleSense }));
+  const g = variant.grip3d;
+  const palm = g === "supinated" ? front : g === "pronated" ? v3(-front.x, -front.y, -front.z) : v3(0, 0, -1);
+  const handle = g === "neutral" ? front : Z;
+  const bar = /Barbell|EZ/.test(variant.equipment ?? "") && type === "gravity";
+  for (const [tip, s] of both ? [[chain[2], 1], [mirror(chain[2]), -1]] : [[chain[2], 1]]) {
+    const pm = v3(palm.x, palm.y, palm.z * s), h = v3(handle.x, handle.y, handle.z * s);
+    // Palm: a short plate beside the handle on the palm side, along the handle.
+    const c = add3(tip, pm, 0.03);
+    line(add3(c, h, -0.045), add3(c, h, 0.045), 0.03, "body");
+    if (!bar && type === "gravity") {
+      line(add3(tip, h, -0.09), add3(tip, h, 0.09), 0.025, "equipment");
+      dot(add3(tip, h, -0.1), 0.045, "weight");
+      dot(add3(tip, h, 0.1), 0.045, "weight");
+    }
+  }
+  if (bar) {
+    const t = chain[2];
+    line(v3(t.x, t.y, 0.55), v3(t.x, t.y, -0.55), 0.03, "equipment");
+    for (const z of [0.5, -0.5]) dot(v3(t.x, t.y, z), 0.11, "weight");
+  }
+}
+
 /** Everything to draw (scene3d's input) for one analyze() result. */
 export function chainScene3d(ex, variant, result, { activation = [], pulley, body } = {}) {
   const F = ex.figure3d;
@@ -123,7 +155,8 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
   const joint3 = map2(result.pose.joint);
   const joints = [{ id: "joint", at: joint3, foot: joint3, momentArm: 0 }];
   const type = variant.load?.type;
-  if (type === "gravity") for (const p of both ? [chain[2], mirror(chain[2])] : [chain[2]]) dot(p, /Dumbbell|Ankle/.test(variant.equipment ?? "") ? 0.055 : 0.09, "weight");
+  if (variant.grip3d) grip(variant, chain, t2, m2, both, { line, dot, dir2, X, Y, Z: v3(0, 0, 1), type, angleSense: ex.angleSense ?? 1 });
+  else if (type === "gravity") for (const p of both ? [chain[2], mirror(chain[2])] : [chain[2]]) dot(p, /Dumbbell|Ankle/.test(variant.equipment ?? "") ? 0.055 : 0.09, "weight");
   if (type === "cable" || type === "band") {
     const q = map2(pulley ?? variant.load.pulley);
     line(chain[2], q, type === "band" ? 0.014 : 0.008, type === "band" && !(f.mag > 0) ? "band slack" : type);

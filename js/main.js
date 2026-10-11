@@ -154,7 +154,7 @@ function setVariant(id, pulley, load, placement) {
   }
   $("variant-notes").textContent = v.strengthScale ? `${v.notes} Strength in this posture: ${v.strengthScale.note}` : v.notes;
   $("variant-equipment").textContent = v.equipment;
-  $("figure-title").textContent = viewTitle(state.exercise, v);
+  $("figure-title").textContent = viewTitle(state.exercise, v, is3d(state.exercise));
   $("load-label").textContent = state.exercise.model === "finger" || state.exercise.model === "pinch" ? "Block (one hand)" : v.load?.type === "reaction" ? "Added load" : "Load";
 }
 
@@ -1178,7 +1178,11 @@ function bind() {
     b.addEventListener("click", () => {
       if (b.dataset.cam === "flat") state.chain3d = false;
       else { state.cam = { ...CAMERAS[b.dataset.cam] }; state.chain3d = true; }
-      if (isChain(state.exercise)) { setZoom(!state.chain3d && (state.exercise.defaults.zoom ?? false)); syncViewButtons(state.exercise); }
+      if (isChain(state.exercise)) {
+        setZoom(!state.chain3d && (state.exercise.defaults.zoom ?? false));
+        syncViewButtons(state.exercise);
+        $("figure-title").textContent = viewTitle(state.exercise, variant(), is3d(state.exercise));
+      }
       render();
     });
   }

@@ -57,3 +57,15 @@ test("calf raise: toes out turns the working foot outwards about the vertical; t
   assert.equal(scene(ex, "single-leg", 10).scene.filter((p) => p.bone).length, 2);
   assert.equal(scene(ex, "two-leg", 10).scene.filter((p) => p.bone).length, 4);
 });
+
+test("curl grips: the dumbbell runs across the body (supinated) or in the plane of the curl (hammer); palms face forward or back", () => {
+  const ex = load("biceps-curl");
+  const handleDir = (s) => { const h = s.scene.find((p) => p.cls === "equipment"); return unit3(sub3(h.b, h.a)); };
+  // The palm plate's centre relative to the hand.
+  const palmSide = (s) => { const t = arm(s).tip; const p = s.scene.find((q) => q.kind === "line" && q.cls === "body" && q.w === 0.03); return v3((p.a.x + p.b.x) / 2 - t.x, (p.a.y + p.b.y) / 2 - t.y, (p.a.z + p.b.z) / 2 - t.z); };
+  // Elbow at 90°: the forearm points forward, its front (palm side when supinated) faces up.
+  const sup = scene(ex, "dumbbell", 90), ham = scene(ex, "hammer", 90), rev = scene(ex, "reverse", 90);
+  assert.ok(Math.abs(handleDir(sup).z) > 0.999);
+  assert.ok(Math.abs(handleDir(ham).y) > 0.999, JSON.stringify(handleDir(ham)));
+  assert.ok(palmSide(sup).y > 0 && palmSide(rev).y < 0, `${palmSide(sup).y} / ${palmSide(rev).y}`);
+});
