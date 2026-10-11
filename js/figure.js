@@ -48,11 +48,12 @@ const postureOf = (exercise, variant) => {
  * Carries its own drawing scale (px per metre) so the picture keeps about the same pixel size.
  */
 export function zoomBounds(exercise, variant, poses) {
-  const R = rotator(screenRotation(variant));
+  const rot = screenRotation(variant);
   const proximalMoves = exercise.movingJoint === "proximal";
   const reach = exercise.segments.distal;
   const pts = [];
   for (const p of poses) {
+    const R = rotator(rot, anchorShift(variant, p));
     const joint = proximalMoves ? p.base : p.mid;
     const other = proximalMoves ? p.mid : p.base;
     const len = Math.hypot(other.x - joint.x, other.y - joint.y) || 1;
@@ -69,22 +70,37 @@ export function zoomBounds(exercise, variant, poses) {
 /** Bounding box (screen frame, metres) that holds the body, the chain over its whole range and the pulley. */
 export function figureBounds(exercise, variant, poses, pulley) {
   const rot = screenRotation(variant);
-  const R = rotator(rot);
   const pts = [];
-  for (const s of postureOf(exercise, variant)) {
-    if (s.shape === "circle") { const c = R(P(s.at)); pts.push(add(c, { x: s.r, y: s.r }), add(c, { x: -s.r, y: -s.r })); }
-    else if (s.shape === "ellipse") { const c = R(P(s.at)); const r = Math.max(s.rx, s.ry); pts.push(add(c, { x: r, y: r }), add(c, { x: -r, y: -r })); }
-    else pts.push(R(P(s.from)), R(P(s.to)));
+  // The body moves with the pose when the drawing is anchored at the foot (anchorShift).
+  const anchored = variant.load?.type === "reaction";
+  for (const pose of anchored ? poses : [null]) {
+    const R = rotator(rot, anchorShift(variant, pose));
+    for (const s of postureOf(exercise, variant)) {
+      if (s.shape === "circle") { const c = R(P(s.at)); pts.push(add(c, { x: s.r, y: s.r }), add(c, { x: -s.r, y: -s.r })); }
+      else if (s.shape === "ellipse") { const c = R(P(s.at)); const r = Math.max(s.rx, s.ry); pts.push(add(c, { x: r, y: r }), add(c, { x: -r, y: -r })); }
+      else pts.push(R(P(s.from)), R(P(s.to)));
+    }
   }
-  for (const p of poses) pts.push(R(p.base), R(p.mid), R(p.tip));
-  if (pulley) pts.push(R(pulley));
+  for (const p of poses) { const R = rotator(rot, anchorShift(variant, p)); pts.push(R(p.base), R(p.mid), R(p.tip)); }
+  if (pulley) pts.push(rotator(rot)(pulley));
   const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y);
   return { x0: Math.min(...xs) - MARGIN, x1: Math.max(...xs) + MARGIN, y0: Math.min(...ys) - MARGIN, y1: Math.max(...ys) + MARGIN };
 }
 
-function rotator(rot) {
+function rotator(rot, shift = { x: 0, y: 0 }) {
   const c = Math.cos(rot), s = Math.sin(rot);
-  return (p) => ({ x: c * p.x - s * p.y, y: s * p.x + c * p.y });
+  return (p) => ({ x: c * p.x - s * p.y + shift.x, y: s * p.x + c * p.y + shift.y });
+}
+
+/**
+ * Screen shift for one pose. A closed chain (calf raise: the floor pushes on the ball of the foot)
+ * is drawn with the ball of the foot fixed, so the body rises and the floor stays put; the
+ * statics' frame stays at the knee. Other loads: no shift.
+ */
+export function anchorShift(variant, pose) {
+  if (variant.load?.type !== "reaction") return { x: 0, y: 0 };
+  const t = rotator(screenRotation(variant))(pose.tip);
+  return { x: -t.x, y: -t.y };
 }
 
 export function renderFigure(svg, { exercise, variant, result, activation, pulley, bounds }) {
@@ -94,7 +110,8 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
   const arrow = (k > 2 ? 1.6 : 1) / k; // and the force arrow a bit longer when zoomed in
   svg.setAttribute("viewBox", `0 0 ${((V.x1 - V.x0) * S).toFixed(1)} ${((V.y1 - V.y0) * S).toFixed(1)}`);
   svg.replaceChildren();
-  const R = rotator(screenRotation(variant));
+  const shift = anchorShift(variant, result.pose);
+  const R = rotator(screenRotation(variant), shift);
   const toPx = (p) => { const q = R(p); return { x: (q.x - V.x0) * S, y: (V.y1 - q.y) * S }; };
   const seg = (parent, a, b, cls, widthM, extra = {}) => {
     const A = toPx(a), B = toPx(b);
@@ -102,7 +119,8 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
   };
   const circle = (parent, c, r, cls) => { const C = toPx(c); return el("circle", { cx: C.x, cy: C.y, r: r * S, class: cls }, parent); };
   // Screen-frame helpers (for things that stand on the floor whatever the posture).
-  const fromScreen = rotator(-screenRotation(variant));
+  const unrotate = rotator(-screenRotation(variant));
+  const fromScreen = (q) => unrotate({ x: q.x - shift.x, y: q.y - shift.y });
   const gravityInPlane = Math.hypot(gravityOf(variant).x, gravityOf(variant).y) > 1e-9;
 
   const act = Object.fromEntries(activation.map((m) => [m.id, m.value]));

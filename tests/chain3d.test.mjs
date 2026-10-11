@@ -85,3 +85,24 @@ test("3D parts: the trunk, hip and shoulder bars and head form one torso; a leg'
   assert.equal(prims[4].part, prims[5].part);
   assert.ok(prims[4].part !== "torso" && prims[6].part !== "torso" && prims[7].part !== prims[4].part);
 });
+
+test("calf raise display: the ball of the foot, the step and the floor stay put while the body rises (2D and 3D)", async () => {
+  const { anchorShift } = await import("../js/figure.js");
+  const ex = load("calf-raise");
+  const v = ex.variants.find((x) => x.id === "two-leg");
+  const balls = [], floors = [], hips = [];
+  for (const angle of [-20, 0, 20, 40]) {
+    const r = analyze(ex, v, angle, { loadKg: 0, peakTorqueNm: 119, bodyMassKg: 75, placement: v.params });
+    // 2D: the tip lands on the screen origin, the knee moves.
+    const sh = anchorShift(v, r.pose);
+    assert.ok(Math.abs(r.pose.tip.x + sh.x) < 1e-9 && Math.abs(r.pose.tip.y + sh.y) < 1e-9);
+    hips.push(r.pose.base.y + sh.y);
+    // 3D
+    const s = chainScene3d(ex, v, r, { body });
+    balls.push(arm(s).tip);
+    floors.push(s.scene.find((p) => p.cls === "floor3d").pts[0].y);
+  }
+  for (const b of balls) near(b, balls[0], 1e-9);
+  assert.ok(floors.every((y) => Math.abs(y - floors[0]) < 1e-9));
+  assert.ok(hips[3] > hips[1] + 0.05, `the knee rises: ${hips}`);
+});

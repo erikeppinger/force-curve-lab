@@ -233,10 +233,15 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
     const a = T(P), b = T(S), y = Math.min(a.y, b.y) - 0.16;
     scene.push({ kind: "poly", pts: [[a.x, -0.17], [b.x, -0.17], [b.x, 0.17], [a.x, 0.17]].map(([x, z]) => v3(x, y, z)), cls: "plate3d bench3d" });
   }
+  // A closed chain is drawn with the ball of the foot fixed (on the step's edge, the floor at
+  // y = 0): the body rises and the step stays put, as in the 2D figure.
+  const D = type === "reaction" ? v3(-ball.x, -floorY, 0) : v3(0, 0, 0);
+  const M = (p) => add3(p, D);
+  const move = (p) => (p.kind === "line" ? { ...p, a: M(p.a), b: M(p.b) } : p.kind === "dot" ? { ...p, c: M(p.c) } : { ...p, pts: p.pts.map(M) });
   return {
-    scene: [...scene, ...prims],
+    scene: [...scene, ...prims].map(move),
     frames: {},
-    forces: forces.map((q) => ({ at: T(q.at), dir: R(q.dir) })),
-    joints: joints.map((j) => ({ ...j, at: T(j.at), foot: T(j.foot) })),
+    forces: forces.map((q) => ({ at: M(T(q.at)), dir: R(q.dir) })),
+    joints: joints.map((j) => ({ ...j, at: M(T(j.at)), foot: M(T(j.foot)) })),
   };
 }
