@@ -168,6 +168,20 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
     }
   }
 
+  // A pad under the upper arm (preacher curl), as in the 2D figure: a board across both arms.
+  let padCentre = null;
+  if (variant.proximalSupported) {
+    const l = Math.hypot(m2.x - b2.x, m2.y - b2.y) || 1, u = { x: (m2.x - b2.x) / l, y: (m2.y - b2.y) / l };
+    const side = { x: -u.y, y: u.x };
+    const p0 = map2({ x: b2.x + (m2.x - b2.x) * 0.4 - side.x * 0.05, y: b2.y + (m2.y - b2.y) * 0.4 - side.y * 0.05 });
+    const p1 = map2({ x: m2.x + u.x * 0.04 - side.x * 0.05, y: m2.y + u.y * 0.04 - side.y * 0.05 });
+    const zs = both ? [-L.shoulderHalfWidth - 0.08, L.shoulderHalfWidth + 0.08] : [L.shoulderHalfWidth - 0.08, L.shoulderHalfWidth + 0.08];
+    lines.push({ kind: "poly", pts: [v3(p0.x, p0.y, zs[0]), v3(p1.x, p1.y, zs[0]), v3(p1.x, p1.y, zs[1]), v3(p0.x, p0.y, zs[1])], cls: "plate3d bench3d", top: 0.15 }); // in front of the trunk it leans on
+    // The cushion under each upper arm, as the 2D figure's pad.
+    for (const z of both ? [L.shoulderHalfWidth, -L.shoulderHalfWidth] : [L.shoulderHalfWidth]) line(v3(p0.x, p0.y, z), v3(p1.x, p1.y, z), 0.06, "pad", { top: 0.15 });
+    padCentre = v3((p0.x + p1.x) / 2, (p0.y + p1.y) / 2, (zs[0] + zs[1]) / 2);
+  }
+
   // Load and equipment.
   const f = result.force, forces = [];
   const joint3 = map2(result.pose.joint);
@@ -212,6 +226,7 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
     box([[x0, stepTop, -z], [x0, floorY, -z], [x0, floorY, z], [x0, stepTop, z]]);
     box([[x1, stepTop, -z], [x1, floorY, -z], [x1, floorY, z], [x1, stepTop, z]]);
   }
+  if (padCentre) { const c = T(padCentre); scene.push({ kind: "line", a: v3(c.x, c.y - 0.03, c.z), b: v3(c.x, floorY, c.z), w: 0.05, cls: "equipment", top: 0.15 }); } // the pad's post
   if (knee && seated) scene.push({ kind: "line", a: T(v3(-L.thigh / 2 - 0.1, -0.1, 0)), b: v3(T(v3(-L.thigh / 2 - 0.1, 0, 0)).x, floorY, 0), w: 0.05, cls: "equipment" }); // the seat's post
   if (lying) {
     // A bench under the trunk.
