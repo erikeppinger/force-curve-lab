@@ -4,6 +4,7 @@
   "joint": "Elbow flexion",
   "movingJoint": "distal",
   "view": "side",
+  "figure3d": {"kind": "chain", "base": "shoulder", "plane": "sagittal", "both": true, "start": "2d"},
   "angleLabel": "Elbow angle",
   "angleRange": [0, 145],
   "angleNote": "0° = arm straight, 145° = fully flexed",
@@ -168,6 +169,7 @@
     },
     {
       "id": "cable-low",
+      "oneSided": true,
       "name": "Cable curl (low pulley, in front)",
       "equipment": "Cable",
       "proximalAngle": 0,
@@ -177,6 +179,7 @@
     },
     {
       "id": "cable-bayesian",
+      "oneSided": true,
       "name": "Bayesian cable curl (pulley behind)",
       "equipment": "Cable",
       "proximalAngle": -25,
@@ -192,6 +195,7 @@
     },
     {
       "id": "band",
+      "oneSided": true,
       "name": "Band curl (standing on the band)",
       "equipment": "Resistance band",
       "proximalAngle": 0,

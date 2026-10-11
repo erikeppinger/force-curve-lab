@@ -4,6 +4,7 @@
   "joint": "Shoulder horizontal adduction",
   "movingJoint": "proximal",
   "view": "top",
+  "figure3d": {"kind": "chain", "base": "shoulder", "plane": "transverse", "both": true, "start": "3d"},
   "angleLabel": "Arm angle",
   "angleOffset": 90,
   "angleRange": [-20, 90],

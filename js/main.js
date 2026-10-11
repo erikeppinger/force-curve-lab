@@ -9,6 +9,7 @@ import { loadRegion, regionsOf, viewsFor, renderRegionView, regionValues } from 
 import { analyzeEdge, sampleEdge, idealEdge, liftProfile } from "./finger.js";
 import { renderFingersView, renderHandView, renderArmView } from "./edgefig.js";
 import { hipScene3d } from "./hipmodel.js";
+import { chainScene3d } from "./chain3d.js";
 import { handScene3d } from "./handfig3d.js";
 import { analyzePinch, samplePinch } from "./pinchlift.js";
 import { renderPinchView } from "./pinchfig.js";
@@ -34,6 +35,7 @@ const state = {
   placement: null, // live foot placement for 3D lifts (main variant only)
   hand: null, // edge lift: the user's own finger bone lengths (m), or null for the typical hand
   edgeView: "fingers", // edge lift: which figure (fingers | hand | arm)
+  chain3d: false, // single-joint exercises with figure3d.kind "chain": 3D figure (true) or the 2D one
   liftT: null, // edge lift: time in the played lift (s); null = holding (the static view)
   cam: { ...CAMERAS["3d"] },
   angle: 90,
@@ -99,7 +101,8 @@ async function loadExercise(id) {
   return ex;
 }
 /** A 3D figure (drag to turn): the 3D lifts, and single-joint exercises with `figure3d`. */
-const is3d = (ex) => ex.view === "3d" || Boolean(ex.figure3d && ex.hipModel?.geometry) || (ex.model === "finger" && state.edgeView === "muscles" && Boolean(ex.handModel?.geometry));
+const isChain = (ex) => ex.figure3d?.kind === "chain";
+const is3d = (ex) => ex.view === "3d" || Boolean(ex.figure3d && ex.hipModel?.geometry) || (isChain(ex) && state.chain3d) || (ex.model === "finger" && state.edgeView === "muscles" && Boolean(ex.handModel?.geometry));
 
 function fillSelect(sel, items, includeNone) {
   sel.replaceChildren();
@@ -441,6 +444,15 @@ async function loadWger() {
 }
 
 /** Switch exercise: reset controls, labels, body map and wger info. `h` = values from the URL hash. */
+/** Camera buttons (3D figures), the 2D/3D switch (single-joint exercises with a 3D figure) and zoom (2D). */
+function syncViewButtons(ex) {
+  $("view-buttons").hidden = !is3d(ex) && !isChain(ex);
+  $("view-buttons").querySelector('[data-cam="flat"]').hidden = !isChain(ex);
+  $("view-buttons").querySelector('[data-cam="flat"]').setAttribute("aria-pressed", String(isChain(ex) && !state.chain3d));
+  $("zoom-buttons").hidden = Boolean(ex.model) || ex.view === "3d" || is3d(ex); // the 3D hip view zooms to the hip
+  $("figure").classList.toggle("draggable", is3d(ex));
+}
+
 function setExercise(id, h = {}) {
   const ex = (state.exercise = state.catalog[id]);
   const view = ex.view ?? "side";
@@ -486,11 +498,10 @@ function setExercise(id, h = {}) {
   state.liftT = null;
   // A new exercise starts paused (an animation running on the previous one doesn't carry over).
   if (state.playing) { state.playing = false; $("play").textContent = "Play"; $("play").setAttribute("aria-pressed", "false"); }
-  $("view-buttons").hidden = !is3d(ex);
-  // Zoom for single-joint lifts; on by default where the moving segment is small (e.g. the hand).
-  $("zoom-buttons").hidden = Boolean(ex.model) || ex.view === "3d"; // the 3D hip view zooms to the hip
+  state.chain3d = isChain(ex) && ex.figure3d.start !== "2d";
+  if (isChain(ex)) state.cam = { ...(ex.figure3d.cam ?? CAMERAS["3d"]) };
+  syncViewButtons(ex);
   setZoom(!ex.model && !is3d(ex) && (ex.defaults.zoom ?? false));
-  $("figure").classList.toggle("draggable", is3d(ex));
   $("joint-table").hidden = !multi; // the edge lift shows it in its Arm view
   $("holding-switch").hidden = true; // shown again by renderHolding on lifts that report holding loads
   $("holding-rows").replaceChildren();
@@ -909,10 +920,12 @@ function renderView() {
   const { main, cmp, bounds } = curves();
 
   if (is3d(ex)) {
-    // Hip model: 3D figure with the muscles along their model paths. Bounds over the range for this
-    // camera (and lean), so the figure doesn't jump while animating.
-    const geo = ex.hipModel.geometry;
-    const scene = (res) => scene3d(ex, hipScene3d(ex, v, res, { geometry: geo, acts: act[0]?.parts ?? {}, muscles: ex.muscles, pulley: state.pulley }), act);
+    // Hip model: 3D figure with the muscles along their model paths; other single-joint exercises:
+    // the 2D chain in its plane on a 3D body (chain3d.js). Bounds over the range for this camera
+    // (and lean), so the figure doesn't jump while animating.
+    const scene = isChain(ex)
+      ? (res) => scene3d(ex, chainScene3d(ex, v, res, { activation: act, pulley: state.pulley, body: state.body }), act)
+      : (res) => scene3d(ex, hipScene3d(ex, v, res, { geometry: ex.hipModel.geometry, acts: act[0]?.parts ?? {}, muscles: ex.muscles, pulley: state.pulley }), act);
     const camKey = `${state.cam.yaw},${state.cam.pitch}`;
     if (curves().camKey !== camKey) {
       Object.assign(curves(), { camKey, bounds3: bounds3d(main.filter((_, i) => i % 6 === 0 || i === main.length - 1).map((s) => scene(s)), state.cam) });
@@ -1162,7 +1175,12 @@ function bind() {
     render();
   });
   for (const b of $("view-buttons").querySelectorAll("button")) {
-    b.addEventListener("click", () => { state.cam = { ...CAMERAS[b.dataset.cam] }; render(); });
+    b.addEventListener("click", () => {
+      if (b.dataset.cam === "flat") state.chain3d = false;
+      else { state.cam = { ...CAMERAS[b.dataset.cam] }; state.chain3d = true; }
+      if (isChain(state.exercise)) { setZoom(!state.chain3d && (state.exercise.defaults.zoom ?? false)); syncViewButtons(state.exercise); }
+      render();
+    });
   }
   // Drag to turn the 3D view (horizontal drags only on touch, so the page still scrolls).
   let drag = null;

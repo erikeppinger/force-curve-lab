@@ -4,6 +4,7 @@
   "joint": "Shoulder abduction",
   "movingJoint": "proximal",
   "view": "front",
+  "figure3d": {"kind": "chain", "base": "shoulder", "plane": "frontal", "both": true, "start": "3d"},
   "angleLabel": "Abduction angle",
   "angleRange": [0, 180],
   "angleNote": "0° = arm by your side, 90° = arm horizontal at shoulder height, 180° = overhead (Lu raise). Front view: x points out to the side.",
@@ -151,6 +152,7 @@
     },
     {
       "id": "cable",
+      "oneSided": true,
       "name": "Cable lateral raise (low pulley, opposite side)",
       "equipment": "Cable",
       "load": {
@@ -179,6 +181,7 @@
     },
     {
       "id": "band",
+      "oneSided": true,
       "name": "Band lateral raise (band under the foot)",
       "equipment": "Resistance band",
       "load": {

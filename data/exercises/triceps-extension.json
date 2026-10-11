@@ -4,6 +4,7 @@
   "joint": "Elbow extension",
   "movingJoint": "distal",
   "view": "side",
+  "figure3d": {"kind": "chain", "base": "shoulder", "plane": "sagittal", "both": true, "start": "2d"},
   "angleLabel": "Elbow angle",
   "concentric": "decrease",
   "angleRange": [0, 140],

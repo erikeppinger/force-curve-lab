@@ -4,6 +4,7 @@
   "joint": "Ankle plantarflexion",
   "movingJoint": "distal",
   "view": "side",
+  "figure3d": {"kind": "chain", "base": "knee", "plane": "sagittal", "both": true, "start": "2d", "yawKey": "footAngle", "cam": {"yaw": 90, "pitch": 60}},
   "angleLabel": "Ankle angle",
   "angleOffset": 60.3,
   "angleSense": -1,
@@ -105,6 +106,7 @@
   "variants": [
     {
       "id": "single-leg",
+      "oneSided": true,
       "name": "Single-leg standing calf raise (dumbbell)",
       "equipment": "Dumbbell, on a step",
       "posture": "standing",

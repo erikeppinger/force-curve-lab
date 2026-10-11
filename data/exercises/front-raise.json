@@ -4,6 +4,7 @@
   "joint": "Shoulder flexion",
   "movingJoint": "proximal",
   "view": "side",
+  "figure3d": {"kind": "chain", "base": "shoulder", "plane": "sagittal", "both": true, "start": "3d"},
   "angleLabel": "Shoulder angle",
   "angleRange": [0, 180],
   "angleNote": "Shoulder flexion: 0° = arm by your side, 90° = arm pointing forward at shoulder height, 180° = straight overhead (the overhead variant).",
@@ -158,6 +159,7 @@
     },
     {
       "id": "cable",
+      "oneSided": true,
       "name": "Cable front raise (low pulley behind)",
       "equipment": "Cable",
       "posture": "standing",
