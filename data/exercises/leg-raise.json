@@ -1,0 +1,142 @@
+{
+  "id": "leg-raise",
+  "group": "core",
+  "name": "Leg raise",
+  "joint": "Hip flexion (both legs)",
+  "movingJoint": "proximal",
+  "view": "side",
+  "angleLabel": "Hip angle",
+  "angleRange": [0, 100],
+  "angleNote": "Hip flexion: 0° = legs in line with the trunk, 90° = legs at a right angle to it. Hip at the origin.",
+  "segments": {
+    "proximal": 0.43,
+    "distal": 0.43,
+    "names": ["Thighs", "Lower legs"],
+    "massFractions": [0.2832, 0.114],
+    "comFractions": [0.41, 0.604],
+    "massNote": "Both legs: segment mass as a fraction of body mass (twice one leg), and centre of mass as a fraction of the segment length from its proximal end, from de Leva's adjusted Zatsiorsky-Seluyanov table (young adult males). The lower legs include the feet (combined centre of mass along knee → ankle; the foot's own position is approximated).",
+    "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
+    "note": "Hip→knee and knee→ankle in metres, typical adult.",
+    "massLabel": "legs"
+  },
+  "defaults": {"loadKg": 0, "peakTorqueNm": 283, "variant": "hanging", "bodyMassKg": 75},
+  "ui": {"load": [0, 20, 0.5], "strength": [100, 450]},
+  "strengthCurve": {
+    "label": "Hip flexor strength (both hips)",
+    "points": [[0, 0.99], [15, 0.94], [30, 0.86], [45, 0.74], [60, 0.6], [74, 0.44]],
+    "note": "Relative isometric hip-flexion torque vs hip flexion, strongest with the hip straight or slightly extended (peak at −12°), measured standing with the knee slightly bent (tested −29° to 74°; further hip flexion is held flat at the 74° value, which is extrapolation: the hip flexors are short there and likely weaker still). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3 (hip flexion: C2 0.738, C3 −0.214 rad). Peak torque default: twice the same table's C1 for young men (both hips; 0.113 × body weight × height = 142 Nm each at 73 kg and 1.75 m).",
+    "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
+  },
+  "postures": {
+    "hanging": [
+      {"shape": "seg", "from": [0, 0], "to": [0, 0.52], "w": 0.2},
+      {"shape": "circle", "at": [0.02, 0.72], "r": 0.11},
+      {"shape": "seg", "from": [0, 0.5], "to": [0.02, 1.12], "w": 0.07},
+      {"shape": "seg", "from": [-0.25, 1.15], "to": [0.3, 1.15], "w": 0.035, "class": "equipment"}
+    ],
+    "lying": [
+      {"shape": "seg", "from": [0, 0], "to": [0, 0.52], "w": 0.2},
+      {"shape": "circle", "at": [0.02, 0.72], "r": 0.11},
+      {"shape": "seg", "from": [-0.04, 0.5], "to": [-0.06, 0.05], "w": 0.07},
+      {"shape": "seg", "from": [-0.13, 0.95], "to": [-0.13, -1.0], "w": 0.03, "class": "equipment"}
+    ]
+  },
+  "muscles": [
+    {
+      "id": "iliopsoas",
+      "region": "thigh",
+      "name": "Iliopsoas (hip flexors)",
+      "wgerId": null,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[0, 1], [100, 1]],
+      "note": "The main hip flexor: the psoas from the lumbar spine and the iliacus from the pelvis, both to the thigh. It lifts the legs; the abdominals don't, they hold the pelvis.",
+      "source": "TODO: check against EMG literature"
+    },
+    {
+      "id": "rectus-femoris",
+      "region": "thigh",
+      "name": "Rectus femoris (quadriceps)",
+      "wgerId": 10,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.8], [100, 0.5]],
+      "note": "The one quadriceps head that crosses the hip. It shortens as the hip flexes, so it helps less near the top. With the knees bent it is longer at the knee (not modelled).",
+      "source": "TODO: check against EMG literature"
+    },
+    {
+      "id": "rectus-abdominis",
+      "region": "trunk",
+      "name": "Rectus abdominis",
+      "wgerId": 6,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "weight": [[0, 0.5], [100, 0.7]],
+      "note": "The hip flexors pull the pelvis forward (arching the lower back) as hard as they lift the legs; the abdominals hold it. Curling the pelvis up at the top (the 'toes to bar' finish) is trunk flexion and works them more, which this model leaves out.",
+      "source": "TODO: check against EMG literature"
+    },
+    {
+      "id": "external-oblique",
+      "region": "trunk",
+      "name": "External oblique",
+      "wgerId": 14,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "weight": [[0, 0.4], [100, 0.5]],
+      "note": "Braces the trunk with the rectus abdominis; hanging, it also stops the body swinging.",
+      "source": "TODO: check against EMG literature"
+    }
+  ],
+  "phases": [
+    {"name": "Start", "range": [0, 30], "text": "Legs in line with the trunk: the hip flexors are long and strongest. Lying down, this is where the legs' weight has its longest lever."},
+    {"name": "Mid-range", "range": [30, 75], "text": "Lever and strength cross over: lying, the load falls; hanging, it rises."},
+    {"name": "Top", "range": [75, 100], "text": "Hanging, the legs are horizontal at 90°: the longest lever while the hip flexors are short and weak. The hardest point, and the reason many swing or bend the knees."}
+  ],
+  "variants": [
+    {
+      "id": "hanging",
+      "name": "Hanging leg raise",
+      "equipment": "Pull-up bar",
+      "posture": "hanging",
+      "load": {"type": "gravity"},
+      "defaultLoadKg": 0,
+      "notes": "Hanging from a bar, straight legs. Torque grows with the sine of the hip angle: nothing at the bottom, most with the legs horizontal.",
+      "params": {"knee": 0}
+    },
+    {
+      "id": "hanging-knee",
+      "name": "Hanging knee raise",
+      "equipment": "Pull-up bar",
+      "posture": "hanging",
+      "load": {"type": "gravity"},
+      "defaultLoadKg": 0,
+      "notes": "Knees bent 90°: with the thighs horizontal the lower legs hang straight below the knees, closer to the hip: about a quarter less torque than straight legs. The thighs' weight stays the same.",
+      "params": {"knee": 90}
+    },
+    {
+      "id": "lying",
+      "name": "Lying leg raise",
+      "equipment": "Floor or bench",
+      "posture": "lying",
+      "gravity": {"x": -1, "y": 0},
+      "viewLabel": "Side view (lying on the back)",
+      "load": {"type": "gravity"},
+      "defaultLoadKg": 0,
+      "notes": "On the back, straight legs. The hardest point is the start, just off the floor, where the legs are horizontal; at 90° they are vertical and weigh nothing on the hips.",
+      "params": {"knee": 0}
+    }
+  ],
+  "placement": [
+    {
+      "key": "knee",
+      "label": "Knee bend",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "°",
+      "scale": 1,
+      "distalBend": true,
+      "hint": "0° = legs straight. Bending the knees brings the lower legs' weight (and an ankle weight) closer to the hip: a shorter lever, so a lighter lift."
+    }
+  ]
+}

@@ -76,6 +76,8 @@ export function pose(exercise, variant, angleDeg) {
  * reaction: closed chain (e.g. calf raise): the floor pushes up on the tip with the load
  *           plus the share of body mass this limb carries (load.bodyWeight: 1 on one leg,
  *           0.5 on two, 0 seated): (m + share·body)·g against gravity.
+ * A gravity load acts at the tip, or with load.on ("proximal" / "distal") and load.along
+ * (fraction from that segment's start) at a point on a segment (e.g. a plate held at the chest).
  */
 export function loadForce(exercise, variant, p, angleDeg, { loadKg, pulley, bodyMassKg = 75 }) {
   const { load } = variant;
@@ -107,7 +109,9 @@ export function loadForce(exercise, variant, p, angleDeg, { loadKg, pulley, body
     const F = (loadKg + (load.bodyWeight ?? 0) * bodyMassKg) * G;
     return { x: -F * g.x, y: -F * g.y, mag: F * Math.hypot(g.x, g.y), at: p.tip };
   }
-  return { x: mag * g.x, y: mag * g.y, mag: mag * Math.hypot(g.x, g.y), at: p.tip };
+  const [a, b] = load.on === "proximal" ? [p.base, p.mid] : [p.mid, p.tip];
+  const at = load.on ? { x: a.x + (b.x - a.x) * load.along, y: a.y + (b.y - a.y) * load.along } : p.tip;
+  return { x: mag * g.x, y: mag * g.y, mag: mag * Math.hypot(g.x, g.y), at };
 }
 
 /** Weight of the moving limb segments: [{ at, f }] at their centres of mass. */

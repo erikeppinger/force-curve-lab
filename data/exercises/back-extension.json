@@ -1,0 +1,130 @@
+{
+  "id": "back-extension",
+  "group": "core",
+  "name": "Back extension",
+  "joint": "Hip extension (trunk held straight)",
+  "movingJoint": "proximal",
+  "view": "side",
+  "angleLabel": "Hip angle",
+  "angleOffset": 180,
+  "angleSense": -1,
+  "concentric": "decrease",
+  "angleRange": [-10, 90],
+  "angleNote": "Hip flexion: 0° = body straight (top), 90° = trunk folded down to the legs. Lifting makes the angle smaller. Hip at the origin; the legs are held by the pads.",
+  "segments": {
+    "proximal": 0.52,
+    "distal": 0.18,
+    "names": ["Trunk (arms crossed)", "Head"],
+    "massFractions": [0.5334, 0.0694],
+    "comFractions": [0.611, 0.72],
+    "massNote": "Both segments as a fraction of body mass from de Leva's table (young adult males). Trunk: upper, middle and lower trunk (0.4346, centre of mass 0.29 m above the hips: head + trunk at 66% of hip → shoulder minus the head) plus both arms crossed on the chest (0.0988, placed 0.42 m above the hips, estimate): 0.5334 at 0.32 m. Head: 0.0694, its centre 0.13 m above the shoulders. The segment ends 0.18 m above the shoulders, where a plate held behind the head sits.",
+    "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
+    "note": "Hip → shoulder and shoulder → behind the head, metres, typical adult (data/body.json).",
+    "massLabel": "upper body"
+  },
+  "defaults": {"loadKg": 0, "peakTorqueNm": 400, "variant": "bench45", "bodyMassKg": 75},
+  "ui": {"load": [0, 60, 1], "strength": [120, 600]},
+  "strengthCurve": {
+    "label": "Hip extensor strength (both hips)",
+    "points": [[-25, 0.26], [0, 0.63], [25, 0.89], [50, 1], [74, 0.94]],
+    "note": "Relative isometric hip-extension torque vs hip flexion, peak about 53°, measured standing with the knee slightly bent (tested −29° to 74°; deeper hip flexion is held flat at the 74° value, which is extrapolation). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3, as for the glute kickback. Peak torque default: twice the same table's C1 for young men (both hips; 202 Nm each, scaled to 73 kg and 1.75 m). The back muscles hold the trunk straight in series with the hips; measured lumbar extension strength (Graves et al.: 236–465 Nm in men across the range) is above this, so the hips are taken to limit the lift. Rounding the back moves part of the work to the back muscles, which this model leaves out.",
+    "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022; Graves JE, Pollock ML, Carpenter DM, Leggett SH, Jones A, MacMillan M, Fulton M (1990). Quantitative assessment of full range-of-motion isometric lumbar extension strength. Spine 15(4):289–294. doi:10.1097/00007632-199004000-00008 (abstract)"
+  },
+  "postures": {
+    "chair": [
+      {"shape": "seg", "from": [0.02, 0], "to": [0.03, -0.86], "w": 0.12},
+      {"shape": "seg", "from": [0.03, -0.86], "to": [0.18, -0.88], "w": 0.07},
+      {"shape": "seg", "from": [0.14, 0.02], "to": [0.14, -0.14], "w": 0.07, "class": "equipment"},
+      {"shape": "seg", "from": [-0.06, -0.8], "to": [-0.06, -0.92], "w": 0.05, "class": "equipment"},
+      {"shape": "seg", "from": [0.14, -0.06], "to": [0.6, -0.06], "w": 0.03, "class": "equipment"}
+    ]
+  },
+  "muscles": [
+    {
+      "id": "gluteus-maximus",
+      "region": "thigh",
+      "name": "Gluteus maximus",
+      "wgerId": 8,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[-10, 1], [45, 0.95], [90, 0.85]],
+      "note": "Main hip extensor. On the 45° Roman chair it was as active as in the Romanian deadlift over the whole lift and more active in the top part, where the 45° bench keeps the load on (Andersen et al., 15 trained women, 6-RM loads).",
+      "source": "Andersen V, Pedersen H, Fimland MS, Shaw M, Solstad TEJ, Stien N, Cumming KT, Saeterbakken AH (2021). Comparison of muscle activity in three single-joint, hip extension exercises in resistance-trained women. J Sports Sci Med 20:181–187. doi:10.52082/jssm.2021.181 (relative differences only; weights here are estimates)"
+    },
+    {
+      "id": "hamstrings",
+      "region": "thigh",
+      "regionPath": ["biceps-femoris", "semitendinosus", "semimembranosus"],
+      "name": "Hamstrings",
+      "wgerId": 11,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[-10, 0.6], [90, 0.9]],
+      "note": "With the knees straight they are long and strong hip extensors. Biceps femoris activity on the 45° Roman chair was 71% above the Romanian deadlift's (Andersen et al.).",
+      "source": "Andersen V, Pedersen H, Fimland MS, Shaw M, Solstad TEJ, Stien N, Cumming KT, Saeterbakken AH (2021). Comparison of muscle activity in three single-joint, hip extension exercises in resistance-trained women. J Sports Sci Med 20:181–187. doi:10.52082/jssm.2021.181 (relative differences only; weights here are estimates)"
+    },
+    {
+      "id": "erector-spinae",
+      "region": "trunk",
+      "regionPath": ["iliocostalis", "longissimus", "spinalis"],
+      "name": "Erector spinae",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "weight": [[-10, 0.8], [90, 0.8]],
+      "note": "Hold the trunk straight against the same weight about the lower back (a little less than about the hips). Their activity was the same in the Roman chair, the Romanian deadlift and a seated back-extension machine (Andersen et al.). Hyperextending at the top (below 0°) loads them more, which this weight leaves out.",
+      "source": "Andersen V, Pedersen H, Fimland MS, Shaw M, Solstad TEJ, Stien N, Cumming KT, Saeterbakken AH (2021). Comparison of muscle activity in three single-joint, hip extension exercises in resistance-trained women. J Sports Sci Med 20:181–187. doi:10.52082/jssm.2021.181 (relative differences only; weights here are estimates)"
+    },
+    {
+      "id": "adductor-magnus",
+      "region": "thigh",
+      "name": "Adductor magnus",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[-10, 0.2], [90, 0.6]],
+      "note": "Its rear part is a strong hip extensor when the hip is bent.",
+      "source": "TODO: check against EMG literature"
+    }
+  ],
+  "phases": [
+    {"name": "Top", "range": [-10, 20], "text": "Body straight. On the 45° bench the load stays on here; on the horizontal bench this is the hardest part. Going past straight arches the lower back."},
+    {"name": "Mid-range", "range": [20, 60], "text": "On the 45° bench the trunk is horizontal at 45° of hip bend, where its weight has the longest lever."},
+    {"name": "Bottom", "range": [60, 90], "text": "Folded over the pads. On the horizontal bench the trunk hangs nearly straight down: little torque. On the 45° bench it points 45° below horizontal at 90°."}
+  ],
+  "variants": [
+    {
+      "id": "bench45",
+      "name": "45° Roman chair",
+      "equipment": "Hyperextension bench",
+      "posture": "chair",
+      "gravity": {"x": 0.7071, "y": -0.7071},
+      "viewLabel": "Side view (45° bench)",
+      "load": {"type": "gravity", "on": "proximal", "along": 0.85},
+      "defaultLoadKg": 0,
+      "notes": "Body weight, or a plate hugged to the chest. The upper body's weight has its longest lever when the trunk is horizontal (45° of hip bend here), and the lift still carries load at the top."
+    },
+    {
+      "id": "bench45-head",
+      "name": "45° Roman chair, plate behind the head",
+      "equipment": "Hyperextension bench, plate",
+      "posture": "chair",
+      "gravity": {"x": 0.7071, "y": -0.7071},
+      "viewLabel": "Side view (45° bench)",
+      "load": {"type": "gravity"},
+      "defaultLoadKg": 5,
+      "notes": "The same plate held behind the head sits about 0.26 m further from the hips than at the chest: about 60% more torque from the plate."
+    },
+    {
+      "id": "flat",
+      "name": "Horizontal back extension",
+      "equipment": "Glute-ham bench or horizontal hyperextension",
+      "posture": "chair",
+      "gravity": {"x": 1, "y": 0},
+      "viewLabel": "Side view (horizontal bench)",
+      "load": {"type": "gravity", "on": "proximal", "along": 0.85},
+      "defaultLoadKg": 0,
+      "notes": "Lying face down with the hips on the pad. The trunk is horizontal at the top, so the hardest point is the end of the lift, where the hips are also weaker (less bent)."
+    }
+  ]
+}

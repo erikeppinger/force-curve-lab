@@ -10,6 +10,22 @@
       "usedFor": "Hip, knee and ankle strength curves and peak torques (hip extension and flexion, knee extension and flexion, plantarflexion)."
     },
     {
+      "key": "Wessel 1992",
+      "match": "Wessel J",
+      "group": "Strength curves",
+      "citation": "Wessel J, Ford D, van Driesum D (1992). Measurement of torque of trunk flexors at different velocities. Scand J Rehabil Med 24(4):175–180.",
+      "url": "https://doi.org/10.2340/1650197799224175180",
+      "usedFor": "Trunk-flexion strength curve and peak torque (crunch): isometric torque at −20° to 40°, corrected for the trunk's weight with their passive curve."
+    },
+    {
+      "key": "Graves 1990",
+      "match": "Graves JE",
+      "group": "Strength curves",
+      "citation": "Graves JE, Pollock ML, Carpenter DM, Leggett SH, Jones A, MacMillan M, Fulton M (1990). Quantitative assessment of full range-of-motion isometric lumbar extension strength. Spine 15(4):289–294.",
+      "url": "https://doi.org/10.1097/00007632-199004000-00008",
+      "usedFor": "Lumbar extension strength range (abstract): check that the back muscles are stronger than the hips in the back extension."
+    },
+    {
       "key": "Chen 2025",
       "match": "Chen Z, Franklin DW",
       "group": "Strength curves",
@@ -144,6 +160,14 @@
       "citation": "Baptista MT, Nascimento FXM, Nardes LK, Matta TT, Oliveira LF (2014). Influência de posições do joelho no torque e atividade mioelétrica do tríceps sural na flexão plantar isométrica máxima. Rev Bras Educ Fís Esporte 28(2):197–202.",
       "url": "https://doi.org/10.1590/1807-55092014000200197",
       "usedFor": "Calf strength and gastrocnemius EMG, knee straight vs bent."
+    },
+    {
+      "key": "Andersen 2021",
+      "match": "Andersen V, Pedersen H",
+      "group": "Muscle activity",
+      "citation": "Andersen V, Pedersen H, Fimland MS, Shaw M, Solstad TEJ, Stien N, Cumming KT, Saeterbakken AH (2021). Comparison of muscle activity in three single-joint, hip extension exercises in resistance-trained women. J Sports Sci Med 20:181–187.",
+      "url": "https://doi.org/10.52082/jssm.2021.181",
+      "usedFor": "Back extension: gluteus maximus, biceps femoris and erector spinae activity on the 45° Roman chair compared with the Romanian deadlift and a back-extension machine."
     },
     {
       "key": "Cibulka 2017",

@@ -87,6 +87,12 @@ The hamstrings' share at the hip (deadlift, RDL, hip thrust, split squat). Still
 - Waters RL et al. (1974). "The relative strength of the hamstrings during hip extension." J Bone Joint Surg Am 56(8):1592–1597. Cited by Rajagopal et al. 2016 (ref. 61) for hip-extension strength, which confirms title, journal and pages; the co-authors are listed only as "et al." there. The title is the open question exactly.
 - Chen & Franklin's collection (read) found hip extension nearly flat with knee angle in three datasets, against the two studies above. Waters et al. would settle which applies to lifting.
 
+### Core exercises
+
+- Wessel J, Ford D, van Driesum D (1994). Torque of trunk flexion and trunk flexion with axial rotation in healthy men and women. Spine 19(3):329–334. doi:10.1097/00007632-199402000-00013. 82 adults (39 men, 43 women), isometric trunk flexion at four angles: would give separate men's and women's peaks for the crunch (the app now uses their 1992 mixed group).
+- Graves JE et al. (1990). Quantitative assessment of full range-of-motion isometric lumbar extension strength. Spine 15(4):289–294. doi:10.1097/00007632-199004000-00008. Only the abstract was read; the per-angle values (0–72°) would let the back extension check the back muscles, not just the hips.
+- Escamilla RF et al. (2006). Electromyographic analysis of traditional and nontraditional abdominal exercises: implications for rehabilitation and training. Phys Ther 86(5):656–671 (PMID 16649890; DOI not checked). Crunch, sit-up and hanging knee-up EMG of the abdominals and rectus femoris: for the crunch and leg-raise muscle weights.
+
 ### Machine cam profiles
 
 - Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. Eight knee-extension machines from six makers, resistive torque measured at five knee angles. **Read and cited:** the leg extension now uses its measured profiles (makers are named in the paper).

@@ -17,6 +17,7 @@ const EXERCISES = [
   "biceps-curl", "triceps-extension", "wrist-curl", "reverse-wrist-curl", "edge-lift", "pinch-lift", "lateral-raise", "front-raise", "chest-fly", "straight-arm-pulldown",
   "leg-extension", "leg-curl", "calf-raise", "hip-abduction", "hip-adduction", "glute-kickback",
   "squat", "romanian-deadlift", "deadlift", "split-squat", "leg-press", "hip-thrust", "bench-press", "overhead-press", "bent-over-row", "seated-row", "lat-pulldown", "pull-up",
+  "crunch", "leg-raise", "back-extension",
 ];
 const $ = (id) => document.getElementById(id);
 
@@ -1236,10 +1237,10 @@ async function init() {
   for (const ex of all) state.catalog[ex.id] = ex;
   const sel = $("exercise");
   sel.replaceChildren();
-  for (const [label, models] of [["Single joint", [undefined]], ["Multi-joint", ["multi"]], ["Grip", ["finger", "pinch"]]]) {
+  for (const [label, models, core] of [["Single joint", [undefined]], ["Core", [undefined], true], ["Multi-joint", ["multi"]], ["Grip", ["finger", "pinch"]]]) {
     const group = document.createElement("optgroup");
     group.label = label;
-    for (const ex of all.filter((x) => models.includes(x.model))) group.append(new Option(ex.name, ex.id));
+    for (const ex of all.filter((x) => models.includes(x.model) && (x.group === "core") === !!core)) group.append(new Option(ex.name, ex.id));
     sel.append(group);
   }
   setExercise(EXERCISES.includes(h.ex) ? h.ex : EXERCISES[0], h);

@@ -472,6 +472,23 @@ On Vigouroux et al.'s own set-up (1 cm hold, pull along the metacarpal, their cr
 - The postures are from light grips; under a maximal load they change (dynamics not captured). Thumb opposition, out-of-plane forces, the palm and thenar eminence on the block, contact along the whole fingers, and lift-off accelerations are not modelled.
 - Wall-mounted pinch holds differ: there the thumb pushed only 20–25% of the fingers' force (Fuss et al. 2004, cited in Huang et al.), because the arm takes the sideways balance; on a hanging block it can't.
 
+## Core exercises (added 2026-10-11)
+
+### How it works
+- **Single joint, like the arm and leg exercises.** Crunch: the upper trunk, arms crossed, and the head swing about the lower back at the top of the pelvis (the pelvis stays on the floor). Leg raise: both legs swing about the hips, with a knee-bend slider. Back extension: the straight trunk and head swing about the hips, legs held by the pads. A plate held at the chest acts 85% of the way from the pivot to the shoulders; behind the head, at the chain's end.
+- **Strength.** Crunch: isometric trunk flexion at −20° to 40° (Wessel et al. 1992, 15 men and 15 women, seated, pelvis strapped), with the trunk's own weight taken off using their passive curve (one subject, read off a figure: an estimate); peak 140 Nm. Leg raise: hip flexion from Anderson et al. 2007 (young men, both hips: 283 Nm), strongest with the hip straight, 44% at 74° (tested range; held flat beyond). Back extension: hip extension from the same paper (both hips: 400 Nm), as in the glute kickback.
+- **Masses.** de Leva's segments; how the trunk splits above and below the pivot, and where the crossed arms sit, are estimates.
+
+### What it shows
+- Lying flat, the crunch and the lying leg raise are hardest at the very start, where the body part is horizontal; hanging, the leg raise is hardest with the legs horizontal (90°), where the hip flexors are also short and weak (body weight alone: about 76% of a young man's maximum). Bent knees take about a quarter off.
+- The 45° back extension peaks where the trunk is horizontal (45° of hip bend) and keeps load at the top; the horizontal one peaks at the top. A plate behind the head gives about 60% more torque than at the chest.
+
+### Still limited
+- The crunch's trunk is one rigid piece on one pivot; a real curl bends the whole thoracic and lumbar spine. A bodyweight crunch comes out at about 70% of the 140 Nm peak, which is a mixed men-and-women value (likely low for young men). Past about 40° a sit-up continues at the hips (hip flexors), not covered.
+- Hip flexion strength beyond 74° (the top of a hanging leg raise) is extrapolated; curling the pelvis up at the top (posterior tilt, 'toes to bar') is trunk flexion and is left out. The abdominals' load in the leg raise (holding the pelvis) is a weight, not a balance.
+- The back extension assumes the back stays straight; rounding it moves work to the back muscles. Measured lumbar extension strength (Graves et al. 1990: 236–465 Nm in men) is above the hips', so the hips are taken to limit it.
+- Muscle weights are estimates (Andersen et al. 2021 give only relative EMG for the back extension). Planks, side planks and the Pallof press need a support at both ends (a beam on two supports) or rotation, which the single-joint model can't do: still to add.
+
 ## Break test
 
 Every exercise × variant × start, middle and end of the range × extreme settings (no load and 250 kg, strength 50–150%, body mass 40–140 kg, every placement slider at its minimum, its maximum and on auto), plus own finger lengths at the ends of their ranges and the lift profile at 0–300 kg: about 4,900 runs, no exceptions and no NaN or Infinity. In the browser: every exercise and variant at both slider ends and both load ends, comparisons, and malformed links, with no console errors. What it did find:
