@@ -88,47 +88,64 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
   const line = (a, b, w, cls, extra) => lines.push({ kind: "line", a, b, w, cls, ...extra });
   const dot = (c, r, cls, extra) => lines.push({ kind: "dot", c, r, cls, ...extra });
 
-  // The still body. Arms: shoulder at the base; legs: knee at the base.
+  // The still body. Arms: shoulder at the base; legs: knee at the base. Each piece belongs to a
+  // part (view3d.js draws a part's outline round the whole part, not round each piece).
+  const knee = F.base === "knee";
+  const machine = /Machine|Smith/.test(variant.equipment ?? "");
   let S, P;
-  if (F.base === "knee") {
+  const arm = (sh, hand, s) => line(sh, hand, 0.065, s > 0 ? "body" : "body back", { part: s > 0 ? "armR" : "armL" });
+  if (knee) {
     const hip = seated ? v3(-L.thigh, 0, L.hipHalfWidth) : v3(0, L.thigh, L.hipHalfWidth);
     P = v3(hip.x, hip.y, 0);
     S = add3(P, v3(0, L.trunk, 0));
-    line(hip, chain[0], 0.14, "body");
-    const lHip = mirror(hip), lKnee = mirror(chain[0]);
-    line(lHip, lKnee, 0.14, "body back");
-    if (both) { line(lKnee, mirror(chain[1]), 0.1, "body back"); line(mirror(chain[1]), mirror(chain[2]), 0.07, "body back"); }
-    else line(lKnee, add3(lKnee, v3(-0.3, -0.3, 0)), 0.1, "body back"); // the other foot lifted behind
-    for (const s of [1, -1]) {
-      const sh = v3(S.x, S.y, s * L.shoulderHalfWidth);
-      line(sh, add3(sh, v3(0, -L.upperArm - L.forearm, 0)), 0.065, s > 0 ? "body" : "body back");
+    line(hip, chain[0], 0.14, "body", { part: "legR" });
+    const lKnee = mirror(chain[0]);
+    line(mirror(hip), lKnee, 0.14, "body back", { part: "legL" });
+    if (!both) {
+      // The other foot lifted behind the working leg.
+      const lAnkle = add3(lKnee, v3(-0.3, -0.3, 0));
+      line(lKnee, lAnkle, 0.1, "body back", { part: "legL" });
+      line(lAnkle, add3(lAnkle, v3(0.05, -0.12, 0)), 0.07, "body back", { part: "legL" });
+    }
+    if (seated) {
+      // Seat under the thighs, pad across the knees, hands on the pad.
+      const pad = (z) => v3(-0.06, 0.11, z);
+      line(pad(-0.3), pad(0.3), 0.06, "pad");
+      for (const s of [1, -1]) arm(v3(S.x, S.y, s * L.shoulderHalfWidth), pad(s * 0.24), s);
+      lines.push({ kind: "poly", pts: [[-L.thigh - 0.12, -0.25], [-0.15, -0.25], [-0.15, 0.25], [-L.thigh - 0.12, 0.25]].map(([x, z]) => v3(x, -0.09, z)), cls: "plate3d bench3d" });
+    } else {
+      for (const s of [1, -1]) arm(v3(S.x, S.y, s * L.shoulderHalfWidth), v3(S.x, S.y - L.upperArm - L.forearm, s * (L.shoulderHalfWidth + 0.04)), s);
+      if (machine) line(v3(S.x, S.y + 0.06, -0.3), v3(S.x, S.y + 0.06, 0.3), 0.07, "pad");
+      else dot(v3(S.x, S.y - L.upperArm - L.forearm - 0.04, L.shoulderHalfWidth + 0.04), 0.055, "weight"); // the dumbbell
     }
   } else {
     S = v3(0, 0, 0);
     P = v3(0, -L.trunk, 0);
     for (const s of [1, -1]) {
       const hip = v3(P.x, P.y, s * L.hipHalfWidth);
-      const knee = seated ? add3(hip, v3(L.thigh, 0, 0)) : add3(hip, v3(0, -L.thigh, 0));
-      const ankle = add3(knee, v3(0, -L.shank, 0));
-      const cls = s > 0 ? "body" : "body back";
-      line(hip, knee, 0.14, cls);
-      line(knee, ankle, 0.1, cls);
-      line(add3(ankle, v3(-L.heel, -0.06, 0)), add3(ankle, v3(L.footFront, -0.06, 0)), 0.06, cls);
+      const kn = seated ? add3(hip, v3(L.thigh, 0, 0)) : add3(hip, v3(0, -L.thigh, 0));
+      const ankle = add3(kn, v3(0, -L.shank, 0));
+      const o = { part: s > 0 ? "legR" : "legL" }, cls = s > 0 ? "body" : "body back";
+      line(hip, kn, 0.14, cls, o);
+      line(kn, ankle, 0.1, cls, o);
+      line(add3(ankle, v3(-L.heel, -0.06, 0)), add3(ankle, v3(L.footFront, -0.06, 0)), 0.06, cls, o);
     }
     const lSh = v3(0, 0, -L.shoulderHalfWidth);
-    if (!both) line(lSh, add3(lSh, v3(0, -L.upperArm - L.forearm, 0)), 0.065, "body back");
+    if (!both) arm(lSh, add3(lSh, v3(0, -L.upperArm - L.forearm, 0)), -1);
   }
-  line(add3(P, v3(0, 0, -L.hipHalfWidth - 0.05)), add3(P, v3(0, 0, L.hipHalfWidth + 0.05)), 0.16, "body");
-  line(P, S, 0.3, "body");
-  line(add3(S, v3(0, 0, -L.shoulderHalfWidth)), add3(S, v3(0, 0, L.shoulderHalfWidth)), 0.1, "body");
-  dot(add3(S, v3(0, 0.2, 0)), 0.11, "body");
+  const torso = { part: "torso" };
+  line(add3(P, v3(0, 0, -L.hipHalfWidth)), add3(P, v3(0, 0, L.hipHalfWidth)), 0.16, "body", torso);
+  line(P, S, 0.3, "body", torso);
+  line(add3(S, v3(0, 0, -L.shoulderHalfWidth)), add3(S, v3(0, 0, L.shoulderHalfWidth)), 0.1, "body", torso);
+  dot(add3(S, v3(0, 0.2, 0)), 0.11, "body", torso);
 
-  // The working limb (and its mirror image), joints, muscles.
-  // Legs (knee at the base) are drawn over the trunk so the feet show from above; the foot is wider.
-  const lift = F.base === "knee" ? { top: 3 } : {};
-  const limb = (pts, cls) => { line(pts[0], pts[1], 0.075, cls, { bone: true, ...lift }); line(pts[1], pts[2], F.base === "knee" ? 0.08 : 0.06, cls, { bone: true, ...lift }); };
-  limb(chain, "body");
-  if (both) limb(chain.map(mirror), "body back");
+  // The working limb (and its mirror image), joints, muscles. A working leg joins its thigh's part.
+  const limb = (pts, cls, part) => {
+    line(pts[0], pts[1], 0.075, cls, { bone: true, part });
+    line(pts[1], pts[2], knee ? 0.08 : 0.06, cls, { bone: true, part });
+  };
+  limb(chain, "body", knee ? "legR" : "limbR");
+  if (both) limb(chain.map(mirror), "body back", knee ? "legL" : "limbL");
   const act = Object.fromEntries(activation.map((m) => [m.id, m.value ?? 0]));
   const segs = { proximal: [b2, m2], distal: [m2, t2] };
   for (const m of ex.muscles.filter((x) => x.draw)) {
@@ -178,12 +195,23 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
   const G3 = dir2(g);
   const R = len3(G3) > 1e-9 ? turnOnto(unit3(G3), v3(0, -1, 0), unit3(cross3(X, Y))) : (p) => p;
   const T = (p) => R(p);
-  const prims = lines.map((p) => (p.kind === "line" ? { ...p, a: T(p.a), b: T(p.b) } : { ...p, c: T(p.c) }));
+  const prims = lines.map((p) => (p.kind === "line" ? { ...p, a: T(p.a), b: T(p.b) } : p.kind === "dot" ? { ...p, c: T(p.c) } : { ...p, pts: p.pts.map(T) }));
   const lying = len3(G3) > 1e-9 && Math.abs(dot3(R(v3(0, 1, 0)), v3(0, 1, 0))) < 0.5;
   // Floor: under the ball of the foot for a closed chain, else under the lowest body point.
-  const ys = prims.flatMap((p) => (p.kind === "line" ? [p.a.y - p.w / 2, p.b.y - p.w / 2] : [p.c.y - p.r]));
-  const floorY = type === "reaction" ? T(chain[2]).y - 0.03 : Math.min(...ys) - 0.02;
+  const ys = prims.flatMap((p) => (p.kind === "line" ? [p.a.y - p.w / 2, p.b.y - p.w / 2] : p.kind === "dot" ? [p.c.y - p.r] : p.pts.map((q) => q.y)));
+  // A closed chain (calf raise) stands with the balls of the feet on a step, the heels free.
+  const STEP = 0.15;
+  const ball = T(chain[2]), stepTop = ball.y - 0.03;
+  const floorY = type === "reaction" ? Math.min(stepTop - STEP, Math.min(...ys) - 0.02) : Math.min(...ys) - 0.02;
   const scene = [{ kind: "poly", pts: [[-0.6, -0.7], [0.8, -0.7], [0.8, 0.7], [-0.6, 0.7]].map(([x, z]) => v3(x, floorY, z)), cls: "floor3d" }];
+  if (type === "reaction") {
+    const [x0, x1, z] = [ball.x - 0.06, ball.x + 0.25, 0.35];
+    const box = (pts) => scene.push({ kind: "poly", pts: pts.map(([x, y, zz]) => v3(x, y, zz)), cls: "plate3d bench3d" });
+    box([[x0, stepTop, -z], [x1, stepTop, -z], [x1, stepTop, z], [x0, stepTop, z]]);
+    box([[x0, stepTop, -z], [x0, floorY, -z], [x0, floorY, z], [x0, stepTop, z]]);
+    box([[x1, stepTop, -z], [x1, floorY, -z], [x1, floorY, z], [x1, stepTop, z]]);
+  }
+  if (knee && seated) scene.push({ kind: "line", a: T(v3(-L.thigh / 2 - 0.1, -0.1, 0)), b: v3(T(v3(-L.thigh / 2 - 0.1, 0, 0)).x, floorY, 0), w: 0.05, cls: "equipment" }); // the seat's post
   if (lying) {
     // A bench under the trunk.
     const a = T(P), b = T(S), y = Math.min(a.y, b.y) - 0.16;

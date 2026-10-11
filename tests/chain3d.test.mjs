@@ -42,7 +42,7 @@ test("every gravity load points straight down, also lying (fly, skull crusher) o
   assert.ok(fly.scene.filter((p) => p.kind === "line").every((p) => Math.min(p.a.y, p.b.y) - p.w / 2 >= floor - 1e-9));
 });
 
-test("calf raise: toes out turns the working foot outwards about the vertical; the ball of the foot stays on the floor", () => {
+test("calf raise: toes out turns the working foot outwards about the vertical; the ball of the foot stays on the step", () => {
   const ex = load("calf-raise");
   for (const deg of [-30, 0, 30]) {
     const s = scene(ex, "two-leg", 10, { footAngle: deg });
@@ -51,7 +51,8 @@ test("calf raise: toes out turns the working foot outwards about the vertical; t
     const heading = (Math.atan2(foot.z, foot.x) * 180) / Math.PI;
     assert.ok(Math.abs(heading - deg) < 1e-6, `${deg}: ${heading}`);
     const floor = s.scene.find((p) => p.cls === "floor3d").pts[0].y;
-    assert.ok(Math.abs(a.tip.y - 0.03 - floor) < 1e-9);
+    const step = s.scene.find((p) => p.cls?.includes("bench3d")).pts[0].y;
+    assert.ok(Math.abs(a.tip.y - 0.03 - step) < 1e-9 && step - floor >= 0.15 - 1e-9);
   }
   // One leg: no mirrored working leg.
   assert.equal(scene(ex, "single-leg", 10).scene.filter((p) => p.bone).length, 2);
@@ -68,4 +69,19 @@ test("curl grips: the dumbbell runs across the body (supinated) or in the plane 
   assert.ok(Math.abs(handleDir(sup).z) > 0.999);
   assert.ok(Math.abs(handleDir(ham).y) > 0.999, JSON.stringify(handleDir(ham)));
   assert.ok(palmSide(sup).y > 0 && palmSide(rev).y < 0, `${palmSide(sup).y} / ${palmSide(rev).y}`);
+});
+
+test("3D parts: the trunk, hip and shoulder bars and head form one torso; a leg's pieces one limb; arms stay out of the torso", async () => {
+  const { autoParts } = await import("../js/view3d.js");
+  const L = (a, b, w, cls) => ({ kind: "line", a: v3(...a), b: v3(...b), w, cls });
+  const prims = autoParts([
+    L([0, 1, 0], [0, 1.5, 0], 0.3, "body"), L([0, 1, -0.1], [0, 1, 0.1], 0.16, "body"), L([0, 1.5, -0.2], [0, 1.5, 0.2], 0.1, "body"),
+    { kind: "dot", c: v3(0, 1.7, 0), r: 0.11, cls: "body" },
+    L([0, 1, 0.1], [0, 0.5, 0.1], 0.14, "body"), L([0, 0.5, 0.1], [0, 0.08, 0.1], 0.1, "body"),
+    L([0, 1.5, 0.2], [0, 1.5, 0.8], 0.07, "body arm"),
+    L([0, 1, -0.1], [0, 0.5, -0.1], 0.14, "body back"),
+  ]);
+  assert.deepEqual(prims.slice(0, 4).map((p) => p.part), ["torso", "torso", "torso", "torso"]);
+  assert.equal(prims[4].part, prims[5].part);
+  assert.ok(prims[4].part !== "torso" && prims[6].part !== "torso" && prims[7].part !== prims[4].part);
 });

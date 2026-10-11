@@ -210,6 +210,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .fig-label { fill: var(--text); font-size: 15px; font-weight: 600; paint-order: stroke; stroke: var(--card); stroke-width: 4px; }
 #figure .force-label { fill: var(--accent); }
 #figure .body.back { opacity: 0.55; }
+#figure g.part.back { opacity: 0.55; }
 #figure .balance { stroke: var(--muted); stroke-dasharray: 3 5; }
 #figure .ma-label { font-size: 12px; }
 #figure .ma-hip { stroke: var(--j-hip); fill: var(--j-hip); }
