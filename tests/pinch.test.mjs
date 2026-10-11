@@ -108,3 +108,16 @@ test("whole hand: the precomputed table matches the live model (rerun tools/pinc
   assert.ok(pinchHand(ex, ex.pincer.arms, ex.pincer.fingerModel, 0.06, 0.49 * full, o(0.5)).holds);
   assert.ok(!pinchHand(ex, ex.pincer.arms, ex.pincer.fingerModel, 0.06, 0.51 * full, o(0.5)).holds);
 });
+
+test("charts: an infinite effort (no block holds at 110 mm) gives a finite axis with a few gridlines, not an endless loop", async () => {
+  const { yScale } = await import("../js/chart.js");
+  const { samplePinch } = await import("../js/pinchlift.js");
+  const s = samplePinch(ex, ex.pincer.arms, v("four-fingers"), { loadKg: 10, placement: v("four-fingers").params });
+  const pts = s.map((x) => [x.widthMm, x.effort * 100]);
+  assert.ok(pts.some((p) => p[1] === Infinity), "110 mm holds nothing");
+  for (const yMax of [undefined, Infinity, Math.max(100, ...pts.map((p) => p[1]))]) {
+    const { top, bottom, step } = yScale([{ points: pts }], yMax);
+    assert.ok(Number.isFinite(top) && step > 0 && (top - bottom) / step <= 20, `${yMax}: ${top} / ${step}`);
+  }
+  assert.deepEqual(yScale([{ points: [[0, NaN]] }]), { top: 1, bottom: 0, step: 0.25 });
+});

@@ -17,6 +17,25 @@ function niceMax(v) {
 }
 
 /**
+ * The y axis: top, bottom and gridline step. Only finite values set the scale (an infinite effort,
+ * e.g. a block no hand can hold, is drawn clipped at the top): a non-finite top would make the
+ * gridline loop endless (it once filled the browser's memory). Negative values (e.g. the opposite
+ * muscle group working) get room below zero when yMin < 0, with gridlines through zero.
+ */
+export function yScale(series, yMax, yMin = 0) {
+  const finite = series.flatMap((s) => s.points.map((p) => p[1])).filter(Number.isFinite);
+  let rawTop = Number.isFinite(yMax) ? yMax : Math.max(0, ...finite) * 1.05;
+  if (!(rawTop > 0)) rawTop = 1;
+  let top = niceMax(rawTop), bottom = 0, step = top / 4;
+  if (Number.isFinite(yMin) && yMin < 0) {
+    step = niceMax((rawTop - yMin * 1.05) / 4);
+    top = Math.max(step, Math.ceil(rawTop / step) * step);
+    bottom = Math.floor((yMin * 1.05) / step) * step;
+  }
+  return { top, bottom, step };
+}
+
+/**
  * series: [{ points: [[x,y],...], className, label }]
  * bands:  [{ from, to, label }] shaded x-ranges (e.g. exercise phases)
  * marker: x position of the current-angle line
@@ -28,15 +47,7 @@ export function renderChart(svg, { xRange, yMax, yMin = 0, series, bands = [], m
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
   svg.replaceChildren();
   const [x0, x1] = xRange;
-  const rawTop = yMax ?? Math.max(...series.flatMap((s) => s.points.map((p) => p[1]))) * 1.05;
-  // Negative values (e.g. the opposite muscle group working) get room below zero when asked for,
-  // with gridlines on round steps through zero.
-  let top = niceMax(rawTop), bottom = 0, step = top / 4;
-  if (yMin < 0) {
-    step = niceMax((rawTop - yMin * 1.05) / 4);
-    top = Math.max(step, Math.ceil(rawTop / step) * step);
-    bottom = Math.floor((yMin * 1.05) / step) * step;
-  }
+  const { top, bottom, step } = yScale(series, yMax, yMin);
   const X = (x) => M.l + ((x - x0) / (x1 - x0)) * (W - M.l - M.r);
   const Y = (y) => H - M.b - ((Math.min(top, Math.max(bottom, y)) - bottom) / (top - bottom)) * (H - M.t - M.b);
 

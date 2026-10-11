@@ -878,7 +878,7 @@ function renderPinch() {
   });
   const eff = [...(cmp ? [{ points: xs(cmp, (x) => x.effort * 100), className: "compare" }] : []), { points: xs(main, (x) => x.effort * 100), className: "primary" }];
   renderChart($("effort-chart"), { onScrub: scrubAngle,
-    xRange: chartRange(), bands, marker: state.angle, xUnit: " mm", xStep: 10, yMax: Math.max(100, ...eff.flatMap((s) => s.points.map((p) => p[1]))),
+    xRange: chartRange(), bands, marker: state.angle, xUnit: " mm", xStep: 10, yMax: Math.max(100, ...eff.flatMap((s) => s.points.map((p) => p[1])).filter(Number.isFinite)),
     series: eff, xLabel: ex.angleLabel, yLabel: "Effort (% of max)", yFormat: (x) => `${x.toFixed(0)}%`,
   });
   $("angle-out").textContent = `${state.angle.toFixed(0)} mm`;
