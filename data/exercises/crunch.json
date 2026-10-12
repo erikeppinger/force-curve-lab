@@ -19,15 +19,19 @@
     "massNote": "Fractions of body mass from de Leva's table (young adult males). Upper trunk: upper and middle trunk (0.3229, centre placed 0.22 m above the pivot, estimate) plus both arms crossed on the chest (0.0988, 0.30 m above the pivot, estimate): 0.4217 at 0.24 m. Head: 0.0694, its centre 0.13 m above the shoulders. The lower trunk stays on the floor with the pelvis.",
     "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
     "note": "Pivot → shoulders and shoulders → behind the head, metres, typical adult (estimates).",
-    "massLabel": "upper body"
+    "massLabel": "upper body",
+    "draw": {
+      "w": [0.24, 0.08],
+      "head": {"at": 0.72, "r": 0.11}
+    }
   },
-  "defaults": {"loadKg": 0, "peakTorqueNm": 140, "variant": "floor", "bodyMassKg": 75},
+  "defaults": {"loadKg": 0, "peakTorqueNm": 180, "variant": "floor", "bodyMassKg": 75},
   "ui": {"load": [0, 40, 1], "strength": [50, 300]},
   "strengthCurve": {
     "label": "Trunk flexor strength",
     "points": [[-20, 0.95], [0, 1], [20, 0.87], [40, 0.67]],
-    "note": "Relative isometric trunk-flexion torque vs trunk flexion, seated with the pelvis strapped (dynamometer axis at the top of the pelvis), 15 men and 15 women aged 18–56. Measured: 132.6, 143.3, 143.6 and 126.8 Nm at −20°, 0°, 20° and 40° (Table I, mean of both test days), not corrected for the trunk's own weight, which helps a forward-leaning trunk flex. The passive curve of their Fig. 2 (trunk moved with no effort, one subject, 30°/s; read off, about 0, +3, +22 and +33 Nm) is taken off: 132.6, 140.3, 121.6 and 93.8 Nm, relative to the 0° value. That correction is an estimate (one subject, moving). Peak default 140 Nm: the group's value at 0° (men and women mixed, so likely low for young men). Tested only from −20° to 40°.",
-    "source": "Wessel J, Ford D, van Driesum D (1992). Measurement of torque of trunk flexors at different velocities. Scand J Rehabil Med 24(4):175–180. doi:10.2340/1650197799224175180 (Table I and Fig. 2)"
+    "note": "Relative isometric trunk-flexion torque vs trunk flexion, seated with the pelvis strapped (dynamometer axis at the top of the pelvis), 15 men and 15 women aged 18–56. Measured: 132.6, 143.3, 143.6 and 126.8 Nm at −20°, 0°, 20° and 40° (Table I, mean of both test days), not corrected for the trunk's own weight, which helps a forward-leaning trunk flex. The passive curve of their Fig. 2 (trunk moved with no effort, one subject, 30°/s; read off, about 0, +3, +22 and +33 Nm) is taken off: 132.6, 140.3, 121.6 and 93.8 Nm, relative to the 0° value. That correction is an estimate (one subject, moving). Peak default 180 Nm for men: Wessel et al. 1994 measured about 183 Nm in 39 men at 0° (women about 103 Nm; read off their Fig. 3, not corrected for the trunk's weight), and Kumar et al. 1995 imply about 190 Nm for men. The 1992 group's 140 Nm mixed men and women; its curve shape is kept. Tested only from −20° to 40°.",
+    "source": "Wessel J, Ford D, van Driesum D (1992). Measurement of torque of trunk flexors at different velocities. Scand J Rehabil Med 24(4):175–180. doi:10.2340/1650197799224175180 (Table I and Fig. 2); Wessel J, Ford D, van Driesum D (1994). Torque of trunk flexion and trunk flexion with axial rotation in healthy men and women. Spine 19(3):329–334. doi:10.1097/00007632-199402000-00013 (Fig. 3, read off)"
   },
   "postures": {
     "floor": [
@@ -59,8 +63,9 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "weight": [[-20, 1], [40, 1]],
-      "note": "Curls the ribcage towards the pelvis.",
-      "source": "TODO: check against EMG literature"
+      "note": "Curls the ribcage towards the pelvis: in floor crunches 56% (upper part) and 48% (lower part) of its maximum (Escamilla et al.).",
+      "source": "Escamilla RF, Babb E, DeWitt R, Jew P, Kelleher P, Burnham T, Busch J, D'Anna K, Mowbray R, Imamura RT (2006). Electromyographic analysis of traditional and nontraditional abdominal exercises: implications for rehabilitation and training. Phys Ther 86(5):656–671. doi:10.1093/ptj/86.5.656 (Table 2: % of maximal isometric activation, 21 adults)",
+      "draw": {"seg": "proximal", "along": [0.03, 0.3], "offset": -0.085, "w": 0.05, "layer": 1}
     },
     {
       "id": "external-oblique",
@@ -70,14 +75,27 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "weight": [[-20, 0.5], [40, 0.5]],
-      "note": "Helps flex the trunk; works much harder when the crunch twists.",
-      "source": "TODO: check against EMG literature"
+      "note": "Helps flex the trunk: 27% of its maximum in the floor crunch, about half the rectus abdominis (the internal oblique 42%; Escamilla et al.). It works much harder when the crunch twists, or in a sit-up (50%).",
+      "source": "Escamilla RF, Babb E, DeWitt R, Jew P, Kelleher P, Burnham T, Busch J, D'Anna K, Mowbray R, Imamura RT (2006). Electromyographic analysis of traditional and nontraditional abdominal exercises: implications for rehabilitation and training. Phys Ther 86(5):656–671. doi:10.1093/ptj/86.5.656 (Table 2: % of maximal isometric activation, 21 adults)",
+      "draw": {"seg": "proximal", "along": [0.06, 0.24], "offset": -0.05, "w": 0.05, "layer": 0}
     }
   ],
   "phases": [
-    {"name": "Arched", "range": [-20, 0], "text": "Only over a ball: the abdominals start stretched, where they are still about as strong as straight."},
-    {"name": "Early curl", "range": [0, 20], "text": "Lying flat, the trunk is horizontal: its weight has the longest lever exactly where the curl starts."},
-    {"name": "Curled", "range": [20, 40], "text": "The lever shortens as the trunk rises, but the abdominals weaken as they shorten. Past this, a sit-up continues at the hips (hip flexors), which this model doesn't cover."}
+    {
+      "name": "Arched",
+      "range": [-20, 0],
+      "text": "Only over a ball: the abdominals start stretched, where they are still about as strong as straight."
+    },
+    {
+      "name": "Early curl",
+      "range": [0, 20],
+      "text": "Lying flat, the trunk is horizontal: its weight has the longest lever exactly where the curl starts."
+    },
+    {
+      "name": "Curled",
+      "range": [20, 40],
+      "text": "The lever shortens as the trunk rises, but the abdominals weaken as they shorten. Past this, a sit-up continues at the hips (hip flexors), which this model doesn't cover."
+    }
   ],
   "variants": [
     {
@@ -127,5 +145,9 @@
       "defaultLoadKg": 0,
       "notes": "Lying back over the ball the trunk can start arched (−20°), with the abdominals stretched and still strong: more range. The heaviest lever comes with the trunk straight and horizontal (0°), a third of the way in, not at the start."
     }
-  ]
+  ],
+  "trunk3d": {
+    "note": "3D view: the trunk muscles of the OpenSim lumbar spine model (Christophy et al. 2012, MIT licence) in its upright posture, shaded by this exercise's muscle effort. Groups the exercise doesn't load stay grey.",
+    "map": {"rectus-abdominis": ["rectus-abdominis"], "external-oblique": ["external-oblique", "internal-oblique"]}
+  }
 }

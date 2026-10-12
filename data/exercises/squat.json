@@ -136,8 +136,8 @@
       "driver": "jointEffort",
       "joint": "knee",
       "weight": [[0, 1], [130, 1]],
-      "note": "Knee extensors: their share follows the knee torque. Net joint torques can't say how stance or toe angle shifts work between the four heads.",
-      "source": "TODO: check against EMG literature",
+      "note": "Knee extensors: their share follows the knee torque. Net joint torques can't say how stance or toe angle shifts work between the four heads. No change with the toe angle (Escamilla et al. 2001); vastus lateralis 110% of maximum at 10RM (Contreras et al.), the same in partial and full squats (da Silva et al.).",
+      "source": "Escamilla RF, Fleisig GS, Zheng N, Lander JE, Barrentine SW, Andrews JR, Bergemann BW, Moorman CT (2001). Effects of technique variations on knee biomechanics during the squat and leg press. Med Sci Sports Exerc 33(9):1552–1566. doi:10.1097/00005768-200109000-00020 (10 experienced lifters, 12RM); Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J (2015). A comparison of gluteus maximus, biceps femoris, and vastus lateralis electromyographic activity in the back squat and barbell hip thrust exercises. J Appl Biomech 31(6):452–458. doi:10.1123/jab.2014-0301 (13 trained women, 10RM, mean % of maximal isometric activation); da Silva JJ, Schoenfeld BJ, Marchetti PN, Pecoraro SL, Greve JM, Marchetti PH (2017). Muscle activation differs between partial and full back squat exercise with external load equated. J Strength Cond Res 31(6):1688–1693. doi:10.1519/JSC.0000000000001713 (15 trained men, 10RM)",
       "draw3d": {"seg": "thigh", "side": "anterior", "along": [0.08, 0.36], "offset": 0.05, "w": 0.065}
     },
     {
@@ -149,8 +149,8 @@
       "driver": "jointEffort",
       "joint": "hip",
       "weight": [[0, 0.8], [90, 1], [160, 1]],
-      "note": "Main hip extensor; deep hip bend (feet high) loads it more.",
-      "source": "TODO: check against EMG literature",
+      "note": "Main hip extensor; deep hip bend (feet high) loads it more. 40–45% of maximum at 8–10RM (McCurdy et al., Contreras et al.), about half the hip thrust's; 29% higher in partial than in full squats at the same relative load (da Silva et al.). The hamstrings, not drawn here, worked at 15–24% (Contreras et al., McCurdy et al.).",
+      "source": "McCurdy K, Walker J, Yuen D (2018). Gluteus maximus and hamstring activation during selected weight-bearing resistance exercises. J Strength Cond Res 32(3):594–601. doi:10.1519/JSC.0000000000001893 (18 trained women, 8RM, % of maximal isometric activation); Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J (2015). A comparison of gluteus maximus, biceps femoris, and vastus lateralis electromyographic activity in the back squat and barbell hip thrust exercises. J Appl Biomech 31(6):452–458. doi:10.1123/jab.2014-0301 (13 trained women, 10RM, mean % of maximal isometric activation); da Silva JJ, Schoenfeld BJ, Marchetti PN, Pecoraro SL, Greve JM, Marchetti PH (2017). Muscle activation differs between partial and full back squat exercise with external load equated. J Strength Cond Res 31(6):1688–1693. doi:10.1519/JSC.0000000000001713 (15 trained men, 10RM)",
       "draw3d": {"seg": "thigh", "side": "posterior", "along": [0, 0.12], "offset": 0.06, "w": 0.09}
     },
     {
@@ -163,7 +163,7 @@
       "joint": "hip",
       "weight": [[0, 0.3], [90, 0.8], [160, 1]],
       "note": "Rear part extends the hip, more so when it is deeply bent.",
-      "source": "TODO: check against EMG literature",
+      "source": "Escamilla RF, Fleisig GS, Zheng N, Lander JE, Barrentine SW, Andrews JR, Bergemann BW, Moorman CT (2001). Effects of technique variations on knee biomechanics during the squat and leg press. Med Sci Sports Exerc 33(9):1552–1566. doi:10.1097/00005768-200109000-00020 (10 experienced lifters, 12RM)",
       "draw3d": {"seg": "thigh", "side": "medial", "along": [0.2, 0.36], "offset": 0.045, "w": 0.05}
     },
     {
@@ -177,7 +177,7 @@
       "joint": "hip-frontal",
       "weight": [[0, 1], [160, 1]],
       "note": "Work when the plate's push tends to spread the thighs apart: wide stances and toes out.",
-      "source": "TODO: check against EMG literature",
+      "source": "Escamilla RF, Fleisig GS, Zheng N, Lander JE, Barrentine SW, Andrews JR, Bergemann BW, Moorman CT (2001). Effects of technique variations on knee biomechanics during the squat and leg press. Med Sci Sports Exerc 33(9):1552–1566. doi:10.1097/00005768-200109000-00020 (10 experienced lifters, 12RM)",
       "sign": 1,
       "draw3d": {"seg": "thigh", "side": "medial", "along": [0.03, 0.25], "offset": 0.05, "w": 0.05}
     },
@@ -191,7 +191,7 @@
       "joint": "hip-frontal",
       "weight": [[0, 1], [160, 1]],
       "note": "Work when the push tends to pull the thighs together: narrow stances, toes in.",
-      "source": "TODO: check against EMG literature",
+      "source": "Escamilla RF, Fleisig GS, Zheng N, Lander JE, Barrentine SW, Andrews JR, Bergemann BW, Moorman CT (2001). Effects of technique variations on knee biomechanics during the squat and leg press. Med Sci Sports Exerc 33(9):1552–1566. doi:10.1097/00005768-200109000-00020 (10 experienced lifters, 12RM)",
       "sign": -1,
       "draw3d": {"seg": "thigh", "side": "lateral", "along": [-0.05, 0.08], "offset": 0.06, "w": 0.06}
     },
@@ -206,7 +206,7 @@
       "joint": "hip-rotation",
       "weight": [[0, 1], [160, 1]],
       "note": "Piriformis, obturators and gemelli (with the glutes) resist the thigh turning inwards.",
-      "source": "TODO: check against EMG literature",
+      "source": "Escamilla RF, Fleisig GS, Zheng N, Lander JE, Barrentine SW, Andrews JR, Bergemann BW, Moorman CT (2001). Effects of technique variations on knee biomechanics during the squat and leg press. Med Sci Sports Exerc 33(9):1552–1566. doi:10.1097/00005768-200109000-00020 (10 experienced lifters, 12RM)",
       "sign": 1,
       "draw3d": {"seg": "thigh", "side": "posterior", "along": [-0.04, 0.03], "offset": 0.07, "w": 0.05}
     },
@@ -221,7 +221,7 @@
       "joint": "hip",
       "weight": [[0, 0.6], [90, 0.6]],
       "note": "Holds the spine straight; their load grows with the hip torque from the upper body. Approximation: driven by the hip's effort.",
-      "source": "TODO: check against EMG literature",
+      "source": "da Silva JJ, Schoenfeld BJ, Marchetti PN, Pecoraro SL, Greve JM, Marchetti PH (2017). Muscle activation differs between partial and full back squat exercise with external load equated. J Strength Cond Res 31(6):1688–1693. doi:10.1519/JSC.0000000000001713 (15 trained men, 10RM)",
       "draw3d": {"seg": "trunk", "side": "posterior", "along": [0.05, 0.3], "offset": 0.1, "w": 0.05}
     },
     {
@@ -234,8 +234,8 @@
       "driver": "jointEffort",
       "joint": "ankle",
       "weight": [[-60, 1], [40, 1]],
-      "note": "Plantarflexors: push through the ball of the foot.",
-      "source": "TODO: check against EMG literature",
+      "note": "Plantarflexors: push through the ball of the foot. The gastrocnemius was more active with a narrow than a wide stance (Escamilla et al. 2001); the soleus more in partial squats (da Silva et al.).",
+      "source": "Escamilla RF, Fleisig GS, Zheng N, Lander JE, Barrentine SW, Andrews JR, Bergemann BW, Moorman CT (2001). Effects of technique variations on knee biomechanics during the squat and leg press. Med Sci Sports Exerc 33(9):1552–1566. doi:10.1097/00005768-200109000-00020 (10 experienced lifters, 12RM); da Silva JJ, Schoenfeld BJ, Marchetti PN, Pecoraro SL, Greve JM, Marchetti PH (2017). Muscle activation differs between partial and full back squat exercise with external load equated. J Strength Cond Res 31(6):1688–1693. doi:10.1519/JSC.0000000000001713 (15 trained men, 10RM)",
       "draw3d": {"seg": "shank", "side": "posterior", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055}
     }
   ],

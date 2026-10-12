@@ -69,9 +69,11 @@ function modelMax(ex, data, w, fingers, level) {
 
 /**
  * Whole hand (level 2): thumb from ARMS, fingers from the edge-lift finger model, each pad's force
- * inside its friction cone (pincer.js pinchHand). The thumb's muscles are scaled once so that a
- * straight squeeze (no weight) at 65 mm reaches the measured maximum (ex.pinch.capacity); the
- * fingers keep their own measured reference tensions. Then the squeeze, its split between the
+ * inside its friction cone (pincer.js pinchHand). The thumb's muscles are scaled in two groups, the
+ * long ones (FPL, EPL, EPB, APL) and the small ones in the hand, so that a straight squeeze (no
+ * weight) reaches the measured maximum (ex.pinch.capacity) at both widths Huang et al. measured
+ * (ex.pinch.calibrationMm: 50 and 80 mm, equally strong); the fingers keep their own measured
+ * reference tensions (with ARMS's force–length by width). Then the squeeze, its split between the
  * fingers and the largest block follow from the balance of every joint.
  * Strength and wrist scale every muscle alike, so the largest block and the squeeze there scale
  * in proportion (the balance is linear in the forces): they are found at full strength only. The
@@ -86,15 +88,35 @@ function bisect(ok, start, iters = 14) {
   for (let k = 0; k < iters; k++) { const m = (lo + hi) / 2; if (ok(m)) lo = m; else hi = m; }
   return lo;
 }
-/** The thumb's strength factor that makes a straight squeeze at 65 mm the measured maximum. */
+/** The largest straight squeeze (N, no weight) at width mm with thumb strength `strength`. */
+export function maxStraightSqueeze(ex, data, mm, strength, iters = 22) {
+  return bisect((N) => pinchHand(ex, data, ex.pincer.fingerModel, mm / 1000, 0, { squeeze: N, strength }).holds, 50, iters);
+}
+/**
+ * The thumb's strength factors { extrinsic, intrinsic } that make the straight squeeze the measured
+ * maximum at both calibration widths (Newton steps on the logarithms; the long muscles mostly set
+ * the wide one, the small ones the narrow one).
+ */
 export function thumbScale(ex, data) {
   if (ex.pincer.whole?.thumbScale) return ex.pincer.whole.thumbScale;
   if (!calibCache.has(ex.id)) {
-    const s = bisect((N) => pinchHand(ex, data, ex.pincer.fingerModel, 0.065, 0, { squeeze: N }).holds, 4, 24);
-    calibCache.set(ex.id, ex.pinch.capacity / s);
+    const [w1, w2] = ex.pinch.calibrationMm, cap = ex.pinch.capacity;
+    const F = (s) => [Math.log(maxStraightSqueeze(ex, data, w1, s) / cap), Math.log(maxStraightSqueeze(ex, data, w2, s) / cap)];
+    let s = { extrinsic: 2.5, intrinsic: 8 };
+    for (let it = 0; it < 12; it++) {
+      const f = F(s), h = 0.03;
+      if (Math.abs(f[0]) + Math.abs(f[1]) < 2e-3) break;
+      const fa = F({ ...s, extrinsic: s.extrinsic * Math.exp(h) }), fb = F({ ...s, intrinsic: s.intrinsic * Math.exp(h) });
+      const J = [[(fa[0] - f[0]) / h, (fb[0] - f[0]) / h], [(fa[1] - f[1]) / h, (fb[1] - f[1]) / h]];
+      const det = J[0][0] * J[1][1] - J[0][1] * J[1][0];
+      const lim = (x) => Math.max(-0.5, Math.min(0.5, x)); // damped: at most × 1.65 per step
+      s = { extrinsic: s.extrinsic * Math.exp(lim((-f[0] * J[1][1] + f[1] * J[0][1]) / det)), intrinsic: s.intrinsic * Math.exp(lim((-J[0][0] * f[1] + J[1][0] * f[0]) / det)) };
+    }
+    calibCache.set(ex.id, s);
   }
   return calibCache.get(ex.id);
 }
+const scaled = (s, k) => ({ extrinsic: s.extrinsic * k, intrinsic: s.intrinsic * k });
 /** Largest weight (N) and the squeeze there at full strength, width w (m), friction mu {thumb, finger}. */
 export function wholeMax(ex, data, w, fingers, mu, iters = 14) {
   const o = { fingers: WHOLE[fingers], mu, strength: thumbScale(ex, data), fingerStrength: 1 };
@@ -138,7 +160,7 @@ function analyzeWhole(ex, data, P, w, W, scale) {
     full = maxCache.get(key);
   }
   const Wmax = full.Wmax * scale, squeezeAtMax = full.squeeze * scale;
-  const r = pinchHand(ex, data, edge, w, Math.min(W, Wmax * 0.999), { fingers, mu, strength: thumbScale(ex, data) * scale, fingerStrength: scale });
+  const r = pinchHand(ex, data, edge, w, Math.min(W, Wmax * 0.999), { fingers, mu, strength: scaled(thumbScale(ex, data), scale), fingerStrength: scale });
   const fN = fingers.reduce((s, id) => s + r.digits[id].N, 0);
   const holds = W <= Wmax && r.holds;
   return {

@@ -386,7 +386,7 @@ export function squat3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
  * passes "up": elbows below the bar), or with `front` = "under" the one that puts the forearm
  * closest to vertical under the hand (press); the pulls pass "backwards" for elbows in front. Returns the closest point if the offset can't be reached.
  */
-export function elbowUnderHand(S, hand, l1, l2, offsetZ, front) {
+export function elbowUnderHand(S, hand, l1, l2, offsetZ, front, toFeet = null) {
   const e = unit3(sub3(hand, S));
   const d = Math.min(len3(sub3(hand, S)), l1 + l2 - 1e-9);
   const along = (l1 * l1 - l2 * l2 + d * d) / (2 * d);
@@ -413,7 +413,13 @@ export function elbowUnderHand(S, hand, l1, l2, offsetZ, front) {
   if (front === "under") { // forearm closest to vertical under the hand
     const off = (a) => Math.hypot(a.x - hand.x, a.z - hand.z) - 1e-3 * (hand.y - a.y);
     cands.sort((a, b) => off(a) - off(b));
-  } else cands.sort((a, b) => dot3(a, front) - dot3(b, front)); // the smaller component along `front` first
+  } else {
+    // The smaller component along `front` first (the elbow below the bar). With `toFeet` (bench):
+    // also towards the feet, since near lockout on an incline both candidates lie close to the
+    // bench plane and "lower" alone could pick the one beside the head.
+    const key = (a) => dot3(a, front) - (toFeet ? dot3(a, toFeet) : 0);
+    cands.sort((a, b) => key(a) - key(b));
+  }
   return { E: cands[0], ok: true };
 }
 
@@ -480,7 +486,7 @@ export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const armAt = () => {
     const { E, ok } = P.elbowOut === "auto"
       ? elbowNearestUnder(S, hand, L.upperArm, L.forearm)
-      : elbowUnderHand(S, hand, L.upperArm, L.forearm, P.elbowOut, front);
+      : elbowUnderHand(S, hand, L.upperArm, L.forearm, P.elbowOut, front, toFeet);
     const dU = unit3(sub3(E, S)), dF = unit3(sub3(hand, E));
     return {
       E, ok, dU, dF,

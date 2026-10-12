@@ -174,3 +174,17 @@ const variantOf = (ex) => (id) => ex.variants.find((x) => x.id === id);
     assert.ok(Math.abs(analyze(ex, kneeling, -20, o(90)).strengthScale - 0.82) < 1e-9);
   });
 }
+
+test("leg curl: toes pulled up vs pointed changes knee-flexion strength by the measured ~10% (Vuk 2023), not the load's torque", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { analyze } = await import("../js/physics.js");
+  const ex = JSON.parse(readFileSync(new URL("../data/exercises/leg-curl.json", import.meta.url)));
+  assert.ok(ex.placementStrength.note && ex.placementStrength.source);
+  for (const v of ex.variants) {
+    const at = (foot) => analyze(ex, v, 45, { loadKg: 20, peakTorqueNm: ex.defaults.peakTorqueNm, bodyMassKg: 75, placement: { foot } });
+    const up = at("up"), relaxed = at("relaxed"), pointed = at("pointed");
+    assert.ok(Math.abs(up.capacity / pointed.capacity - 1.05 / 0.95) < 1e-9, v.id);
+    assert.ok(Math.abs(relaxed.capacity - analyze(ex, v, 45, { loadKg: 20, peakTorqueNm: ex.defaults.peakTorqueNm, bodyMassKg: 75 }).capacity) < 1e-9);
+    assert.equal(up.jointTorque, pointed.jointTorque);
+  }
+});

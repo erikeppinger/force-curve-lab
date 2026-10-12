@@ -98,7 +98,10 @@ export const abductionArm = (m, hip, wraps) => -momentArm(m, hip, "adduction", w
 export function hipPosture(variant, angleDeg, placement) {
   const h = variant.hip ?? {};
   const lean = h.lean ? Number(placement?.lean ?? variant.params?.lean ?? 0) : 0;
-  return { flexion: (h.flexion ?? 0) - lean, adduction: -angleDeg, rotation: 0, lean };
+  // `hip.flexSlider`: the hip-bend slider swings the leg forward (+) or back (−) and the side
+  // raise happens there.
+  const flex = h.flexSlider ? Number(placement?.hipFlex ?? variant.params?.hipFlex ?? 0) : 0;
+  return { flexion: (h.flexion ?? 0) - lean + flex, adduction: -angleDeg, rotation: 0, lean };
 }
 
 /** Solve the small system M y = b (Gaussian elimination with pivoting). */

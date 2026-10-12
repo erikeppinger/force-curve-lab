@@ -26,7 +26,7 @@ const ratio = { 4: [1, 1.2, 1.4, 1.6], 2: [1, 1.1, 1.2, 1.3] };
 const out = {
   licence: "Derived from the ARMS hand and wrist model (McFarland et al. 2021, bioRxiv 2021.12.28.474357): NON-COMMERCIAL use only.",
   note: "Whole-hand pinch at full strength: max[width][thumb μ][ratio] = [largest weight (N), squeeze there (N)]. Written by tools/pinch-table.mjs.",
-  thumbScale: +thumbScale(ex, data).toFixed(5), widths, mu,
+  thumbScale: Object.fromEntries(Object.entries(thumbScale(ex, data)).map(([k, v]) => [k, +v.toFixed(5)])), widths, mu,
 };
 const t0 = Date.now();
 for (const k of [4, 2]) {

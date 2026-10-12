@@ -48,7 +48,8 @@ export function muscleActivation(exercise, variant, result, angleDeg) {
         const j = result.joints.find((x) => x.id === id);
         // Two-sided joints: a muscle with `sign` only works when the torque has that sign.
         if (m.sign && Math.sign(j.torque) !== m.sign) return 0;
-        return j.effort * interp(m.weight, j.angle);
+        // `jointScale`: a joint the muscle follows at a fraction (e.g. the lats with the elbow in a pull).
+        return j.effort * interp(m.weight, j.angle) * (m.jointScale?.[id] ?? 1);
       }));
       return { ...m, value: Math.min(1, Math.max(0, value * mod)) };
     });
@@ -65,8 +66,10 @@ export function muscleActivation(exercise, variant, result, angleDeg) {
     // `kneeFactor`: the weight's change with the knee bend (e.g. the kickback's hamstrings), on a
     // hip × knee grid, bilinear and held at the edges.
     const kf = m.kneeFactor && result.knee != null ? grid2(m.kneeFactor, angleDeg, result.knee) : 1;
-    // `placementFactor`: the weight's change with a placement slider (e.g. the calf raise's toe angle).
-    const pf = m.placementFactor ? interp(m.placementFactor.points, Number(result.placement?.[m.placementFactor.key] ?? variant.params?.[m.placementFactor.key] ?? 0)) : 1;
+    // `placementFactor`: the weight's change with a placement slider (e.g. the calf raise's toe
+    // angle: `points` by value), or with a choice (`values` by option, e.g. the arm's rotation).
+    const pv = result.placement?.[m.placementFactor?.key] ?? variant.params?.[m.placementFactor?.key];
+    const pf = !m.placementFactor ? 1 : m.placementFactor.values ? m.placementFactor.values[String(pv)] ?? 1 : interp(m.placementFactor.points, Number(pv ?? 0));
     const value = Math.min(1, Math.max(0, demand * interp(m.weight, angleDeg) * mod * kf * pf));
     return { ...m, value };
   });

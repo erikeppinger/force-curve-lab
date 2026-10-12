@@ -722,3 +722,19 @@ test("holding loads: the RDL's lower-back moment grows with the hinge and stays 
   const r = at(90);
   assert.ok(lb(r) > 0 && lb(r) < 2 * r.joints.find((j) => j.id === "hip").torque);
 });
+
+test("incline bench, elbows set by hand: the elbow stays on the feet side all the way up (no flip beside the head)", async () => {
+  const { analyzeMulti } = await import("../js/multijoint.js");
+  const ex = JSON.parse(readFileSync(new URL("../data/exercises/bench-press.json", import.meta.url)));
+  const body = JSON.parse(readFileSync(new URL("../data/body.json", import.meta.url)));
+  const v = ex.variants.find((x) => x.id === "incline");
+  for (const elbowOut of [-0.06, 0, 0.06]) {
+    let prev = null;
+    for (let x = 0; x <= 90; x += 5) {
+      const r = analyzeMulti(ex, v, x, { loadKg: 50, bodyMassKg: 75, body, placement: { ...v.params, elbowOut } });
+      const flare = +r.info[0].text.match(/: (-?\d+)°/)[1];
+      if (prev != null) assert.ok(Math.abs(flare - prev) < 25, `elbowOut ${elbowOut} @${x}: flare ${prev}° → ${flare}°`);
+      prev = flare;
+    }
+  }
+});

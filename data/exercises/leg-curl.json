@@ -23,7 +23,7 @@
   "ui": {"load": [0, 100, 1], "strength": [40, 250]},
   "strengthCurve": {
     "label": "Knee flexor strength",
-    "points": [[0, 0.9], [15, 0.97], [30, 1.0], [45, 0.97], [60, 0.9], [75, 0.78], [90, 0.61], [103, 0.45]],
+    "points": [[0, 0.9], [15, 0.97], [30, 1], [45, 0.97], [60, 0.9], [75, 0.78], [90, 0.61], [103, 0.45]],
     "note": "Relative isometric knee-flexion torque vs knee flexion, peak about 30°, measured seated with the hip flexed about 70° (tested 0–103°). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m). The seated test position matches the seated leg curl best; lying, the hamstrings are shorter and somewhat weaker (not modelled). Variants correct this for the hip angle (two-joint hamstrings): see each variant's strength note.",
     "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
   },
@@ -60,9 +60,9 @@
       "wgerId": 11,
       "role": "Prime mover",
       "driver": "jointEffort",
-      "weight": [[0, 1.0], [90, 0.9], [120, 0.8]],
-      "note": "Cross the hip as well; their length (and strength) depends on hip angle, which these weights ignore.",
-      "source": "TODO: check against EMG literature",
+      "weight": [[0, 1], [90, 0.9], [120, 0.8]],
+      "note": "Cross the hip as well; their length (and strength) depends on hip angle, which these weights ignore. The leg curl favours the medial hamstrings over the biceps femoris (the lowest lateral-to-medial ratio of 10 exercises, Bourne et al.).",
+      "source": "Bourne MN, Williams MD, Opar DA, Al Najjar A, Kerr GK, Shield AJ (2017). Impact of exercise selection on hamstring muscle activation. Br J Sports Med 51(13):1021–1028. doi:10.1136/bjsports-2015-095739 (24 men, 10 exercises)",
       "draw": {"seg": "proximal", "along": [0.08, 0.4], "offset": -0.045, "w": 0.06, "layer": 0}
     },
     {
@@ -74,8 +74,8 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "weight": [[0, 0.5], [120, 0.3]],
-      "note": "Calf muscle that also crosses the knee and helps flex it.",
-      "source": "TODO: check against EMG literature",
+      "note": "Calf muscle that also crosses the knee and helps flex it. Pointing the toes shortens it: its EMG was 44% higher toes pointed than pulled up with the knee straight (Marchetti et al., lying), while knee-flexion force was lower; the weight doesn't follow the foot setting.",
+      "source": "TODO: check against EMG literature; Marchetti PH, Magalhaes RA, Gomes WA, da Silva JJ, Stecyk SD, Whiting WC (2021). Different knee and ankle positions affect force and muscle activation during prone leg curl in trained subjects. J Strength Cond Res 35(12):3322–3326. doi:10.1519/JSC.0000000000003333 (Results and Table 1: 15 resistance-trained men, isometric, prone, hip at 15°)",
       "draw": {"seg": "distal", "along": [0.03, 0.2], "offset": -0.04, "w": 0.055, "layer": 1}
     }
   ],
@@ -110,8 +110,8 @@
       "notes": "Face down with the hip straight. The pad is behind the ankle; lifting the lower leg's weight also adds torque until it passes vertical (90°).",
       "strengthScale": {
         "factor": 0.61,
-        "note": "hip straight, so the hamstrings are shorter: knee-flexion strength about 61% of the seated test's. Guex et al. measured 62 Nm with the hip straight vs 110 Nm at 90° of hip flexion (knee at 45°); the base curve was measured with the hip at about 70° (101 Nm by interpolation). Measured at one knee angle only, so the factor is applied across the range. Black et al. found the same: 48 Nm lying on the back (hip at about 10°) vs 78 Nm sitting (hip at about 80°), a ratio of 0.62; Worrell et al. also found the hamstrings weaker supine.",
-        "source": "Guex K, Gojanovic B, Millet GP (2012). Influence of hip-flexion angle on hamstrings isokinetic activity in sprinters. J Athl Train 47(4):390–395. doi:10.4085/1062-6050-47.4.04 (Table: isometric, knee at 45°, 10 sprinters); Black SJ, Woodhouse ML, Suttmiller S, Shall L (1993). Influence of hip position on electromyographic and torque productions in the knee. J Sport Rehabil 2(1):26–34. doi:10.1123/jsr.2.1.26 (Table 1: 24 recreational athletes, isokinetic 30°/s); Worrell TW, Perrin DH, Denegar CR (1989). The influence of hip position on quadriceps and hamstring peak torque and reciprocal muscle group ratio values. J Orthop Sports Phys Ther 11(3):104–107"
+        "note": "hip straight, so the hamstrings are shorter: knee-flexion strength about 61% of the seated test's. Guex et al. measured 62 Nm with the hip straight vs 110 Nm at 90° of hip flexion (knee at 45°); the base curve was measured with the hip at about 70° (101 Nm by interpolation). Measured at one knee angle only, so the factor is applied across the range. Black et al. found the same: 48 Nm lying on the back (hip at about 10°) vs 78 Nm sitting (hip at about 80°), a ratio of 0.62; Worrell et al. also found the hamstrings weaker supine. Check of the curve's shape lying: Marchetti et al. measured the force with the knee at 90° at 0.66–0.68 of the straight-knee force (hip at 15°); the base curve gives 0.61 ÷ 0.90 = 0.68.",
+        "source": "Guex K, Gojanovic B, Millet GP (2012). Influence of hip-flexion angle on hamstrings isokinetic activity in sprinters. J Athl Train 47(4):390–395. doi:10.4085/1062-6050-47.4.04 (Table: isometric, knee at 45°, 10 sprinters); Black SJ, Woodhouse ML, Suttmiller S, Shall L (1993). Influence of hip position on electromyographic and torque productions in the knee. J Sport Rehabil 2(1):26–34. doi:10.1123/jsr.2.1.26 (Table 1: 24 recreational athletes, isokinetic 30°/s); Worrell TW, Perrin DH, Denegar CR (1989). The influence of hip position on quadriceps and hamstring peak torque and reciprocal muscle group ratio values. J Orthop Sports Phys Ther 11(3):104–107; Marchetti PH, Magalhaes RA, Gomes WA, da Silva JJ, Stecyk SD, Whiting WC (2021). Different knee and ankle positions affect force and muscle activation during prone leg curl in trained subjects. J Strength Cond Res 35(12):3322–3326. doi:10.1519/JSC.0000000000003333 (Results and Table 1: 15 resistance-trained men, isometric, prone, hip at 15°)"
       }
     },
     {
@@ -157,5 +157,21 @@
     "exerciseId": 365,
     "name": "Leg Curls (laying)",
     "note": "Checked against wger's public exercise list (id = the number in the page address). This is the lying leg curl, the exercise's default variant."
-  }
+  },
+  "placementStrength": {
+    "key": "foot",
+    "default": "relaxed",
+    "values": {"up": 1.05, "relaxed": 1, "pointed": 0.95},
+    "note": "Knee-flexion strength with the toes pulled up (ankle dorsiflexed) vs pointed (plantarflexed): 1.10 ± 0.11 times as strong seated and 1.11 ± 0.08 lying, at 60°/s (13 men; 1.14 seated at 180°/s). The gastrocnemius, which crosses the knee too, is longer with the toes up. The base curve's ankle position isn't reported, so 'relaxed' is taken as halfway: toes up × 1.05, pointed × 0.95. Measured isokinetically, applied at every knee angle. The same dataset has lying at 0.70 of seated (this app: 0.61 ÷ 1.09 = 0.56, from Guex et al.). Marchetti et al. found more (isometric, lying, toes pulled up as far as possible vs pointed): 22% stronger with the knee at 90° (significant) and 17% with it straight (not significant); biceps femoris EMG didn't change. The app keeps Vuk's 10%, measured through the whole range.",
+    "source": "Vuk S (2023). Active Insufficiency [dataset]. Mendeley Data, v1. doi:10.17632/jyp4jg3zxm.1 (CC BY 4.0; sheet PT: isokinetic knee-flexion peak torque, 13 physically active men, seated and lying, ankle dorsiflexed vs plantarflexed); Marchetti PH, Magalhaes RA, Gomes WA, da Silva JJ, Stecyk SD, Whiting WC (2021). Different knee and ankle positions affect force and muscle activation during prone leg curl in trained subjects. J Strength Cond Res 35(12):3322–3326. doi:10.1519/JSC.0000000000003333 (Results and Table 1: 15 resistance-trained men, isometric, prone, hip at 15°)"
+  },
+  "placement": [
+    {
+      "key": "foot",
+      "label": "Foot",
+      "type": "choice",
+      "options": [["up", "Toes pulled up"], ["relaxed", "Relaxed"], ["pointed", "Toes pointed"]],
+      "hint": "Pulling the toes up stretches the calf muscle (gastrocnemius), which also bends the knee: in 13 men knee flexion was about 10% stronger with the toes up than pointed, seated and lying alike (Vuk 2023); in a lying isometric test 17–22% (Marchetti et al.). Hamstring EMG didn't change. The torque the load makes is the same; only the strength changes."
+    }
+  ]
 }

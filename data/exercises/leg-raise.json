@@ -17,7 +17,8 @@
     "massNote": "Both legs: segment mass as a fraction of body mass (twice one leg), and centre of mass as a fraction of the segment length from its proximal end, from de Leva's adjusted Zatsiorsky-Seluyanov table (young adult males). The lower legs include the feet (combined centre of mass along knee → ankle; the foot's own position is approximated).",
     "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
     "note": "Hip→knee and knee→ankle in metres, typical adult.",
-    "massLabel": "legs"
+    "massLabel": "legs",
+    "draw": {"w": [0.15, 0.11]}
   },
   "defaults": {"loadKg": 0, "peakTorqueNm": 283, "variant": "hanging", "bodyMassKg": 75},
   "ui": {"load": [0, 20, 0.5], "strength": [100, 450]},
@@ -38,7 +39,7 @@
       {"shape": "seg", "from": [0, 0], "to": [0, 0.52], "w": 0.2},
       {"shape": "circle", "at": [0.02, 0.72], "r": 0.11},
       {"shape": "seg", "from": [-0.04, 0.5], "to": [-0.06, 0.05], "w": 0.07},
-      {"shape": "seg", "from": [-0.13, 0.95], "to": [-0.13, -1.0], "w": 0.03, "class": "equipment"}
+      {"shape": "seg", "from": [-0.13, 0.95], "to": [-0.13, -1], "w": 0.03, "class": "equipment"}
     ]
   },
   "muscles": [
@@ -50,8 +51,9 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "weight": [[0, 1], [100, 1]],
-      "note": "The main hip flexor: the psoas from the lumbar spine and the iliacus from the pelvis, both to the thigh. It lifts the legs; the abdominals don't, they hold the pelvis.",
-      "source": "TODO: check against EMG literature"
+      "note": "The main hip flexor: the psoas from the lumbar spine and the iliacus from the pelvis, both to the thigh. It lifts the legs; the abdominals don't, they hold the pelvis. Fine-wire EMG: the iliacus worked harder in straight-leg lifts than in sit-ups, and two-leg lifts also needed the abdominals (Andersson et al.).",
+      "source": "Andersson EA, Nilsson J, Ma Z, Thorstensson A (1997). Abdominal and hip flexor muscle activation during various training exercises. Eur J Appl Physiol 75(2):115–123. doi:10.1007/s004210050135 (6 men, fine-wire EMG of the iliacus)",
+      "draw": {"seg": "proximal", "origin": [0.03, 0.22], "insert": 0.1, "offset": 0.03, "w": 0.05, "layer": 2}
     },
     {
       "id": "rectus-femoris",
@@ -60,9 +62,10 @@
       "wgerId": 10,
       "role": "Synergist",
       "driver": "jointEffort",
-      "weight": [[0, 0.8], [100, 0.5]],
-      "note": "The one quadriceps head that crosses the hip. It shortens as the hip flexes, so it helps less near the top. With the knees bent it is longer at the knee (not modelled).",
-      "source": "TODO: check against EMG literature"
+      "weight": [[0, 0.35], [100, 0.25]],
+      "note": "The one quadriceps head that crosses the hip. In the hanging knee-up it reached only 15% of its maximum (Escamilla et al.), while the abdominals worked hard; with the knees bent it is short at the hip and slack at the knee. Higher with straight legs (not measured).",
+      "source": "Escamilla RF, Babb E, DeWitt R, Jew P, Kelleher P, Burnham T, Busch J, D'Anna K, Mowbray R, Imamura RT (2006). Electromyographic analysis of traditional and nontraditional abdominal exercises: implications for rehabilitation and training. Phys Ther 86(5):656–671. doi:10.1093/ptj/86.5.656 (Table 2: % of maximal isometric activation, 21 adults)",
+      "draw": {"seg": "proximal", "along": [0.04, 0.37], "offset": 0.05, "w": 0.05, "layer": 1}
     },
     {
       "id": "rectus-abdominis",
@@ -71,9 +74,14 @@
       "wgerId": 6,
       "role": "Stabiliser",
       "driver": "jointEffort",
-      "weight": [[0, 0.5], [100, 0.7]],
-      "note": "The hip flexors pull the pelvis forward (arching the lower back) as hard as they lift the legs; the abdominals hold it. Curling the pelvis up at the top (the 'toes to bar' finish) is trunk flexion and works them more, which this model leaves out.",
-      "source": "TODO: check against EMG literature"
+      "weight": [[0, 0.8], [100, 1]],
+      "note": "The hip flexors pull the pelvis forward (arching the lower back) as hard as they lift the legs; the abdominals hold it, and at the top curl the pelvis up. In the hanging knee-up (with straps) the rectus abdominis reached 69–75% of its maximum (upper and lower part; Escamilla et al.), as high as in any exercise they tested.",
+      "source": "Escamilla RF, Babb E, DeWitt R, Jew P, Kelleher P, Burnham T, Busch J, D'Anna K, Mowbray R, Imamura RT (2006). Electromyographic analysis of traditional and nontraditional abdominal exercises: implications for rehabilitation and training. Phys Ther 86(5):656–671. doi:10.1093/ptj/86.5.656 (Table 2: % of maximal isometric activation, 21 adults)",
+      "draw": {
+        "points": [[0.08, 0.06], [0.08, 0.46]],
+        "w": 0.05,
+        "layer": 1
+      }
     },
     {
       "id": "external-oblique",
@@ -82,15 +90,32 @@
       "wgerId": 14,
       "role": "Stabiliser",
       "driver": "jointEffort",
-      "weight": [[0, 0.4], [100, 0.5]],
-      "note": "Braces the trunk with the rectus abdominis; hanging, it also stops the body swinging.",
-      "source": "TODO: check against EMG literature"
+      "weight": [[0, 0.8], [100, 1]],
+      "note": "Braces the trunk with the rectus abdominis and stops the body swinging: 79% of its maximum in the hanging knee-up (internal oblique 85%; Escamilla et al.).",
+      "source": "Escamilla RF, Babb E, DeWitt R, Jew P, Kelleher P, Burnham T, Busch J, D'Anna K, Mowbray R, Imamura RT (2006). Electromyographic analysis of traditional and nontraditional abdominal exercises: implications for rehabilitation and training. Phys Ther 86(5):656–671. doi:10.1093/ptj/86.5.656 (Table 2: % of maximal isometric activation, 21 adults)",
+      "draw": {
+        "points": [[0.05, 0.1], [0.05, 0.36]],
+        "w": 0.05,
+        "layer": 0
+      }
     }
   ],
   "phases": [
-    {"name": "Start", "range": [0, 30], "text": "Legs in line with the trunk: the hip flexors are long and strongest. Lying down, this is where the legs' weight has its longest lever."},
-    {"name": "Mid-range", "range": [30, 75], "text": "Lever and strength cross over: lying, the load falls; hanging, it rises."},
-    {"name": "Top", "range": [75, 100], "text": "Hanging, the legs are horizontal at 90°: the longest lever while the hip flexors are short and weak. The hardest point, and the reason many swing or bend the knees."}
+    {
+      "name": "Start",
+      "range": [0, 30],
+      "text": "Legs in line with the trunk: the hip flexors are long and strongest. Lying down, this is where the legs' weight has its longest lever."
+    },
+    {
+      "name": "Mid-range",
+      "range": [30, 75],
+      "text": "Lever and strength cross over: lying, the load falls; hanging, it rises."
+    },
+    {
+      "name": "Top",
+      "range": [75, 100],
+      "text": "Hanging, the legs are horizontal at 90°: the longest lever while the hip flexors are short and weak. The hardest point, and the reason many swing or bend the knees."
+    }
   ],
   "variants": [
     {
@@ -101,7 +126,8 @@
       "load": {"type": "gravity"},
       "defaultLoadKg": 0,
       "notes": "Hanging from a bar, straight legs. Torque grows with the sine of the hip angle: nothing at the bottom, most with the legs horizontal.",
-      "params": {"knee": 0}
+      "params": {"knee": 0},
+      "noFloor": true
     },
     {
       "id": "hanging-knee",
@@ -111,7 +137,8 @@
       "load": {"type": "gravity"},
       "defaultLoadKg": 0,
       "notes": "Knees bent 90°: with the thighs horizontal the lower legs hang straight below the knees, closer to the hip: about a quarter less torque than straight legs. The thighs' weight stays the same.",
-      "params": {"knee": 90}
+      "params": {"knee": 90},
+      "noFloor": true
     },
     {
       "id": "lying",
@@ -138,5 +165,13 @@
       "distalBend": true,
       "hint": "0° = legs straight. Bending the knees brings the lower legs' weight (and an ankle weight) closer to the hip: a shorter lever, so a lighter lift."
     }
-  ]
+  ],
+  "trunk3d": {
+    "note": "3D view: the trunk muscles of the OpenSim lumbar spine model (Christophy et al. 2012, MIT licence) in its upright posture, shaded by this exercise's muscle effort. Groups the exercise doesn't load stay grey.",
+    "map": {
+      "iliopsoas": ["psoas"],
+      "rectus-abdominis": ["rectus-abdominis"],
+      "external-oblique": ["external-oblique", "internal-oblique"]
+    }
+  }
 }

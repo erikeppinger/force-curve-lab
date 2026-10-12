@@ -6,6 +6,8 @@
 //   "transverse", both: true (the other limb mirrors the working one), start: "3d" | "2d",
 //   yawKey: placement key that turns the plane about the vertical (degrees, + = outwards),
 //   cam: { yaw, pitch } the camera to start with }.
+// A muscle drawn by `points` (fixed to the trunk) may set `draw.z3d` [z of its first point, z of
+// its second] (right side, metres from the midline), so a trapezius runs in towards the neck.
 // A variant may set `oneSided: true` (the other limb rests) or `yaw3d` (degrees).
 // The 2D frame's x and y axes are mapped onto the plane at the base joint of a standing body
 // (world: x forward, y up, z to the right, as in multijoint3d.js); then the scene is turned so the
@@ -77,12 +79,21 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
   const yaw = Number(variant.yaw3d ?? (F.yawKey ? result.placement?.[F.yawKey] ?? variant.params?.[F.yawKey] ?? 0 : 0));
   const { ex: X, ey: Y } = planeAxes(F.plane, yaw);
   const seated = /seated/.test(variant.posture ?? "");
+  // Chest on an incline bench: the legs are drawn after the turn, standing on the floor.
+  const incline = variant.posture === "incline";
   // Body points relative to the base joint (right side).
-  const base = F.base === "knee" ? v3(0, 0, L.hipHalfWidth) : v3(0, 0, L.shoulderHalfWidth);
+  // Toes turned in (calf raise): the feet stand further apart so the toes don't meet.
+  const toesIn = F.base === "knee" && yaw < 0 ? Math.sin(rad(-yaw)) * (L.footFront + 0.04) : 0;
+  const base = F.base === "knee" ? v3(0, 0, L.hipHalfWidth + toesIn) : v3(0, 0, L.shoulderHalfWidth);
   const map2 = (p) => add3(add3(base, X, p.x), Y, p.y);
   const dir2 = (d) => add3(add3(v3(0, 0, 0), X, d.x), Y, d.y);
   const { base: b2, mid: m2, tip: t2 } = result.pose;
   const chain = [b2, m2, t2].map(map2);
+  // An elbow bent out of the plane (lateral raise, physics.js "outOfPlane"): the statics see the
+  // forearm foreshortened; drawn, it swings forward by length × sin(bend).
+  const out = result.bendOutOfPlane ? add3(v3(0, 0, 0), cross3(Y, X), ex.segments.distal * Math.sin(rad(result.bend))) : v3(0, 0, 0);
+  chain[2] = add3(chain[2], out);
+  const atTip = (p) => Math.hypot(p.x - t2.x, p.y - t2.y) < 1e-9;
   const both = F.both && !variant.oneSided;
   const lines = [];
   const line = (a, b, w, cls, extra) => lines.push({ kind: "line", a, b, w, cls, ...extra });
@@ -121,7 +132,7 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
   } else {
     S = v3(0, 0, 0);
     P = v3(0, -L.trunk, 0);
-    for (const s of [1, -1]) {
+    for (const s of incline ? [] : [1, -1]) {
       const hip = v3(P.x, P.y, s * L.hipHalfWidth);
       const kn = seated ? add3(hip, v3(L.thigh, 0, 0)) : add3(hip, v3(0, -L.thigh, 0));
       const ankle = add3(kn, v3(0, -L.shank, 0));
@@ -161,7 +172,9 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
       a = d.origin ? { x: d.origin[0], y: d.origin[1] } : at(d.along[0], d.offset ?? 0);
       b = d.origin ? at(d.insert, d.offset ?? 0) : at(d.along[1], d.offset ?? 0);
     }
-    const A = map2(a), B = map2(b), v = act[m.id] ?? 0, title = `${m.name}: ${Math.round(v * 100)}%`;
+    const A = map2(a), B = map2(b), v = act[m.id] ?? 0;
+    if (d.z3d) [A.z, B.z] = d.z3d;
+    const title = `${m.name}: ${Math.round(v * 100)}%`;
     for (const [p, q] of both ? [[A, B], [mirror(A), mirror(B)]] : [[A, B]]) {
       line(p, q, d.w, "muscle-base", { title, top: 50 });
       line(p, q, d.w, "muscle-on", { opacity: v, title, top: 50 });
@@ -200,7 +213,7 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
     line(add3(at, n, 0.045), add3(add3(at, n, 0.045), unit3(sub3(chain[2], chain[1])), 0.1), 0.04, "pad");
   }
   if (f.mag > 0) {
-    forces.push({ at: map2(f.at), dir: unit3(dir2({ x: f.x / f.mag, y: f.y / f.mag })) });
+    forces.push({ at: add3(map2(f.at), out, atTip(f.at) ? 1 : 0), dir: unit3(dir2({ x: f.x / f.mag, y: f.y / f.mag })) });
     joints[0] = { id: "joint", at: joint3, foot: map2(result.momentArmFoot), momentArm: Math.abs(result.momentArm) };
   }
 
@@ -217,6 +230,21 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
   // A closed chain (calf raise) stands with the balls of the feet on a step, the heels free.
   const STEP = 0.15;
   const ball = T(chain[2]), stepTop = ball.y - 0.03;
+  // Incline: the hips on the bench's seat end, thighs down and a little back, shins upright.
+  const legs = [];
+  if (incline) {
+    const back = unit3(v3(T(P).x - T(S).x, 0, 0));
+    for (const s of [1, -1]) {
+      const hip = T(v3(P.x, P.y, s * L.hipHalfWidth));
+      const kn = add3(hip, unit3(add3(v3(0, -1, 0), back, 0.35)), L.thigh);
+      const ankle = add3(kn, v3(0, -L.shank, 0));
+      const o = { part: s > 0 ? "legR" : "legL" }, cls = s > 0 ? "body" : "body back";
+      legs.push({ kind: "line", a: hip, b: kn, w: 0.14, cls, ...o }, { kind: "line", a: kn, b: ankle, w: 0.1, cls, ...o },
+        { kind: "line", a: add3(ankle, add3(v3(0, -0.06, 0), back, L.heel)), b: add3(ankle, add3(v3(0, -0.06, 0), back, -L.footFront)), w: 0.06, cls, ...o });
+      ys.push(ankle.y - 0.09);
+    }
+    prims.push(...legs);
+  }
   const floorY = type === "reaction" ? Math.min(stepTop - STEP, Math.min(...ys) - 0.02) : Math.min(...ys) - 0.02;
   const scene = [{ kind: "poly", pts: [[-0.6, -0.7], [0.8, -0.7], [0.8, 0.7], [-0.6, 0.7]].map(([x, z]) => v3(x, floorY, z)), cls: "floor3d" }];
   if (type === "reaction") {
@@ -228,6 +256,17 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
   }
   if (padCentre) { const c = T(padCentre); scene.push({ kind: "line", a: v3(c.x, c.y - 0.03, c.z), b: v3(c.x, floorY, c.z), w: 0.05, cls: "equipment", top: 0.15 }); } // the pad's post
   if (knee && seated) scene.push({ kind: "line", a: T(v3(-L.thigh / 2 - 0.1, -0.1, 0)), b: v3(T(v3(-L.thigh / 2 - 0.1, 0, 0)).x, floorY, 0), w: 0.05, cls: "equipment" }); // the seat's post
+  if (incline) {
+    // The bench under the chest: a board along the trunk on its front, from below the armpits to the hips, on a post.
+    const front = unit3(sub3(R(v3(1, 0, 0)), v3(0, 0, 0))), p0 = T(P), s0 = T(S);
+    const at = (t) => add3(add3(s0, sub3(p0, s0), t), front, 0.17);
+    const [a, b] = [at(0.12), at(1.1)];
+    scene.push({ kind: "poly", pts: [v3(a.x, a.y, -0.15), v3(b.x, b.y, -0.15), v3(b.x, b.y, 0.15), v3(a.x, a.y, 0.15)], cls: "plate3d bench3d" });
+    const pad = (z) => scene.push({ kind: "line", a: add3(v3(a.x, a.y, z), front, 0.03), b: add3(v3(b.x, b.y, z), front, 0.03), w: 0.06, cls: "pad" });
+    pad(-0.1); pad(0.1); // the cushion's thickness
+    const c = at(0.75);
+    scene.push({ kind: "line", a: add3(c, front, 0.03), b: v3(c.x, floorY, 0), w: 0.05, cls: "equipment" });
+  }
   if (lying) {
     // A bench under the trunk.
     const a = T(P), b = T(S), y = Math.min(a.y, b.y) - 0.16;

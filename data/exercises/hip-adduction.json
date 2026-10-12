@@ -129,7 +129,8 @@
       "adjustablePulley": true,
       "defaultLoadKg": 5,
       "notes": "Standing on the other leg, cable from a low pulley well out to the working leg's side (about ankle height), pulling the leg in towards (and past) the other one. The cable pulls outwards over the whole range; its lever is longest with the leg crossed in. With the leg far out, its own weight pulls it back in about as hard as the cable pulls out, so the start is nearly free.",
-      "hip": {"flexion": 0}
+      "hip": {"flexion": 0, "flexSlider": true},
+      "strengthScale": {"by": "hipFlexion", "points": [[0,1], [45,0.6], [120,0.6]], "note": "By the hip bend set with the slider, as for the seated machine: Adduction strength vs hip bend: about 40% lower at 45° of hip flexion than straight in the one dataset Chen & Franklin collected across hip flexion (Fig. 6, bottom left); held to 120° (extrapolation). The OpenSim model's leverage alone would predict little change, so the loss is more likely the adductors working at a shorter length (not in the leverage model).", "source": "Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183 (bioRxiv preprint, CC BY 4.0: Fig. 6, read off the figure)"}
     },
     {
       "id": "side-lying",
@@ -190,6 +191,19 @@
       "scale": 1,
       "variants": ["seated"],
       "hint": "+ = leaning back against a reclined pad (less hip bend), − = leaning forward over the thighs (more hip bend). The thighs stay on the seat, so the hip bend is 90° minus the lean. The pelvis is taken to tilt with the trunk."
+    },
+    {
+      "key": "hipFlex",
+      "label": "Hip bent forward",
+      "min": -20,
+      "max": 60,
+      "step": 5,
+      "unit": "°",
+      "scale": 1,
+      "variants": [
+        "cable"
+      ],
+      "hint": "0° = leg straight down; + = the leg swung forward before it is pulled across, − = back. The movement then happens in a tilted plane, so only cos(bend) of the leg's weight acts in it, and adduction strength drops with the hip bent (Chen & Franklin's datasets). In the OpenSim hip model the adductor longus and brevis (also hip flexors) take a larger share as the hip bends, and the psoas joins in. The cable keeps the direction it has in the upright stance."
     }
   ]
 }

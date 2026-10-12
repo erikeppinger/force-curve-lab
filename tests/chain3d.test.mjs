@@ -106,3 +106,18 @@ test("calf raise display: the ball of the foot, the step and the floor stay put 
   assert.ok(floors.every((y) => Math.abs(y - floors[0]) < 1e-9));
   assert.ok(hips[3] > hips[1] + 0.05, `the knee rises: ${hips}`);
 });
+
+test("chest-supported front raise: feet on the floor, a bench under the chest", () => {
+  const ex = load("front-raise");
+  const s = scene(ex, "incline", 45);
+  const floor = s.scene.find((p) => p.cls === "floor3d").pts[0].y;
+  const feet = s.scene.filter((p) => p.kind === "line" && /^leg/.test(p.part ?? "")).flatMap((p) => [p.a.y, p.b.y]);
+  assert.ok(Math.abs(Math.min(...feet) - 0.03 - floor) < 0.03, `feet ${Math.min(...feet)} floor ${floor}`); // sole (centre − half its width) on the floor
+  assert.ok(s.scene.some((p) => p.kind === "poly" && /bench3d/.test(p.cls)), "bench");
+});
+
+test("toes turned in: the feet stand further apart, so the toes don't meet", () => {
+  const ex = load("calf-raise");
+  const toes = (deg) => { const s = scene(ex, "two-leg", 20, { footAngle: deg }); return arm(s).tip.z; };
+  assert.ok(toes(-30) > 0.05, `right toes at z = ${toes(-30)}`);
+});

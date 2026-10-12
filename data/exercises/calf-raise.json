@@ -4,7 +4,15 @@
   "joint": "Ankle plantarflexion",
   "movingJoint": "distal",
   "view": "side",
-  "figure3d": {"kind": "chain", "base": "knee", "plane": "sagittal", "both": true, "start": "2d", "yawKey": "footAngle", "cam": {"yaw": 90, "pitch": 60}},
+  "figure3d": {
+    "kind": "chain",
+    "base": "knee",
+    "plane": "sagittal",
+    "both": true,
+    "start": "2d",
+    "yawKey": "footAngle",
+    "cam": {"yaw": 90, "pitch": 60}
+  },
   "angleLabel": "Ankle angle",
   "angleOffset": 60.3,
   "angleSense": -1,
@@ -48,8 +56,8 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "weight": [[-20, 1], [40, 0.85]],
-      "note": "Crosses the knee too: with the knee bent (seated) it is slack and contributes much less. Turning the toes out shifts a little more of the work to this inner head (about +2% at full outward rotation; the difference between the heads was significant only toes out). Training with the toes out at 45° thickened this head 8.4% in 9 weeks, toes in 3.8%.",
-      "source": "Weights: TODO. Knee-angle effect: Baptista MT, Nascimento FXM, Nardes LK, Matta TT, Oliveira LF (2014). Influência de posições do joelho no torque e atividade mioelétrica do tríceps sural na flexão plantar isométrica máxima. Rev Bras Educ Fís Esporte 28(2):197–202. doi:10.1590/1807-55092014000200197; Kovács B, Csala D, Yang S, Tihanyi J, Gu Y, Hortobágyi T (2024). Knee position affects medial gastrocnemius and soleus activation during dynamic plantarflexion: no evidence for an inter-muscle compensation in healthy young adults. Biol Open 13:bio061810. doi:10.1242/bio.061810; head shares by foot position: Cibulka M, Wenthe A, Boyle Z, Callier D, Schwerdt A, Jarman D, Strube MJ (2017). Variation in medial and lateral gastrocnemius muscle activity with foot position. Int J Sports Phys Ther 12(2):233–241 (Table 2: standing heel rise, % MVIC; 33 participants); direction confirmed under load (130–135% body mass, both phases): Riemann BL, Limbaugh GK, Eitner JD, LeFavi RG (2011). Medial and lateral gastrocnemius activation differences during heel-raise exercise with three different foot positions. J Strength Cond Res 25(3):634–639. doi:10.1519/JSC.0b013e3181cc22b8; growth: Nunes JP, Costa BDV, Kassiano W, Kunevaliki G, Castro-e-Souza P, Rodacki ALF, Fortes LS, Cyrino ES (2020). Different foot positioning during calf training to induce portion-specific gastrocnemius muscle hypertrophy. J Strength Cond Res 34(8):2347–2351. doi:10.1519/JSC.0000000000003674",
+      "note": "Crosses the knee too: with the knee bent (seated) it is slack and contributes much less. Turning the toes out shifts a little more of the work to this inner head (about +2% at full outward rotation; the difference between the heads was significant only toes out). Training with the toes out at 45° thickened this head 8.4% in 9 weeks, toes in 3.8%. Its share of plantarflexion falls as the knee bends: at least 40% of the torque with the knee straight, its EMG lower with the knee bent at the same effort while the soleus's stays (Cresswell et al.).",
+      "source": "Weights: TODO. Knee-angle effect: Baptista MT, Nascimento FXM, Nardes LK, Matta TT, Oliveira LF (2014). Influência de posições do joelho no torque e atividade mioelétrica do tríceps sural na flexão plantar isométrica máxima. Rev Bras Educ Fís Esporte 28(2):197–202. doi:10.1590/1807-55092014000200197; Kovács B, Csala D, Yang S, Tihanyi J, Gu Y, Hortobágyi T (2024). Knee position affects medial gastrocnemius and soleus activation during dynamic plantarflexion: no evidence for an inter-muscle compensation in healthy young adults. Biol Open 13:bio061810. doi:10.1242/bio.061810; head shares by foot position: Cibulka M, Wenthe A, Boyle Z, Callier D, Schwerdt A, Jarman D, Strube MJ (2017). Variation in medial and lateral gastrocnemius muscle activity with foot position. Int J Sports Phys Ther 12(2):233–241 (Table 2: standing heel rise, % MVIC; 33 participants); direction confirmed under load (130–135% body mass, both phases): Riemann BL, Limbaugh GK, Eitner JD, LeFavi RG (2011). Medial and lateral gastrocnemius activation differences during heel-raise exercise with three different foot positions. J Strength Cond Res 25(3):634–639. doi:10.1519/JSC.0b013e3181cc22b8; growth: Nunes JP, Costa BDV, Kassiano W, Kunevaliki G, Castro-e-Souza P, Rodacki ALF, Fortes LS, Cyrino ES (2020). Different foot positioning during calf training to induce portion-specific gastrocnemius muscle hypertrophy. J Strength Cond Res 34(8):2347–2351. doi:10.1519/JSC.0000000000003674; Cresswell AG, Löscher WN, Thorstensson A (1995). Influence of gastrocnemius muscle length on triceps surae torque development and electromyographic activity in man. Exp Brain Res 105(2):283–290. doi:10.1007/BF00240964 (10 men, isometric, knee 180° to 60°)",
       "draw": {"seg": "proximal", "along": [0.05, 0.22], "offset": -0.045, "w": 0.07, "layer": 1},
       "placementFactor": {
         "key": "footAngle",
@@ -81,8 +89,8 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "weight": [[-20, 0.9], [40, 0.9]],
-      "note": "Crosses the ankle only, so it works whatever the knee angle.",
-      "source": "TODO: check against EMG literature",
+      "note": "Crosses the ankle only, so it works whatever the knee angle. Its EMG doesn't change with the knee angle (Cresswell et al.).",
+      "source": "Cresswell AG, Löscher WN, Thorstensson A (1995). Influence of gastrocnemius muscle length on triceps surae torque development and electromyographic activity in man. Exp Brain Res 105(2):283–290. doi:10.1007/BF00240964 (10 men, isometric, knee 180° to 60°)",
       "draw": {"seg": "proximal", "along": [0.15, 0.36], "offset": -0.035, "w": 0.05, "layer": 0}
     }
   ],
@@ -143,7 +151,7 @@
       "load": {"type": "reaction", "bodyWeight": 0},
       "defaultLoadKg": 25,
       "muscleModifiers": {"gastroc-medial": 0.65, "gastroc-lateral": 0.65},
-      "notes": "The load sits on the knees, so body weight isn't lifted. With the knee bent the gastrocnemius is slack: its EMG fell by about a third (Baptista et al.: −41% lateral, −32% medial head; Kovács et al.: −35% medial head), hence the 0.65 factor. The soleus results differ between studies (more active in Baptista et al., unchanged in Cresswell et al.), so it keeps its weight.",
+      "notes": "The load sits on the knees, so body weight isn't lifted. With the knee bent the gastrocnemius is slack: its EMG fell by about a third (Baptista et al.: −41% lateral, −32% medial head; Kovács et al.: −35% medial head), hence the 0.65 factor. The soleus results differ between studies (more active in Baptista et al., unchanged in Cresswell et al.), so it keeps its weight. No toes in / out option here: turning the feet doesn't change the ankle's lever or the load (the leg and foot turn together), and its only measured effect, a small shift between the two gastrocnemius heads, comes from standing heel raises (Riemann et al., Nunes et al.). Seated, the slack gastrocnemius does a smaller share of the work, so the shift is likely smaller still; it hasn't been measured.",
       "strengthScale": {
         "factor": 0.92,
         "note": "knee bent 90°, gastrocnemius slack: about 92% of the base curve's strength (Cresswell et al.: 103.7 Nm at 90° vs about 112 Nm at 50°).",

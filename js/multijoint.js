@@ -38,7 +38,10 @@ const weight = (at, kg) => ({ at, f: { x: 0, y: -kg * G } });
  * leg in a leg press); "proximal" = the free side is the trunk side (e.g. everything
  * above the knee in a squat). The proximal sense is the distal one reversed.
  */
-const SENSE = { "hip-extension": -1, "knee-extension": 1, "plantarflexion": -1, "shoulder-flexion": 1, "shoulder-extension": -1, "elbow-flexion": 1 };
+const SENSE = { "hip-extension": -1, "knee-extension": 1, "plantarflexion": -1, "shoulder-flexion": 1, "shoulder-extension": -1, "elbow-flexion": 1,
+  // Holds with the body as a beam (planks): the free side is the legs' end, and the working
+  // muscles keep the middle from sagging (hip flexors, abdominals; side-bend and hip abductors).
+  "hip-flexion": 1, "trunk-flexion": 1, "side-bend": 1, "hip-abduction": 1, "trunk-rotation": 1, "trunk-extension": -1 };
 const senseOf = (action, side) => SENSE[action] * (side === "proximal" ? -1 : 1);
 
 /**
@@ -406,7 +409,182 @@ function seatedRow(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
   };
 }
 
-const SOLVERS = { standing, split, hipThrust, seatedRow, legPress3d, squat3d, bench3d, press3d, hinge3d, split3d, hipThrust3d, row3d, pull3d };
+/**
+ * Planks (driver: the height of the forearm or hand support, cm; 0 = the floor). The body is a
+ * straight beam from the feet (or knees) to the shoulders, held up at the toes (knees) and under
+ * the shoulders (upper arms vertical). Front plank: in the side view; side plank (\`params.side\`):
+ * the same beam in the body's frontal plane, on one forearm and the edge of the lower foot. The
+ * supports push straight up (no friction needed). Each joint's torque is the moment of the legs'
+ * end of the beam: the hip (per leg; side plank: the lower hip, carrying both legs) and the lower
+ * back at L5/S1 (whole trunk). All horizontal distances shrink with the cosine of the incline,
+ * so a raised support makes every torque smaller. Optional plate on the back (mid-trunk).
+ */
+function plank(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
+  const P = v.params;
+  const L = body.lengths, m = body.mass, c = body.com, tp = body.trunkParts;
+  const knees = P.support === "knees";
+  const arm = P.hands ? L.upperArm + L.forearm : L.upperArm; // shoulder height above the support
+  const base = knees ? { x: 0, y: 0.05 } : { x: 0, y: P.side ? 0.06 : L.footFront }; // knee / ankle above the floor
+  const len = (knees ? 0 : L.shank) + L.thigh + L.trunk;
+  const Sy = x / 100 + arm;
+  const beta = Math.asin(Math.max(-1, Math.min(Math.sin(rad(75)), (Sy - base.y) / len))); // up to 75°: a support at shoulder height isn't a plank
+  const u = { x: Math.cos(beta), y: Math.sin(beta) };
+  const A = knees ? null : base;
+  const K = knees ? base : add(base, u, L.shank);
+  const H = add(K, u, L.thigh), S = add(H, u, L.trunk), L5 = add(H, u, tp.l5s1);
+  const toe = knees ? { x: K.x, y: 0 } : { x: A.x, y: 0 };
+  const sup = { x: S.x, y: x / 100 };
+  // Weights (both legs; side plank: one on the other in the frontal view).
+  const lowerTrunkAt = add(H, u, 0.04); // pelvis, below L5/S1 (estimate)
+  const upperKg = (m.headTrunk - tp.lowerTrunk) * kg;
+  const upperAt = add(H, u, (m.headTrunk * c.headTrunk * L.trunk - tp.lowerTrunk * 0.04) / (m.headTrunk - tp.lowerTrunk));
+  const legs = knees
+    ? [{ at: lerp(K, H, c.thigh), kg: 2 * m.thigh * kg }]
+    : [{ at: { x: A.x + 0.02, y: A.y * 0.5 }, kg: 2 * m.foot * kg }, { at: lerp(A, K, c.shank), kg: 2 * m.shank * kg }, { at: lerp(K, H, c.thigh), kg: 2 * m.thigh * kg }];
+  const armsAt = lerp(S, sup, 0.5);
+  const plate = add(lerp(H, S, 0.5), { x: -u.y, y: u.x }, 0.12);
+  const items = [...legs, { at: lowerTrunkAt, kg: tp.lowerTrunk * kg }, { at: upperAt, kg: upperKg }, { at: armsAt, kg: (P.side ? 1 : 2) * (m.upperArm + m.forearmHand) * kg }, ...(loadKg > 0 ? [{ at: plate, kg: loadKg }] : [])];
+  const W = items.reduce((t, i) => t + i.kg, 0) * G;
+  const supR = (items.reduce((t, i) => t + i.kg * (i.at.x - toe.x), 0) * G) / (sup.x - toe.x);
+  const toeR = W - supR;
+  const legSide = [{ at: toe, f: { x: 0, y: toeR } }, ...legs.map((l) => weight(l.at, l.kg))];
+  const half = (fs) => fs.map((q) => ({ at: q.at, f: { x: q.f.x / 2, y: q.f.y / 2 } }));
+  const hipF = P.side ? legSide : half(legSide); // front plank: per leg; side plank: the lower hip holds both legs
+  const lumbar = jointTorque(L5, [...legSide, weight(lowerTrunkAt, tp.lowerTrunk * kg)], P.side ? "side-bend" : "trunk-flexion", "distal");
+  const hip = jointTorque(H, hipF, P.side ? "hip-abduction" : "hip-flexion", "distal");
+  const incline = deg(beta);
+  const head = add(S, u, 0.22);
+  const what = P.hands ? "hands" : P.side ? "forearm" : "forearms";
+  const end = knees ? "knees" : P.side ? "foot" : "toes";
+  return {
+    joints: {
+      lumbar: { at: L5, angle: 0, ...lumbar, noDraw: true },
+      hip: { at: H, angle: 0, ...hip, noDraw: true },
+    },
+    // For tests: the hip torque from the trunk's side must agree.
+    check: { weight: W, toeR, supR, hipFromTrunk: jointTorque(H, (P.side ? (q) => q : half)([{ at: sup, f: { x: 0, y: supR } }, ...items.filter((i) => !legs.includes(i)).map((i) => weight(i.at, i.kg))]), P.side ? "hip-abduction" : "hip-flexion", "proximal").torque },
+    segs: { trunk: [H, S], thigh: [K, H], ...(A ? { shank: [A, K] } : {}) },
+    draw: [...(A ? [P.side ? { a: { x: A.x - 0.04, y: 0.04 }, b: { x: A.x + 0.02, y: A.y + 0.02 }, w: 0.09, cls: "body" } : { a: { x: A.x - 0.03, y: 0 }, b: { x: A.x + 0.03, y: A.y + 0.03 }, w: 0.07, cls: "body" }, { a: A, b: K, w: 0.1, cls: "body" }] : [{ a: { x: K.x - 0.4, y: 0.05 }, b: K, w: 0.1, cls: "body back" }]),
+      { a: K, b: H, w: 0.14, cls: "body" }, { a: H, b: S, w: 0.24, cls: "body", trunk: true }, { circle: head, r: 0.11, cls: "body" }],
+    // Side plank (front view): the supporting upper arm stands straight under the shoulder (the
+    // forearm points at the viewer), the top arm rests along the body.
+    arms: P.side
+      ? [{ from: S, to: { x: sup.x, y: sup.y + 0.03 }, elbow: lerp(S, { x: sup.x, y: sup.y + 0.03 }, 0.5) },
+        { from: S, to: add(lerp(H, S, 0.15), { x: -u.y, y: u.x }, 0.1), elbow: add(lerp(H, S, 0.55), { x: -u.y, y: u.x }, 0.14) }]
+      : [{ from: S, to: P.hands ? sup : { x: sup.x + 0.28, y: sup.y + 0.03 }, elbow: P.hands ? undefined : { x: sup.x, y: sup.y + 0.03 } }],
+    loads: loadKg > 0 ? [{ at: plate, kind: "plate" }] : [],
+    // A bench (or box) under the forearms when the support is raised: top and two legs.
+    props: x > 0 ? [{ a: { x: sup.x - 0.2, y: sup.y - 0.04 }, b: { x: sup.x + 0.4, y: sup.y - 0.04 }, w: 0.08, cls: "equipment" },
+      { a: { x: sup.x - 0.15, y: sup.y - 0.08 }, b: { x: sup.x - 0.15, y: 0 }, w: 0.04, cls: "equipment" }, { a: { x: sup.x + 0.35, y: sup.y - 0.08 }, b: { x: sup.x + 0.35, y: 0 }, w: 0.04, cls: "equipment" }] : [],
+    balance: null,
+    reactions: { toes: toeR, support: supR, weight: W },
+    info: [{ text: `The body is tilted ${Math.round(incline)}° from horizontal. The ${what} ${what === "forearm" ? "carries" : "carry"} ${Math.round((100 * supR) / W)}% of the weight, the ${end} the rest.` }],
+  };
+}
+
+/**
+ * Pallof press (driver: reach, % from the hands at the chest to the arms straight in front). Top
+ * view: x towards the cable's anchor side, y forward. The cable pulls the hands sideways; the
+ * trunk must stop it twisting (cable force × the hands' distance in front of the spine) and
+ * bending sideways (the sideways force × the hands' height above L5/S1, \`params.handHeight\`).
+ * Both are held about the lower back, whole trunk.
+ */
+function pallof(ex, v, x, { loadKg, body }) {
+  const P = v.params;
+  const L = body.lengths;
+  const sh = L.shoulderHalfWidth;
+  // Hands on the midline: straight arms reach sqrt((upper arm + forearm)² − shoulder half-width²).
+  const maxReach = Math.sqrt((L.upperArm + L.forearm) ** 2 - sh * sh) - 0.005;
+  const reach = P.chest + (maxReach - P.chest) * (x / 100);
+  const hand = { x: 0, y: reach };
+  const anchor = P.anchor;
+  const d = unit(sub(anchor, hand));
+  const F = loadKg * G;
+  const pull = { at: hand, f: { x: d.x * F, y: d.y * F } };
+  const O = { x: 0, y: 0 };
+  const twist = jointTorque(O, [pull], "trunk-rotation", "distal");
+  twist.torque = Math.abs(twist.torque);
+  const side = Math.abs(pull.f.x) * P.handHeight;
+  // Elbows out to the side of the line shoulder → hands (top view).
+  const elbow = (sx) => ik2({ x: sx, y: 0 }, hand, L.upperArm, L.forearm, sx > 0 ? -1 : 1);
+  return {
+    joints: {
+      rotation: { at: O, angle: 0, ...twist },
+      // The lever is the hands' height above L5/S1, out of this top view: nothing to draw.
+      sidebend: { at: O, angle: 0, torque: side, momentArm: P.handHeight, foot: O, resultant: { x: pull.f.x, y: 0 }, noDraw: true },
+    },
+    segs: { trunk: [{ x: -sh, y: 0 }, { x: sh, y: 0 }] },
+    draw: [{ a: { x: -sh, y: 0 }, b: { x: sh, y: 0 }, w: 0.12, cls: "body" }, { circle: { x: 0, y: 0 }, r: 0.1, cls: "body" }],
+    arms: [{ from: { x: sh, y: 0 }, to: hand, elbow: elbow(sh) }, { from: { x: -sh, y: 0 }, to: hand, elbow: elbow(-sh) }],
+    loads: [{ at: hand, kind: "handle" }],
+    props: [{ a: hand, b: anchor, w: 0.008, cls: "cable" }, { a: { x: anchor.x - 0.05, y: anchor.y - 0.15 }, b: { x: anchor.x - 0.05, y: anchor.y + 0.15 }, w: 0.08, cls: "equipment" }],
+    balance: null,
+    noFloor: true,
+    info: [{ text: `Seen from above. The hands are ${Math.round(reach * 100)} cm in front of the spine; the cable pulls ${Math.round(Math.abs(d.x) * 100)}% of its tension sideways.` }],
+  };
+}
+
+/**
+ * Back extension on a Roman chair (driver: the trunk's bend to the legs, degrees; 0 = body
+ * straight). The bend is split between the hips and the lower back: \`rounding\` (placement,
+ * degrees of lumbar flexion) is taken by the lower back, the rest by the hips, so for the same
+ * trunk position a rounded back bends the hips less. The legs are held by the pads (\`params.bench\`:
+ * 45 = legs 45° from vertical, 0 = horizontal bench). The hips (per side) carry the moment of
+ * everything above them; the lower back (L5/S1, whole trunk) carries the moment of the upper
+ * body above it. Plate at the chest (\`params.plate\` "chest") or behind the head.
+ */
+function backExtension(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
+  const P = { ...v.params, ...placement };
+  const L = body.lengths, m = body.mass, c = body.com, tp = body.trunkParts;
+  const r = Math.max(-30, Math.min(x + 10, Number(P.rounding ?? 0))); // lumbar flexion, ° (negative: arched)
+  const hipFlex = x - r;
+  const k = rad(P.bench === 45 ? 45 : 90);
+  const d = { x: -Math.sin(k), y: -Math.cos(k) }; // hip → ankle (legs down and back)
+  const rot = (u, a) => ({ x: u.x * Math.cos(a) + u.y * Math.sin(a), y: -u.x * Math.sin(a) + u.y * Math.cos(a) }); // clockwise
+  const up0 = { x: -d.x, y: -d.y };
+  // As in the RDL and deadlift: the rounding bends the trunk above the pelvis, here spread over the
+  // lower back (half of it from L5/S1 to mid-back) and the upper back (all of it), so the curve shows.
+  const p = rot(up0, rad(hipFlex)), a = rot(up0, rad(hipFlex + r / 2)), q = rot(up0, rad(x)); // pelvis, lower back, upper back
+  const legLen = L.thigh + L.shank;
+  const H = { x: 0, y: L.ankleHeight - d.y * legLen + 0.05 };
+  const K = add(H, d, L.thigh), A = add(H, d, legLen);
+  const L5 = add(H, p, tp.l5s1);
+  const M = add(L5, a, L.trunk / 2 - tp.l5s1); // mid-back
+  const S = add(M, q, L.trunk / 2);
+  const head = add(S, q, 0.2);
+  // Masses (de Leva's trunk parts): the pelvis (lower trunk) below L5/S1; the middle trunk 70% of the
+  // way up the lower back, the upper trunk halfway up the upper back, the head 13 cm above the
+  // shoulders; arms crossed on the chest.
+  const pelvis = { at: add(H, p, 0.04), kg: tp.lowerTrunk * kg };
+  const above = [weight(add(L5, a, 0.7 * (L.trunk / 2 - tp.l5s1)), tp.middleTrunk * kg), weight(add(M, q, L.trunk / 4), tp.upperTrunk * kg),
+    weight(add(S, q, 0.13), tp.head * kg), weight(add(M, q, 0.06), 2 * (m.upperArm + m.forearmHand) * kg)];
+  const plateAt = P.plate === "head" ? add(S, q, 0.18) : add(M, q, 0.85 * L.trunk - L.trunk / 2);
+  if (loadKg > 0) above.push(weight(plateAt, loadKg));
+  const lumbar = jointTorque(L5, above, "trunk-extension", "proximal");
+  const half = (fs) => fs.map((q2) => ({ at: q2.at, f: { x: q2.f.x / 2, y: q2.f.y / 2 } }));
+  const hip = jointTorque(H, half([...above, weight(pelvis.at, pelvis.kg)]), "hip-extension", "proximal");
+  const n = { x: -d.y, y: d.x }; // the legs' front side (towards the pads)
+  const chest = add(M, q, 0.06);
+  return {
+    joints: {
+      hip: { at: H, angle: hipFlex, ...hip },
+      lumbar: { at: L5, angle: r, ...lumbar },
+    },
+    segs: { thigh: [K, H], pelvis: [H, L5], trunk: [L5, M], upperBack: [M, S] },
+    draw: [{ a: A, b: K, w: 0.1, cls: "body" }, { a: K, b: H, w: 0.14, cls: "body" }, { a: { x: A.x - 0.02, y: A.y }, b: add(A, n, -0.12), w: 0.06, cls: "body" },
+      { a: H, b: L5, w: 0.26, cls: "body", trunk: true }, { a: L5, b: M, w: 0.26, cls: "body", trunk: true }, { a: M, b: S, w: 0.26, cls: "body", trunk: true }, { circle: head, r: 0.11, cls: "body" }],
+    arms: [{ from: S, to: chest, elbow: add(lerp(S, chest, 0.5), rot(q, Math.PI / 2), -0.12) }],
+    loads: loadKg > 0 ? [{ at: plateAt, kind: "plate" }] : [],
+    // Thigh pad on the front of the thighs below the hips, ankle roller behind the calves, frame under the legs.
+    props: [{ a: add(add(H, n, 0.12), d, 0.06), b: add(add(H, n, 0.12), d, 0.26), w: 0.09, cls: "pad" }, { a: add(add(A, n, -0.08), d, -0.1), b: add(add(A, n, -0.08), d, -0.16), w: 0.08, cls: "pad" },
+      { a: add(add(H, n, 0.2), d, 0.1), b: add(add(A, n, 0.2), d, 0.02), w: 0.035, cls: "equipment" },
+      { a: add(add(A, n, 0.2), d, 0.02), b: { x: add(add(A, n, 0.2), d, 0.02).x, y: 0 }, w: 0.04, cls: "equipment" }],
+    balance: null,
+    info: [{ text: `Trunk bent ${Math.round(x)}° to the legs: ${Math.round(Math.max(0, hipFlex))}° at the hips, ${r < 0 ? `the lower back arched ${Math.round(-r)}°` : `${Math.round(r)}° in the lower back`}.` }],
+  };
+}
+
+const SOLVERS = { backExtension, plank, pallof, standing, split, hipThrust, seatedRow, legPress3d, squat3d, bench3d, press3d, hinge3d, split3d, hipThrust3d, row3d, pull3d };
 
 /** Full analysis at one driver value: posture, forces and per-joint torque, capacity and effort. */
 export function analyzeMulti(exercise, variant, x, opts) {

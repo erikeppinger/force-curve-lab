@@ -47,8 +47,8 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "weight": [[0, 1], [90, 1]],
-      "note": "Vastus lateralis, medialis and intermedius: cross the knee only.",
-      "source": "TODO: check against EMG literature",
+      "note": "Vastus lateralis, medialis and intermedius: cross the knee only. At the same isometric force the quadriceps' EMG matches the leg press's (Alkner et al.).",
+      "source": "Alkner BA, Tesch PA, Berg HE (2000). Quadriceps EMG/force relationship in knee extension and leg press. Med Sci Sports Exerc 32(2):459–463. doi:10.1097/00005768-200002000-00030 (9 men, isometric at 90°)",
       "draw": {"seg": "proximal", "along": [0.15, 0.4], "offset": 0.045, "w": 0.065, "layer": 0}
     },
     {
@@ -60,7 +60,7 @@
       "driver": "jointEffort",
       "weight": [[0, 0.8], [90, 0.7]],
       "note": "Also crosses the hip; seated with the hip bent it is slack and contributes less. The weights here can't depend on hip angle.",
-      "source": "TODO: check against EMG literature",
+      "source": "Alkner BA, Tesch PA, Berg HE (2000). Quadriceps EMG/force relationship in knee extension and leg press. Med Sci Sports Exerc 32(2):459–463. doi:10.1097/00005768-200002000-00030 (9 men, isometric at 90°)",
       "draw": {"seg": "proximal", "along": [0.05, 0.38], "offset": 0.07, "w": 0.04, "layer": 1}
     }
   ],

@@ -103,7 +103,7 @@ test("whole hand: the precomputed table matches the live model (rerun tools/pinc
     close(r.maxBlockKg, Wmax / 9.81, 0.04); // interpolation between table points
   }
   // The balance is linear in the forces: half the strength holds about half the weight.
-  const o = (s) => ({ fingers: WHOLE[4], mu: { thumb: 0.6, finger: 0.6 }, strength: ex.pincer.whole.thumbScale * s, fingerStrength: s });
+  const o = (s) => ({ fingers: WHOLE[4], mu: { thumb: 0.6, finger: 0.6 }, strength: { extrinsic: ex.pincer.whole.thumbScale.extrinsic * s, intrinsic: ex.pincer.whole.thumbScale.intrinsic * s }, fingerStrength: s });
   const full = ex.pincer.whole[4].max[8][3][0][0]; // 60 mm, μ 0.6, equal friction
   assert.ok(pinchHand(ex, ex.pincer.arms, ex.pincer.fingerModel, 0.06, 0.49 * full, o(0.5)).holds);
   assert.ok(!pinchHand(ex, ex.pincer.arms, ex.pincer.fingerModel, 0.06, 0.51 * full, o(0.5)).holds);
@@ -120,4 +120,24 @@ test("charts: an infinite effort (no block holds at 110 mm) gives a finite axis 
     assert.ok(Number.isFinite(top) && step > 0 && (top - bottom) / step <= 20, `${yMax}: ${top} / ${step}`);
   }
   assert.deepEqual(yScale([{ points: [[0, NaN]] }]), { top: 1, bottom: 0, step: 0.25 });
+});
+
+test("3D hand: the block is as wide as the exported width; the whole-hand model's activations land on the ARMS muscles", async () => {
+  const { pinchBlock, pinchValueOf, handScene3d } = await import("../js/handfig3d.js");
+  const hand = JSON.parse(readFileSync(new URL(`../${ex.handModel.data}`, import.meta.url)));
+  assert.match(hand.licence, /NON-COMMERCIAL/);
+  for (const key of ["w40", "w80"]) {
+    const faces = pinchBlock(hand.postures[key], +key.slice(1));
+    const mid = (f) => f.pts.reduce((s, p) => ({ x: s.x + p.x / 4, y: s.y + p.y / 4, z: s.z + p.z / 4 }), { x: 0, y: 0, z: 0 });
+    const [a, b] = [mid(faces[0]), mid(faces[1])];
+    close(Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z), +key.slice(1) / 1000, 1e-9);
+  }
+  const r = analyzePinch(ex, ex.pincer.arms, v("four-fingers"), 60, { loadKg: 15, placement: v("four-fingers").params });
+  const val = pinchValueOf(r.act);
+  close(val("FPL"), r.act.FPL);
+  close(val("FDPM"), r.act.FDP_middle);
+  close(val("EDCI"), r.act.EXT_index);
+  assert.equal(val("ECRL"), null); // wrist muscles: not in the model, drawn grey
+  const prims = handScene3d(hand.postures.w60, null, val);
+  assert.ok(prims.some((p) => p.cls === "muscle-on" && /FPL|thumb flexor/.test(p.title)));
 });

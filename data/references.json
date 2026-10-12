@@ -10,6 +10,14 @@
       "usedFor": "Hip, knee and ankle strength curves and peak torques (hip extension and flexion, knee extension and flexion, plantarflexion)."
     },
     {
+      "key": "Vuk 2023",
+      "match": "Vuk S",
+      "group": "Strength curves",
+      "citation": "Vuk S (2023). Active Insufficiency [dataset]. Mendeley Data, v1 (University of Zagreb; CC BY 4.0).",
+      "url": "https://doi.org/10.17632/jyp4jg3zxm.1",
+      "usedFor": "Leg curl: knee-flexion strength with the toes pulled up vs pointed, seated and lying (13 men, isokinetic); cross-check of the lying-vs-seated factor."
+    },
+    {
       "key": "Wessel 1992",
       "match": "Wessel J",
       "group": "Strength curves",
@@ -18,12 +26,52 @@
       "usedFor": "Trunk-flexion strength curve and peak torque (crunch): isometric torque at −20° to 40°, corrected for the trunk's weight with their passive curve."
     },
     {
+      "key": "Kumar 1995a",
+      "match": "Human trunk strength profile in flexion and extension",
+      "group": "Strength curves",
+      "citation": "Kumar S, Dufresne RM, Van Schoor T (1995). Human trunk strength profile in flexion and extension. Spine 20(2):160–168.",
+      "url": "https://doi.org/10.1097/00007632-199501150-00006",
+      "usedFor": "Plank: trunk-flexion strength of men (derived from their extension value and the extension ÷ flexion ratio)."
+    },
+    {
+      "key": "Kumar 1995b",
+      "match": "Human trunk strength profile in lateral flexion and axial rotation",
+      "group": "Strength curves",
+      "citation": "Kumar S, Dufresne RM, Van Schoor T (1995). Human trunk strength profile in lateral flexion and axial rotation. Spine 20(2):169–177.",
+      "url": "https://doi.org/10.1097/00007632-199501150-00007",
+      "usedFor": "Side plank and Pallof press: trunk side-bending and twisting strength (41 men, 32 women, isometric, by posture)."
+    },
+    {
       "key": "Graves 1990",
       "match": "Graves JE",
       "group": "Strength curves",
       "citation": "Graves JE, Pollock ML, Carpenter DM, Leggett SH, Jones A, MacMillan M, Fulton M (1990). Quantitative assessment of full range-of-motion isometric lumbar extension strength. Spine 15(4):289–294.",
       "url": "https://doi.org/10.1097/00007632-199004000-00008",
       "usedFor": "Lumbar extension strength range (abstract): check that the back muscles are stronger than the hips in the back extension."
+    },
+    {
+      "key": "Marchetti 2021",
+      "match": "Marchetti PH",
+      "group": "Strength curves",
+      "citation": "Marchetti PH, Magalhaes RA, Gomes WA, da Silva JJ, Stecyk SD, Whiting WC (2021). Different knee and ankle positions affect force and muscle activation during prone leg curl in trained subjects. J Strength Cond Res 35(12):3322–3326.",
+      "url": "https://doi.org/10.1519/JSC.0000000000003333",
+      "usedFor": "Leg curl: toes pulled up vs pointed (lying, isometric), the drop in knee-flexion force from a straight knee to 90°, and gastrocnemius activity."
+    },
+    {
+      "key": "Horsak 2017",
+      "match": "Horsak B",
+      "group": "Muscle activity",
+      "citation": "Horsak B, Wunsch R, Bernhart P, Gorgas AM, Bichler R, Lampel K (2017). Trunk muscle activation levels during eight stabilization exercises used in the functional kinetics concept: a controlled laboratory study. J Back Musculoskelet Rehabil 30:497–508.",
+      "url": "https://doi.org/10.3233/BMR-140259",
+      "usedFor": "Side plank: abdominal and back-muscle activity in the side bridge."
+    },
+    {
+      "key": "Christophy 2012",
+      "match": "Christophy M",
+      "group": "Muscle models",
+      "citation": "Christophy M, Faruk Senan NA, Lotz JC, O'Reilly OM (2012). A musculoskeletal model for the lumbar spine. Biomech Model Mechanobiol 11:19–34.",
+      "url": "https://doi.org/10.1007/s10237-011-0290-6",
+      "usedFor": "OpenSim lumbar spine model (MIT licence): the trunk muscles in the core exercises' 3D view, and the back muscles' active capacity against lumbar flexion (back extension)."
     },
     {
       "key": "Chen 2025",
@@ -168,6 +216,38 @@
       "citation": "Andersen V, Pedersen H, Fimland MS, Shaw M, Solstad TEJ, Stien N, Cumming KT, Saeterbakken AH (2021). Comparison of muscle activity in three single-joint, hip extension exercises in resistance-trained women. J Sports Sci Med 20:181–187.",
       "url": "https://doi.org/10.52082/jssm.2021.181",
       "usedFor": "Back extension: gluteus maximus, biceps femoris and erector spinae activity on the 45° Roman chair compared with the Romanian deadlift and a back-extension machine."
+    },
+    {
+      "key": "Ekstrom 2007",
+      "match": "Ekstrom RA, Donatelli RA, Carp KC",
+      "group": "Muscle activity",
+      "citation": "Ekstrom RA, Donatelli RA, Carp KC (2007). Electromyographic analysis of core trunk, hip, and thigh muscles during 9 rehabilitation exercises. J Orthop Sports Phys Ther 37(12):754–762.",
+      "url": "https://doi.org/10.2519/jospt.2007.2471",
+      "usedFor": "Plank and side plank: activity of the abdominals, back extensors and gluteus medius; a check of the models' loads."
+    },
+    {
+      "key": "Escamilla 2006",
+      "match": "Escamilla RF, Babb E",
+      "group": "Muscle activity",
+      "citation": "Escamilla RF, Babb E, DeWitt R, Jew P, Kelleher P, Burnham T, Busch J, D'Anna K, Mowbray R, Imamura RT (2006). Electromyographic analysis of traditional and nontraditional abdominal exercises: implications for rehabilitation and training. Phys Ther 86(5):656–671.",
+      "url": "https://doi.org/10.1093/ptj/86.5.656",
+      "usedFor": "Crunch and leg raise: abdominal, oblique and rectus femoris activity (crunch, bent-knee sit-up, hanging knee-up)."
+    },
+    {
+      "key": "Wessel 1994",
+      "match": "Wessel J, Ford D, van Driesum D (1994)",
+      "group": "Strength curves",
+      "citation": "Wessel J, Ford D, van Driesum D (1994). Torque of trunk flexion and trunk flexion with axial rotation in healthy men and women. Spine 19(3):329–334.",
+      "url": "https://doi.org/10.1097/00007632-199402000-00013",
+      "usedFor": "Crunch: men's trunk-flexion strength (about 183 Nm at 0°; women 103 Nm)."
+    },
+    {
+      "key": "Coratella 2020",
+      "match": "Coratella G",
+      "group": "Muscle activity",
+      "citation": "Coratella G, Tornatore G, Longo S, Esposito F, Cè E (2020). An electromyographic analysis of lateral raise variations and frontal raise in competitive bodybuilders. Int J Environ Res Public Health 17(17):6015.",
+      "url": "https://doi.org/10.3390/ijerph17176015",
+      "usedFor": "Lateral raise: how turning the arm (thumbs up, forward, down) shifts the work between the front, middle and rear deltoid; the deltoid parts' levels."
     },
     {
       "key": "Cibulka 2017",
@@ -574,6 +654,174 @@
       "citation": "Lieber RL, Jacobson MD, Fazeli BM, Abrams RA, Botte MJ (1992). Architecture of selected muscles of the arm and forearm: anatomy and implications for tendon transfer. J Hand Surg Am 17(5):787–798.",
       "url": "https://doi.org/10.1016/0363-5023(92)90444-T",
       "usedFor": "Edge lift: FDP and FDS muscle size per finger, which sets how the block splits between the fingers (least effort)."
+    },
+    {
+      "key": "Lusk 2010",
+      "match": "Lusk SJ",
+      "group": "Muscle activity",
+      "citation": "Lusk SJ, Hale BD, Russell DM (2010). Grip width and forearm orientation effects on muscle activity during the lat pull-down. J Strength Cond Res 24(7):1895–1900.",
+      "url": "https://doi.org/10.1519/JSC.0b013e3181ddb0ab",
+      "usedFor": "Lat pulldown: lats, middle trapezius and biceps by grip width and forearm turn; the lats' link to the elbow in pulls."
+    },
+    {
+      "key": "Lehman 2004",
+      "match": "Lehman GJ, Buchan DD",
+      "group": "Muscle activity",
+      "citation": "Lehman GJ, Buchan DD, Lundy A, Myers N, Nalborczyk A (2004). Variations in muscle activation levels during traditional latissimus dorsi weight training exercises: an experimental study. Dyn Med 3:4.",
+      "url": "https://doi.org/10.1186/1476-5918-3-4",
+      "usedFor": "Pulldowns and seated rows: lats, biceps and middle trapezius."
+    },
+    {
+      "key": "Youdas 2010",
+      "match": "Youdas JW",
+      "group": "Muscle activity",
+      "citation": "Youdas JW, Amundson CL, Cicero KS, Hahn JJ, Harezlak DT, Hollman JH (2010). Surface electromyographic activation patterns and elbow joint motion during a pull-up, chin-up, or Perfect-Pullup rotational exercise. J Strength Cond Res 24(12):3404–3414.",
+      "url": "https://doi.org/10.1519/JSC.0b013e3181f1598c",
+      "usedFor": "Pull-up and chin-up: lats, biceps and other muscles."
+    },
+    {
+      "key": "Signorile 2002",
+      "match": "Signorile JF, Zink AJ",
+      "group": "Muscle activity",
+      "citation": "Signorile JF, Zink AJ, Szwed SP (2002). A comparative electromyographical investigation of muscle utilization patterns using various hand positions during the lat pull-down. J Strength Cond Res 16(4):539–546.",
+      "url": "https://doi.org/10.1519/00124278-200211000-00008",
+      "usedFor": "Lat pulldown hand positions, bar in front vs behind the neck."
+    },
+    {
+      "key": "Di Fonza 2026",
+      "match": "Di Fonza D",
+      "group": "Muscle activity",
+      "citation": "Di Fonza D, Di Claudio G, Colantuono G, Persichini L, Cerulo N, Sangregorio B, Buonsenso A, Fiorilli G, Calcagno G, di Cagno A (2026). Electromyographic analysis of latissimus dorsi activation during common resistance training exercises: a narrative review. J Funct Morphol Kinesiol 11(3):315.",
+      "url": "https://doi.org/10.3390/jfmk11030315",
+      "usedFor": "Lats across pulldowns, rows and pull-ups (review)."
+    },
+    {
+      "key": "Campos 2020",
+      "match": "Campos YAC",
+      "group": "Muscle activity",
+      "citation": "Campos YAC, Vianna JM, Guimarães MP, Oliveira JLD, Hernández-Mosqueira C, da Silva SF, Marchetti PH (2020). Different shoulder exercises affect the activation of deltoid portions in resistance-trained individuals. J Hum Kinet 75:5–14.",
+      "url": "https://doi.org/10.2478/hukin-2020-0033",
+      "usedFor": "Deltoid parts in the bench press, fly, shoulder press and lateral raise."
+    },
+    {
+      "key": "Saeterbakken 2013",
+      "match": "Saeterbakken AH, Fimland MS",
+      "group": "Muscle activity",
+      "citation": "Saeterbakken AH, Fimland MS (2013). Effects of body position and loading modality on muscle activity and strength in shoulder presses. J Strength Cond Res 27(7):1824–1831.",
+      "url": "https://doi.org/10.1519/JSC.0b013e318276b873",
+      "usedFor": "Overhead press: seated vs standing, barbell vs dumbbells."
+    },
+    {
+      "key": "Saeterbakken 2011",
+      "match": "Saeterbakken AH, van den Tillaar R",
+      "group": "Muscle activity",
+      "citation": "Saeterbakken AH, van den Tillaar R, Fimland MS (2011). A comparison of muscle activity and 1-RM strength of three chest-press exercises with different stability requirements. J Sports Sci 29(5):533–538.",
+      "url": "https://doi.org/10.1080/02640414.2010.543916",
+      "usedFor": "Bench press: barbell, dumbbell and Smith machine."
+    },
+    {
+      "key": "Trebs 2010",
+      "match": "Trebs AA",
+      "group": "Muscle activity",
+      "citation": "Trebs AA, Brandenburg JP, Pitney WA (2010). An electromyography analysis of 3 muscles surrounding the shoulder joint during the performance of a chest press exercise at several angles. J Strength Cond Res 24(7):1925–1930.",
+      "url": "https://doi.org/10.1519/JSC.0b013e3181ddfae7",
+      "usedFor": "Incline bench: pectoral heads and anterior deltoid by bench angle."
+    },
+    {
+      "key": "Ekstrom 2003",
+      "match": "Ekstrom RA, Donatelli RA, Soderberg GL",
+      "group": "Muscle activity",
+      "citation": "Ekstrom RA, Donatelli RA, Soderberg GL (2003). Surface electromyographic analysis of exercises for the trapezius and serratus anterior muscles. J Orthop Sports Phys Ther 33(5):247–258.",
+      "url": "https://doi.org/10.2519/jospt.2003.33.5.247",
+      "usedFor": "Lateral and front raise: serratus anterior and trapezius weights."
+    },
+    {
+      "key": "Andersen 2018",
+      "match": "Andersen V, Fimland MS",
+      "group": "Muscle activity",
+      "citation": "Andersen V, Fimland MS, Mo DA, Iversen VM, Vederhus T, Rockland Hellebø LR, Nordaune KI, Saeterbakken AH (2018). Electromyographic comparison of barbell deadlift, hex bar deadlift, and hip thrust exercises: a cross-over study. J Strength Cond Res 32(3):587–593.",
+      "url": "https://doi.org/10.1519/JSC.0000000000001826",
+      "usedFor": "Deadlift, trap-bar deadlift and hip thrust: glutes, hamstrings, back muscles."
+    },
+    {
+      "key": "Contreras 2015",
+      "match": "Contreras B",
+      "group": "Muscle activity",
+      "citation": "Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J (2015). A comparison of gluteus maximus, biceps femoris, and vastus lateralis electromyographic activity in the back squat and barbell hip thrust exercises. J Appl Biomech 31(6):452–458.",
+      "url": "https://doi.org/10.1123/jab.2014-0301",
+      "usedFor": "Hip thrust vs back squat."
+    },
+    {
+      "key": "McCurdy 2018",
+      "match": "McCurdy K",
+      "group": "Muscle activity",
+      "citation": "McCurdy K, Walker J, Yuen D (2018). Gluteus maximus and hamstring activation during selected weight-bearing resistance exercises. J Strength Cond Res 32(3):594–601.",
+      "url": "https://doi.org/10.1519/JSC.0000000000001893",
+      "usedFor": "Squat, split squat and stiff-leg deadlift: glutes and hamstrings."
+    },
+    {
+      "key": "da Silva 2017",
+      "match": "da Silva JJ",
+      "group": "Muscle activity",
+      "citation": "da Silva JJ, Schoenfeld BJ, Marchetti PN, Pecoraro SL, Greve JM, Marchetti PH (2017). Muscle activation differs between partial and full back squat exercise with external load equated. J Strength Cond Res 31(6):1688–1693.",
+      "url": "https://doi.org/10.1519/JSC.0000000000001713",
+      "usedFor": "Squat depth: glutes, quadriceps, soleus."
+    },
+    {
+      "key": "Escamilla 2001",
+      "match": "Escamilla RF, Fleisig GS",
+      "group": "Muscle activity",
+      "citation": "Escamilla RF, Fleisig GS, Zheng N, Lander JE, Barrentine SW, Andrews JR, Bergemann BW, Moorman CT (2001). Effects of technique variations on knee biomechanics during the squat and leg press. Med Sci Sports Exerc 33(9):1552–1566.",
+      "url": "https://doi.org/10.1097/00005768-200109000-00020",
+      "usedFor": "Squat and leg press: stance and toe angle."
+    },
+    {
+      "key": "Alkner 2000",
+      "match": "Alkner BA",
+      "group": "Muscle activity",
+      "citation": "Alkner BA, Tesch PA, Berg HE (2000). Quadriceps EMG/force relationship in knee extension and leg press. Med Sci Sports Exerc 32(2):459–463.",
+      "url": "https://doi.org/10.1097/00005768-200002000-00030",
+      "usedFor": "Leg extension vs leg press: quadriceps."
+    },
+    {
+      "key": "Bourne 2017",
+      "match": "Bourne MN",
+      "group": "Muscle activity",
+      "citation": "Bourne MN, Williams MD, Opar DA, Al Najjar A, Kerr GK, Shield AJ (2017). Impact of exercise selection on hamstring muscle activation. Br J Sports Med 51(13):1021–1028.",
+      "url": "https://doi.org/10.1136/bjsports-2015-095739",
+      "usedFor": "Hamstrings across hinges, curls and kickbacks."
+    },
+    {
+      "key": "Muyor 2022",
+      "match": "Muyor JM",
+      "group": "Muscle activity",
+      "citation": "Muyor JM, López-Miñarro PA, Alacid F (2022). Comparison of electromyographic activity during barbell pullover and straight arm pulldown exercises. Appl Sci 12(21):11138.",
+      "url": "https://doi.org/10.3390/app122111138",
+      "usedFor": "Straight-arm pulldown vs pullover."
+    },
+    {
+      "key": "Kholinne 2018",
+      "match": "Kholinne E",
+      "group": "Muscle activity",
+      "citation": "Kholinne E, Zulkarnain RF, Sun YC, Lim S, Chun JM, Jeon IH (2018). The different role of each head of the triceps brachii muscle in elbow extension. Acta Orthop Traumatol Turc 52(3):201–205.",
+      "url": "https://doi.org/10.1016/j.aott.2018.02.005",
+      "usedFor": "Triceps heads by shoulder angle."
+    },
+    {
+      "key": "Andersson 1997",
+      "match": "Andersson EA",
+      "group": "Muscle activity",
+      "citation": "Andersson EA, Nilsson J, Ma Z, Thorstensson A (1997). Abdominal and hip flexor muscle activation during various training exercises. Eur J Appl Physiol 75(2):115–123.",
+      "url": "https://doi.org/10.1007/s004210050135",
+      "usedFor": "Leg raise and plank: the iliacus (fine-wire EMG)."
+    },
+    {
+      "key": "Fenwick 2009",
+      "match": "Fenwick CMJ",
+      "group": "Muscle activity",
+      "citation": "Fenwick CMJ, Brown SHM, McGill SM (2009). Comparison of different rowing exercises: trunk muscle activation and lumbar spine motion, load, and stiffness. J Strength Cond Res 23(5):1408–1417.",
+      "url": "https://doi.org/10.1519/JSC.0b013e3181b07334",
+      "usedFor": "Bent-over row: back muscles and lumbar load."
     }
   ],
   "resources": [

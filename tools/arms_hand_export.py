@@ -2,12 +2,14 @@
 """Hand geometry for the app's 3D hand view, from the ARMS hand and wrist model.
 
     python tools/arms_hand_export.py Hand_Wrist_Model_for_development.osim data/opensim/arms-hand.json
+    python tools/arms_hand_export.py Hand_Wrist_Model_for_development.osim data/opensim/arms-pinch-hand.json data/opensim/arms-pincer.json
 
 LICENCE: the ARMS model (McFarland et al. 2021) is for NON-COMMERCIAL use only. The JSON this
 writes is derived from it and carries that restriction (stated in its `licence` field); the app
 marks every view that uses it.
 
-For each posture (the edge lift's three grips, wrist neutral) it writes, in a hand frame
+For each posture (the edge lift's three grips, wrist neutral; or, with a third argument, every
+posture's "pose" in that JSON, e.g. the pinch lift's per block width) it writes, in a hand frame
 (origin at the middle finger's MCP joint, metres; x towards the fingertips with the fingers
 straight, y towards the palm, z towards the thumb side; right-handed, y = z × x):
 - joints: every finger's and the thumb's joint centres from the wrist to the fingertip;
@@ -21,6 +23,7 @@ import sys
 import opensim as osim
 
 src, out = sys.argv[1:3]
+poses_file = sys.argv[3] if len(sys.argv) > 3 else None
 model = osim.Model(src)
 state = model.initSystem()
 cs = model.getCoordinateSet()
@@ -100,10 +103,16 @@ def tip(g):
 
 res = {"licence": "Derived from the ARMS hand and wrist model (McFarland DC, Binder-Markey BI, Nichols JA, Wohlman SJ, de Bruin M, Murray WM (2021). A musculoskeletal model of the hand and wrist capable of simulating functional tasks. bioRxiv 2021.12.28.474357): NON-COMMERCIAL use only (BSD 3-clause with non-commercial terms, Copyright (c) 2021-present Northwestern University, Shirley Ryan AbilityLab, Drexel University, University of Florida, and Edward Hines VA Medical Center).",
        "frame": "metres; origin at the middle finger's MCP joint; x along the middle metacarpal towards the fingers, z towards the index/thumb side, y = z × x (towards the palm); right-handed", "postures": {}}
-for gname, grip in GRIPS.items():
-    p = dict(THUMB)
-    for g in FINGERS.values():
-        p.update({f"{g}mcp_flexion": grip["mcp"], f"{g}pm_flexion": grip["pip"], f"{g}md_flexion": grip["dip"]})
+def grip_poses():
+    for gname, grip in GRIPS.items():
+        p = dict(THUMB)
+        for g in FINGERS.values():
+            p.update({f"{g}mcp_flexion": grip["mcp"], f"{g}pm_flexion": grip["pip"], f"{g}md_flexion": grip["dip"]})
+        yield gname, p
+
+
+POSES = ((k, v["pose"]) for k, v in json.load(open(poses_file))["postures"].items()) if poses_file else grip_poses()
+for gname, p in POSES:
     pose(p)
     fr = hand_frame()
     joints = {}

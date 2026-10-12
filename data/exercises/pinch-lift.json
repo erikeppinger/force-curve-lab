@@ -13,6 +13,7 @@
   "ui": {"load": [2, 60, 1]},
   "pinch": {
     "capacity": 194,
+    "calibrationMm": [50, 80],
     "capacityNote": "The most one face of the block is pressed with (N): maximal whole-hand pinch of wooden pinch holds, measured with pressure mats in 22 advanced climbers (11 men, 11 women, about 60 kg): 377 N at 8 cm and 398 N at 5 cm, no significant difference; taken here as summed over both faces (thumb side + finger side), so about 194 N per face. Strong climbers squeezed about 20% more. For comparison, a pinch gauge between thumb pad and two finger pads (3-point or palmar pinch) gives about 104 N in adult men and 73 N in women (all ages), 83–107 N in men aged 18–65 in a recent sample.",
     "capacitySource": "Huang Y, Li S, Peng Y, Yu J, Chen R, Ding X, et al. (2026). Mechanics and muscular activity characteristics of the pinch grip across varying hold widths and climber skill levels. J Sports Sci 44(4):431–442. doi:10.1080/02640414.2025.2585743 (Table 5); gauge comparison: Mathiowetz V, Kashman N, Volland G, Weber K, Dowe M, Rogers S (1985). Grip and pinch strength: normative data for adults. Arch Phys Med Rehabil 66(2):69–72 (Table 5, palmar pinch); Massy-Westropp C, Massy-Westropp N, Wechalekar H (2023). Normative values for pinch strength: relationship with joint hypermobility as measured with the Beighton criteria. J Hand Surg Glob Online 5(3):272–276. doi:10.1016/j.jhsg.2023.01.007 (Table 1, three-point pinch)",
     "frictionNote": "Each contact patch holds μ·N0·(Ni/N0)^n, N0 = 10 N: with n = 1 (Amontons' law, dry or chalked skin on a rough surface; above about 2 N the pad's contact area stops growing) the friction is μ × squeeze, however many fingers share it. With n < 1 (moist skin, smooth surfaces: 2/3 ≤ n ≤ 1) friction grows less than the pressing force, so spreading one squeeze over more patches (more fingers, the thenar eminence pressed on) holds more. Strong climbers were seen pressing the thenar eminence onto the hold to enlarge the contact.",
@@ -176,5 +177,11 @@
       "notes": "Thumb against index and middle finger, like a palmar (3-point) pinch on a gauge. With n = 1 friction is unchanged; each finger carries half the squeeze.",
       "params": {"fingers": 2, "mu": 0.6, "n": 1, "wrist": 0, "level": "whole"}
     }
-  ]
+  ],
+  "handModel": {
+    "data": "data/opensim/arms-pinch-hand.json",
+    "note": "The 3D hand: bones and every muscle's path from the ARMS hand and wrist model at the pinch postures for each block width, 20–110 mm (thumb base found in the model, fingers as measured; tools/arms_hand_export.py with data/opensim/arms-pincer.json, OpenSim 4.6). Muscles are shaded by the whole-hand model's effort; muscles it leaves out are grey. The block is drawn at the exported width nearest the slider. The thumb sits partly beside the index finger rather than straight opposite the finger pads: the posture search only matched the pad gap to the width. Searching for an opposed thumb pushes ARMS's thumb base to the edge of its ranges and fits the measurements worse (see the model's limits). NON-COMMERCIAL: the ARMS model is licensed for non-commercial use only, so this view and its data file (data/opensim/arms-pinch-hand.json) are not covered by the site's CC BY licence.",
+    "source": "McFarland DC, Binder-Markey BI, Nichols JA, Wohlman SJ, de Bruin M, Murray WM (2021). A musculoskeletal model of the hand and wrist capable of simulating functional tasks. bioRxiv 2021.12.28.474357 (ARMS hand and wrist model 4.3, simtk.org/projects/arms_hand_model; non-commercial licence)"
+  },
+  "wip": "Work in progress: the pinch model is still being reviewed. Treat its numbers as provisional."
 }

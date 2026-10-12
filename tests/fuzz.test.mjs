@@ -43,7 +43,9 @@ for (const id of ids) {
     if (ex.pincer?.wholeData) ex.pincer.whole = JSON.parse(readFileSync(new URL(`../${ex.pincer.wholeData}`, import.meta.url)));
     const end = (s, i) => (s.type === "choice" ? s.options.at(i)[0] : i === 0 ? s.min : s.max);
     const placements = [undefined, Object.fromEntries(spec.map((s) => [s.key, end(s, 0)])), Object.fromEntries(spec.map((s) => [s.key, end(s, -1)])),
-      Object.fromEntries(spec.filter((s) => s.auto).map((s) => [s.key, "auto"]))];
+      Object.fromEntries(spec.filter((s) => s.auto).map((s) => [s.key, "auto"])),
+      // Each control alone: every choice, and each slider's middle (the others at the preset).
+      ...spec.flatMap((s) => (s.type === "choice" ? s.options.map((o) => ({ [s.key]: o[0] })) : [{ [s.key]: (s.min + s.max) / 2 }]))];
     const finger = ex.model === "finger";
     for (const v of ex.variants) {
       for (const pl of finger ? placements.slice(0, 3) : placements) {

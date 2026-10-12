@@ -108,12 +108,13 @@
       "wgerId": 12,
       "role": "Prime mover",
       "driver": "jointEffort",
-      "joints": ["shoulder-ext", "shoulder-add"],
+      "joints": ["shoulder-ext", "shoulder-add", "elbow"],
       "weight": [[0, 1], [180, 1]],
       "sign": 1,
-      "note": "Pulls the arm down: adduction with a wide grip, extension with a close grip. It takes the larger of the two demands.",
-      "source": "TODO: check against EMG literature",
-      "draw3d": {"seg": "trunk", "side": "posterior", "along": [0.3, 0.48], "offset": 0.12, "w": 0.07}
+      "note": "Pulls the arm down: adduction with a wide grip, extension with a close grip. It takes the larger of the two demands. In a pull the lats also hold the shoulder down against the cable or bar, which net joint torques miss, so here they also follow the elbow's effort (× 1.2): EMG puts them at about 1.5 times the biceps whatever the grip (Lusk et al.: 0.62–0.67 of maximum vs 0.38–0.43 at 70% 1RM, the grip width making no difference and a pronated grip 6% more than a supinated one; Lehman et al.). In body-weight pull-ups and chin-ups the lats reached 117–130% of their maximal isometric activation, about the same with either grip (Youdas et al.).",
+      "source": "Youdas JW, Amundson CL, Cicero KS, Hahn JJ, Harezlak DT, Hollman JH (2010). Surface electromyographic activation patterns and elbow joint motion during a pull-up, chin-up, or Perfect-Pullup rotational exercise. J Strength Cond Res 24(12):3404–3414. doi:10.1519/JSC.0b013e3181f1598c (25 adults, % of maximal isometric activation); Lusk SJ, Hale BD, Russell DM (2010). Grip width and forearm orientation effects on muscle activity during the lat pull-down. J Strength Cond Res 24(7):1895–1900. doi:10.1519/JSC.0b013e3181ddb0ab (Table 1: 12 men, 70% 1RM, fraction of maximal isometric activation); Di Fonza D, Di Claudio G, Colantuono G, Persichini L, Cerulo N, Sangregorio B, Buonsenso A, Fiorilli G, Calcagno G, di Cagno A (2026). Electromyographic analysis of latissimus dorsi activation during common resistance training exercises: a narrative review. J Funct Morphol Kinesiol 11(3):315. doi:10.3390/jfmk11030315",
+      "draw3d": {"seg": "trunk", "side": "posterior", "along": [0.3, 0.48], "offset": 0.12, "w": 0.07},
+      "jointScale": {"elbow": 1.2}
     },
     {
       "id": "teres-major",
@@ -126,7 +127,7 @@
       "weight": [[0, 0.7], [180, 0.7]],
       "sign": 1,
       "note": "Works with the lats on both actions.",
-      "source": "TODO: check against EMG literature",
+      "source": "Di Fonza D, Di Claudio G, Colantuono G, Persichini L, Cerulo N, Sangregorio B, Buonsenso A, Fiorilli G, Calcagno G, di Cagno A (2026). Electromyographic analysis of latissimus dorsi activation during common resistance training exercises: a narrative review. J Funct Morphol Kinesiol 11(3):315. doi:10.3390/jfmk11030315",
       "draw3d": {"seg": "upperArm", "side": "medial", "along": [-0.03, 0.07], "offset": 0.04, "w": 0.05}
     },
     {
@@ -140,8 +141,8 @@
       "joint": "elbow",
       "weight": [[0, 1], [150, 1]],
       "sign": 1,
-      "note": "Elbow flexors: work while the forearm is tilted away from the line of the pull. With the elbows under the bar (wide grip) they do little; with a close grip they do much more.",
-      "source": "TODO: check against EMG literature",
+      "note": "Elbow flexors: work while the forearm is tilted away from the line of the pull. With the elbows under the bar (wide grip) they do little; with a close grip they do much more. Measured 78–96% of maximum, higher in the chin-up than the pull-up (Youdas et al.). The model's grip effect is larger than measured.",
+      "source": "Youdas JW, Amundson CL, Cicero KS, Hahn JJ, Harezlak DT, Hollman JH (2010). Surface electromyographic activation patterns and elbow joint motion during a pull-up, chin-up, or Perfect-Pullup rotational exercise. J Strength Cond Res 24(12):3404–3414. doi:10.1519/JSC.0b013e3181f1598c (25 adults, % of maximal isometric activation)",
       "draw3d": {"seg": "upperArm", "side": "anterior", "along": [0.08, 0.24], "offset": 0.035, "w": 0.05}
     },
     {
@@ -155,7 +156,7 @@
       "weight": [[0, 0.6], [180, 0.6]],
       "sign": 1,
       "note": "Helps extend the arm, most near the bottom.",
-      "source": "TODO: check against EMG literature",
+      "source": "Di Fonza D, Di Claudio G, Colantuono G, Persichini L, Cerulo N, Sangregorio B, Buonsenso A, Fiorilli G, Calcagno G, di Cagno A (2026). Electromyographic analysis of latissimus dorsi activation during common resistance training exercises: a narrative review. J Funct Morphol Kinesiol 11(3):315. doi:10.3390/jfmk11030315",
       "draw3d": {"seg": "upperArm", "side": "posterior", "along": [-0.02, 0.08], "offset": 0.04, "w": 0.05}
     },
     {

@@ -136,8 +136,8 @@
       "driver": "jointEffort",
       "joint": "knee",
       "weight": [[0, 1], [130, 1]],
-      "note": "All four heads extend the knee, so net joint torques can't say how the toe angle shifts work between vastus medialis and lateralis.",
-      "source": "TODO: check against EMG literature",
+      "note": "All four heads extend the knee, so net joint torques can't say how the toe angle shifts work between vastus medialis and lateralis. Lower than in the squat, and unchanged by turning the feet out (Escamilla et al. 2001); at the same isometric force at 90° the quadriceps work as in a knee extension (Alkner et al.).",
+      "source": "Escamilla RF, Fleisig GS, Zheng N, Lander JE, Barrentine SW, Andrews JR, Bergemann BW, Moorman CT (2001). Effects of technique variations on knee biomechanics during the squat and leg press. Med Sci Sports Exerc 33(9):1552–1566. doi:10.1097/00005768-200109000-00020 (10 experienced lifters, 12RM); Alkner BA, Tesch PA, Berg HE (2000). Quadriceps EMG/force relationship in knee extension and leg press. Med Sci Sports Exerc 32(2):459–463. doi:10.1097/00005768-200002000-00030 (9 men, isometric at 90°)",
       "draw3d": {"seg": "thigh", "side": "anterior", "along": [0.08, 0.36], "offset": 0.05, "w": 0.065}
     },
     {
@@ -149,8 +149,8 @@
       "driver": "jointEffort",
       "joint": "hip",
       "weight": [[0, 0.8], [90, 1], [160, 1]],
-      "note": "Main hip extensor; deep hip bend (feet high) loads it more.",
-      "source": "TODO: check against EMG literature",
+      "note": "Main hip extensor; deep hip bend (feet high) loads it more. With the feet high and wide the hamstrings worked more than with them high and narrow (Escamilla et al. 2001).",
+      "source": "Escamilla RF, Fleisig GS, Zheng N, Lander JE, Barrentine SW, Andrews JR, Bergemann BW, Moorman CT (2001). Effects of technique variations on knee biomechanics during the squat and leg press. Med Sci Sports Exerc 33(9):1552–1566. doi:10.1097/00005768-200109000-00020 (10 experienced lifters, 12RM)",
       "draw3d": {"seg": "thigh", "side": "posterior", "along": [0, 0.12], "offset": 0.06, "w": 0.09}
     },
     {
@@ -163,7 +163,7 @@
       "joint": "hip",
       "weight": [[0, 0.3], [90, 0.8], [160, 1]],
       "note": "Rear part extends the hip, more so when it is deeply bent.",
-      "source": "TODO: check against EMG literature",
+      "source": "Escamilla RF, Fleisig GS, Zheng N, Lander JE, Barrentine SW, Andrews JR, Bergemann BW, Moorman CT (2001). Effects of technique variations on knee biomechanics during the squat and leg press. Med Sci Sports Exerc 33(9):1552–1566. doi:10.1097/00005768-200109000-00020 (10 experienced lifters, 12RM)",
       "draw3d": {"seg": "thigh", "side": "medial", "along": [0.2, 0.36], "offset": 0.045, "w": 0.05}
     },
     {
@@ -177,7 +177,7 @@
       "joint": "hip-frontal",
       "weight": [[0, 1], [160, 1]],
       "note": "Work when the plate's push tends to spread the thighs apart: wide stances and toes out.",
-      "source": "TODO: check against EMG literature",
+      "source": "Escamilla RF, Fleisig GS, Zheng N, Lander JE, Barrentine SW, Andrews JR, Bergemann BW, Moorman CT (2001). Effects of technique variations on knee biomechanics during the squat and leg press. Med Sci Sports Exerc 33(9):1552–1566. doi:10.1097/00005768-200109000-00020 (10 experienced lifters, 12RM)",
       "sign": 1,
       "draw3d": {"seg": "thigh", "side": "medial", "along": [0.03, 0.25], "offset": 0.05, "w": 0.05}
     },
@@ -191,7 +191,7 @@
       "joint": "hip-frontal",
       "weight": [[0, 1], [160, 1]],
       "note": "Work when the push tends to pull the thighs together: narrow stances, toes in.",
-      "source": "TODO: check against EMG literature",
+      "source": "Escamilla RF, Fleisig GS, Zheng N, Lander JE, Barrentine SW, Andrews JR, Bergemann BW, Moorman CT (2001). Effects of technique variations on knee biomechanics during the squat and leg press. Med Sci Sports Exerc 33(9):1552–1566. doi:10.1097/00005768-200109000-00020 (10 experienced lifters, 12RM)",
       "sign": -1,
       "draw3d": {"seg": "thigh", "side": "lateral", "along": [-0.05, 0.08], "offset": 0.06, "w": 0.06}
     },
@@ -206,7 +206,7 @@
       "joint": "hip-rotation",
       "weight": [[0, 1], [160, 1]],
       "note": "Piriformis, obturators and gemelli (with the glutes) resist the thigh turning inwards.",
-      "source": "TODO: check against EMG literature",
+      "source": "Escamilla RF, Fleisig GS, Zheng N, Lander JE, Barrentine SW, Andrews JR, Bergemann BW, Moorman CT (2001). Effects of technique variations on knee biomechanics during the squat and leg press. Med Sci Sports Exerc 33(9):1552–1566. doi:10.1097/00005768-200109000-00020 (10 experienced lifters, 12RM)",
       "sign": 1,
       "draw3d": {"seg": "thigh", "side": "posterior", "along": [-0.04, 0.03], "offset": 0.07, "w": 0.05}
     },
@@ -221,7 +221,7 @@
       "joint": "ankle",
       "weight": [[-60, 1], [40, 1]],
       "note": "Plantarflexors: push through the ball of the foot.",
-      "source": "TODO: check against EMG literature",
+      "source": "Escamilla RF, Fleisig GS, Zheng N, Lander JE, Barrentine SW, Andrews JR, Bergemann BW, Moorman CT (2001). Effects of technique variations on knee biomechanics during the squat and leg press. Med Sci Sports Exerc 33(9):1552–1566. doi:10.1097/00005768-200109000-00020 (10 experienced lifters, 12RM)",
       "draw3d": {"seg": "shank", "side": "posterior", "along": [0.1, 0.3], "offset": 0.04, "w": 0.055}
     }
   ],

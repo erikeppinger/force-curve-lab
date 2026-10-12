@@ -77,6 +77,12 @@ const interp = (pts, x) => { if (x <= pts[0][0]) return pts[0][1]; for (let i = 
 
 export const INDEX_MUSCLES = ["FDPI", "FDSI", "EDCI", "EIP", "LUMI", "1stDI_MC2", "1stPI"];
 export const THUMB_MUSCLES = ["FPL", "FPB", "OPP", "APB", "ADPt", "ADPo", "1stDI_MC1", "EPL", "EPB", "APL"];
+/** The thumb's long (forearm) muscles; the rest of THUMB_MUSCLES sit in the hand (thenar, adductor, interosseus). */
+export const THUMB_EXTRINSIC = ["FPL", "EPL", "EPB", "APL"];
+/** A thumb strength factor: one number, or { extrinsic, intrinsic } for the long and the small muscles. */
+export const thumbFactor = (strength, n) => (typeof strength === "number" ? strength : THUMB_EXTRINSIC.includes(n) ? strength.extrinsic : strength.intrinsic);
+/** ARMS finger flexor slips by finger, for their force–length (active ÷ maximum force at the posture). */
+const SLIPS = { index: "I", middle: "M", ring: "R", little: "L" };
 const INDEX_COORDS = ["2mcp_flexion", "2pm_flexion", "2md_flexion"];
 const THUMB_COORDS = ["cmc_flexion", "mp_flexion", "ip_flexion"];
 
@@ -343,6 +349,11 @@ export function pinchHand(ex, data, edgeEx, w, W, { fingers = Object.keys(FINGER
   const P = ex.pincer, M = musclesAt(data, w);
   const G = pincerGeometry(ex, w), a = G.angles.index;
   const bow = (pts) => interp(pts, a.pip);
+  // Finger force–length: the edge-lift model's reference tensions times the ARMS flexor's force at
+  // full activation ÷ its maximum at this width, relative to 60 mm (the middle of the measured
+  // postures). Small: ARMS's FDP and FDS stay at 93–99% from 20 to 110 mm.
+  const M60 = musclesAt(data, 0.06);
+  const fl = (n) => (M[n] && M60[n] ? (M[n].active / M[n].max) / (M60[n].active / M60[n].max) : 1);
   // Rows: per finger PIP, DIP; then the thumb's three joints; then sideways and weight (or squeeze).
   const fRows = fingers.length * 2, R = fRows + 3;
   const cols = [], cost = [], hi = [], names = [];
@@ -353,13 +364,14 @@ export function pinchHand(ex, data, edgeEx, w, W, { fingers = Object.keys(FINGER
     const L = g.lengths;
     const d = chain([L.proximal, L.middle, L.distal], [a.mcp, a.pip, a.dip], P.padAlong, P.padDepth);
     digits.push({ id, d, need: (s) => digitNeed(d, s).slice(1), rows: [2 * i, 2 * i + 1], mu: mu.finger, thumb: false });
-    const fdp = row(); fdp[2 * i] = (r.fdpPip + bow(g.bowstring.fdp)) * T.fdp * fingerStrength; fdp[2 * i + 1] = r.fdpDip * T.fdp * fingerStrength;
-    const fds = row(); fds[2 * i] = (r.fdsPip + bow(g.bowstring.fds)) * T.fds * fingerStrength;
+    const sP = fingerStrength * fl(`FDP${SLIPS[id]}`), sS = fingerStrength * fl(`FDS${SLIPS[id]}`);
+    const fdp = row(); fdp[2 * i] = (r.fdpPip + bow(g.bowstring.fdp)) * T.fdp * sP; fdp[2 * i + 1] = r.fdpDip * T.fdp * sP;
+    const fds = row(); fds[2 * i] = (r.fdsPip + bow(g.bowstring.fds)) * T.fds * sS;
     const ext = row(); ext[2 * i] = -r.fdsPip * T.fds * fingerStrength; // the extensor mechanism at the middle joint (estimate: as strong as the FDS there)
     cols.push(fdp, fds, ext); cost.push(1, 1, 1); hi.push(1, 1, 1); names.push(`FDP_${id}`, `FDS_${id}`, `EXT_${id}`);
   });
   const tNames = THUMB_MUSCLES.filter((n) => M[n]);
-  for (const n of tNames) { const col = row(); THUMB_COORDS.forEach((c, k) => { col[fRows + k] = M[n].arms[c] * M[n].active * strength; }); cols.push(col); cost.push(1); hi.push(1); names.push(n); }
+  for (const n of tNames) { const col = row(); THUMB_COORDS.forEach((c, k) => { col[fRows + k] = M[n].arms[c] * M[n].active * thumbFactor(strength, n); }); cols.push(col); cost.push(1); hi.push(1); names.push(n); }
   digits.push({ id: "thumb", d: G.thumb, need: (s) => digitNeed(G.thumb, s), rows: [fRows, fRows + 1, fRows + 2], mu: mu.thumb, thumb: true });
   const nm = cols.length;
   const edges = [];

@@ -134,8 +134,8 @@
       "driver": "jointEffort",
       "joint": "hip",
       "weight": [[0, 1], [80, 0.85]],
-      "note": "Main hip extensor, working hardest at full hip extension.",
-      "source": "TODO: check against EMG literature",
+      "note": "Main hip extensor, working hardest at full hip extension. About twice the back squat's activity at 10RM (Contreras et al.: upper part 70% vs 29%, lower part 87% vs 45% of maximum), as the model gives (1.8 times).",
+      "source": "Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J (2015). A comparison of gluteus maximus, biceps femoris, and vastus lateralis electromyographic activity in the back squat and barbell hip thrust exercises. J Appl Biomech 31(6):452–458. doi:10.1123/jab.2014-0301 (13 trained women, 10RM, mean % of maximal isometric activation)",
       "draw": {"seg": "thigh", "along": [0.33, 0.47], "offset": 0.06, "w": 0.09},
       "draw3d": {"seg": "thigh", "side": "posterior", "along": [0, 0.12], "offset": 0.06, "w": 0.09}
     },
@@ -148,9 +148,9 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "joint": "hip",
-      "weight": [[0, 0.5], [90, 0.8]],
-      "note": "Extend the hip; with the knee bending at the same time they change length little, so they help less in squats than in hinges.",
-      "source": "TODO: check against EMG literature",
+      "weight": [[0, 0.4], [90, 0.64]],
+      "note": "Extend the hip; with the knee bending at the same time they change length little, so they help less in squats than in hinges. Measured 20% lower than in a barbell deadlift at 1RM (Andersen et al.), so these weights are 0.8 of the earlier estimate; 2.7 times the back squat's biceps femoris at 10RM (Contreras et al.).",
+      "source": "Andersen V, Fimland MS, Mo DA, Iversen VM, Vederhus T, Rockland Hellebø LR, Nordaune KI, Saeterbakken AH (2018). Electromyographic comparison of barbell deadlift, hex bar deadlift, and hip thrust exercises: a cross-over study. J Strength Cond Res 32(3):587–593. doi:10.1519/JSC.0000000000001826 (13 trained men, 1RM); Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J (2015). A comparison of gluteus maximus, biceps femoris, and vastus lateralis electromyographic activity in the back squat and barbell hip thrust exercises. J Appl Biomech 31(6):452–458. doi:10.1123/jab.2014-0301 (13 trained women, 10RM, mean % of maximal isometric activation)",
       "draw": {"seg": "thigh", "along": [0.06, 0.34], "offset": 0.045, "w": 0.055},
       "draw3d": {"seg": "thigh", "side": "posterior", "along": [0.12, 0.36], "offset": 0.06, "w": 0.06}
     },
@@ -164,7 +164,7 @@
       "joint": "hip",
       "weight": [[0, 0.3], [90, 0.8], [130, 0.9]],
       "note": "Rear part extends the hip, more so when it is deeply bent.",
-      "source": "TODO: check against EMG literature",
+      "source": "Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J (2015). A comparison of gluteus maximus, biceps femoris, and vastus lateralis electromyographic activity in the back squat and barbell hip thrust exercises. J Appl Biomech 31(6):452–458. doi:10.1123/jab.2014-0301 (13 trained women, 10RM, mean % of maximal isometric activation)",
       "draw3d": {"seg": "thigh", "side": "medial", "along": [0.2, 0.36], "offset": 0.045, "w": 0.05}
     },
     {
@@ -177,8 +177,8 @@
       "driver": "jointEffort",
       "joint": "knee",
       "weight": [[0, 1], [130, 1]],
-      "note": "Knee extensors: their share follows the knee torque.",
-      "source": "TODO: check against EMG literature",
+      "note": "Knee extensors: their share follows the knee torque. The vastus lateralis was as active as in the back squat (Contreras et al.: 100% vs 110% of maximum at 10RM), well above this model (knee torque only): it also holds the bent knee against the hamstrings.",
+      "source": "Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J (2015). A comparison of gluteus maximus, biceps femoris, and vastus lateralis electromyographic activity in the back squat and barbell hip thrust exercises. J Appl Biomech 31(6):452–458. doi:10.1123/jab.2014-0301 (13 trained women, 10RM, mean % of maximal isometric activation)",
       "draw": {"seg": "thigh", "along": [0.08, 0.36], "offset": -0.05, "w": 0.065},
       "draw3d": {"seg": "thigh", "side": "anterior", "along": [0.08, 0.36], "offset": 0.05, "w": 0.065}
     },
@@ -193,7 +193,7 @@
       "joint": "hip-frontal",
       "weight": [[0, 1], [160, 1]],
       "note": "Work when the plate's push tends to spread the thighs apart: wide stances and toes out.",
-      "source": "TODO: check against EMG literature",
+      "source": "Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J (2015). A comparison of gluteus maximus, biceps femoris, and vastus lateralis electromyographic activity in the back squat and barbell hip thrust exercises. J Appl Biomech 31(6):452–458. doi:10.1123/jab.2014-0301 (13 trained women, 10RM, mean % of maximal isometric activation)",
       "sign": 1,
       "draw3d": {"seg": "thigh", "side": "medial", "along": [0.03, 0.25], "offset": 0.05, "w": 0.05}
     },
@@ -207,7 +207,7 @@
       "joint": "hip-frontal",
       "weight": [[0, 1], [160, 1]],
       "note": "Work when the push tends to pull the thighs together: narrow stances, toes in.",
-      "source": "TODO: check against EMG literature",
+      "source": "Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J (2015). A comparison of gluteus maximus, biceps femoris, and vastus lateralis electromyographic activity in the back squat and barbell hip thrust exercises. J Appl Biomech 31(6):452–458. doi:10.1123/jab.2014-0301 (13 trained women, 10RM, mean % of maximal isometric activation)",
       "sign": -1,
       "draw3d": {"seg": "thigh", "side": "lateral", "along": [-0.05, 0.08], "offset": 0.06, "w": 0.06}
     },
@@ -222,7 +222,7 @@
       "joint": "hip-rotation",
       "weight": [[0, 1], [160, 1]],
       "note": "Piriformis, obturators and gemelli (with the glutes) resist the thigh turning inwards.",
-      "source": "TODO: check against EMG literature",
+      "source": "Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J (2015). A comparison of gluteus maximus, biceps femoris, and vastus lateralis electromyographic activity in the back squat and barbell hip thrust exercises. J Appl Biomech 31(6):452–458. doi:10.1123/jab.2014-0301 (13 trained women, 10RM, mean % of maximal isometric activation)",
       "sign": 1,
       "draw3d": {"seg": "thigh", "side": "posterior", "along": [-0.04, 0.03], "offset": 0.07, "w": 0.05}
     }

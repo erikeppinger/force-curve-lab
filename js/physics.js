@@ -137,14 +137,52 @@ export function limbWeights(exercise, variant, p, bodyMassKg = 75) {
  *   the proximal segment still against clockwise rotation (the shoulder flexors in a standing
  *   curl). 0 when a pad supports the segment or the base joint itself moves.
  */
-export function analyze(exercise, variant0, angleDeg, opts) {
-  const { peakTorqueNm, bodyMassKg = 75 } = opts;
+/** A placement slider's value: the slider, else the variant's preset, else `fallback`. */
+const slider = (spec, variant, placement, fallback) => Number(placement?.[spec.key] ?? variant.params?.[spec.key] ?? fallback);
+const applies = (spec, variant) => !spec.variants || spec.variants.includes(variant.id);
+const turnCcw = (p, deg) => { const c = Math.cos(rad(deg)), s = Math.sin(rad(deg)); return { x: p.x * c - p.y * s, y: p.x * s + p.y * c }; };
+
+/**
+ * The body leaning (a placement slider with `lean: { pivot: [x, y] }`, degrees, + = the trunk tipped
+ * forward, towards +x, about the pivot, e.g. the hips): the variant's gravity and pulley, given
+ * for the upright stance, expressed in the leaning body's frame.
+ */
+export function leanFrame(spec, deg) {
+  const piv = { x: spec.lean.pivot[0], y: spec.lean.pivot[1] };
+  return {
+    dir: (g) => turnCcw(g, deg),
+    point: (q) => { const r = turnCcw({ x: q.x - piv.x, y: q.y - piv.y }, deg); return { x: piv.x + r.x, y: piv.y + r.y }; },
+  };
+}
+
+export function analyze(exercise0, variant0, angleDeg, opts0) {
+  const { peakTorqueNm, bodyMassKg = 75 } = opts0;
   // A placement slider with `distalBend` (e.g. the kickback's knee bend, degrees of flexion) sets
-  // the fixed bend between the two segments: distalBend = −value.
-  const bendSpec = exercise.placement?.find((s) => s.distalBend);
-  const bendVal = bendSpec ? Number(opts.placement?.[bendSpec.key] ?? variant0.params?.[bendSpec.key] ?? -(variant0.distalBend ?? 0)) : undefined;
-  const variant = bendSpec ? { ...variant0, distalBend: -bendVal } : variant0;
+  // the fixed bend between the two segments: distalBend = bendSign × value (default −1: the knee
+  // folds the other way to the hip's flexion; +1: the elbow folds on in a front raise). With
+  // `distalBend: "outOfPlane"` the bend leaves the plane (a lateral raise's forearm swings
+  // forward): in the plane the distal segment is foreshortened to length × cos(bend), which is
+  // exact for loads and weights in the plane.
+  const bendSpec = exercise0.placement?.find((s) => s.distalBend && applies(s, variant0));
+  const bendVal = bendSpec ? slider(bendSpec, variant0, opts0.placement, -(variant0.distalBend ?? 0)) : undefined;
+  const outOfPlane = bendSpec?.distalBend === "outOfPlane";
+  const exercise = outOfPlane ? { ...exercise0, segments: { ...exercise0.segments, distal: exercise0.segments.distal * Math.cos(rad(bendVal)) } } : exercise0;
+  let variant = bendSpec && !outOfPlane ? { ...variant0, distalBend: (bendSpec.bendSign ?? -1) * bendVal } : variant0;
+  let opts = opts0;
+  const leanSpec = exercise0.placement?.find((s) => s.lean && applies(s, variant0));
+  const leanDeg = leanSpec ? slider(leanSpec, variant0, opts0.placement, 0) : 0;
+  if (leanDeg) {
+    const L = leanFrame(leanSpec, leanDeg);
+    variant = { ...variant, gravity: L.dir(gravityOf(variant)), ...(variant.load.pulley ? { load: { ...variant.load, pulley: L.point(variant.load.pulley) } } : {}) };
+    if (opts0.pulley) opts = { ...opts0, pulley: L.point(opts0.pulley) };
+  }
+  // Hip ab/adduction with the leg swung forward or back (hip.flexSlider): the side raise's plane
+  // tilts with it, so only cos(bend) of the leg's weight acts in that plane.
+  const hipFlex = variant.hip?.flexSlider ? Number(opts0.placement?.hipFlex ?? variant.params?.hipFlex ?? 0) : 0;
+  if (hipFlex) { const g = gravityOf(variant), c = Math.cos(rad(hipFlex)); variant = { ...variant, gravity: { x: g.x * c, y: g.y * c } }; }
   const p = pose(exercise, variant, angleDeg);
+  if (leanSpec) p.leanDeg = leanDeg;
+  if (leanDeg) p.gravity = variant.gravity;
   const f = loadForce(exercise, variant, p, angleDeg, opts);
   const w = workSense(exercise);
   const loadTorque = -w * cross(sub(f.at, p.joint), f);
@@ -169,11 +207,17 @@ export function analyze(exercise, variant0, angleDeg, opts) {
   // grip): a factor on the strength curve, constant or varying with the joint angle (or, with
   // `by: "hipFlexion"`, with the hip bend of the hip-model exercises).
   const hip = exercise.hipModel ? hipPosture(variant, angleDeg, opts.placement) : undefined;
-  const strengthScale = strengthScaleAt(variant, angleDeg, { hipFlexion: hip?.flexion, knee: bendVal });
+  // An exercise-level strength factor chosen with a placement slider (`placementStrength`: values
+  // by option, e.g. the leg curl's foot position), on top of the variant's posture correction.
+  const ps = exercise.placementStrength;
+  const psVal = ps ? opts.placement?.[ps.key] ?? variant.params?.[ps.key] ?? ps.default : undefined;
+  const strengthScale = strengthScaleAt(variant, angleDeg, { hipFlexion: hip?.flexion, knee: bendVal }) * (ps ? ps.values[String(psVal)] ?? 1 : 1);
   const capacity = interp(exercise.strengthCurve.points, angleDeg) * peakTorqueNm * strengthScale;
   const effort = Math.max(0, jointTorque) / capacity;
 
-  return { pose: p, force: f, limbs, jointTorque, loadTorque, limbTorque, stabiliserDemand, momentArm, momentArmFoot, capacity, effort, strengthScale, placement: opts.placement, ...(hip ? { hip } : {}), ...(bendSpec ? { knee: bendVal } : {}) };
+  const pulley = variant.load.type === "cable" || variant.load.type === "band" ? (opts.pulley ?? variant.load.pulley) : undefined;
+  if (leanDeg && pulley) p.pulley = pulley;
+  return { angle: angleDeg, pose: p, force: f, limbs, jointTorque, loadTorque, limbTorque, stabiliserDemand, momentArm, momentArmFoot, capacity, effort, strengthScale, placement: opts.placement, ...(hip ? { hip } : {}), ...(bendSpec ? { knee: bendVal, bend: bendVal, ...(outOfPlane ? { bendOutOfPlane: true } : {}) } : {}), ...(leanDeg ? { pulley, gravity: variant.gravity } : {}) };
 }
 
 /** The variant's strength factor: `strengthScale.points` (by joint angle, or by `at[sc.by]`) or `.factor`; 1 if none. */
