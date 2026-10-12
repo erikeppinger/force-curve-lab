@@ -120,6 +120,7 @@ h3 { margin: 0 0 8px; font-size: 1.05rem; }
 h4 { margin: 12px 0 6px; font-size: 0.95rem; }
 .tagline, .hint { color: var(--muted); }
 .hint { font-size: 0.85rem; margin: 4px 0 8px; }
+.wip-note { margin: 4px 0 10px; padding: 8px 12px; border: 1px solid var(--warning); border-radius: 8px; font-size: 0.9rem; }
 
 main {
   display: grid;
@@ -210,14 +211,18 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .fig-label { fill: var(--text); font-size: 15px; font-weight: 600; paint-order: stroke; stroke: var(--card); stroke-width: 4px; }
 #figure .force-label { fill: var(--accent); }
 #figure .body.back { opacity: 0.55; }
+#figure g.part.back { opacity: 0.55; }
 #figure .balance { stroke: var(--muted); stroke-dasharray: 3 5; }
 #figure .ma-label { font-size: 12px; }
 #figure .ma-hip { stroke: var(--j-hip); fill: var(--j-hip); }
 #figure .ma-knee { stroke: var(--j-knee); fill: var(--j-knee); }
 #figure .ma-ankle { stroke: var(--j-ankle); fill: var(--j-ankle); }
 #figure .ma-shoulder { stroke: var(--j-shoulder); fill: var(--j-shoulder); }
+#figure .ma-lumbar, #figure .ma-sidebend { stroke: var(--j-hip-frontal); fill: var(--j-hip-frontal); }
+#figure .ma-rotation { stroke: var(--j-hip-rotation); fill: var(--j-hip-rotation); }
 #figure .plate3d { fill: var(--compare); fill-opacity: 0.07; stroke: var(--compare); stroke-width: 2; }
 #figure .plate3d.bench3d { fill: var(--equipment); fill-opacity: 0.25; stroke: var(--equipment); }
+#figure .plate3d.block3d { fill: var(--equipment); fill-opacity: 0.1; stroke: var(--equipment); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
 #figure .floor3d { fill: var(--border); fill-opacity: 0.5; stroke: var(--border); }
 #figure.draggable { cursor: grab; touch-action: pan-y; user-select: none; }
 .view-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 6px; }
@@ -243,6 +248,8 @@ input[type="range"]:disabled { opacity: 0.4; }
 .joint-table .jt-hip-frontal { border-left-color: var(--j-hip-frontal); }
 .joint-table .jt-hip-rotation { border-left-color: var(--j-hip-rotation); }
 .joint-table .jt-knee-frontal { border-left-color: var(--j-knee-frontal); }
+.joint-table .jt-lumbar, .joint-table .jt-sidebend { border-left-color: var(--j-hip-frontal); }
+.joint-table .jt-rotation { border-left-color: var(--j-hip-rotation); }
 .joint-table tbody td small { display: block; font-size: 0.72rem; color: var(--muted); }
 .joint-table tbody th small { display: block; font-size: 0.75rem; font-weight: 400; color: var(--muted); }
 .joint-table td.over { color: var(--warning); font-weight: 700; }
@@ -278,6 +285,9 @@ input[type="range"]:disabled { opacity: 0.4; }
 .charts .line.joint-hip-frontal { stroke: var(--j-hip-frontal); }
 .charts .line.joint-hip-rotation { stroke: var(--j-hip-rotation); }
 .charts .line.joint-knee-frontal { stroke: var(--j-knee-frontal); stroke-width: 2; }
+/* Core holds: the lower back (abdominals or side-bend) and the trunk's twist. */
+.charts .line.joint-lumbar, .charts .line.joint-sidebend { stroke: var(--j-hip-frontal); }
+.charts .line.joint-rotation { stroke: var(--j-hip-rotation); }
 /* Edge lift: tendons and pulleys (js/finger.js) */
 .charts .line.f-fdp { stroke: var(--j-hip); }
 .charts .line.f-fds { stroke: var(--j-knee); }
@@ -484,3 +494,12 @@ svg.scrub { cursor: ew-resize; touch-action: pan-y; }
 .dock .grow { flex: 1; min-width: 0; }
 .dock input[type="range"] { width: 100%; }
 body.dock-on { padding-bottom: 76px; }
+#figure .inset-box { fill: var(--card); stroke: var(--border); }
+#figure .inset-foot { fill: var(--body); stroke: var(--body-edge); stroke-width: 1.5; }
+#figure .inset-label { font-size: 11px; }
+#figure .ghost { opacity: 0.22; }
+#figure .inset-cam { fill: var(--equipment); fill-opacity: 0.35; stroke: var(--equipment); stroke-width: 1.5; }
+#figure .inset-lever { stroke: var(--compare); stroke-width: 2; stroke-dasharray: 3 2; }
+#figure .inset-belt { stroke: var(--equipment); stroke-width: 2; }
+#figure .inset-stack { fill: var(--equipment); }
+#figure .inset-axle { fill: var(--card); stroke: var(--equipment); }

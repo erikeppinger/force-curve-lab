@@ -90,8 +90,8 @@
       "driver": "jointEffort",
       "joint": "shoulder-h",
       "weight": [[-60, 1], [180, 1]],
-      "note": "Main horizontal adductor. Measured: wider grips raise the shoulder's moment and the abdominal head's EMG; the sternocostal head barely changes (Mausehund et al.).",
-      "source": "Activation weights: TODO. Grip-width effect: Mausehund L, Werkhausen A, Bartsch J, Krosshaug T (2022). Understanding bench press biomechanics — the necessity of measuring lateral barbell forces. J Strength Cond Res 36(10):2685–2695",
+      "note": "Main horizontal adductor. Measured: wider grips raise the shoulder's moment and the abdominal head's EMG; the sternocostal head barely changes (Mausehund et al.). Same in barbell, dumbbell and Smith-machine presses (Saeterbakken et al.). Inclining the bench moves work from the sternal to the clavicular head: the sternal head falls at every incline, the clavicular head rises at 44–56° but not at 28° (Trebs et al.).",
+      "source": "Grip-width effect: Mausehund L, Werkhausen A, Bartsch J, Krosshaug T (2022). Understanding bench press biomechanics — the necessity of measuring lateral barbell forces. J Strength Cond Res 36(10):2685–2695; Saeterbakken AH, van den Tillaar R, Fimland MS (2011). A comparison of muscle activity and 1-RM strength of three chest-press exercises with different stability requirements. J Sports Sci 29(5):533–538. doi:10.1080/02640414.2010.543916 (12 trained men, 1RM lifts); Trebs AA, Brandenburg JP, Pitney WA (2010). An electromyography analysis of 3 muscles surrounding the shoulder joint during the performance of a chest press exercise at several angles. J Strength Cond Res 24(7):1925–1930. doi:10.1519/JSC.0b013e3181ddfae7 (15 men, 70% 1RM, Smith machine; values in figures only)",
       "draw3d": {"seg": "upperArm", "side": "medial", "along": [-0.06, 0.12], "offset": 0.04, "w": 0.07}
     },
     {
@@ -103,8 +103,8 @@
       "driver": "jointEffort",
       "joint": "shoulder-flex",
       "weight": [[-60, 1], [180, 1]],
-      "note": "Shoulder flexor; also helps horizontal adduction.",
-      "source": "TODO: check against EMG literature",
+      "note": "Shoulder flexor; also helps horizontal adduction. Higher at every incline than flat (Trebs et al.); 21% of maximum at 60% 1RM flat, with the middle and rear deltoid at 5% and 3.5% (Campos et al.).",
+      "source": "Trebs AA, Brandenburg JP, Pitney WA (2010). An electromyography analysis of 3 muscles surrounding the shoulder joint during the performance of a chest press exercise at several angles. J Strength Cond Res 24(7):1925–1930. doi:10.1519/JSC.0b013e3181ddfae7 (15 men, 70% 1RM, Smith machine; values in figures only); Campos YAC, Vianna JM, Guimarães MP, Oliveira JLD, Hernández-Mosqueira C, da Silva SF, Marchetti PH (2020). Different shoulder exercises affect the activation of deltoid portions in resistance-trained individuals. J Hum Kinet 75:5–14. doi:10.2478/hukin-2020-0033 (13 men, 60% 1RM, % of maximal isometric activation)",
       "sign": 1,
       "draw3d": {"seg": "upperArm", "side": "anterior", "along": [-0.02, 0.1], "offset": 0.035, "w": 0.05}
     },
@@ -118,8 +118,8 @@
       "driver": "jointEffort",
       "joint": "elbow",
       "weight": [[0, 0.9], [90, 1], [150, 1]],
-      "note": "Elbow extensor. Measured: narrower grips raise the elbow's moment (by up to 26%) and the lateral head's EMG (Mausehund et al.). This model's elbow moment arm (15–20 cm) is about twice the measured one (7–9 cm), so its triceps numbers run high.",
-      "source": "Activation weights: TODO. Grip-width effect and moment arms: Mausehund L, Werkhausen A, Bartsch J, Krosshaug T (2022). Understanding bench press biomechanics — the necessity of measuring lateral barbell forces. J Strength Cond Res 36(10):2685–2695",
+      "note": "Elbow extensor. Measured: narrower grips raise the elbow's moment (by up to 26%) and the lateral head's EMG (Mausehund et al.). This model's elbow moment arm (15–20 cm) is about twice the measured one (7–9 cm), so its triceps numbers run high. Lower with dumbbells than a barbell (Saeterbakken et al.).",
+      "source": "Grip-width effect and moment arms: Mausehund L, Werkhausen A, Bartsch J, Krosshaug T (2022). Understanding bench press biomechanics — the necessity of measuring lateral barbell forces. J Strength Cond Res 36(10):2685–2695; Saeterbakken AH, van den Tillaar R, Fimland MS (2011). A comparison of muscle activity and 1-RM strength of three chest-press exercises with different stability requirements. J Sports Sci 29(5):533–538. doi:10.1080/02640414.2010.543916 (12 trained men, 1RM lifts)",
       "sign": 1,
       "draw3d": {"seg": "upperArm", "side": "posterior", "along": [0.06, 0.27], "offset": 0.04, "w": 0.055}
     },

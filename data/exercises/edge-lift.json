@@ -9,7 +9,7 @@
   "angleRange": [0, 110],
   "angleNote": "The edge lift is a static hold: the fingers keep one position while the block comes up, so nothing moves at the finger joints. The slider doesn't animate a lift; it compares holds with the middle joint (PIP) at different angles: 0° = straight, about 90° = half crimp, about 105° = full crimp. Each grip keeps its own fingertip (DIP) and knuckle (MCP) angles and starts at its measured position.",
   "defaults": {"loadKg": 20, "variant": "half-crimp", "bodyMassKg": 75},
-  "ui": {"load": [2, 80, 1]},
+  "ui": {"load": [0, 80, 1]},
   "finger": {
     "label": "Index finger",
     "lengths": {"metacarpal": 0.0716, "proximal": 0.0436, "middle": 0.0247, "distal": 0.0197},
@@ -37,7 +37,13 @@
     "crossCheckSource": "Ferrer-Uris B, Arias D, Torrado P, Marina M, Busquets A (2023). Exploring forearm muscle coordination and training applications of various grip positions during maximal isometric finger dead-hangs in rock climbers. PeerJ 11:e15464. doi:10.7717/peerj.15464 (Table 2; CC BY 4.0)",
     "referenceTension": {"fdp": 257.5, "fds": 214.8},
     "referenceTensionNote": "Tendon tension at a maximal one-finger effort (highest group mean of the two grips: FDP in the crimp, FDS in the slope grip), used to scale the muscle bars.",
-    "referenceTensionSource": "Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Table 3)"
+    "referenceTensionSource": "Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Table 3)",
+    "friction": {
+      "note": "Contact rule: pad and edge are both curved and touch where their surfaces face each other. The pad's surface faces the distal phalanx's palm side ± 35° (estimate); the edge's runs from its top face (tilted by the face-angle slider) round the lip to its front. The contact normal is the shared direction nearest the push; needed coefficient = tan(angle between push and contact normal). Constant coefficient: on rough holds the pad's friction hardly depends on load, because above about 2 N its contact area stops growing.",
+      "source": "Li FX, Margetts S, Fowler I (2001). Use of 'chalk' in rock climbing: sine qua non or myth? J Sports Sci 19(6):427–432 (fingertip on rock, maximum static coefficient 2.5–3.3; chalk lowered it); Fuss FK, Weizman Y, Niegl G, Tan AM (2020). Climbers' perception of hold surface properties: roughness versus slip resistance. Front Psychol 11:252 (coefficient climbers used on an instrumented hold: averages 0.56–0.86 by surface; a 29° sloping surface needs at least 0.55); load independence on rough surfaces: Dzidek BM, Adams MJ, Andrews JW, Zhang Z, Johnson SA (2017). Contact mechanics of the human finger pad under compressive loads. J R Soc Interface 14(127):20160935. doi:10.1098/rsif.2016.0935; contact area and the two-term friction law: Adams MJ, Johnson SA, Lefèvre P, Lévesque V, Hayward V, André T, Thonnard JL (2013). Finger pad friction and its role in grip and touch. J R Soc Interface 10(80):20120467. doi:10.1098/rsif.2012.0467"
+    },
+    "strengthCheck": "Strength scale: 100% = recreational climbers (the reference tensions and fingertip forces). Hang tests put stronger climbers well above it: climbers around French 7a held 133% of body mass in a two-arm hang on 21 mm (this model: about 125–150%), intermediate to elite climbers about 80–85% of body mass one-armed on 20 mm (this model: about 115% for the women's mean, 160% for the men's in the half crimp; the open hand comes out relatively weaker here than measured).",
+    "strengthCheckSource": "Ferrer-Uris B, Arias D, Torrado P, Marina M, Busquets A (2023). Exploring forearm muscle coordination and training applications of various grip positions during maximal isometric finger dead-hangs in rock climbers. PeerJ 11:e15464 (Table 2); Torr O, Randall T, Knowles R, Giles D, Atkins S (2022). Reliability and validity of a method for the assessment of sport rock climbers' isometric finger strength. J Strength Cond Res 36(8):2277–2282 (Table 2)"
   },
   "fingers": {
     "note": "All four fingers on one edge. The fingertips line up on the edge (each pad may sit up to 6 mm deeper or shallower than the middle finger's); every finger keeps close to the grip's PIP and fingertip angles and takes up its length at the knuckle, the ring and little finger also by cupping the palm, and the whole hand may tilt sideways at the wrist (radial/ulnar deviation, −15° to +25°). Where the edge sits under the hand and the hand's tilt are chosen so the four postures together stay closest to the grip (weighted squared angle changes; weights are estimates). Moment arms are An et al.'s index-finger values scaled by each finger's proximal phalanx length (estimate). How the block splits between the fingers isn't fixed by statics: it is shared for least effort (smallest sum of squared tendon tension ÷ reference tension over each finger's FDP and FDS), with the FDP slips of the middle, ring and little finger pulled towards equal relative tension by the quadriga slider. A finger that only just reaches fades out of the split.",
@@ -96,6 +102,30 @@
     }
   },
   "placement": [
+    {
+      "key": "mode",
+      "label": "Load",
+      "type": "choice",
+      "options": [["block", "Block lift (block hanging from one hand)"], ["hang", "Hang (body weight from the edge)"]],
+      "hint": "The fingers don't know what pulls on the arm: the edge's push runs from the pad towards the wrist either way, so the finger loads follow from the force on the hand. Block lift: the block. Hang: body weight less what the feet carry, plus the added weight (the load slider), shared by the hands. In a hang the arm is overhead and only pulls, so the arm view and Play are off."
+    },
+    {
+      "key": "hands",
+      "label": "Hands on the edge (hang)",
+      "type": "choice",
+      "options": [["2", "Two hands"], ["1", "One hand"]],
+      "hint": "Hang only: how many hands share the body weight."
+    },
+    {
+      "key": "feet",
+      "label": "Weight on the feet (hang)",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "scale": 1,
+      "hint": "Hang only: the share of body weight the feet carry (0 = a free hang; feet on a box or the wall take the rest)."
+    },
     {
       "key": "contactFromDip",
       "label": "Where the edge presses (from the fingertip joint)",
@@ -181,6 +211,34 @@
       "auto": "fits this hand"
     },
     {
+      "key": "fingersOn",
+      "label": "Fingers on the edge",
+      "type": "choice",
+      "options": [["auto", "Auto (a finger that can't reach comfortably stays off)"], ["all", "All four"], ["no-index", "Without the index"], ["no-little", "Without the little finger"]],
+      "hint": "On a flat edge the fingers' different lengths can't all be matched by one posture, least of all in an open hand, where the fingers are nearly straight: climbers then leave the index or the little finger off, or curl the longer fingers more. \"All four\" keeps every finger on whatever posture that takes (watch the knuckle angles); the edge-height bars or \"Fits this hand\" give the edge a profile instead."
+    },
+    {
+      "key": "incut",
+      "label": "Edge face angle (+ = incut, − = sloping)",
+      "min": -30,
+      "max": 30,
+      "step": 1,
+      "unit": "°",
+      "scale": 1,
+      "hint": "The face the pads press on, relative to square to the pull. An incut face pushes the pads deeper into the hold and needs no friction; a sloping face pushes them out, and every finger then needs at least tan(slope) (15°: μ 0.27). Fischer et al. measured their climbing postures on a 25° incut edge."
+    },
+    {
+      "key": "mu",
+      "label": "Skin–edge friction (μ)",
+      "min": 0.3,
+      "max": 3,
+      "step": 0.05,
+      "unit": "",
+      "scale": 1,
+      "decimals": 2,
+      "hint": "How much sideways force the pad can take per unit of pressing force before it slips. Pad and edge are both curved, so they touch where their surfaces face each other: a pad that can face the edge's top squarely needs no friction there; a fingertip that meets the edge steeply (open hand, the shorter little finger) touches the rounded lip, where part of the push runs along the pad. Measured values vary widely: fingertip on rock up to 2.5–3.3 at most (Li et al.), 0.56–0.86 actually used on gym-hold surfaces (Fuss et al.). On rough holds skin friction hardly depends on the pressing force (Dzidek et al.); on smooth or moist surfaces it falls as the force rises (not modelled here)."
+    },
+    {
       "key": "quadriga",
       "label": "FDP of middle, ring and little finger linked (quadriga)",
       "min": 0,
@@ -246,9 +304,9 @@
       "name": "Open hand (drag)",
       "equipment": "Edge block on a loading pin",
       "params": {
-        "mcp": -21,
-        "dip": 38.8,
-        "pip": 25.9,
+        "mcp": 4,
+        "dip": 1,
+        "pip": 54,
         "contactFromDip": 0.00985,
         "armForward": 0,
         "armSide": 0,
@@ -260,19 +318,25 @@
         "quadriga": 0.5,
         "liftTime": 0.6,
         "dipPassiveShare": 0,
-        "maxFingertipN": 78
+        "maxFingertipN": 78,
+        "mu": 1,
+        "fingersOn": "auto",
+        "incut": 0,
+        "mode": "block",
+        "hands": "2",
+        "feet": 0
       },
-      "notes": "Fingertip bent, middle joint nearly straight (the 'slope' grip of Vigouroux et al.: DIP 38.8°, PIP 25.9°, MCP −21°). The tendons barely change direction at the pulleys, so A2 carries very little.",
-      "source": "Posture: Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027; maximum fingertip force (all four fingers on the hold, slope grip, 78 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
+      "notes": "Middle joint moderately bent, fingertip about straight, knuckles nearly straight: MCP 4°, PIP 54°, DIP 1°, measured with motion capture in elite climbers on a 23 mm edge (middle finger, mean of both hands). The open hand varied most between climbers (PIP −4° to 82°), in two patterns that the authors link to whether the little finger is on the hold; the ring finger stayed straighter (PIP about 25°). Vigouroux et al.'s 'slope' grip, with the knuckles bent back and the middle joint nearly straight (MCP −21°, PIP 26°, DIP 39°), is the PIP slider's low end. The A2 pulley carries about half the full crimp's load per newton at the fingertip; in the flat slope grip it would carry far less.",
+      "source": "Posture: Fischer G, Schneeberger M, Petter SA, Scheibler AG, Wolf P, Calcagni M, Schweizer A, Reissner L (2024). Motion analysis of the wrist and finger joints in sport climbing. Bioengineering 11(4):370. doi:10.3390/bioengineering11040370 (Table 5: middle finger, holding phase, mean of both hands; CC BY 4.0); for comparison, the slope grip: Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027; maximum fingertip force (all four fingers on the hold, slope grip, 78 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
     },
     {
       "id": "half-crimp",
       "name": "Half crimp",
       "equipment": "Edge block on a loading pin",
       "params": {
-        "mcp": 0,
-        "dip": 0,
-        "pip": 90,
+        "mcp": 14,
+        "dip": -12,
+        "pip": 72,
         "contactFromDip": 0.00985,
         "armForward": 0,
         "armSide": 0,
@@ -284,19 +348,25 @@
         "quadriga": 0.5,
         "liftTime": 0.6,
         "dipPassiveShare": 0,
-        "maxFingertipN": 82
+        "maxFingertipN": 82,
+        "mu": 1,
+        "fingersOn": "auto",
+        "incut": 0,
+        "mode": "block",
+        "hands": "2",
+        "feet": 0
       },
-      "notes": "Middle joint at about 90°, fingertip in line with the middle phalanx, no thumb. Estimated posture (neither paper measured this grip); the maximum force is taken from the crimp. A grip between half crimp and open hand with all four fingers is often recommended for off-the-wall strength training (Tyler Nelson, via StrengthClimbing); in the 'chisel' variant the index finger stays straight and carries less.",
-      "source": "Posture: estimate (TODO); maximum fingertip force (all four fingers on the hold, crimp, 82 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
+      "notes": "Middle joint well bent, fingertip slightly bent back, knuckles a little bent: MCP 14°, PIP 72°, DIP −12°, measured with motion capture in elite climbers on a 23 mm edge (middle finger, mean of both hands). Climbers ranged widely (PIP 28° to 87°); many 'half crimps' are flatter than the 90° often quoted. The maximum force is taken from the crimp. A grip between half crimp and open hand with all four fingers is often recommended for off-the-wall strength training (Tyler Nelson, via StrengthClimbing); in the 'chisel' variant the index finger stays straight and carries little.",
+      "source": "Posture: Fischer G, Schneeberger M, Petter SA, Scheibler AG, Wolf P, Calcagni M, Schweizer A, Reissner L (2024). Motion analysis of the wrist and finger joints in sport climbing. Bioengineering 11(4):370. doi:10.3390/bioengineering11040370 (Table 5: middle finger, holding phase, mean of both hands; CC BY 4.0); maximum fingertip force (all four fingers on the hold, crimp, 82 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
     },
     {
       "id": "full-crimp",
       "name": "Full crimp",
       "equipment": "Edge block on a loading pin",
       "params": {
-        "mcp": -2.6,
-        "dip": -22.6,
-        "pip": 106.5,
+        "mcp": 40,
+        "dip": -26,
+        "pip": 87,
         "contactFromDip": 0.00985,
         "armForward": 0,
         "armSide": 0,
@@ -308,10 +378,16 @@
         "quadriga": 0.5,
         "liftTime": 0.6,
         "dipPassiveShare": 0.222,
-        "maxFingertipN": 82
+        "maxFingertipN": 82,
+        "mu": 1,
+        "fingersOn": "auto",
+        "incut": 0,
+        "mode": "block",
+        "hands": "2",
+        "feet": 0
       },
-      "notes": "Middle joint past 90°, fingertip bent back (the 'crimp' of Vigouroux et al.: DIP −22.6°, PIP 106.5°, MCP −2.6°). With the fingertip bent back, the joint itself carries about a fifth of the DIP moment (22% in their climbers), which spares the FDP. The thumb wrapped over the index finger isn't modelled.",
-      "source": "Posture and passive DIP moment: Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Table 2); maximum fingertip force (82 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
+      "notes": "Middle joint sharply bent, fingertip bent back, knuckles clearly bent: MCP 40°, PIP 87°, DIP −26°, measured with motion capture in elite climbers on a 23 mm edge (middle finger, mean of both hands). Vigouroux et al.'s crimp (MCP −3°, PIP 107°, DIP −23°) bends the middle joint further and keeps the knuckles straight; the model's check against their tendon estimates uses their posture. With the fingertip bent back, the joint itself carries about a fifth of the DIP moment (22% in their climbers), which spares the FDP. The thumb wrapped over the index finger isn't modelled.",
+      "source": "Posture: Fischer G, Schneeberger M, Petter SA, Scheibler AG, Wolf P, Calcagni M, Schweizer A, Reissner L (2024). Motion analysis of the wrist and finger joints in sport climbing. Bioengineering 11(4):370. doi:10.3390/bioengineering11040370 (Table 5: middle finger, holding phase, mean of both hands; CC BY 4.0); passive DIP moment and the check posture: Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. J Biomech 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027 (Table 2); maximum fingertip force (82 N): Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. J Biomech 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6"
     }
   ],
   "wger": null,

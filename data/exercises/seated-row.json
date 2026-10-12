@@ -100,12 +100,13 @@
       "wgerId": 12,
       "role": "Prime mover",
       "driver": "jointEffort",
-      "joint": "shoulder",
       "weight": [[-90, 1], [90, 1]],
       "sign": 1,
-      "note": "Main shoulder extensor: pulls the upper arm back towards the hips.",
-      "source": "TODO: check against EMG literature",
-      "draw3d": {"seg": "trunk", "side": "posterior", "along": [0.3, 0.48], "offset": 0.12, "w": 0.07}
+      "note": "Main shoulder extensor: pulls the upper arm back towards the hips. In a row the lats work at about 1.5–2 times the biceps (Lehman et al.: 30–37% vs 18–20% of maximum in seated rows), more than the elbow's torque alone suggests, so here they also follow the elbow's effort (× 1.2).",
+      "source": "Lehman GJ, Buchan DD, Lundy A, Myers N, Nalborczyk A (2004). Variations in muscle activation levels during traditional latissimus dorsi weight training exercises: an experimental study. Dyn Med 3:4. doi:10.1186/1476-5918-3-4 (Table 1: isometric holds, % of maximum); Di Fonza D, Di Claudio G, Colantuono G, Persichini L, Cerulo N, Sangregorio B, Buonsenso A, Fiorilli G, Calcagno G, di Cagno A (2026). Electromyographic analysis of latissimus dorsi activation during common resistance training exercises: a narrative review. J Funct Morphol Kinesiol 11(3):315. doi:10.3390/jfmk11030315",
+      "draw3d": {"seg": "trunk", "side": "posterior", "along": [0.3, 0.48], "offset": 0.12, "w": 0.07},
+      "joints": ["shoulder", "elbow"],
+      "jointScale": {"elbow": 1.2}
     },
     {
       "id": "posterior-deltoid",
@@ -132,8 +133,8 @@
       "joint": "elbow",
       "weight": [[0, 1], [150, 1]],
       "sign": 1,
-      "note": "Elbow flexors: work while the forearm is tilted away from the line of the load.",
-      "source": "TODO: check against EMG literature",
+      "note": "Elbow flexors: work while the forearm is tilted away from the line of the load. About the same in every row and pulldown variant Lehman et al. tested (15–20% of maximum, isometric holds).",
+      "source": "Lehman GJ, Buchan DD, Lundy A, Myers N, Nalborczyk A (2004). Variations in muscle activation levels during traditional latissimus dorsi weight training exercises: an experimental study. Dyn Med 3:4. doi:10.1186/1476-5918-3-4 (Table 1: isometric holds, % of maximum)",
       "draw3d": {"seg": "upperArm", "side": "anterior", "along": [0.08, 0.24], "offset": 0.035, "w": 0.05}
     },
     {

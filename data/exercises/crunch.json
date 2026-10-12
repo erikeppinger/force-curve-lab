@@ -1,0 +1,153 @@
+{
+  "id": "crunch",
+  "group": "core",
+  "name": "Crunch",
+  "joint": "Trunk flexion (lower back)",
+  "movingJoint": "proximal",
+  "view": "side",
+  "angleLabel": "Trunk flexion",
+  "angleOffset": 180,
+  "angleSense": -1,
+  "angleRange": [-20, 40],
+  "angleNote": "Flexion of the lower back: 0° = trunk straight, positive = curled forward, negative = arched back (over a ball). The pivot is the lower back at the level of the top of the pelvis (about 0.12 m above the hip joints); the pelvis stays put.",
+  "segments": {
+    "proximal": 0.4,
+    "distal": 0.18,
+    "names": ["Upper trunk (arms crossed)", "Head"],
+    "massFractions": [0.4217, 0.0694],
+    "comFractions": [0.6, 0.72],
+    "massNote": "Fractions of body mass from de Leva's table (young adult males). Upper trunk: upper and middle trunk (0.3229, centre placed 0.22 m above the pivot, estimate) plus both arms crossed on the chest (0.0988, 0.30 m above the pivot, estimate): 0.4217 at 0.24 m. Head: 0.0694, its centre 0.13 m above the shoulders. The lower trunk stays on the floor with the pelvis.",
+    "massSource": "de Leva P (1996). Adjustments to Zatsiorsky-Seluyanov's segment inertia parameters. J Biomech 29(9):1223–1230. doi:10.1016/0021-9290(95)00178-6 (Table 4, males)",
+    "note": "Pivot → shoulders and shoulders → behind the head, metres, typical adult (estimates).",
+    "massLabel": "upper body",
+    "draw": {
+      "w": [0.24, 0.08],
+      "head": {"at": 0.72, "r": 0.11}
+    }
+  },
+  "defaults": {"loadKg": 0, "peakTorqueNm": 180, "variant": "floor", "bodyMassKg": 75},
+  "ui": {"load": [0, 40, 1], "strength": [50, 300]},
+  "strengthCurve": {
+    "label": "Trunk flexor strength",
+    "points": [[-20, 0.95], [0, 1], [20, 0.87], [40, 0.67]],
+    "note": "Relative isometric trunk-flexion torque vs trunk flexion, seated with the pelvis strapped (dynamometer axis at the top of the pelvis), 15 men and 15 women aged 18–56. Measured: 132.6, 143.3, 143.6 and 126.8 Nm at −20°, 0°, 20° and 40° (Table I, mean of both test days), not corrected for the trunk's own weight, which helps a forward-leaning trunk flex. The passive curve of their Fig. 2 (trunk moved with no effort, one subject, 30°/s; read off, about 0, +3, +22 and +33 Nm) is taken off: 132.6, 140.3, 121.6 and 93.8 Nm, relative to the 0° value. That correction is an estimate (one subject, moving). Peak default 180 Nm for men: Wessel et al. 1994 measured about 183 Nm in 39 men at 0° (women about 103 Nm; read off their Fig. 3, not corrected for the trunk's weight), and Kumar et al. 1995 imply about 190 Nm for men. The 1992 group's 140 Nm mixed men and women; its curve shape is kept. Tested only from −20° to 40°.",
+    "source": "Wessel J, Ford D, van Driesum D (1992). Measurement of torque of trunk flexors at different velocities. Scand J Rehabil Med 24(4):175–180. doi:10.2340/1650197799224175180 (Table I and Fig. 2); Wessel J, Ford D, van Driesum D (1994). Torque of trunk flexion and trunk flexion with axial rotation in healthy men and women. Spine 19(3):329–334. doi:10.1097/00007632-199402000-00013 (Fig. 3, read off)"
+  },
+  "postures": {
+    "floor": [
+      {"shape": "seg", "from": [0, 0], "to": [0, -0.14], "w": 0.2},
+      {"shape": "seg", "from": [0, -0.12], "to": [0.3, -0.42], "w": 0.12},
+      {"shape": "seg", "from": [0.3, -0.42], "to": [-0.02, -0.68], "w": 0.1},
+      {"shape": "seg", "from": [-0.13, 0.9], "to": [-0.13, -0.85], "w": 0.03, "class": "equipment"}
+    ],
+    "decline": [
+      {"shape": "seg", "from": [0, 0], "to": [0, -0.14], "w": 0.2},
+      {"shape": "seg", "from": [0, -0.12], "to": [0.3, -0.42], "w": 0.12},
+      {"shape": "seg", "from": [0.3, -0.42], "to": [0.12, -0.72], "w": 0.1},
+      {"shape": "seg", "from": [-0.13, 0.9], "to": [-0.13, -0.6], "w": 0.04, "class": "equipment"},
+      {"shape": "seg", "from": [0.24, -0.8], "to": [0.04, -0.8], "w": 0.05, "class": "equipment"}
+    ],
+    "ball": [
+      {"shape": "seg", "from": [0, 0], "to": [0, -0.14], "w": 0.2},
+      {"shape": "seg", "from": [0, -0.12], "to": [0.3, -0.5], "w": 0.12},
+      {"shape": "seg", "from": [0.3, -0.5], "to": [-0.05, -0.75], "w": 0.1},
+      {"shape": "circle", "at": [-0.43, -0.02], "r": 0.32, "class": "equipment"}
+    ]
+  },
+  "muscles": [
+    {
+      "id": "rectus-abdominis",
+      "region": "trunk",
+      "name": "Rectus abdominis",
+      "wgerId": 6,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[-20, 1], [40, 1]],
+      "note": "Curls the ribcage towards the pelvis: in floor crunches 56% (upper part) and 48% (lower part) of its maximum (Escamilla et al.).",
+      "source": "Escamilla RF, Babb E, DeWitt R, Jew P, Kelleher P, Burnham T, Busch J, D'Anna K, Mowbray R, Imamura RT (2006). Electromyographic analysis of traditional and nontraditional abdominal exercises: implications for rehabilitation and training. Phys Ther 86(5):656–671. doi:10.1093/ptj/86.5.656 (Table 2: % of maximal isometric activation, 21 adults)",
+      "draw": {"seg": "proximal", "along": [0.03, 0.3], "offset": -0.085, "w": 0.05, "layer": 1}
+    },
+    {
+      "id": "external-oblique",
+      "region": "trunk",
+      "name": "External oblique",
+      "wgerId": 14,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[-20, 0.5], [40, 0.5]],
+      "note": "Helps flex the trunk: 27% of its maximum in the floor crunch, about half the rectus abdominis (the internal oblique 42%; Escamilla et al.). It works much harder when the crunch twists, or in a sit-up (50%).",
+      "source": "Escamilla RF, Babb E, DeWitt R, Jew P, Kelleher P, Burnham T, Busch J, D'Anna K, Mowbray R, Imamura RT (2006). Electromyographic analysis of traditional and nontraditional abdominal exercises: implications for rehabilitation and training. Phys Ther 86(5):656–671. doi:10.1093/ptj/86.5.656 (Table 2: % of maximal isometric activation, 21 adults)",
+      "draw": {"seg": "proximal", "along": [0.06, 0.24], "offset": -0.05, "w": 0.05, "layer": 0}
+    }
+  ],
+  "phases": [
+    {
+      "name": "Arched",
+      "range": [-20, 0],
+      "text": "Only over a ball: the abdominals start stretched, where they are still about as strong as straight."
+    },
+    {
+      "name": "Early curl",
+      "range": [0, 20],
+      "text": "Lying flat, the trunk is horizontal: its weight has the longest lever exactly where the curl starts."
+    },
+    {
+      "name": "Curled",
+      "range": [20, 40],
+      "text": "The lever shortens as the trunk rises, but the abdominals weaken as they shorten. Past this, a sit-up continues at the hips (hip flexors), which this model doesn't cover."
+    }
+  ],
+  "variants": [
+    {
+      "id": "floor",
+      "name": "Floor crunch",
+      "equipment": "Floor",
+      "posture": "floor",
+      "gravity": {"x": -1, "y": 0},
+      "viewLabel": "Side view (lying on the back)",
+      "angleRange": [0, 40],
+      "load": {"type": "gravity", "on": "proximal", "along": 0.85},
+      "defaultLoadKg": 0,
+      "notes": "Knees bent, feet flat, arms crossed (or a plate hugged to the chest). The upper body's weight has its longest lever at the start, lying flat."
+    },
+    {
+      "id": "floor-head",
+      "name": "Floor crunch, hands behind the head",
+      "equipment": "Floor",
+      "posture": "floor",
+      "gravity": {"x": -1, "y": 0},
+      "viewLabel": "Side view (lying on the back)",
+      "angleRange": [0, 40],
+      "load": {"type": "gravity"},
+      "defaultLoadKg": 0,
+      "notes": "A plate (or the hands) behind the head is further from the lower back than at the chest. The arms' own weight moves up too, which this variant leaves at the chest."
+    },
+    {
+      "id": "decline",
+      "name": "Decline bench crunch (30°)",
+      "equipment": "Decline bench",
+      "posture": "decline",
+      "gravity": {"x": -0.866, "y": 0.5},
+      "viewLabel": "Side view (head 30° down)",
+      "angleRange": [0, 40],
+      "load": {"type": "gravity", "on": "proximal", "along": 0.85},
+      "defaultLoadKg": 0,
+      "notes": "Head 30° lower than the hips: the trunk is horizontal, its lever longest, at 30° of curl. The start is slightly easier than on the floor (the trunk points downhill), everything past about 15° harder, and the hardest point moves to where the abdominals are already weakening."
+    },
+    {
+      "id": "ball",
+      "name": "Crunch on a Swiss ball",
+      "equipment": "Swiss ball",
+      "posture": "ball",
+      "gravity": {"x": -1, "y": 0},
+      "viewLabel": "Side view (lying back over the ball)",
+      "load": {"type": "gravity", "on": "proximal", "along": 0.85},
+      "defaultLoadKg": 0,
+      "notes": "Lying back over the ball the trunk can start arched (−20°), with the abdominals stretched and still strong: more range. The heaviest lever comes with the trunk straight and horizontal (0°), a third of the way in, not at the start."
+    }
+  ],
+  "trunk3d": {
+    "note": "3D view: the trunk muscles of the OpenSim lumbar spine model (Christophy et al. 2012, MIT licence) in its upright posture, shaded by this exercise's muscle effort. Groups the exercise doesn't load stay grey.",
+    "map": {"rectus-abdominis": ["rectus-abdominis"], "external-oblique": ["external-oblique", "internal-oblique"]}
+  }
+}

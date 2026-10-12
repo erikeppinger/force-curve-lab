@@ -1,0 +1,145 @@
+{
+  "id": "plank",
+  "group": "core",
+  "name": "Plank",
+  "joint": "Lower back and hips (held)",
+  "model": "multi",
+  "solver": "plank",
+  "view": "side",
+  "angleLabel": "Support height",
+  "angleUnit": " cm",
+  "angleRange": [0, 80],
+  "angleNote": "Height of the forearm (or hand) support above the floor: 0 = on the floor, higher = forearms on a bench, the body tilted up. The body stays straight; it's a hold, so the slider compares set-ups rather than playing a movement.",
+  "defaults": {"loadKg": 0, "variant": "forearm", "bodyMassKg": 75, "angle": 0},
+  "ui": {"load": [0, 40, 1]},
+  "joints": [
+    {
+      "id": "lumbar",
+      "name": "Lower back (abdominals)",
+      "action": "Trunk flexion",
+      "angleLabel": "trunk",
+      "peakTorqueNm": 190,
+      "strength": {
+        "points": [[0, 1]],
+        "note": "Isometric trunk flexion with the trunk upright, men: about 190 Nm. Kumar et al. give the men's flexion in a figure only; their text gives normal men's extension at 0° as 320 Nm (the patients' 147 Nm being 46% of it) and the extension ÷ flexion ratio at 0° as 1.67, so flexion ≈ 320 ÷ 1.67 ≈ 190 Nm (derived). Women: about 60% of men. Wessel et al. 1992 found 140 Nm in a mixed group. The plank holds the trunk straight, so only the 0° value is used.",
+        "source": "Kumar S, Dufresne RM, Van Schoor T (1995). Human trunk strength profile in flexion and extension. Spine 20(2):160–168. doi:10.1097/00007632-199501150-00006"
+      }
+    },
+    {
+      "id": "hip",
+      "name": "Hip (per leg)",
+      "action": "Hip flexion",
+      "angleLabel": "hip",
+      "peakTorqueNm": 142,
+      "strength": {
+        "points": [[0, 0.99]],
+        "note": "Isometric hip flexion with the hip straight: 0.99 of the peak (at −12°), peak 142 Nm per hip (0.113 × body weight × height, young men at 73 kg and 1.75 m; Table 3), as for the leg raise.",
+        "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022"
+      }
+    }
+  ],
+  "muscles": [
+    {
+      "id": "rectus-abdominis",
+      "region": "trunk",
+      "name": "Rectus abdominis",
+      "wgerId": 6,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "lumbar",
+      "weight": [[0, 1], [80, 1]],
+      "note": "Keeps the lower back from sagging. Measured in a forearm plank: 43% of its maximum (Ekstrom et al.), against about 46% of the trunk's flexion strength in this model.",
+      "source": "Ekstrom RA, Donatelli RA, Carp KC (2007). Electromyographic analysis of core trunk, hip, and thigh muscles during 9 rehabilitation exercises. J Orthop Sports Phys Ther 37(12):754–762. doi:10.2519/jospt.2007.2471 (Tables 1, 3 and 4: 30 healthy adults, % of maximal isometric activation)",
+      "draw": {"seg": "trunk", "along": [0.08, 0.38], "offset": -0.095, "w": 0.05}
+    },
+    {
+      "id": "external-oblique",
+      "region": "trunk",
+      "name": "External oblique",
+      "wgerId": 14,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "lumbar",
+      "weight": [[0, 1.05], [80, 1.05]],
+      "note": "Works with the rectus abdominis: 47% of its maximum in the forearm plank (Ekstrom et al.), slightly more than the rectus.",
+      "source": "Ekstrom RA, Donatelli RA, Carp KC (2007). Electromyographic analysis of core trunk, hip, and thigh muscles during 9 rehabilitation exercises. J Orthop Sports Phys Ther 37(12):754–762. doi:10.2519/jospt.2007.2471 (Tables 1, 3 and 4: 30 healthy adults, % of maximal isometric activation)",
+      "draw": {"seg": "trunk", "along": [0.1, 0.32], "offset": -0.06, "w": 0.05}
+    },
+    {
+      "id": "iliopsoas",
+      "region": "thigh",
+      "name": "Iliopsoas (hip flexors)",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 1], [80, 1]],
+      "note": "Keeps the hips from sagging (the legs' end of the body pivots at the hips). Not measured with surface EMG (deep). Not measured in planks; in leg lifts it is highly active (Andersson et al., fine-wire EMG).",
+      "source": "TODO: no EMG of the iliopsoas in a plank found; Andersson EA, Nilsson J, Ma Z, Thorstensson A (1997). Abdominal and hip flexor muscle activation during various training exercises. Eur J Appl Physiol 75(2):115–123. doi:10.1007/s004210050135 (6 men, fine-wire EMG of the iliacus)",
+      "draw": {"seg": "thigh", "along": [0.33, 0.46], "offset": -0.04, "w": 0.05}
+    },
+    {
+      "id": "rectus-femoris",
+      "region": "thigh",
+      "name": "Rectus femoris (quadriceps)",
+      "wgerId": 10,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "joint": "hip",
+      "weight": [[0, 0.6], [80, 0.6]],
+      "note": "The quadriceps head that also bends the hip; it helps hold the hips and keeps the knees straight.",
+      "source": "TODO: check against EMG literature",
+      "draw": {"seg": "thigh", "along": [0.06, 0.36], "offset": -0.05, "w": 0.05}
+    }
+  ],
+  "phases": [
+    {
+      "name": "Floor",
+      "range": [0, 20],
+      "text": "Forearms on the floor: the body is almost horizontal, so its weight has the longest lever about the hips and lower back."
+    },
+    {
+      "name": "Low bench",
+      "range": [20, 50],
+      "text": "Every lever shrinks with the cosine of the tilt: 30° up keeps 87% of the load, 45° keeps 71%."
+    },
+    {
+      "name": "High bench",
+      "range": [50, 80],
+      "text": "Steeply inclined: an easy progression; at 60° half the load is left."
+    }
+  ],
+  "variants": [
+    {
+      "id": "forearm",
+      "name": "Forearm plank",
+      "equipment": "Floor or bench",
+      "params": {"hands": false},
+      "notes": "On the forearms (elbows under the shoulders) and the toes, body straight. The forearms carry about 70% of the weight, the toes the rest; a plate on the back adds to both."
+    },
+    {
+      "id": "hands",
+      "name": "High plank (on the hands)",
+      "equipment": "Floor or bench",
+      "params": {"hands": true},
+      "notes": "Arms straight: the shoulders are higher, so the body is already tilted about 20° on the floor, slightly easier than on the forearms."
+    },
+    {
+      "id": "knees",
+      "name": "Plank from the knees",
+      "equipment": "Floor or bench",
+      "params": {"hands": false, "support": "knees"},
+      "notes": "On the forearms and knees: the lower legs rest on the floor, so the lever is shorter: about 40% less load on the lower back than from the toes."
+    }
+  ],
+  "hold": true,
+  "trunk3d": {
+    "pose": "body",
+    "note": "3D view: the trunk muscles of the OpenSim lumbar spine model (Christophy et al. 2012, MIT licence) set on the body (the lumbar spine straight, as held), shaded by this exercise's muscle effort. Groups the exercise doesn't load stay grey.",
+    "map": {
+      "rectus-abdominis": ["rectus-abdominis"],
+      "external-oblique": ["external-oblique", "internal-oblique"],
+      "iliopsoas": ["psoas"]
+    }
+  }
+}

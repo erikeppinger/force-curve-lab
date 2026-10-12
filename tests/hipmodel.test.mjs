@@ -100,3 +100,15 @@ test("force–length factors: grid values at grid points, held at the edges, kne
   assert.ok(activeFactor(ham, { flexion: 90, adduction: 0 }, geo, true) > 3 * activeFactor(ham, { flexion: 90, adduction: 0 }, geo, false));
   for (const x of geo.muscles) for (const t of [x.active.knee0, x.active.knee90]) assert.ok(t.flat().every((v) => v >= 0 && v <= 1.5), x.id);
 });
+
+test("hip bent forward (standing abduction): the leg's weight in the tilted plane scales with cos(bend); the hip model gets the bend", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { analyze } = await import("../js/physics.js");
+  const ex = JSON.parse(readFileSync(new URL("../data/exercises/hip-abduction.json", import.meta.url)));
+  const v = ex.variants.find((x) => x.id === "machine");
+  const at = (hipFlex) => analyze(ex, v, 20, { loadKg: 0, peakTorqueNm: ex.defaults.peakTorqueNm, bodyMassKg: 75, placement: { hipFlex } });
+  const r0 = at(0), r60 = at(60);
+  assert.ok(Math.abs(r60.limbTorque - r0.limbTorque * Math.cos(Math.PI / 3)) < 1e-9);
+  assert.equal(r60.hip.flexion, 60);
+  assert.ok(r60.capacity < r0.capacity); // abduction weaker beyond 45° of hip bend
+});

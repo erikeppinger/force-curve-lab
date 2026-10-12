@@ -8,11 +8,12 @@ import { analyze } from "../js/physics.js";
 import { analyzeMulti } from "../js/multijoint.js";
 import { analyzeEdge, liftProfile } from "../js/finger.js";
 import { muscleActivation } from "../js/muscles.js";
+import { analyzePinch } from "../js/pinchlift.js";
 
 const body = JSON.parse(readFileSync(new URL("../data/body.json", import.meta.url)));
 const dir = new URL("../data/exercises/", import.meta.url);
 const ids = readdirSync(dir).filter((f) => f.endsWith(".json")).map((f) => f.replace(".json", ""));
-const SKIP = new Set(["maxBlockKg", "ratio"]); // Infinity is a legitimate answer there (no load, FDP only)
+const SKIP = new Set(["maxBlockKg", "ratio", "friction", "needed"]); // Infinity is a legitimate answer there (no load, FDP only; a push that doesn't press into the pad)
 
 function nonFinite(o, path = "r", seen = new Set()) {
   if (!o || typeof o !== "object" || seen.has(o)) return null;
@@ -37,16 +38,23 @@ for (const id of ids) {
     if (ex.hipModel) ex.hipModel.geometry = JSON.parse(readFileSync(new URL(`../${ex.hipModel.data}`, import.meta.url)));
     const [lo, hi] = ex.angleRange;
     const spec = ex.placement ?? [];
-    const placements = [undefined, Object.fromEntries(spec.map((s) => [s.key, s.min])), Object.fromEntries(spec.map((s) => [s.key, s.max])),
-      Object.fromEntries(spec.filter((s) => s.auto).map((s) => [s.key, "auto"]))];
+    if (ex.pincer) ex.pincer.arms = JSON.parse(readFileSync(new URL(`../${ex.pincer.data}`, import.meta.url)));
+    if (ex.pincer?.fingerData) ex.pincer.fingerModel = JSON.parse(readFileSync(new URL(`../${ex.pincer.fingerData}`, import.meta.url)));
+    if (ex.pincer?.wholeData) ex.pincer.whole = JSON.parse(readFileSync(new URL(`../${ex.pincer.wholeData}`, import.meta.url)));
+    const end = (s, i) => (s.type === "choice" ? s.options.at(i)[0] : i === 0 ? s.min : s.max);
+    const placements = [undefined, Object.fromEntries(spec.map((s) => [s.key, end(s, 0)])), Object.fromEntries(spec.map((s) => [s.key, end(s, -1)])),
+      Object.fromEntries(spec.filter((s) => s.auto).map((s) => [s.key, "auto"])),
+      // Each control alone: every choice, and each slider's middle (the others at the preset).
+      ...spec.flatMap((s) => (s.type === "choice" ? s.options.map((o) => ({ [s.key]: o[0] })) : [{ [s.key]: (s.min + s.max) / 2 }]))];
     const finger = ex.model === "finger";
     for (const v of ex.variants) {
       for (const pl of finger ? placements.slice(0, 3) : placements) {
         for (const st of settings) {
           for (const x of finger ? [lo, hi] : [lo, (lo + hi) / 2, hi]) {
             const o = { ...st, body, placement: pl ? { ...v.params, ...pl } : undefined, pulley: v.load?.pulley };
-            const r = finger ? analyzeEdge(ex, v, x, o) : ex.model === "multi" ? analyzeMulti(ex, v, x, o) : analyze(ex, v, x, o);
-            const bad = nonFinite(r);
+            const r = finger ? analyzeEdge(ex, v, x, o) : ex.model === "pinch" ? analyzePinch(ex, ex.pincer.arms, v, x, o) : ex.model === "multi" ? analyzeMulti(ex, v, x, o) : analyze(ex, v, x, o);
+            // Pinch lift: a block width the hand can't hold at all has an infinite effort.
+            const bad = nonFinite(ex.model === "pinch" ? { ...r, effort: Number.isFinite(r.effort) || r.maxBlockKg === 0 ? 0 : r.effort } : r);
             assert.equal(bad, null, `${v.id} @${x}: ${bad}`);
             for (const m of muscleActivation(ex, v, r, x)) {
               if (m.value != null) assert.ok(m.value >= 0 && m.value <= 1, `${v.id} @${x}: ${m.id} = ${m.value}`);

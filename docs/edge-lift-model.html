@@ -75,11 +75,13 @@
 <div class="table-wrap"><table>
   <thead><tr><th>Grip</th><th>MCP</th><th>PIP</th><th>DIP</th><th>Posture source</th></tr></thead>
   <tbody>
-    <tr><td>Open hand (drag)</td><td>−21°</td><td>25.9°</td><td>38.8°</td><td>Vigouroux et al. 2006, "slope" grip</td></tr>
-    <tr><td>Half crimp</td><td>0°</td><td>90°</td><td>0°</td><td><span class="est">estimate</span>: neither study measured it</td></tr>
-    <tr><td>Full crimp</td><td>−2.6°</td><td>106.5°</td><td>−22.6° (bent back)</td><td>Vigouroux et al. 2006, "crimp" grip</td></tr>
+    <tr><td>Open hand (drag)</td><td>4°</td><td>54°</td><td>1°</td><td>Fischer et al. 2024</td></tr>
+    <tr><td>Half crimp</td><td>14°</td><td>72°</td><td>−12° (bent back)</td><td>Fischer et al. 2024</td></tr>
+    <tr><td>Full crimp</td><td>40°</td><td>87°</td><td>−26° (bent back)</td><td>Fischer et al. 2024</td></tr>
   </tbody>
 </table></div>
+<p>Fischer et al. (2024) measured these angles with motion capture in 11 elite climbers holding a 23 mm, 25° incut edge during real climbing moves (middle finger, holding phase, mean of both hands). Climbers varied widely, most in the open hand (PIP −4° to 82°), where the authors saw two patterns that they link to whether the little finger is on the hold; the ring finger stayed straighter (PIP about 25°). Earlier versions of the page used Vigouroux et al.'s (2006) postures, which were measured on a single finger: a "slope" grip (MCP −21°, PIP 25.9°, DIP 38.8°) that now marks the low end of the PIP slider, and a crimp (MCP −2.6°, PIP 106.5°, DIP −22.6°) that is still used for the check in section 3. Their open hand bends the knuckles back so far that, on a straight edge, the index finger couldn't reach without the whole hand twisting; with the measured climbing postures it reaches.</p>
+<p><strong>Hanging.</strong> A setting switches the load from the block to the body: each hand then carries (body mass × (1 − the share on the feet) + any added weight) ÷ the number of hands. The fingers don't know what pulls on the arm: the edge's push still runs from the pad towards the wrist, so the finger statics below are the same. The arm is overhead and only pulls, so the arm view and the lift-off (Play) are off. Fischer et al. measured the wrist extended by 7–32° while climbers held their edge; that changes the hand's angle to the forearm, not the finger loads.</p>
 <p>The block's weight pulls on the finger pads. The hand hangs so this pull passes straight under the wrist, which then needs no flexion or extension moment. The pull's direction in each finger's frame therefore follows from where the pad sits relative to the wrist.</p>
 
 <h2 id="finger">2. One finger: tendons and pulleys</h2>
@@ -133,22 +135,24 @@ A4 = FDP·|u_A2 + u_insertion|</div>
 <p>The fingers differ in length, so they can't all keep the grip's exact posture and still touch one straight edge. The model searches for the hand posture that changes the grip least.</p>
 <ul>
   <li>Each fingertip touches the edge. A pad may sit up to 6 mm deeper or shallower on the edge than the middle finger's <span class="est">estimate</span>.</li>
+  <li>The edge may meet a pad up to 6 mm nearer the fingertip or nearer the DIP crease than the set contact point. The pad is about 2 cm long, so fingers of different length can meet one flat edge with different parts of their pads instead of bending their joints <span class="est">estimate</span>.</li>
   <li>Each finger stays close to the grip's PIP and DIP angles. Most of the length difference is taken up at the knuckle: a longer finger flexes its MCP more.</li>
   <li>The ring and little metacarpals may flex forward at the base of the hand ("cupping"), up to 10° and 20° <span class="est">estimate</span>.</li>
   <li>The whole hand may tilt sideways (−25° towards the thumb to +30° towards the little finger). This lowers the knuckles on one side, and can come from wrist deviation or from the arm leaning.</li>
   <li>The hand may roll about its long axis (forearm pronation/supination, ±30°). This moves one side's pads towards the palm, so fingers that bend their knuckles by different amounts still meet a straight edge.</li>
 </ul>
 <p>The search minimises a weighted sum of squared angle changes from the grip:</p>
-<div class="eq">cost = Σ_fingers [ 0.1·ΔMCP² + 1·ΔPIP² + 1·ΔDIP² + 0.5·cupping² + 1·(depth offset in mm)² ] + 0.2·tilt² + 0.05·roll²</div>
-<p>The weights are <span class="est">estimates</span>. They encode the idea that a grip "lives" in the PIP and DIP angles while the knuckle adjusts freely. The search runs over the edge's position under the hand, the hand's tilt and its roll, and each finger's joints are solved by two-link reach.</p>
-<p>A finger whose posture cost would exceed 900 (about a 30° change of the PIP) stays off the edge. Between 450 and 900 its weight in the load split fades to zero, so a finger that only just reaches carries little. That way a millimetre of edge shape doesn't switch it fully on or off.</p>
+<div class="eq">cost = Σ_fingers [ 0.5·ΔMCP² + 1·ΔPIP² + 1·ΔDIP² + 0.5·cupping² + 1·(depth offset in mm)² + 1·(pad slide in mm)² ] + 1·tilt² + 0.05·roll²</div>
+<p>The weights are <span class="est">estimates</span>. They encode the idea that a grip "lives" in the PIP and DIP angles, while the knuckle, the hand's tilt and the part of the pad on the edge take up the differences between fingers. The search runs over the edge's position under the hand, the hand's tilt and its roll, and each finger's joints are solved by two-link reach. With the measured postures above, it lands close to them: in the open hand, for example, the index, middle and ring fingers reach a flat edge with their knuckles at 2–11° (measured: 4°) and the hand nearly level.</p>
+<p>A finger whose posture cost would exceed 900 (about a 30° change of the PIP) stays off the edge. Between 450 and 900 its weight in the load split fades to zero, so a finger that only just reaches carries little. That way a millimetre of edge shape doesn't switch it fully on or off. Because a search that starts with a finger off rarely finds its way back to all four, it runs twice, once letting fingers drop and once trying to keep all four on, and the cheaper hand posture wins.</p>
+<p><strong>Fingers on the edge:</strong> a setting chooses which fingers hold the edge. "Auto" is the search above. "All four", "Without the index" and "Without the little finger" keep every other finger on, whatever posture that takes; the finger left off carries nothing.</p>
 <h3>Edge shape and the edge that fits a hand</h3>
 <ul>
   <li><strong>Tilt along the edge's length:</strong> e.g. a block hanging off-centre.</li>
   <li><strong>Height under each finger:</strong> the edge under the index, ring and little finger can sit closer to the knuckles or further away than under the middle finger (four bars, one per finger, set side by side over a sketch of the fingers). Shaped lifting blocks, with a bump under the longer fingers, are this case.</li>
 </ul>
 <p>The model also computes the <strong>edge that fits a hand exactly</strong> in a grip. Every finger is placed in the grip's own angles, with no knuckle adjustment, no cupping and the hand straight, and the hand hangs with the wrist above the middle finger's pad. Each pad's height along the pull, relative to the middle finger's, is then the bump that finger needs, and its position across the pull is the depth difference. "Auto" on the edge sliders uses this profile.</p>
-<p>In the half crimp (MCP 0°, PIP 90°, DIP 0°) the proximal phalanx hangs along the pull and the middle and distal phalanges lie across it. So to first order a finger's bump is its difference in <em>knuckle position + proximal phalanx</em> length from the middle finger. For the typical hand that is about +6 mm for the index, +6 mm for the ring and +19 mm for the little finger, closer to the knuckles than under the middle finger. How far a knuckle sits back counts as much as the proximal phalanx. With such an edge all four fingers keep the grip's exact angles.</p>
+<p>In a square half crimp (MCP 0°, PIP 90°, DIP 0°) the proximal phalanx hangs along the pull and the middle and distal phalanges lie across it. So to first order a finger's bump is its difference in <em>knuckle position + proximal phalanx</em> length from the middle finger. For the typical hand in the measured half crimp that is about +8 mm for the index, +7 mm for the ring and +23 mm for the little finger, closer to the knuckles than under the middle finger. How far a knuckle sits back counts as much as the proximal phalanx. With such an edge all four fingers keep the grip's exact angles.</p>
 <p>A tilted hand only takes the in-plane part of the pull (cos of the tilt) through its flexor chain. The small sideways part is reported but not analysed.</p>
 
 <h2 id="split">5. How the block is shared between the fingers</h2>
@@ -163,7 +167,7 @@ A4 = FDP·|u_A2 + u_insertion|</div>
 </ul>
 <p>J is quadratic in the shares, so the minimum under Σ s = 1 has a closed form (<code>s ∝ H⁻¹·1</code>). Any finger that would get a negative share is removed, and the system is solved again.</p>
 <p>The wrist's sideways moment is the sum of each pad's vertical pull times its sideways distance from the middle of the wrist, including the shift from the hand's tilt. The page reports it as the wrist's radial or ulnar load.</p>
-<p class="muted">Example, flat edge, default settings: the half crimp splits about 21 / 30 / 20 / 28% (index / middle / ring / little) and the full crimp 32 / 39 / 22 / 7%, with the hand tilted about 6° towards the thumb and rolled a few degrees. In the open hand a typical hand can't get both the index and the little finger onto a straight edge without contorting one of them, and the model switches between the two as the PIP changes (see the limits).</p>
+<p class="muted">Example, flat edge, default settings: the half crimp splits about 17 / 32 / 22 / 29% (index / middle / ring / little) and the full crimp 23 / 35 / 21 / 21%, with the hand within about 5° of level and rolled a few degrees. In the open hand the little finger stays off (33 / 43 / 24 / 0%): its fingertip sits about 2.5 cm higher than the middle finger's, more than the knuckle, the pad and a small tilt can make up. That matches one of the two open-hand patterns Fischer et al. saw. "All four" keeps it on by bending every knuckle further.</p>
 
 <h2 id="arm">6. Shoulder and elbow</h2>
 <p>The arm is a straight line from the shoulder to the grip, with the block hanging under the hand.</p>
@@ -231,6 +235,7 @@ elbow torque    = (W · forearm length + forearm weight moment) · sin(angle)</d
   <li>Lin GT, Amadio PC, An KN, Cooney WP (1989). Functional anatomy of the human digital flexor pulley system. <i>J Hand Surg Am</i> 14(6):949–956. doi:10.1016/S0363-5023(89)80043-7</li>
   <li>Lin GT, Cooney WP, Amadio PC, An KN (1990). Mechanical properties of human pulleys. <i>J Hand Surg Br</i> 15(4):429–434.</li>
   <li>Ferrer-Uris B, Arias D, Torrado P, Marina M, Busquets A (2023). Exploring forearm muscle coordination and training applications of various grip positions during maximal isometric finger dead-hangs in rock climbers. <i>PeerJ</i> 11:e15464. doi:10.7717/peerj.15464</li>
+  <li>Fischer G, Schneeberger M, Petter SA, Scheibler AG, Wolf P, Calcagni M, Schweizer A, Reissner L (2024). Motion analysis of the wrist and finger joints in sport climbing. <i>Bioengineering</i> 11(4):370. doi:10.3390/bioengineering11040370 (CC BY 4.0)</li>
   <li>Schweizer A (2001). Biomechanical properties of the crimp grip position in rock climbers. <i>J Biomech</i> 34(2):217–223. doi:10.1016/S0021-9290(00)00184-6</li>
   <li>Vigouroux L, Quaine F, Labarre-Vila A, Moutet F (2006). Estimation of finger muscle tendon tensions and pulley forces during specific sport-climbing grip techniques. <i>J Biomech</i> 39(14):2583–2592. doi:10.1016/j.jbiomech.2005.08.027</li>
   <li>Technique description (practitioner guides, not peer-reviewed): StrengthClimbing, <a href="https://strengthclimbing.com/the-complete-guide-to-arm-lifting-finger-strength-training/">The complete guide to arm-lifting finger strength training</a> and <a href="https://strengthclimbing.com/dr-tyler-nelsons-new-active-finger-strength-training-protocols/">Dr. Tyler Nelson's active finger strength training protocols</a>.</li>

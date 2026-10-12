@@ -4,6 +4,7 @@
   "joint": "Shoulder abduction",
   "movingJoint": "proximal",
   "view": "front",
+  "figure3d": {"kind": "chain", "base": "shoulder", "plane": "frontal", "both": true, "start": "3d"},
   "angleLabel": "Abduction angle",
   "angleRange": [0, 180],
   "angleNote": "0° = arm by your side, 90° = arm horizontal at shoulder height, 180° = overhead (Lu raise). Front view: x points out to the side.",
@@ -45,9 +46,32 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "weight": [[0, 0.7], [30, 0.9], [60, 1], [90, 1]],
-      "note": "Main abductor once the arm is away from the side; its moment arm grows as the arm rises. wger has no separate map for the lateral head.",
-      "source": "TODO: check against EMG literature",
-      "draw": {"seg": "proximal", "along": [-0.03, 0.15], "offset": 0.035, "w": 0.055, "layer": 3}
+      "note": "Main abductor once the arm is away from the side; its moment arm grows as the arm rises. wger has no separate map for the lateral head. 30% of maximum at 60% 1RM, with the rear deltoid at 24% and the front at 21% (Campos et al., thumbs forward), close to these weights' ratios.",
+      "source": "Campos YAC, Vianna JM, Guimarães MP, Oliveira JLD, Hernández-Mosqueira C, da Silva SF, Marchetti PH (2020). Different shoulder exercises affect the activation of deltoid portions in resistance-trained individuals. J Hum Kinet 75:5–14. doi:10.2478/hukin-2020-0033 (13 men, 60% 1RM, % of maximal isometric activation)",
+      "draw": {"seg": "proximal", "along": [-0.03, 0.15], "offset": 0.035, "w": 0.055, "layer": 3},
+      "placementFactor": {
+        "key": "rotation",
+        "values": {"up": 0.87, "forward": 1, "down": 0.95},
+        "note": "Arm rotation (thumbs up / forward / down), relative to thumbs forward, from Coratella et al.'s lateral raises: front deltoid ~80 / 36 / 34%, middle ~48 / 55 / 52%, rear ~36 / 52 / 85% of maximal activation. Each variant was done at its own 8-RM, so these are relative levels, not the same load.",
+        "source": "Coratella G, Tornatore G, Longo S, Esposito F, Cè E (2020). An electromyographic analysis of lateral raise variations and frontal raise in competitive bodybuilders. Int J Environ Res Public Health 17(17):6015. doi:10.3390/ijerph17176015 (Discussion: deltoid sEMG RMS, % of maximal isometric, 10 male bodybuilders, seated, 8-RM, raise to 90°)"
+      }
+    },
+    {
+      "id": "posterior-deltoid",
+      "region": "shoulder",
+      "name": "Posterior deltoid",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "weight": [[0, 0.65], [30, 0.85], [60, 0.95], [90, 0.95]],
+      "note": "Also abducts with the arm out to the side, and takes over when the arm turns in (thumbs down). Level with the thumbs forward: about as active as the middle deltoid (Coratella et al.: 52% vs 55% of maximum); the shape over the angle follows the middle deltoid (estimate).",
+      "source": "Coratella G, Tornatore G, Longo S, Esposito F, Cè E (2020). An electromyographic analysis of lateral raise variations and frontal raise in competitive bodybuilders. Int J Environ Res Public Health 17(17):6015. doi:10.3390/ijerph17176015 (Discussion: deltoid sEMG RMS, % of maximal isometric, 10 male bodybuilders, seated, 8-RM, raise to 90°)",
+      "placementFactor": {
+        "key": "rotation",
+        "values": {"up": 0.69, "forward": 1, "down": 1.63},
+        "note": "Arm rotation (thumbs up / forward / down), relative to thumbs forward, from Coratella et al.'s lateral raises: front deltoid ~80 / 36 / 34%, middle ~48 / 55 / 52%, rear ~36 / 52 / 85% of maximal activation. Each variant was done at its own 8-RM, so these are relative levels, not the same load.",
+        "source": "Coratella G, Tornatore G, Longo S, Esposito F, Cè E (2020). An electromyographic analysis of lateral raise variations and frontal raise in competitive bodybuilders. Int J Environ Res Public Health 17(17):6015. doi:10.3390/ijerph17176015 (Discussion: deltoid sEMG RMS, % of maximal isometric, 10 male bodybuilders, seated, 8-RM, raise to 90°)"
+      }
     },
     {
       "id": "supraspinatus",
@@ -58,7 +82,7 @@
       "driver": "jointEffort",
       "weight": [[0, 0.9], [30, 0.8], [60, 0.6], [90, 0.5]],
       "note": "Helps start the raise and keeps the head of the humerus centred in the socket; relatively more important early in the range.",
-      "source": "TODO: check against EMG literature",
+      "source": "Ekstrom RA, Donatelli RA, Soderberg GL (2003). Surface electromyographic analysis of exercises for the trapezius and serratus anterior muscles. J Orthop Sports Phys Ther 33(5):247–258. doi:10.2519/jospt.2003.33.5.247 (Tables 1, 3, 4: 30 adults, loaded raises in the scapular plane, % of maximal isometric activation)",
       "draw": {
         "points": [[-0.15, 0.04], [0.01, 0.03]],
         "w": 0.03,
@@ -72,10 +96,16 @@
       "wgerId": 2,
       "role": "Synergist",
       "driver": "jointEffort",
-      "weight": [[0, 0.35], [90, 0.45]],
-      "note": "Assists abduction, and takes over more if the arm drifts forward of the body.",
-      "source": "TODO: check against EMG literature",
-      "draw": {"seg": "proximal", "along": [-0.01, 0.12], "offset": -0.005, "w": 0.045, "layer": 2}
+      "weight": [[0, 0.5], [90, 0.65]],
+      "note": "Assists abduction, and takes over more if the arm drifts forward of the body or turns out (thumbs up). Level with the thumbs forward: about two thirds of the middle deltoid's (Coratella et al.: 36% vs 55% of maximum); the shape over the angle is an estimate.",
+      "source": "Coratella G, Tornatore G, Longo S, Esposito F, Cè E (2020). An electromyographic analysis of lateral raise variations and frontal raise in competitive bodybuilders. Int J Environ Res Public Health 17(17):6015. doi:10.3390/ijerph17176015 (Discussion: deltoid sEMG RMS, % of maximal isometric, 10 male bodybuilders, seated, 8-RM, raise to 90°)",
+      "draw": {"seg": "proximal", "along": [-0.01, 0.12], "offset": -0.005, "w": 0.045, "layer": 2},
+      "placementFactor": {
+        "key": "rotation",
+        "values": {"up": 2.22, "forward": 1, "down": 0.94},
+        "note": "Arm rotation (thumbs up / forward / down), relative to thumbs forward, from Coratella et al.'s lateral raises: front deltoid ~80 / 36 / 34%, middle ~48 / 55 / 52%, rear ~36 / 52 / 85% of maximal activation. Each variant was done at its own 8-RM, so these are relative levels, not the same load.",
+        "source": "Coratella G, Tornatore G, Longo S, Esposito F, Cè E (2020). An electromyographic analysis of lateral raise variations and frontal raise in competitive bodybuilders. Int J Environ Res Public Health 17(17):6015. doi:10.3390/ijerph17176015 (Discussion: deltoid sEMG RMS, % of maximal isometric, 10 male bodybuilders, seated, 8-RM, raise to 90°)"
+      }
     },
     {
       "id": "upper-trapezius",
@@ -85,8 +115,8 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "weight": [[0, 0.2], [30, 0.35], [60, 0.6], [90, 0.75]],
-      "note": "Rotates the shoulder blade upwards as the arm rises. Shown on the back body map.",
-      "source": "TODO: check against EMG literature",
+      "note": "Rotates the shoulder blade upwards as the arm rises. Shown on the back body map. About 72% of maximum in loaded raises below 80°, 79% above 120° (Ekstrom et al.), in line with these weights.",
+      "source": "Ekstrom RA, Donatelli RA, Soderberg GL (2003). Surface electromyographic analysis of exercises for the trapezius and serratus anterior muscles. J Orthop Sports Phys Ther 33(5):247–258. doi:10.2519/jospt.2003.33.5.247 (Tables 1, 3, 4: 30 adults, loaded raises in the scapular plane, % of maximal isometric activation)",
       "draw": {
         "points": [[-0.13, 0.14], [-0.03, 0.05]],
         "w": 0.04,
@@ -101,9 +131,9 @@
       "wgerId": null,
       "role": "Synergist",
       "driver": "jointEffort",
-      "weight": [[0, 0.1], [30, 0.2], [90, 0.5], [150, 0.85], [180, 0.9]],
-      "note": "Turns the shoulder blade upwards (with the trapezius) so the arm can rise out to the side and up; its share grows as the arm goes up, and most of the motion above shoulder height is the shoulder blade turning. Estimated shape: the model has no shoulder blade.",
-      "source": "TODO: EMG; direction from Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001 (direction only)"
+      "weight": [[0, 0.1], [30, 0.3], [80, 0.6], [120, 0.9], [180, 0.95]],
+      "note": "Turns the shoulder blade upwards (with the trapezius) so the arm can rise out to the side and up; its share grows as the arm goes up, and most of the motion above shoulder height is the shoulder blade turning. The model has no shoulder blade; the weights follow EMG. Loaded raises in the scapular plane (Ekstrom et al.): serratus anterior 62% of maximum below 80° and 96% above 120°, lower trapezius 50% and 61%, upper trapezius 72% and 79%.",
+      "source": "Ekstrom RA, Donatelli RA, Soderberg GL (2003). Surface electromyographic analysis of exercises for the trapezius and serratus anterior muscles. J Orthop Sports Phys Ther 33(5):247–258. doi:10.2519/jospt.2003.33.5.247 (Tables 1, 3, 4: 30 adults, loaded raises in the scapular plane, % of maximal isometric activation); direction from Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001 (direction only)"
     },
     {
       "id": "lower-trapezius",
@@ -113,9 +143,9 @@
       "wgerId": null,
       "role": "Synergist",
       "driver": "jointEffort",
-      "weight": [[0, 0.05], [60, 0.15], [90, 0.35], [150, 0.7], [180, 0.75]],
-      "note": "Part of the upward-rotation pair with the serratus anterior and upper trapezius, mostly overhead. Estimated shape.",
-      "source": "TODO: EMG; direction from Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001 (direction only)"
+      "weight": [[0, 0.05], [30, 0.25], [80, 0.5], [120, 0.6], [180, 0.65]],
+      "note": "Part of the upward-rotation pair with the serratus anterior and upper trapezius, mostly overhead. Loaded raises in the scapular plane (Ekstrom et al.): serratus anterior 62% of maximum below 80° and 96% above 120°, lower trapezius 50% and 61%, upper trapezius 72% and 79%.",
+      "source": "Ekstrom RA, Donatelli RA, Soderberg GL (2003). Surface electromyographic analysis of exercises for the trapezius and serratus anterior muscles. J Orthop Sports Phys Ther 33(5):247–258. doi:10.2519/jospt.2003.33.5.247 (Tables 1, 3, 4: 30 adults, loaded raises in the scapular plane, % of maximal isometric activation); direction from Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001 (direction only)"
     }
   ],
   "phases": [
@@ -147,10 +177,12 @@
       "equipment": "Dumbbell",
       "load": {"type": "gravity"},
       "notes": "Gravity pulls straight down, so torque = m·g·L·sin(angle): zero with the arm by your side and maximum at shoulder height. The bottom of the range is almost unloaded.",
-      "angleRange": [0, 90]
+      "angleRange": [0, 90],
+      "params": {"rotation": "forward"}
     },
     {
       "id": "cable",
+      "oneSided": true,
       "name": "Cable lateral raise (low pulley, opposite side)",
       "equipment": "Cable",
       "load": {
@@ -159,7 +191,8 @@
       },
       "adjustablePulley": true,
       "notes": "The cable comes from a low pulley on the other side of your body, so it pulls the arm across you even at the bottom. The torque curve is much flatter than with a dumbbell. In this flat front view the cable seems to pass through the body; in reality it runs just in front of or behind it.",
-      "angleRange": [0, 90]
+      "angleRange": [0, 90],
+      "params": {"rotation": "forward"}
     },
     {
       "id": "machine",
@@ -175,10 +208,12 @@
         }
       },
       "notes": "A pad on the upper arm near the elbow pushes against the raise, and the cam sets the resistance at each angle. This illustrative cam loads the start far more than a dumbbell and stays fairly even. Machine stack weights don't compare directly with dumbbell weights: the same number of kg gives a different torque.",
-      "angleRange": [0, 90]
+      "angleRange": [0, 90],
+      "params": {"rotation": "forward"}
     },
     {
       "id": "band",
+      "oneSided": true,
       "name": "Band lateral raise (band under the foot)",
       "equipment": "Resistance band",
       "load": {
@@ -190,7 +225,8 @@
       "adjustablePulley": true,
       "defaultLoadKg": 6,
       "notes": "Band anchored under the foot on the working side. Nearly slack at the bottom, so the start is easy; tension and moment arm both grow as the arm rises, making the top much harder than with a dumbbell. The load slider is the band's tension at 1.6 m (about its length at shoulder height).",
-      "angleRange": [0, 90]
+      "angleRange": [0, 90],
+      "params": {"rotation": "forward"}
     },
     {
       "id": "lu-raise",
@@ -198,12 +234,33 @@
       "equipment": "Dumbbell (light)",
       "load": {"type": "gravity"},
       "defaultLoadKg": 3,
-      "notes": "A lateral raise continued over the head, usually with the thumbs turned up (the arm rotated outwards) and light weights. The load's lever peaks at shoulder height and shrinks to zero overhead, so the hardest point is still around 90°; above it the shoulder blade does more and more of the turning (serratus anterior, trapezius). The model doesn't distinguish the arm's rotation."
+      "notes": "A lateral raise continued over the head, usually with the thumbs turned up (the arm rotated outwards) and light weights. The load's lever peaks at shoulder height and shrinks to zero overhead, so the hardest point is still around 90°; above it the shoulder blade does more and more of the turning (serratus anterior, trapezius). The arm-rotation setting starts at thumbs up, which shifts work to the front deltoid.",
+      "params": {"rotation": "up"}
     }
   ],
   "wger": {
     "exerciseId": 348,
     "name": "Lateral Raises",
     "note": "Checked against wger's public exercise list (id = the number in the page address)."
-  }
+  },
+  "placement": [
+    {
+      "key": "rotation",
+      "label": "Arm rotation",
+      "type": "choice",
+      "options": [["up", "Thumbs up (turned out)"], ["forward", "Thumbs forward"], ["down", "Thumbs down (turned in)"]],
+      "hint": "Turning the arm changes which part of the deltoid lifts it, not the load: the lever and the torque stay the same. Measured in bodybuilders (Coratella et al.): thumbs up shifts the work to the front deltoid (about 80% of its maximum vs 36% with the thumbs forward), thumbs down to the rear deltoid (85% vs 52%), with the upper trapezius and triceps also working harder; the middle deltoid is about the same in all three (48–55%)."
+    },
+    {
+      "key": "elbow",
+      "label": "Elbow bend",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "°",
+      "scale": 1,
+      "distalBend": "outOfPlane",
+      "hint": "0° = arm straight. A bent elbow points the forearm forward, out of the plane of the raise, so seen from the front the weight comes closer to the shoulder: the lever is upper arm + forearm × cos(bend). At 90° only the upper arm's length is left: about half the torque for the same dumbbell. The deltoid works the same way; it just needs less force."
+    }
+  ]
 }

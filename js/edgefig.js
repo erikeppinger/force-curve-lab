@@ -157,7 +157,7 @@ export function renderFingersView(svg, { set, exercise: ex, P, pipDeg }) {
     // Labels: name and share on top, effort and angles at the bottom.
     const cx = ox + pw / 2;
     el("text", { x: cx, y: oy - head + 26 * k, class: "ef-label ef-name", "text-anchor": "middle" }, g).textContent = f.label;
-    el("text", { x: cx, y: oy - head + 48 * k, class: "ef-label ef-share", "text-anchor": "middle" }, g).textContent = f.touches ? `${pct(f.share)} of the block` : "off the edge";
+    el("text", { x: cx, y: oy - head + 48 * k, class: "ef-label ef-share", "text-anchor": "middle" }, g).textContent = f.touches ? `${pct(f.share)} of the block` : f.leftOff ? "left off (chosen)" : "off the edge";
     if (f.touches) {
       const eff = el("text", { x: cx, y: oy + ph - head - foot + 16 * k, class: "ef-label ef-effort", "text-anchor": "middle" }, g);
       eff.textContent = `effort ${pct(f.effort)}`;

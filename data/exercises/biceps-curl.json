@@ -4,6 +4,7 @@
   "joint": "Elbow flexion",
   "movingJoint": "distal",
   "view": "side",
+  "figure3d": {"kind": "chain", "base": "shoulder", "plane": "sagittal", "both": true, "start": "2d"},
   "angleLabel": "Elbow angle",
   "angleRange": [0, 145],
   "angleNote": "0° = arm straight, 145° = fully flexed",
@@ -109,6 +110,7 @@
   "variants": [
     {
       "id": "dumbbell",
+      "grip3d": "supinated",
       "name": "Standing dumbbell curl",
       "equipment": "Dumbbell",
       "proximalAngle": 0,
@@ -117,6 +119,7 @@
     },
     {
       "id": "barbell",
+      "grip3d": "supinated",
       "name": "Standing barbell curl",
       "equipment": "Barbell",
       "proximalAngle": 0,
@@ -125,6 +128,7 @@
     },
     {
       "id": "hammer",
+      "grip3d": "neutral",
       "name": "Hammer curl (neutral grip)",
       "equipment": "Dumbbell",
       "proximalAngle": 0,
@@ -139,6 +143,7 @@
     },
     {
       "id": "reverse",
+      "grip3d": "pronated",
       "name": "Reverse curl (palms down)",
       "equipment": "Barbell or EZ bar",
       "proximalAngle": 0,
@@ -153,6 +158,7 @@
     },
     {
       "id": "preacher",
+      "grip3d": "supinated",
       "name": "Preacher curl",
       "equipment": "Barbell / EZ-bar on pad",
       "proximalAngle": 45,
@@ -168,6 +174,8 @@
     },
     {
       "id": "cable-low",
+      "grip3d": "supinated",
+      "oneSided": true,
       "name": "Cable curl (low pulley, in front)",
       "equipment": "Cable",
       "proximalAngle": 0,
@@ -177,6 +185,8 @@
     },
     {
       "id": "cable-bayesian",
+      "grip3d": "supinated",
+      "oneSided": true,
       "name": "Bayesian cable curl (pulley behind)",
       "equipment": "Cable",
       "proximalAngle": -25,
@@ -192,6 +202,8 @@
     },
     {
       "id": "band",
+      "grip3d": "supinated",
+      "oneSided": true,
       "name": "Band curl (standing on the band)",
       "equipment": "Resistance band",
       "proximalAngle": 0,

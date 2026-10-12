@@ -4,6 +4,15 @@
   "joint": "Ankle plantarflexion",
   "movingJoint": "distal",
   "view": "side",
+  "figure3d": {
+    "kind": "chain",
+    "base": "knee",
+    "plane": "sagittal",
+    "both": true,
+    "start": "2d",
+    "yawKey": "footAngle",
+    "cam": {"yaw": 90, "pitch": 60}
+  },
   "angleLabel": "Ankle angle",
   "angleOffset": 60.3,
   "angleSense": -1,
@@ -39,17 +48,38 @@
   },
   "muscles": [
     {
-      "id": "gastrocnemius",
+      "id": "gastroc-medial",
       "region": "lowerleg",
-      "regionPath": ["gastroc-medial", "gastroc-lateral"],
-      "name": "Gastrocnemius",
+      "regionPath": "gastroc-medial",
+      "name": "Gastrocnemius, medial head",
       "wgerId": 7,
       "role": "Prime mover",
       "driver": "jointEffort",
       "weight": [[-20, 1], [40, 0.85]],
-      "note": "Crosses the knee too: with the knee bent (seated) it is slack and contributes much less.",
-      "source": "Weights: TODO. Knee-angle effect: Baptista MT, Nascimento FXM, Nardes LK, Matta TT, Oliveira LF (2014). Influência de posições do joelho no torque e atividade mioelétrica do tríceps sural na flexão plantar isométrica máxima. Rev Bras Educ Fís Esporte 28(2):197–202. doi:10.1590/1807-55092014000200197; Kovács B, Csala D, Yang S, Tihanyi J, Gu Y, Hortobágyi T (2024). Knee position affects medial gastrocnemius and soleus activation during dynamic plantarflexion: no evidence for an inter-muscle compensation in healthy young adults. Biol Open 13:bio061810. doi:10.1242/bio.061810",
-      "draw": {"seg": "proximal", "along": [0.05, 0.22], "offset": -0.045, "w": 0.07, "layer": 1}
+      "note": "Crosses the knee too: with the knee bent (seated) it is slack and contributes much less. Turning the toes out shifts a little more of the work to this inner head (about +2% at full outward rotation; the difference between the heads was significant only toes out). Training with the toes out at 45° thickened this head 8.4% in 9 weeks, toes in 3.8%. Its share of plantarflexion falls as the knee bends: at least 40% of the torque with the knee straight, its EMG lower with the knee bent at the same effort while the soleus's stays (Cresswell et al.).",
+      "source": "Weights: TODO. Knee-angle effect: Baptista MT, Nascimento FXM, Nardes LK, Matta TT, Oliveira LF (2014). Influência de posições do joelho no torque e atividade mioelétrica do tríceps sural na flexão plantar isométrica máxima. Rev Bras Educ Fís Esporte 28(2):197–202. doi:10.1590/1807-55092014000200197; Kovács B, Csala D, Yang S, Tihanyi J, Gu Y, Hortobágyi T (2024). Knee position affects medial gastrocnemius and soleus activation during dynamic plantarflexion: no evidence for an inter-muscle compensation in healthy young adults. Biol Open 13:bio061810. doi:10.1242/bio.061810; head shares by foot position: Cibulka M, Wenthe A, Boyle Z, Callier D, Schwerdt A, Jarman D, Strube MJ (2017). Variation in medial and lateral gastrocnemius muscle activity with foot position. Int J Sports Phys Ther 12(2):233–241 (Table 2: standing heel rise, % MVIC; 33 participants); direction confirmed under load (130–135% body mass, both phases): Riemann BL, Limbaugh GK, Eitner JD, LeFavi RG (2011). Medial and lateral gastrocnemius activation differences during heel-raise exercise with three different foot positions. J Strength Cond Res 25(3):634–639. doi:10.1519/JSC.0b013e3181cc22b8; growth: Nunes JP, Costa BDV, Kassiano W, Kunevaliki G, Castro-e-Souza P, Rodacki ALF, Fortes LS, Cyrino ES (2020). Different foot positioning during calf training to induce portion-specific gastrocnemius muscle hypertrophy. J Strength Cond Res 34(8):2347–2351. doi:10.1519/JSC.0000000000003674; Cresswell AG, Löscher WN, Thorstensson A (1995). Influence of gastrocnemius muscle length on triceps surae torque development and electromyographic activity in man. Exp Brain Res 105(2):283–290. doi:10.1007/BF00240964 (10 men, isometric, knee 180° to 60°)",
+      "draw": {"seg": "proximal", "along": [0.05, 0.22], "offset": -0.045, "w": 0.07, "layer": 1},
+      "placementFactor": {
+        "key": "footAngle",
+        "points": [[-45, 0.978], [0, 1], [45, 1.022]]
+      }
+    },
+    {
+      "id": "gastroc-lateral",
+      "region": "lowerleg",
+      "regionPath": "gastroc-lateral",
+      "name": "Gastrocnemius, lateral head",
+      "wgerId": 7,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "weight": [[-20, 0.9], [40, 0.765]],
+      "note": "The outer head: in a standing heel rise it works at about 90% of the inner head's level. Turning the toes in shifts a little more of the work to it (about +1% by EMG; under heavier load the outer head was significantly more active toes in). Training with the toes in at 45° thickened this head 9.1% in 9 weeks, toes out 5.5%.",
+      "source": "Relative level and foot position: Cibulka M, Wenthe A, Boyle Z, Callier D, Schwerdt A, Jarman D, Strube MJ (2017). Variation in medial and lateral gastrocnemius muscle activity with foot position. Int J Sports Phys Ther 12(2):233–241 (Table 2: standing heel rise, % MVIC; 33 participants); knee-angle effect as for the medial head; direction confirmed under load (130–135% body mass, both phases): Riemann BL, Limbaugh GK, Eitner JD, LeFavi RG (2011). Medial and lateral gastrocnemius activation differences during heel-raise exercise with three different foot positions. J Strength Cond Res 25(3):634–639. doi:10.1519/JSC.0b013e3181cc22b8; growth: Nunes JP, Costa BDV, Kassiano W, Kunevaliki G, Castro-e-Souza P, Rodacki ALF, Fortes LS, Cyrino ES (2020). Different foot positioning during calf training to induce portion-specific gastrocnemius muscle hypertrophy. J Strength Cond Res 34(8):2347–2351. doi:10.1519/JSC.0000000000003674",
+      "draw": {"seg": "proximal", "along": [0.05, 0.22], "offset": -0.045, "w": 0.07, "layer": 1},
+      "placementFactor": {
+        "key": "footAngle",
+        "points": [[-45, 1.013], [0, 1], [45, 0.987]]
+      }
     },
     {
       "id": "soleus",
@@ -59,8 +89,8 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "weight": [[-20, 0.9], [40, 0.9]],
-      "note": "Crosses the ankle only, so it works whatever the knee angle.",
-      "source": "TODO: check against EMG literature",
+      "note": "Crosses the ankle only, so it works whatever the knee angle. Its EMG doesn't change with the knee angle (Cresswell et al.).",
+      "source": "Cresswell AG, Löscher WN, Thorstensson A (1995). Influence of gastrocnemius muscle length on triceps surae torque development and electromyographic activity in man. Exp Brain Res 105(2):283–290. doi:10.1007/BF00240964 (10 men, isometric, knee 180° to 60°)",
       "draw": {"seg": "proximal", "along": [0.15, 0.36], "offset": -0.035, "w": 0.05, "layer": 0}
     }
   ],
@@ -84,6 +114,7 @@
   "variants": [
     {
       "id": "single-leg",
+      "oneSided": true,
       "name": "Single-leg standing calf raise (dumbbell)",
       "equipment": "Dumbbell, on a step",
       "posture": "standing",
@@ -94,7 +125,8 @@
         "points": [[-28, 1.2], [0, 1.2], [10, 1.34], [20, 1.52], [30, 1.98], [34, 2.5], [35, 2.39], [40, 1.9]],
         "note": "knee straight, so the gastrocnemius is at a useful length. At and below foot-flat, about 120% of the base curve's (measured with the knee bent 50°): Cresswell et al. measured 134.9 Nm with the knee straight vs about 112 Nm at 50° (interpolated between their 30° and 60°); Baptista et al. and Kovács et al. found 28–31% less torque at 90° of knee bend than straight. Towards the top of the raise the gap grows, because the knee-bent curve falls to 21% of its foot-flat value at 34° of plantarflexion. Above foot flat the factor follows the OpenSim leg model's knee-straight curve (its plantarflexors' force × moment arm with force–length), anchored to Cresswell's 1.2 at foot flat: the knee-straight curve keeps 74% of its foot-flat value at 20° and 45% at 34° (the base curve's last measured angle), in line with the datasets Chen & Franklin collected with the knee extended (about 70% at 20°, about half at 30°, individual datasets 30–70%). Below foot flat the model gives less (0.88 at 20° of dorsiflexion); the measured 1.2 is kept there.",
         "source": "Cresswell AG, Löscher WN, Thorstensson A (1995). Influence of gastrocnemius muscle length on triceps surae torque development and electromyographic activity in man. Exp Brain Res 105:283–290 (Table 1: 10 men, isometric, ankle 5° dorsiflexed); Baptista MT, Nascimento FXM, Nardes LK, Matta TT, Oliveira LF (2014). Influência de posições do joelho no torque e atividade mioelétrica do tríceps sural na flexão plantar isométrica máxima. Rev Bras Educ Fís Esporte 28(2):197–202. doi:10.1590/1807-55092014000200197; Kovács B, Csala D, Yang S, Tihanyi J, Gu Y, Hortobágyi T (2024). Knee position affects medial gastrocnemius and soleus activation during dynamic plantarflexion: no evidence for an inter-muscle compensation in healthy young adults. Biol Open 13:bio061810. doi:10.1242/bio.061810; Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183 (bioRxiv preprint, CC BY 4.0: Fig. 11, bottom left, ankle moments with the knee extended or slightly flexed, read off the figure); above foot flat: Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079 (Rajagopal2016.osim, OpenSim 4.6: plantarflexor force × moment arm with force–length, knee straight, via tools/opensim_export.py)"
-      }
+      },
+      "params": {"footAngle": 0}
     },
     {
       "id": "two-leg",
@@ -108,7 +140,8 @@
         "points": [[-28, 1.2], [0, 1.2], [10, 1.34], [20, 1.52], [30, 1.98], [34, 2.5], [35, 2.39], [40, 1.9]],
         "note": "knee straight, so the gastrocnemius is at a useful length. At and below foot-flat, about 120% of the base curve's (measured with the knee bent 50°): Cresswell et al. measured 134.9 Nm with the knee straight vs about 112 Nm at 50° (interpolated between their 30° and 60°); Baptista et al. and Kovács et al. found 28–31% less torque at 90° of knee bend than straight. Towards the top of the raise the gap grows, because the knee-bent curve falls to 21% of its foot-flat value at 34° of plantarflexion. Above foot flat the factor follows the OpenSim leg model's knee-straight curve (its plantarflexors' force × moment arm with force–length), anchored to Cresswell's 1.2 at foot flat: the knee-straight curve keeps 74% of its foot-flat value at 20° and 45% at 34° (the base curve's last measured angle), in line with the datasets Chen & Franklin collected with the knee extended (about 70% at 20°, about half at 30°, individual datasets 30–70%). Below foot flat the model gives less (0.88 at 20° of dorsiflexion); the measured 1.2 is kept there.",
         "source": "Cresswell AG, Löscher WN, Thorstensson A (1995). Influence of gastrocnemius muscle length on triceps surae torque development and electromyographic activity in man. Exp Brain Res 105:283–290 (Table 1: 10 men, isometric, ankle 5° dorsiflexed); Baptista MT, Nascimento FXM, Nardes LK, Matta TT, Oliveira LF (2014). Influência de posições do joelho no torque e atividade mioelétrica do tríceps sural na flexão plantar isométrica máxima. Rev Bras Educ Fís Esporte 28(2):197–202. doi:10.1590/1807-55092014000200197; Kovács B, Csala D, Yang S, Tihanyi J, Gu Y, Hortobágyi T (2024). Knee position affects medial gastrocnemius and soleus activation during dynamic plantarflexion: no evidence for an inter-muscle compensation in healthy young adults. Biol Open 13:bio061810. doi:10.1242/bio.061810; Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183 (bioRxiv preprint, CC BY 4.0: Fig. 11, bottom left, ankle moments with the knee extended or slightly flexed, read off the figure); above foot flat: Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079 (Rajagopal2016.osim, OpenSim 4.6: plantarflexor force × moment arm with force–length, knee straight, via tools/opensim_export.py)"
-      }
+      },
+      "params": {"footAngle": 0}
     },
     {
       "id": "seated",
@@ -117,18 +150,32 @@
       "posture": "seated",
       "load": {"type": "reaction", "bodyWeight": 0},
       "defaultLoadKg": 25,
-      "muscleModifiers": {"gastrocnemius": 0.65},
-      "notes": "The load sits on the knees, so body weight isn't lifted. With the knee bent the gastrocnemius is slack: its EMG fell by about a third (Baptista et al.: −41% lateral, −32% medial head; Kovács et al.: −35% medial head), hence the 0.65 factor. The soleus results differ between studies (more active in Baptista et al., unchanged in Cresswell et al.), so it keeps its weight.",
+      "muscleModifiers": {"gastroc-medial": 0.65, "gastroc-lateral": 0.65},
+      "notes": "The load sits on the knees, so body weight isn't lifted. With the knee bent the gastrocnemius is slack: its EMG fell by about a third (Baptista et al.: −41% lateral, −32% medial head; Kovács et al.: −35% medial head), hence the 0.65 factor. The soleus results differ between studies (more active in Baptista et al., unchanged in Cresswell et al.), so it keeps its weight. No toes in / out option here: turning the feet doesn't change the ankle's lever or the load (the leg and foot turn together), and its only measured effect, a small shift between the two gastrocnemius heads, comes from standing heel raises (Riemann et al., Nunes et al.). Seated, the slack gastrocnemius does a smaller share of the work, so the shift is likely smaller still; it hasn't been measured.",
       "strengthScale": {
         "factor": 0.92,
         "note": "knee bent 90°, gastrocnemius slack: about 92% of the base curve's strength (Cresswell et al.: 103.7 Nm at 90° vs about 112 Nm at 50°).",
         "source": "Cresswell AG, Löscher WN, Thorstensson A (1995). Influence of gastrocnemius muscle length on triceps surae torque development and electromyographic activity in man. Exp Brain Res 105:283–290 (Table 1: 10 men, isometric, ankle 5° dorsiflexed)"
-      }
+      },
+      "params": {"footAngle": 0}
     }
   ],
   "wger": {
     "exerciseId": 622,
     "name": "Standing Calf Raises",
     "note": "Checked against wger's public exercise list (id = the number in the page address)."
-  }
+  },
+  "placement": [
+    {
+      "key": "footAngle",
+      "label": "Toes in / out (+ = out)",
+      "min": -45,
+      "max": 45,
+      "step": 5,
+      "unit": "°",
+      "scale": 1,
+      "variants": ["single-leg", "two-leg"],
+      "hint": "Turning the whole leg so the toes point in or out (in the studies: as far as possible, or 45°). It doesn't change the ankle's leverage (the leg and foot turn together), so the load is the same. Surface EMG shows a small shift between the gastrocnemius heads: toes out favours the inner (medial) head, toes in the outer (lateral) one, by a few percent. Over 9 weeks of calf training the shift showed in growth: the inner head thickened 8.4% with toes out vs 3.8% with toes in, the outer head 9.1% with toes in vs 5.5% with toes out (toes forward: 5.8% and 6.4%)."
+    }
+  ]
 }

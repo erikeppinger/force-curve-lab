@@ -4,7 +4,7 @@
 // gravity points down the screen (lying postures appear lying). With no in-plane gravity
 // (a top view) nothing is rotated.
 
-import { gravityOf } from "./physics.js";
+import { gravityOf, leanFrame, interp } from "./physics.js";
 
 const NS = "http://www.w3.org/2000/svg";
 const BASE_S = 150; // px per metre
@@ -31,8 +31,8 @@ export function screenRotation(variant) {
 }
 
 /** Title for the figure card. */
-export function viewTitle(exercise, variant) {
-  if (exercise.figure3d) return "3D view (drag to turn)";
+export function viewTitle(exercise, variant, threeD = Boolean(exercise.figure3d) && exercise.figure3d.kind !== "chain") {
+  if (threeD) return "3D view (drag to turn)";
   if (variant.viewLabel) return variant.viewLabel;
   return { side: "Side view", front: "Front view", top: "Top view", "3d": "3D view (drag to turn)" }[exercise.view ?? "side"];
 }
@@ -42,17 +42,32 @@ const postureOf = (exercise, variant) => {
   return all[variant.posture] ?? Object.values(all)[0] ?? [];
 };
 
+/** The variant as drawn: with the body leaning (physics.js leanFrame) gravity turns in its frame. */
+const drawnVariant = (variant, pose) => (pose?.gravity ? { ...variant, gravity: pose.gravity } : variant);
+
+/** Posture shapes for a pose; shapes marked `upright` (the legs under a leaning trunk) stay put. */
+function shapesFor(exercise, variant, pose) {
+  const shapes = postureOf(exercise, variant);
+  const spec = exercise.placement?.find((s) => s.lean && (!s.variants || s.variants.includes(variant.id)));
+  if (!spec || !pose?.leanDeg) return shapes;
+  const L = leanFrame(spec, pose.leanDeg);
+  const T = ([x, y]) => { const q = L.point({ x, y }); return [q.x, q.y]; };
+  return shapes.map((s) => (!s.upright ? s : s.shape === "seg" ? { ...s, from: T(s.from), to: T(s.to) } : { ...s, at: T(s.at) }));
+}
+
 /**
  * Zoomed frame around the moving joint: the moving segment over its whole range plus a stretch
  * of the fixed one, for small joints (wrist, ankle) that are tiny in the whole-body view.
  * Carries its own drawing scale (px per metre) so the picture keeps about the same pixel size.
  */
-export function zoomBounds(exercise, variant, poses) {
-  const R = rotator(screenRotation(variant));
+export function zoomBounds(exercise, variant0, poses) {
+  const variant = drawnVariant(variant0, poses[0]);
+  const rot = screenRotation(variant);
   const proximalMoves = exercise.movingJoint === "proximal";
   const reach = exercise.segments.distal;
   const pts = [];
   for (const p of poses) {
+    const R = rotator(rot, anchorShift(variant, p));
     const joint = proximalMoves ? p.base : p.mid;
     const other = proximalMoves ? p.mid : p.base;
     const len = Math.hypot(other.x - joint.x, other.y - joint.y) || 1;
@@ -67,34 +82,54 @@ export function zoomBounds(exercise, variant, poses) {
 }
 
 /** Bounding box (screen frame, metres) that holds the body, the chain over its whole range and the pulley. */
-export function figureBounds(exercise, variant, poses, pulley) {
+export function figureBounds(exercise, variant0, poses, pulley0) {
+  const variant = drawnVariant(variant0, poses[0]);
+  const pulley = poses[0]?.pulley ?? pulley0;
   const rot = screenRotation(variant);
-  const R = rotator(rot);
   const pts = [];
-  for (const s of postureOf(exercise, variant)) {
-    if (s.shape === "circle") { const c = R(P(s.at)); pts.push(add(c, { x: s.r, y: s.r }), add(c, { x: -s.r, y: -s.r })); }
-    else if (s.shape === "ellipse") { const c = R(P(s.at)); const r = Math.max(s.rx, s.ry); pts.push(add(c, { x: r, y: r }), add(c, { x: -r, y: -r })); }
-    else pts.push(R(P(s.from)), R(P(s.to)));
+  // The body moves with the pose when the drawing is anchored at the foot (anchorShift).
+  const anchored = variant.load?.type === "reaction";
+  for (const pose of anchored ? poses : [null]) {
+    const R = rotator(rot, anchorShift(variant, pose));
+    for (const s of shapesFor(exercise, variant, pose ?? poses[0])) {
+      if (s.shape === "circle") { const c = R(P(s.at)); pts.push(add(c, { x: s.r, y: s.r }), add(c, { x: -s.r, y: -s.r })); }
+      else if (s.shape === "ellipse") { const c = R(P(s.at)); const r = Math.max(s.rx, s.ry); pts.push(add(c, { x: r, y: r }), add(c, { x: -r, y: -r })); }
+      else pts.push(R(P(s.from)), R(P(s.to)));
+    }
   }
-  for (const p of poses) pts.push(R(p.base), R(p.mid), R(p.tip));
-  if (pulley) pts.push(R(pulley));
+  for (const p of poses) { const R = rotator(rot, anchorShift(variant, p)); pts.push(R(p.base), R(p.mid), R(p.tip)); }
+  if (pulley) pts.push(rotator(rot)(pulley));
   const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y);
   return { x0: Math.min(...xs) - MARGIN, x1: Math.max(...xs) + MARGIN, y0: Math.min(...ys) - MARGIN, y1: Math.max(...ys) + MARGIN };
 }
 
-function rotator(rot) {
+function rotator(rot, shift = { x: 0, y: 0 }) {
   const c = Math.cos(rot), s = Math.sin(rot);
-  return (p) => ({ x: c * p.x - s * p.y, y: s * p.x + c * p.y });
+  return (p) => ({ x: c * p.x - s * p.y + shift.x, y: s * p.x + c * p.y + shift.y });
 }
 
-export function renderFigure(svg, { exercise, variant, result, activation, pulley, bounds }) {
+/**
+ * Screen shift for one pose. A closed chain (calf raise: the floor pushes on the ball of the foot)
+ * is drawn with the ball of the foot fixed, so the body rises and the floor stays put; the
+ * statics' frame stays at the knee. Other loads: no shift.
+ */
+export function anchorShift(variant, pose) {
+  if (variant.load?.type !== "reaction") return { x: 0, y: 0 };
+  const t = rotator(screenRotation(variant))(pose.tip);
+  return { x: -t.x, y: -t.y };
+}
+
+export function renderFigure(svg, { exercise, variant: variant0, result, activation, pulley: pulley0, bounds }) {
+  const variant = drawnVariant(variant0, result.pose);
+  const pulley = result.pose.pulley ?? pulley0;
   const V = bounds;
   const S = V.scale ?? BASE_S; // px per metre; a zoomed frame brings its own
   const k = S / BASE_S; // overlays (arrows, markers) are divided by this to keep their on-screen size
   const arrow = (k > 2 ? 1.6 : 1) / k; // and the force arrow a bit longer when zoomed in
   svg.setAttribute("viewBox", `0 0 ${((V.x1 - V.x0) * S).toFixed(1)} ${((V.y1 - V.y0) * S).toFixed(1)}`);
   svg.replaceChildren();
-  const R = rotator(screenRotation(variant));
+  const shift = anchorShift(variant, result.pose);
+  const R = rotator(screenRotation(variant), shift);
   const toPx = (p) => { const q = R(p); return { x: (q.x - V.x0) * S, y: (V.y1 - q.y) * S }; };
   const seg = (parent, a, b, cls, widthM, extra = {}) => {
     const A = toPx(a), B = toPx(b);
@@ -102,16 +137,17 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
   };
   const circle = (parent, c, r, cls) => { const C = toPx(c); return el("circle", { cx: C.x, cy: C.y, r: r * S, class: cls }, parent); };
   // Screen-frame helpers (for things that stand on the floor whatever the posture).
-  const fromScreen = rotator(-screenRotation(variant));
+  const unrotate = rotator(-screenRotation(variant));
+  const fromScreen = (q) => unrotate({ x: q.x - shift.x, y: q.y - shift.y });
   const gravityInPlane = Math.hypot(gravityOf(variant).x, gravityOf(variant).y) > 1e-9;
 
   const act = Object.fromEntries(activation.map((m) => [m.id, m.value]));
   const { base, mid, tip, joint } = result.pose;
-  const shapes = postureOf(exercise, variant);
+  const shapes = shapesFor(exercise, variant, result.pose);
 
   // Floor: under the lowest body point, or under the foot for a closed-chain (reaction) load.
   let floorAt = 0;
-  if (gravityInPlane) {
+  if (gravityInPlane && !variant.noFloor) { // `noFloor`: hanging (from a bar), nothing stands on the floor
     const screenYs = shapes.flatMap((s) => (s.shape === "seg" ? [P(s.from), P(s.to)] : [P(s.at)])).map((p) => R(p).y);
     const floorY = variant.load.type === "reaction" ? R(tip).y : Math.min(...screenYs);
     seg(svg, fromScreen({ x: V.x0, y: floorY }), fromScreen({ x: V.x1, y: floorY }), "floor", 0.01);
@@ -159,7 +195,7 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
     circle(svg, pulley, 0.03, "anchor");
   }
   if (variant.load.type === "machine") {
-    // Cam at the joint, lever along the segment, pad on the side the force pushes from.
+    // Cam at the joint (its shape: the inset), lever along the segment, pad on the side the force pushes from.
     circle(svg, joint, 0.07, "cam");
     const n = unit({ x: -result.force.x, y: -result.force.y });
     const at = result.force.at;
@@ -169,8 +205,17 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
   }
 
   // Limb with muscles (lower layers first)
-  seg(svg, base, mid, "bone", 0.06);
-  seg(svg, mid, tip, "bone", 0.05);
+  // The moving chain: limb bones, or (`segments.draw`, the core exercises) body parts, e.g. the
+  // trunk and the head, so a moving trunk reads as a body.
+  const SD = exercise.segments.draw;
+  if (SD) {
+    seg(svg, base, mid, SD.cls ?? "body", SD.w[0]);
+    seg(svg, mid, tip, SD.cls ?? "body", SD.w[1]);
+    if (SD.head) circle(svg, lerp(mid, tip, SD.head.at), SD.head.r, "body");
+  } else {
+    seg(svg, base, mid, "bone", 0.06);
+    seg(svg, mid, tip, "bone", 0.05);
+  }
   const segs = { proximal: [base, mid], distal: [mid, tip] };
   const drawn = exercise.muscles.filter((m) => m.draw).sort((a, b) => (a.draw.layer ?? 0) - (b.draw.layer ?? 0));
   for (const m of drawn) {
@@ -218,8 +263,8 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
   }
 
   // Load at the tip
-  if (variant.load.type === "gravity") {
-    const w = circle(svg, tip, variant.equipment.startsWith("Dumbbell") || variant.equipment.startsWith("Ankle") ? 0.055 : 0.09, "weight");
+  if (variant.load.type === "gravity" && result.force.mag > 0) {
+    const w = circle(svg, result.force.at, variant.equipment.startsWith("Dumbbell") || variant.equipment.startsWith("Ankle") ? 0.055 : 0.09, "weight");
     if (k > 2) w.setAttribute("opacity", "0.35"); // zoomed: the plate is larger than the hand; keep the hand visible
   } else if (variant.load.type === "cable" || variant.load.type === "band") {
     circle(svg, tip, 0.025, "handle");
@@ -243,6 +288,59 @@ export function renderFigure(svg, { exercise, variant, result, activation, pulle
   const defs = el("defs", {}, svg);
   const mk = el("marker", { id: "arrow", viewBox: "0 0 10 10", refX: 5, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto-start-reverse" }, defs);
   el("path", { d: "M0,0 L10,5 L0,10 z", class: "arrowhead" }, mk);
+
+  // Toes in / out (calf raise): both feet from above in the top corner, turned by the slider.
+  const footSpec = exercise.placement?.find((s) => s.key === "footAngle" && (!s.variants || s.variants.includes(variant.id)));
+  if (footSpec) footInset(svg, (V.x1 - V.x0) * S, Number(result.placement?.footAngle ?? variant.params?.footAngle ?? 0));
+  // A machine's cam (leg extension, leg curl ...): its shape and where the belt leaves it now.
+  const prof = variant.load.type === "machine" ? variant.load.camProfile?.points : null;
+  if (prof && result.angle != null) camInset(svg, (V.x1 - V.x0) * S, prof, result.angle, exercise.angleRange ?? [prof[0][0], prof.at(-1)[0]], exercise.angleSense ?? 1);
+}
+
+/** Room for a 96 px inset in the figure's top right corner, outside the drawing. */
+function insetBox(svg, width) {
+  const [x, y, w, h] = svg.getAttribute("viewBox").split(" ").map(Number);
+  svg.setAttribute("viewBox", `${x} ${y} ${w + 112} ${Math.max(h, 112)}`);
+  const g = el("g", { transform: `translate(${width + 8}, 8)` }, svg);
+  el("rect", { x: 0, y: 0, width: 96, height: 96, rx: 8, class: "inset-box" }, g);
+  return g;
+}
+
+/**
+ * The cam seen side-on, turning with the lever: the belt to the weight stack leaves it at the
+ * effective radius r(angle) of the machine's cam profile (joint torque per unit of stack weight),
+ * so a resistance that falls with the angle shows as a cam that shrinks under the belt. Shape
+ * schematic: real cams are smaller, the stack's pulleys making up the rest.
+ */
+function camInset(svg, width, prof, angle, [lo, hi], sense) {
+  const g = insetBox(svg, width);
+  const C = { x: 40, y: 38 }, k = 95; // px per metre of effective radius
+  const r = (a) => k * interp(prof, a);
+  const at = (a) => { const th = (-sense * (angle - a) * Math.PI) / 180; return { x: C.x + r(a) * Math.cos(th), y: C.y - r(a) * Math.sin(th) }; };
+  const pts = [];
+  for (let i = 0; i <= 40; i++) pts.push(at(lo + ((hi - lo) * i) / 40));
+  el("path", { d: `M${C.x},${C.y} ${pts.map((q) => `L${q.x.toFixed(1)},${q.y.toFixed(1)}`).join(" ")} Z`, class: "inset-cam" }, g);
+  const c = at(angle);
+  el("line", { x1: C.x, y1: C.y, x2: c.x, y2: c.y, class: "inset-lever" }, g);
+  el("line", { x1: c.x, y1: c.y, x2: c.x, y2: 70, class: "inset-belt" }, g);
+  el("rect", { x: c.x - 9, y: 70, width: 18, height: 10, rx: 2, class: "inset-stack" }, g);
+  el("circle", { cx: C.x, cy: C.y, r: 2.5, class: "inset-axle" }, g);
+  const label = el("text", { x: 48, y: 91, class: "fig-label inset-label", "text-anchor": "middle" }, g);
+  label.textContent = `cam lever ${Math.round(interp(prof, angle) * 100)} cm`;
+}
+
+/** Two feet seen from above, heels together-ish, each turned out by `deg` (negative = in). */
+function footInset(svg, width, deg) {
+  // Extra room to the right of the figure, so the inset never covers the leg.
+  const g = insetBox(svg, width);
+  // One foot outline (heel at the origin, toes towards −y), 50 long, 20 wide at the ball.
+  const foot = "M0,0 C-8,0 -9,-12 -8,-24 C-8,-36 -11,-44 -7,-50 C-3,-54 5,-54 8,-49 C11,-42 9,-30 8,-22 C7,-10 7,0 0,0 Z";
+  for (const side of [-1, 1]) {
+    // Feet about hip width apart, each turned about its middle (toes out: clockwise for the right foot).
+    el("path", { d: foot, class: "inset-foot", transform: `translate(${48 + side * 22}, 72) rotate(${side * deg}, 0, -25) scale(${side}, 1)` }, g);
+  }
+  const label = el("text", { x: 48, y: 91, class: "fig-label inset-label", "text-anchor": "middle" }, g);
+  label.textContent = deg === 0 ? "toes forward" : `toes ${deg > 0 ? "out" : "in"} ${Math.abs(deg)}°`;
 }
 
 // ---------- multi-joint figure (world frame: x forward, y up, floor at y = 0) ----------
@@ -274,7 +372,7 @@ export function renderMultiFigure(svg, { exercise, result, activation, bounds })
   };
   const circle = (c, r, cls) => { const C = toPx(c); el("circle", { cx: C.x, cy: C.y, r: r * S, class: cls }, svg); };
 
-  seg(svg, { x: V.x0, y: 0 }, { x: V.x1, y: 0 }, "floor", 0.01);
+  if (!result.noFloor) seg(svg, { x: V.x0, y: 0 }, { x: V.x1, y: 0 }, "floor", 0.01);
   for (const p of result.props) seg(svg, p.a, p.b, p.cls, p.w);
   if (result.balance) seg(svg, { x: result.balance.x, y: 0 }, { x: result.balance.x, y: V.y1 }, "balance", 0.006);
 
@@ -316,6 +414,7 @@ export function renderMultiFigure(svg, { exercise, result, activation, bounds })
 
   // Per joint: moment arm to the line of action of everything on its free side.
   for (const j of result.joints) {
+    if (j.noDraw) continue; // holds (planks): the table has the numbers; nothing to draw
     circle(j.at, 0.022, "joint");
     if (j.momentArm < 0.005) continue;
     const R = unit(j.resultant);

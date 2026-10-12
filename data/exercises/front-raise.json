@@ -4,6 +4,7 @@
   "joint": "Shoulder flexion",
   "movingJoint": "proximal",
   "view": "side",
+  "figure3d": {"kind": "chain", "base": "shoulder", "plane": "sagittal", "both": true, "start": "3d"},
   "angleLabel": "Shoulder angle",
   "angleRange": [0, 180],
   "angleNote": "Shoulder flexion: 0° = arm by your side, 90° = arm pointing forward at shoulder height, 180° = straight overhead (the overhead variant).",
@@ -52,7 +53,7 @@
       "driver": "jointEffort",
       "weight": [[0, 0.8], [45, 1], [90, 1]],
       "note": "Main shoulder flexor.",
-      "source": "TODO: check against EMG literature",
+      "source": "Campos YAC, Vianna JM, Guimarães MP, Oliveira JLD, Hernández-Mosqueira C, da Silva SF, Marchetti PH (2020). Different shoulder exercises affect the activation of deltoid portions in resistance-trained individuals. J Hum Kinet 75:5–14. doi:10.2478/hukin-2020-0033 (13 men, 60% 1RM, % of maximal isometric activation)",
       "draw": {"seg": "proximal", "along": [-0.03, 0.15], "offset": 0.035, "w": 0.055, "layer": 2}
     },
     {
@@ -63,12 +64,13 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "weight": [[0, 0.5], [60, 0.6], [90, 0.5]],
-      "note": "Upper chest; assists flexion in the lower and middle range.",
-      "source": "TODO: check against EMG literature",
+      "note": "Upper chest; assists flexion in the lower and middle range. The clavicular head works with the front deltoid in flexion; inclining a press shifts the pectoral work to it (Trebs et al.).",
+      "source": "Trebs AA, Brandenburg JP, Pitney WA (2010). An electromyography analysis of 3 muscles surrounding the shoulder joint during the performance of a chest press exercise at several angles. J Strength Cond Res 24(7):1925–1930. doi:10.1519/JSC.0b013e3181ddfae7 (15 men, 70% 1RM, Smith machine; values in figures only)",
       "draw": {
         "points": [[0.1, -0.08], [0.05, -0.02]],
         "w": 0.05,
-        "layer": 1
+        "layer": 1,
+        "z3d": [0.07, 0.16]
       }
     },
     {
@@ -80,7 +82,7 @@
       "driver": "jointEffort",
       "weight": [[0, 0.3], [90, 0.45]],
       "note": "Helps more if the arm drifts out to the side.",
-      "source": "TODO: check against EMG literature",
+      "source": "Campos YAC, Vianna JM, Guimarães MP, Oliveira JLD, Hernández-Mosqueira C, da Silva SF, Marchetti PH (2020). Different shoulder exercises affect the activation of deltoid portions in resistance-trained individuals. J Hum Kinet 75:5–14. doi:10.2478/hukin-2020-0033 (13 men, 60% 1RM, % of maximal isometric activation)",
       "draw": {"seg": "proximal", "along": [-0.03, 0.12], "offset": 0, "w": 0.05, "layer": 0}
     },
     {
@@ -91,12 +93,13 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "weight": [[0, 0.15], [45, 0.3], [90, 0.6]],
-      "note": "Rotates the shoulder blade upwards as the arm rises.",
-      "source": "TODO: check against EMG literature",
+      "note": "Rotates the shoulder blade upwards as the arm rises. In loaded raises 72–79% of maximum (Ekstrom et al., scapular plane).",
+      "source": "Ekstrom RA, Donatelli RA, Soderberg GL (2003). Surface electromyographic analysis of exercises for the trapezius and serratus anterior muscles. J Orthop Sports Phys Ther 33(5):247–258. doi:10.2519/jospt.2003.33.5.247 (Tables 1, 3, 4: 30 adults, loaded raises in the scapular plane, % of maximal isometric activation)",
       "draw": {
         "points": [[-0.04, 0.15], [-0.05, 0.03]],
         "w": 0.04,
-        "layer": 0
+        "layer": 0,
+        "z3d": [0.06, 0.16]
       }
     },
     {
@@ -107,9 +110,9 @@
       "wgerId": null,
       "role": "Synergist",
       "driver": "jointEffort",
-      "weight": [[0, 0.1], [30, 0.2], [90, 0.5], [150, 0.85], [180, 0.9]],
-      "note": "Turns the shoulder blade upwards (with the trapezius) so the arm can rise forward and up; its share grows as the arm goes up, and most of the motion above shoulder height is the shoulder blade turning. Estimated shape: the model has no shoulder blade.",
-      "source": "TODO: EMG; direction from Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001 (direction only)"
+      "weight": [[0, 0.1], [30, 0.3], [80, 0.6], [120, 0.9], [180, 0.95]],
+      "note": "Turns the shoulder blade upwards (with the trapezius) so the arm can rise forward and up; its share grows as the arm goes up, and most of the motion above shoulder height is the shoulder blade turning. The model has no shoulder blade; the weights follow EMG. Loaded raises in the scapular plane (Ekstrom et al.): serratus anterior 62% of maximum below 80° and 96% above 120°, lower trapezius 50% and 61%, upper trapezius 72% and 79%.",
+      "source": "Ekstrom RA, Donatelli RA, Soderberg GL (2003). Surface electromyographic analysis of exercises for the trapezius and serratus anterior muscles. J Orthop Sports Phys Ther 33(5):247–258. doi:10.2519/jospt.2003.33.5.247 (Tables 1, 3, 4: 30 adults, loaded raises in the scapular plane, % of maximal isometric activation); direction from Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001 (direction only)"
     },
     {
       "id": "lower-trapezius",
@@ -119,9 +122,9 @@
       "wgerId": null,
       "role": "Synergist",
       "driver": "jointEffort",
-      "weight": [[0, 0.05], [60, 0.15], [90, 0.35], [150, 0.7], [180, 0.75]],
-      "note": "Part of the upward-rotation pair with the serratus anterior and upper trapezius, mostly overhead. Estimated shape.",
-      "source": "TODO: EMG; direction from Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001 (direction only)"
+      "weight": [[0, 0.05], [30, 0.25], [80, 0.5], [120, 0.6], [180, 0.65]],
+      "note": "Part of the upward-rotation pair with the serratus anterior and upper trapezius, mostly overhead. Loaded raises in the scapular plane (Ekstrom et al.): serratus anterior 62% of maximum below 80° and 96% above 120°, lower trapezius 50% and 61%, upper trapezius 72% and 79%.",
+      "source": "Ekstrom RA, Donatelli RA, Soderberg GL (2003). Surface electromyographic analysis of exercises for the trapezius and serratus anterior muscles. J Orthop Sports Phys Ther 33(5):247–258. doi:10.2519/jospt.2003.33.5.247 (Tables 1, 3, 4: 30 adults, loaded raises in the scapular plane, % of maximal isometric activation); direction from Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001 (direction only)"
     }
   ],
   "phases": [
@@ -158,6 +161,7 @@
     },
     {
       "id": "cable",
+      "oneSided": true,
       "name": "Cable front raise (low pulley behind)",
       "equipment": "Cable",
       "posture": "standing",
@@ -193,5 +197,19 @@
     "exerciseId": 256,
     "name": "Front Raises",
     "note": "Checked against wger's public exercise list (id = the number in the page address)."
-  }
+  },
+  "placement": [
+    {
+      "key": "elbow",
+      "label": "Elbow bend",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "°",
+      "scale": 1,
+      "distalBend": true,
+      "bendSign": 1,
+      "hint": "0° = arm straight. Bending the elbow folds the forearm up, in the plane of the raise, so the weight comes closer to the shoulder and the lever shrinks: at 90° of bend, with the arm horizontal, about half the torque for the same dumbbell. The biceps holds the bend (not analysed)."
+    }
+  ]
 }

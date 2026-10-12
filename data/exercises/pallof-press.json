@@ -1,0 +1,129 @@
+{
+  "id": "pallof-press",
+  "group": "core",
+  "name": "Pallof press",
+  "joint": "Trunk (anti-rotation, held)",
+  "model": "multi",
+  "solver": "pallof",
+  "view": "top",
+  "angleLabel": "Reach",
+  "angleUnit": "%",
+  "angleRange": [0, 100],
+  "angleNote": "How far the hands press forward: 0% = hands at the chest, 100% = arms straight in front. The cable pulls sideways from an anchor beside you; the trunk must not turn.",
+  "defaults": {"loadKg": 10, "variant": "standing", "bodyMassKg": 75, "angle": 100},
+  "ui": {"load": [0, 40, 1]},
+  "joints": [
+    {
+      "id": "rotation",
+      "name": "Trunk (twisting)",
+      "action": "Trunk rotation",
+      "angleLabel": "trunk",
+      "peakTorqueNm": 80,
+      "strength": {
+        "points": [[0, 1]],
+        "note": "Isometric trunk twisting with the trunk facing forward, men: 80 Nm (left 79, right 81; women 42–45 Nm), falling as the trunk is already turned (67 Nm at 20°). Seated with the hips and legs strapped, so standing, the hips may help (not modelled).",
+        "source": "Kumar S, Dufresne RM, Van Schoor T (1995). Human trunk strength profile in lateral flexion and axial rotation. Spine 20(2):169–177. doi:10.1097/00007632-199501150-00007"
+      }
+    },
+    {
+      "id": "sidebend",
+      "name": "Lower back (side-bend)",
+      "action": "Trunk side-bend",
+      "angleLabel": "trunk",
+      "peakTorqueNm": 163,
+      "strength": {
+        "points": [[0, 1]],
+        "note": "Isometric trunk side-bending with the trunk upright, men: 163 Nm (left 162, right 165; women 101–117 Nm); it falls as the trunk is already bent (140 Nm at 20°, 120 Nm at 30°). Seated with the hips strapped. Only the straight-trunk value is used.",
+        "source": "Kumar S, Dufresne RM, Van Schoor T (1995). Human trunk strength profile in lateral flexion and axial rotation. Spine 20(2):169–177. doi:10.1097/00007632-199501150-00007"
+      }
+    }
+  ],
+  "muscles": [
+    {
+      "id": "external-oblique",
+      "region": "trunk",
+      "name": "Obliques",
+      "wgerId": 14,
+      "role": "Prime mover",
+      "driver": "jointEffort",
+      "joint": "rotation",
+      "weight": [[0, 1], [100, 1]],
+      "note": "The main trunk rotators: the external oblique on one side works with the internal oblique on the other to stop the twist.",
+      "source": "TODO: no Pallof press EMG read yet",
+      "draw": {"seg": "trunk", "along": [0.05, 0.33], "offset": 0.05, "w": 0.05}
+    },
+    {
+      "id": "rectus-abdominis",
+      "region": "trunk",
+      "name": "Rectus abdominis",
+      "wgerId": 6,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "joint": "rotation",
+      "weight": [[0, 0.4], [100, 0.4]],
+      "note": "Braces the trunk; not a rotator itself.",
+      "source": "TODO: no Pallof press EMG read yet",
+      "draw": {"seg": "trunk", "along": [0.15, 0.23], "offset": 0.07, "w": 0.05}
+    },
+    {
+      "id": "erector-spinae",
+      "region": "trunk",
+      "regionPath": ["iliocostalis", "longissimus", "spinalis"],
+      "name": "Back extensors",
+      "wgerId": null,
+      "role": "Synergist",
+      "driver": "jointEffort",
+      "joint": "sidebend",
+      "weight": [[0, 0.6], [100, 0.6]],
+      "note": "Hold against the sideways pull bending the trunk towards the cable.",
+      "source": "TODO: no Pallof press EMG read yet",
+      "draw": {"seg": "trunk", "along": [0.12, 0.26], "offset": -0.05, "w": 0.05}
+    }
+  ],
+  "phases": [
+    {"name": "Hands in", "range": [0, 30], "text": "Hands at the chest: a short lever, little twist."},
+    {
+      "name": "Pressing out",
+      "range": [30, 70],
+      "text": "The twist grows with the hands' distance from the spine."
+    },
+    {
+      "name": "Arms straight",
+      "range": [70, 100],
+      "text": "The longest lever: the twist is about five times that at the chest. The side-bend stays the same throughout."
+    }
+  ],
+  "variants": [
+    {
+      "id": "standing",
+      "name": "Standing Pallof press",
+      "equipment": "Cable or band",
+      "params": {
+        "chest": 0.12,
+        "handHeight": 0.35,
+        "anchor": {"x": -1.4, "y": 0.35}
+      },
+      "notes": "Standing side-on to a cable at chest height, hands at the sternum, pressing straight forward. The hands are about 35 cm above the lower back (L5/S1)."
+    },
+    {
+      "id": "half-kneeling",
+      "name": "Half-kneeling Pallof press",
+      "equipment": "Cable or band",
+      "params": {
+        "chest": 0.12,
+        "handHeight": 0.35,
+        "anchor": {"x": -1.4, "y": 0.35}
+      },
+      "notes": "One knee down: the hips can't help by shifting, but the trunk's loads are the same as standing."
+    }
+  ],
+  "hold": true,
+  "trunk3d": {
+    "note": "3D view: the trunk muscles of the OpenSim lumbar spine model (Christophy et al. 2012, MIT licence) in its upright posture, shaded by this exercise's muscle effort. Groups the exercise doesn't load stay grey. Cable on the left: the left external and right internal oblique stop the twist, the right side's back muscles the side-bend.",
+    "map": {
+      "external-oblique": ["external-oblique:l", "internal-oblique:r"],
+      "rectus-abdominis": ["rectus-abdominis"],
+      "erector-spinae": ["quadratus-lumborum:r", "iliocostalis:r", "longissimus:r", "multifidus:r"]
+    }
+  }
+}

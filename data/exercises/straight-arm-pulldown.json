@@ -25,13 +25,13 @@
   "ui": {"load": [1, 50, 0.5], "strength": [30, 150]},
   "strengthCurve": {
     "label": "Shoulder extensor strength",
-    "points": [[0, 0.85], [45, 0.97], [65, 1.0], [90, 0.98], [135, 0.94], [180, 0.76]],
+    "points": [[0, 0.85], [45, 0.97], [65, 1], [90, 0.98], [135, 0.94], [180, 0.76]],
     "note": "Relative shoulder-extension strength vs shoulder flexion: nearly flat, peaking around 65–100°. Clarke et al. (64 men, via Kulig et al.) measured 347 N at 65° and 262 N at 180°, varying by only 25.5 N between 45° and 135°; two other studies agree. The 0° value is an estimate (the curves rise from there). Mayer et al. place the isometric peak at 53–91°. Peak torque default: Mayer's isometric shoulder extension, men, 93 ± 24 Nm.",
     "source": "Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (Clarke et al. data); Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25. doi:10.1055/s-2007-1021105"
   },
   "postures": {
     "standing": [
-      {"shape": "seg", "from": [0, -0.55], "to": [0.02, -1.45], "w": 0.14},
+      {"shape": "seg", "from": [0, -0.55], "to": [0.02, -1.45], "w": 0.14, "upright": true},
       {"shape": "seg", "from": [0, 0.05], "to": [0, -0.55], "w": 0.2},
       {"shape": "circle", "at": [0.02, 0.24], "r": 0.11}
     ],
@@ -41,7 +41,7 @@
       {"shape": "seg", "from": [-0.16, -0.5], "to": [-0.6, -0.5], "w": 0.03, "class": "equipment"},
       {"shape": "seg", "from": [0, 0.05], "to": [0, -0.55], "w": 0.2},
       {"shape": "seg", "from": [0, -0.55], "to": [0.22, -0.95], "w": 0.14},
-      {"shape": "seg", "from": [0.22, -0.95], "to": [-0.6, -1.0], "w": 0.12},
+      {"shape": "seg", "from": [0.22, -0.95], "to": [-0.6, -1], "w": 0.12},
       {"shape": "circle", "at": [0, 0.24], "r": 0.11}
     ]
   },
@@ -53,9 +53,9 @@
       "wgerId": 12,
       "role": "Prime mover",
       "driver": "jointEffort",
-      "weight": [[0, 0.7], [90, 1.0], [170, 1.0]],
-      "note": "Main shoulder extensor; strongest pull with the arm high.",
-      "source": "TODO: check against EMG literature",
+      "weight": [[0, 0.7], [90, 1], [170, 1]],
+      "note": "Main shoulder extensor; strongest pull with the arm high. Higher in the straight-arm pulldown than the barbell pullover, at either grip width (Muyor et al.).",
+      "source": "Muyor JM, López-Miñarro PA, Alacid F (2022). Comparison of electromyographic activity during barbell pullover and straight arm pulldown exercises. Appl Sci 12(21):11138. doi:10.3390/app122111138 (20 adults, 30% of body mass)",
       "draw": {"seg": "proximal", "origin": [-0.07, -0.42], "insert": 0.05, "offset": -0.02, "w": 0.07, "layer": 0}
     },
     {
@@ -67,7 +67,7 @@
       "driver": "jointEffort",
       "weight": [[0, 0.6], [170, 0.8]],
       "note": "Works alongside the lats.",
-      "source": "TODO: check against EMG literature",
+      "source": "Signorile JF, Zink AJ, Szwed SP (2002). A comparative electromyographical investigation of muscle utilization patterns using various hand positions during the lat pull-down. J Strength Cond Res 16(4):539–546. doi:10.1519/00124278-200211000-00008 (10 men, 10RM)",
       "draw": {"seg": "proximal", "origin": [-0.08, -0.13], "insert": 0.06, "offset": -0.02, "w": 0.04, "layer": 1}
     },
     {
@@ -78,8 +78,8 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "weight": [[0, 0.5], [170, 0.6]],
-      "note": "Crosses the shoulder and helps extend it; also keeps the elbow straight.",
-      "source": "TODO: check against EMG literature",
+      "note": "Crosses the shoulder and helps extend it; also keeps the elbow straight. Higher in the straight-arm pulldown than the pullover (Muyor et al.).",
+      "source": "Muyor JM, López-Miñarro PA, Alacid F (2022). Comparison of electromyographic activity during barbell pullover and straight arm pulldown exercises. Appl Sci 12(21):11138. doi:10.3390/app122111138 (20 adults, 30% of body mass)",
       "draw": {"seg": "proximal", "along": [0.06, 0.26], "offset": -0.04, "w": 0.045, "layer": 2}
     },
     {
@@ -90,8 +90,8 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "weight": [[0, 0.1], [90, 0.4], [170, 0.6]],
-      "note": "Helps pull the arm down from overhead, mainly in the upper range.",
-      "source": "TODO: check against EMG literature",
+      "note": "Helps pull the arm down from overhead, mainly in the upper range. Higher in the barbell pullover than the straight-arm pulldown, mainly its sternal and lower parts (Muyor et al.).",
+      "source": "Muyor JM, López-Miñarro PA, Alacid F (2022). Comparison of electromyographic activity during barbell pullover and straight arm pulldown exercises. Appl Sci 12(21):11138. doi:10.3390/app122111138 (20 adults, 30% of body mass)",
       "draw": {"seg": "proximal", "origin": [0.09, -0.16], "insert": 0.05, "offset": 0.02, "w": 0.05, "layer": 1}
     }
   ],
@@ -118,9 +118,12 @@
       "name": "Cable straight-arm pulldown",
       "equipment": "Cable",
       "posture": "standing",
-      "load": {"type": "cable", "pulley": {"x": 0.7, "y": 0.4}},
+      "load": {
+        "type": "cable",
+        "pulley": {"x": 0.7, "y": 0.4}
+      },
       "adjustablePulley": true,
-      "notes": "Standing upright facing a high pulley (the usual slight forward lean isn't modelled). Tension is high through the middle and bottom of the pull; above the pulley line the cable stops resisting."
+      "notes": "Standing facing a high pulley; lean the trunk forward with the slider. Tension is high through the middle and bottom of the pull; above the pulley line the cable stops resisting."
     },
     {
       "id": "pullover",
@@ -138,5 +141,19 @@
     "exerciseId": 628,
     "name": "Straight-arm Pull Down (bar Attachment)",
     "note": "Checked against wger's public exercise list (id = the number in the page address)."
-  }
+  },
+  "placement": [
+    {
+      "key": "lean",
+      "label": "Trunk lean",
+      "min": -10,
+      "max": 45,
+      "step": 1,
+      "unit": "° forward",
+      "scale": 1,
+      "variants": ["cable"],
+      "lean": {"pivot": [0, -0.55]},
+      "hint": "0° = standing upright; + = trunk tipped forward at the hips (the legs stay upright). Leaning turns the body under the cable, so the cable meets the arm at a different angle: leaning forward moves the hardest point towards the overhead start (the stretch) and unloads the finish. With 10 kg, the torque with the arm by your side drops from about 35 Nm upright to 16 Nm at 20° and none at 40°. The pulley stays where it is in the room. How the lean shifts work between the lats, the triceps' long head and the chest isn't modelled."
+    }
+  ]
 }

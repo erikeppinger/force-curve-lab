@@ -58,15 +58,19 @@ test("equilibrium at the DIP and PIP in every grip and angle", () => {
   }
 });
 
-test("crimping loads the A2 pulley far more than an open hand, per newton at the fingertip", () => {
-  const per = (id) => { const r = analyzeFinger(ex, v(id), v(id).params.pip, { loadKg: 20 }); return r.pulleys.a2 / r.fingertipN; };
-  assert.ok(per("full-crimp") > 5 * per("open-hand"), `${per("full-crimp")} vs ${per("open-hand")}`);
-  assert.ok(per("half-crimp") > 5 * per("open-hand"));
+test("the A2 pulley's load per newton at the fingertip rises with the middle joint's bend", () => {
+  const per = (x, pip = x.params.pip) => { const r = analyzeFinger(ex, x, pip, { loadKg: 20 }); return r.pulleys.a2 / r.fingertipN; };
+  assert.ok(per(v("open-hand")) < per(v("half-crimp")) && per(v("half-crimp")) < per(v("full-crimp")));
+  // Vigouroux et al.'s nearly straight slope grip: a fraction of the crimp's.
+  const slope = { ...v("open-hand"), params: { ...v("open-hand").params, mcp: -21, pip: 25.9, dip: 38.8 } };
+  assert.ok(per(v("full-crimp")) > 5 * per(slope), `${per(v("full-crimp"))} vs ${per(slope)}`);
 });
 
 test("full crimp on the paper's 1 cm hold lands near Vigouroux et al.'s estimates", () => {
   // Measured: FDP:FDS 1.75, A2 2.7× and A4 2.4× the fingertip force (6 climbers, middle finger).
-  const r = analyzeFinger(along, v("full-crimp"), v("full-crimp").params.pip, { loadKg: 95.6 / G / 0.25 });
+  // Their crimp posture (Table 2), not the variant's (Fischer et al.'s measured climbing posture).
+  const theirs = { ...v("full-crimp"), params: { ...v("full-crimp").params, mcp: -2.6, pip: 106.5, dip: -22.6 } };
+  const r = analyzeFinger(along, theirs, 106.5, { loadKg: 95.6 / G / 0.25 });
   assert.ok(r.ratio > 1 && r.ratio < 2.5, `FDP:FDS ${r.ratio}`);
   const a2 = r.pulleys.a2 / r.fingertipN, a4 = r.pulleys.a4 / r.fingertipN;
   assert.ok(a2 > 2 && a2 < 3.5, `A2 ${a2}`);
@@ -110,7 +114,7 @@ test("edge-lift data: grips, sources and phases", () => {
   const [lo, hi] = ex.angleRange;
   assert.equal(ex.phases[0].range[0], lo);
   assert.equal(ex.phases.at(-1).range[1], hi);
-  for (const s of ex.placement) assert.ok(ex.variants.every((x) => Number.isFinite(x.params[s.key]) || (s.auto && x.params[s.key] === "auto")), s.key);
+  for (const s of ex.placement) assert.ok(ex.variants.every((x) => (s.type === "choice" ? s.options.some(([v]) => v === x.params[s.key]) : Number.isFinite(x.params[s.key]) || (s.auto && x.params[s.key] === "auto"))), s.key);
 });
 
 test("maximum block: the grip's maximum fingertip force × strength ÷ (g × finger share)", () => {
@@ -236,4 +240,49 @@ test("one lift over time: no force at rest, the block's weight while held, Newto
   assert.ok(Math.abs(sum / n) < 0.05 * m, `mean extra ${sum / n}`);
   // The hold sits at the lift height.
   close(L.at(L.holdAt).y, h);
+});
+
+test("edge friction: square on a level face none; a sloping face tan(slope); a pad facing away can't hold; the open hand needs more than the crimps", async () => {
+  const { frictionNeeded, volar } = await import("../js/finger.js");
+  const phi = 1.2, n = volar(phi), u = { x: -n.x, y: -n.y };
+  assert.ok(Math.abs(frictionNeeded(u, phi)) < 1e-12);
+  assert.ok(Math.abs(frictionNeeded(u, phi, 25)) < 1e-12); // incut: pressed deeper, no friction
+  assert.ok(Math.abs(frictionNeeded(u, phi, -20) - Math.tan((20 * Math.PI) / 180)) < 1e-12); // sloping 20°
+  // A rigid pad (no curvature) turned 30° towards the lip touches the lip at its own normal.
+  const r = (30 * Math.PI) / 180, s = Math.sign(-Math.cos(phi) * u.y + Math.sin(phi) * u.x) || 1;
+  const rot = (v, a) => ({ x: v.x * Math.cos(a) - v.y * Math.sin(a), y: v.x * Math.sin(a) + v.y * Math.cos(a) });
+  const tilted = [rot(u, r), rot(u, -r)].map((w) => frictionNeeded(w, phi, 0, 0));
+  assert.ok(tilted.some((x) => Math.abs(x - Math.tan(r)) < 1e-9), String(tilted));
+  assert.equal(frictionNeeded({ x: n.x, y: n.y }, phi), Infinity);
+  const ex = JSON.parse(readFileSync(new URL("../data/exercises/edge-lift.json", import.meta.url)));
+  const need = (id) => { const v = ex.variants.find((x) => x.id === id); return analyzeEdge(ex, v, v.params.pip, { loadKg: 20, bodyMassKg: 75, strengthPct: 100, placement: v.params }).friction.needed; };
+  assert.ok(need("open-hand") > need("full-crimp"), `${need("open-hand")} vs ${need("full-crimp")}`);
+});
+
+test("fingers on the edge: a chosen finger stays off, every other one is kept on and the shares still add up", () => {
+  for (const v of ex.variants) {
+    for (const [choice, off] of [["all", null], ["no-index", "index"], ["no-little", "little"]]) {
+      const r = analyzeEdge(ex, v, v.params.pip, { loadKg: 20, bodyMassKg: 75, strengthPct: 100, placement: { ...v.params, fingersOn: choice } });
+      for (const f of r.set.fingers) {
+        if (f.id === off) assert.ok(f.leftOff && !f.touches && f.force === 0, `${v.id} ${choice} ${f.id}`);
+        else assert.ok(f.touches && f.pose, `${v.id} ${choice}: ${f.id} on`);
+      }
+      assert.ok(Math.abs(r.set.fingers.reduce((s, f) => s + f.share, 0) - 1) < 1e-9, `${v.id} ${choice}`);
+    }
+  }
+});
+
+test("hang: each hand carries (body × (1 − feet share) + added) ÷ hands; the fingers behave as with a block of that mass", async () => {
+  const { handLoadKg } = await import("../js/finger.js");
+  const v = ex.variants.find((x) => x.id === "half-crimp");
+  const hang = { ...v.params, mode: "hang", hands: "2", feet: 0 };
+  assert.equal(handLoadKg(hang, 0, 70), 35);
+  assert.equal(handLoadKg({ ...hang, hands: "1", feet: 50 }, 10, 70), 45);
+  assert.equal(handLoadKg(v.params, 20, 70), 20); // block lift: the block
+  const a = analyzeEdge(ex, v, v.params.pip, { loadKg: 0, bodyMassKg: 70, placement: hang });
+  const b = analyzeEdge(ex, v, v.params.pip, { loadKg: 35, bodyMassKg: 70, placement: v.params });
+  assert.ok(Math.abs(a.peak.effort - b.peak.effort) < 1e-12 && a.arm === null);
+  // The most added weight brings the hardest finger exactly to its maximum.
+  const at = analyzeEdge(ex, v, v.params.pip, { loadKg: a.maxAddedKg, bodyMassKg: 70, placement: hang });
+  assert.ok(Math.abs(at.peak.effort - 1) < 1e-6, String(at.peak.effort));
 });

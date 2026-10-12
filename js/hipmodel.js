@@ -98,7 +98,10 @@ export const abductionArm = (m, hip, wraps) => -momentArm(m, hip, "adduction", w
 export function hipPosture(variant, angleDeg, placement) {
   const h = variant.hip ?? {};
   const lean = h.lean ? Number(placement?.lean ?? variant.params?.lean ?? 0) : 0;
-  return { flexion: (h.flexion ?? 0) - lean, adduction: -angleDeg, rotation: 0, lean };
+  // `hip.flexSlider`: the hip-bend slider swings the leg forward (+) or back (−) and the side
+  // raise happens there.
+  const flex = h.flexSlider ? Number(placement?.hipFlex ?? variant.params?.hipFlex ?? 0) : 0;
+  return { flexion: (h.flexion ?? 0) - lean + flex, adduction: -angleDeg, rotation: 0, lean };
 }
 
 /** Solve the small system M y = b (Gaussian elimination with pivoting). */
@@ -237,7 +240,7 @@ export function hipScene3d(exercise, variant, result, { geometry, acts, muscles,
   const shoulder = plus(mid, up, 0.52);
   const prims = [
     L3(mid, shoulder, 0.3, "body"), { kind: "dot", c: v3(plus(shoulder, up, 0.2)), r: 0.11, cls: "body" },
-    L3(lH, H, 0.16, "body"),
+    L3(plus(mid, plus(lH, mid, -1), 0.75), plus(mid, plus(H, mid, -1), 0.75), 0.16, "body"), // hips inside the trunk's outline (HIP_BAR in multijoint3d.js)
     L3(lH, lK, 0.14, "body back"), L3(lK, lA, 0.1, "body back"),
     L3(H, K, 0.14, "body"), L3(K, A, 0.1, "body"),
   ];

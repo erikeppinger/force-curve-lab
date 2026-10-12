@@ -218,6 +218,12 @@ export function holding({ pelvis, back, upperBack = back, S, loads = [], hands =
 
 // ---------- drawing helpers (primitives for js/view3d.js) ----------
 const L3 = (a, b, w, cls) => ({ kind: "line", a, b, w, cls });
+/**
+ * The hips: a 16 cm bar between the hip joints, shortened to 75% so its round ends stay inside the
+ * trunk's outline (the joints are 9 cm either side of the midline; the trunk is drawn 30 cm wide).
+ */
+export const HIP_BAR = 0.75;
+const hipBar = (a, b) => { const m = lerp3(a, b, 0.5); return L3(lerp3(m, a, HIP_BAR), lerp3(m, b, HIP_BAR), 0.16, "body"); };
 const dot = (c, r, cls) => ({ kind: "dot", c, r, cls });
 const both = (p) => [p, mirror(p)];
 
@@ -280,7 +286,7 @@ export function legPress3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }
       { kind: "poly", pts: [[-0.32, -0.45], [0.38, -0.45], [0.38, 0.45], [-0.32, 0.45]].map(([up, side]) => add3(add3(plateCentre, vp, up), Z, side)), cls: "plate3d" },
       ...[-0.5, 0.5].map((z) => L3(add3(rail[0], Z, z), add3(rail[1], Z, z), 0.02, "equipment")),
       ...[-0.25, 0.25].map((z) => L3(add3(seat[0], Z, z), add3(seat[1], Z, z), 0.05, "equipment")),
-      L3(mid, S, 0.3, "body"), dot(add3(S, back, 0.22), 0.11, "body"), L3(mirror(H), H, 0.16, "body"),
+      L3(mid, S, 0.3, "body"), dot(add3(S, back, 0.22), 0.11, "body"), hipBar(mirror(H), H),
       ...legPrims(H, K, A, add3(plate, f, -L.heel), add3(plate, f, L.footFront)),
     ],
     forces: both(cop).map((at) => ({ at, dir: neg3(u) })),
@@ -357,7 +363,7 @@ export function squat3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     balance: { x: balanceX, com: U.comX, ok },
     scene: [
       { kind: "poly", pts: [[-0.5, -0.6], [0.7, -0.6], [0.7, 0.6], [-0.5, 0.6]].map(([px, pz]) => v3(px, 0, pz)), cls: "floor3d" },
-      L3(pelvis, U.S, 0.3, "body"), dot(add3(U.S, U.back, 0.22), 0.11, "body"), L3(mirror(H), H, 0.16, "body"),
+      L3(pelvis, U.S, 0.3, "body"), dot(add3(U.S, U.back, 0.22), 0.11, "body"), hipBar(mirror(H), H),
       L3(mirror(shoulder), shoulder, 0.1, "body"),
       ...[false, true].map((left) => (left ? L3(mirror(shoulder), mirror(hand), 0.07, "body arm back") : L3(shoulder, hand, 0.07, "body arm"))),
       ...legPrims(H, K, A, add3(v3(A.x, 0.01, A.z), f, -L.heel), add3(v3(A.x, 0.01, A.z), f, L.footFront)),
@@ -380,7 +386,7 @@ export function squat3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
  * passes "up": elbows below the bar), or with `front` = "under" the one that puts the forearm
  * closest to vertical under the hand (press); the pulls pass "backwards" for elbows in front. Returns the closest point if the offset can't be reached.
  */
-export function elbowUnderHand(S, hand, l1, l2, offsetZ, front) {
+export function elbowUnderHand(S, hand, l1, l2, offsetZ, front, toFeet = null) {
   const e = unit3(sub3(hand, S));
   const d = Math.min(len3(sub3(hand, S)), l1 + l2 - 1e-9);
   const along = (l1 * l1 - l2 * l2 + d * d) / (2 * d);
@@ -407,7 +413,13 @@ export function elbowUnderHand(S, hand, l1, l2, offsetZ, front) {
   if (front === "under") { // forearm closest to vertical under the hand
     const off = (a) => Math.hypot(a.x - hand.x, a.z - hand.z) - 1e-3 * (hand.y - a.y);
     cands.sort((a, b) => off(a) - off(b));
-  } else cands.sort((a, b) => dot3(a, front) - dot3(b, front)); // the smaller component along `front` first
+  } else {
+    // The smaller component along `front` first (the elbow below the bar). With `toFeet` (bench):
+    // also towards the feet, since near lockout on an incline both candidates lie close to the
+    // bench plane and "lower" alone could pick the one beside the head.
+    const key = (a) => dot3(a, front) - (toFeet ? dot3(a, toFeet) : 0);
+    cands.sort((a, b) => key(a) - key(b));
+  }
   return { E: cands[0], ok: true };
 }
 
@@ -474,7 +486,7 @@ export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const armAt = () => {
     const { E, ok } = P.elbowOut === "auto"
       ? elbowNearestUnder(S, hand, L.upperArm, L.forearm)
-      : elbowUnderHand(S, hand, L.upperArm, L.forearm, P.elbowOut, front);
+      : elbowUnderHand(S, hand, L.upperArm, L.forearm, P.elbowOut, front, toFeet);
     const dU = unit3(sub3(E, S)), dF = unit3(sub3(hand, E));
     return {
       E, ok, dU, dF,
@@ -774,7 +786,7 @@ export function hinge3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     balance: { x: balanceX, com: Q.comX, ok: bal.ok },
     scene: [
       { kind: "poly", pts: [[-0.5, -0.6], [0.7, -0.6], [0.7, 0.6], [-0.5, 0.6]].map(([px, pz]) => v3(px, 0, pz)), cls: "floor3d" },
-      L3(Q.pelvis, Q.midBack, 0.3, "body"), L3(Q.midBack, Q.S, 0.3, "body"), dot(add3(Q.S, Q.upperBack, 0.22), 0.11, "body"), L3(mirror(Q.H), Q.H, 0.16, "body"),
+      L3(Q.pelvis, Q.midBack, 0.3, "body"), L3(Q.midBack, Q.S, 0.3, "body"), dot(add3(Q.S, Q.upperBack, 0.22), 0.11, "body"), hipBar(mirror(Q.H), Q.H),
       L3(mirror(shoulder), shoulder, 0.1, "body"), L3(mirror(shoulder), mirror(hand), 0.07, "body arm back"), L3(shoulder, hand, 0.07, "body arm"),
       ...legPrims(Q.H, Q.K, A, ...footPrims(A, f, L)),
       L3(add3(Q.bar, Z, -0.7), add3(Q.bar, Z, 0.7), 0.03, "equipment"), ...both(add3(Q.bar, Z, 0.62)).map((p) => dot(p, PLATE_R, "weight")),
@@ -895,7 +907,7 @@ export function split3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       ...(Rr.y > 0.2 ? [{ kind: "poly", pts: [[-0.25, -0.18], [0.08, -0.18], [0.08, 0.18], [-0.25, 0.18]].map(([px, pz]) => v3(Rr.x + px, Rr.y - 0.04, Rr.z + pz)), cls: "plate3d bench3d" },
         L3(v3(Rr.x - 0.1, Rr.y - 0.04, Rr.z), v3(Rr.x - 0.1, 0, Rr.z), 0.04, "equipment")] : []),
       L3(Q.Hr, Q.Kr, 0.13, "body back"), L3(Q.Kr, Rr, 0.1, "body back"),
-      L3(Q.pelvis, Q.S, 0.3, "body"), dot(add3(Q.S, back, 0.22), 0.11, "body"), L3(Q.Hr, Q.H, 0.16, "body"),
+      L3(Q.pelvis, Q.S, 0.3, "body"), dot(add3(Q.S, back, 0.22), 0.11, "body"), hipBar(Q.Hr, Q.H),
       L3(add3(sh, Z, -2 * L.shoulderHalfWidth), sh, 0.1, "body"),
       L3(add3(sh, Z, -2 * L.shoulderHalfWidth), add3(Q.bar, Z, P.load === "hang" ? -handZ : -0.3), 0.07, "body arm back"),
       L3(sh, add3(Q.bar, Z, P.load === "hang" ? handZ : 0.3), 0.07, "body arm"),
@@ -958,7 +970,7 @@ export function hipThrust3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement 
       { kind: "poly", pts: [[-0.7, -0.5], [0.7, -0.5], [0.7, 0.5], [-0.7, 0.5]].map(([px, pz]) => v3(px, 0, pz)), cls: "floor3d" },
       ...(Sm.y > 0.2 ? [{ kind: "poly", pts: [[-0.45, -0.25], [0.02, -0.25], [0.02, 0.25], [-0.45, 0.25]].map(([px, pz]) => v3(Sm.x + px, Sm.y - 0.1, pz)), cls: "plate3d bench3d" },
         L3(v3(Sm.x - 0.2, Sm.y - 0.1, 0), v3(Sm.x - 0.2, 0, 0), 0.04, "equipment")] : []),
-      L3(Sm, pelvis, 0.3, "body"), dot(add3(Sm, e, -0.22), 0.11, "body"), L3(mirror(H), H, 0.16, "body"),
+      L3(Sm, pelvis, 0.3, "body"), dot(add3(Sm, e, -0.22), 0.11, "body"), hipBar(mirror(H), H),
       L3(mirror(shoulder), shoulder, 0.1, "body"), L3(mirror(shoulder), mirror(hand), 0.07, "body arm back"), L3(shoulder, hand, 0.07, "body arm"),
       ...legPrims(H, K, A, ...footPrims(A, f, L)),
       L3(add3(bar, Z, -0.7), add3(bar, Z, 0.7), 0.03, "equipment"), ...both(add3(bar, Z, 0.62)).map((p) => dot(p, 0.2, "weight")),

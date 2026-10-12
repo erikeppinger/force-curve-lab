@@ -83,7 +83,19 @@ const variantOf = (ex) => (id) => ex.variants.find((x) => x.id === id);
     const r = analyze(ex, v("seated"), 10, opts);
     const act = Object.fromEntries(muscleActivation(ex, v("seated"), r, 10).map((m) => [m.id, m.value]));
     const w = (id) => interp(ex.muscles.find((m) => m.id === id).weight, 10);
-    close(act.gastrocnemius / act.soleus, (0.65 * w("gastrocnemius")) / w("soleus"));
+    close(act["gastroc-medial"] / act.soleus, (0.65 * w("gastroc-medial")) / w("soleus"));
+    close(act["gastroc-lateral"] / act.soleus, (0.65 * w("gastroc-lateral")) / w("soleus"));
+  });
+
+  test("calf raise toes in / out: the ankle torque is unchanged; the gastrocnemius heads shift by Cibulka et al.'s ratios", () => {
+    const at = (deg) => { const o = { ...opts, placement: { footAngle: deg } }; const r = analyze(ex, v("single-leg"), 10, o); return { r, act: Object.fromEntries(muscleActivation(ex, v("single-leg"), r, 10).map((m) => [m.id, m.value])) }; };
+    const [inn, mid, out] = [at(-45), at(0), at(45)];
+    close(inn.r.jointTorque, mid.r.jointTorque);
+    close(out.r.jointTorque, mid.r.jointTorque);
+    // Standing heel rise, % MVIC: toes in MG 75.8 / LG 70.7, toes out MG 79.2 / LG 68.9.
+    close(out.act["gastroc-medial"] / inn.act["gastroc-medial"], 79.2 / 75.8, 2e-3);
+    close(out.act["gastroc-lateral"] / inn.act["gastroc-lateral"], 68.9 / 70.7, 2e-3);
+    close(mid.act.soleus, out.act.soleus);
     // Cresswell et al. Table 1: 134.9 Nm knee straight, 103.7 Nm at 90°, base curve at 50° (119.25 → 108.91 between 30° and 60°).
     const ref = 119.25 + (108.91 - 119.25) * (20 / 30);
     close(v("seated").strengthScale.factor, Math.round((103.7 / ref) * 100) / 100);
@@ -162,3 +174,17 @@ const variantOf = (ex) => (id) => ex.variants.find((x) => x.id === id);
     assert.ok(Math.abs(analyze(ex, kneeling, -20, o(90)).strengthScale - 0.82) < 1e-9);
   });
 }
+
+test("leg curl: toes pulled up vs pointed changes knee-flexion strength by the measured ~10% (Vuk 2023), not the load's torque", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { analyze } = await import("../js/physics.js");
+  const ex = JSON.parse(readFileSync(new URL("../data/exercises/leg-curl.json", import.meta.url)));
+  assert.ok(ex.placementStrength.note && ex.placementStrength.source);
+  for (const v of ex.variants) {
+    const at = (foot) => analyze(ex, v, 45, { loadKg: 20, peakTorqueNm: ex.defaults.peakTorqueNm, bodyMassKg: 75, placement: { foot } });
+    const up = at("up"), relaxed = at("relaxed"), pointed = at("pointed");
+    assert.ok(Math.abs(up.capacity / pointed.capacity - 1.05 / 0.95) < 1e-9, v.id);
+    assert.ok(Math.abs(relaxed.capacity - analyze(ex, v, 45, { loadKg: 20, peakTorqueNm: ex.defaults.peakTorqueNm, bodyMassKg: 75 }).capacity) < 1e-9);
+    assert.equal(up.jointTorque, pointed.jointTorque);
+  }
+});

@@ -51,7 +51,7 @@
       "driver": "jointEffort",
       "weight": [[-25, 1], [45, 0.95], [90, 0.85]],
       "note": "Main hip extensor, working hardest near full hip extension.",
-      "source": "TODO: check against EMG literature",
+      "source": "Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J (2015). A comparison of gluteus maximus, biceps femoris, and vastus lateralis electromyographic activity in the back squat and barbell hip thrust exercises. J Appl Biomech 31(6):452–458. doi:10.1123/jab.2014-0301 (13 trained women, 10RM, mean % of maximal isometric activation)",
       "draw": {"seg": "proximal", "origin": [-0.09, 0.1], "insert": 0.1, "offset": -0.05, "w": 0.1, "layer": 0},
       "kneeFactor": {
         "hip": [-20, 0, 20, 40, 60, 90],
@@ -70,8 +70,8 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "weight": [[-25, 0.5], [90, 0.8]],
-      "note": "Help extend the hip, more so when it is bent. With the knee bent (kneeling) they are shorter and help less, which these weights ignore.",
-      "source": "TODO: check against EMG literature",
+      "note": "Help extend the hip, more so when it is bent. With the knee bent (kneeling) they are shorter and help less, which these weights ignore. Hip extension with the knee straight uses the long hamstrings most (Bourne et al.).",
+      "source": "Bourne MN, Williams MD, Opar DA, Al Najjar A, Kerr GK, Shield AJ (2017). Impact of exercise selection on hamstring muscle activation. Br J Sports Med 51(13):1021–1028. doi:10.1136/bjsports-2015-095739 (24 men, 10 exercises)",
       "draw": {"seg": "proximal", "along": [0.12, 0.4], "offset": -0.045, "w": 0.06, "layer": 1},
       "kneeFactor": {
         "hip": [-20, 0, 20, 40, 60, 90],
@@ -90,7 +90,7 @@
       "driver": "jointEffort",
       "weight": [[-25, 0.2], [90, 0.6]],
       "note": "Its rear part is a strong hip extensor when the hip is bent.",
-      "source": "TODO: check against EMG literature",
+      "source": "Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J (2015). A comparison of gluteus maximus, biceps femoris, and vastus lateralis electromyographic activity in the back squat and barbell hip thrust exercises. J Appl Biomech 31(6):452–458. doi:10.1123/jab.2014-0301 (13 trained women, 10RM, mean % of maximal isometric activation)",
       "kneeFactor": {
         "hip": [-20, 0, 20, 40, 60, 90],
         "knee": [0, 30, 60, 90, 120],

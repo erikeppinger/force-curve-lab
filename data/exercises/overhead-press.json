@@ -88,12 +88,12 @@
       "wgerId": 2,
       "role": "Prime mover",
       "driver": "jointEffort",
-      "joint": "shoulder-flex",
       "weight": [[0, 1], [180, 1]],
       "sign": 1,
-      "note": "Main shoulder flexor: works while the bar is in front of the shoulder, most at the start.",
-      "source": "TODO: check against EMG literature",
-      "draw3d": {"seg": "upperArm", "side": "anterior", "along": [-0.02, 0.1], "offset": 0.035, "w": 0.05}
+      "note": "Main shoulder flexor: works while the bar is in front of the shoulder, most at the start. With the arm raised its fibres also abduct, so here it takes the larger of the flexion and abduction demands. Measured above the middle deltoid in the shoulder press (Campos et al.: 33% vs 28% of maximum at 60% 1RM), and 11–15% higher with dumbbells than a barbell (Saeterbakken & Fimland).",
+      "source": "Campos YAC, Vianna JM, Guimarães MP, Oliveira JLD, Hernández-Mosqueira C, da Silva SF, Marchetti PH (2020). Different shoulder exercises affect the activation of deltoid portions in resistance-trained individuals. J Hum Kinet 75:5–14. doi:10.2478/hukin-2020-0033 (13 men, 60% 1RM, % of maximal isometric activation); Saeterbakken AH, Fimland MS (2013). Effects of body position and loading modality on muscle activity and strength in shoulder presses. J Strength Cond Res 27(7):1824–1831. doi:10.1519/JSC.0b013e318276b873 (15 men, 80% 1RM)",
+      "draw3d": {"seg": "upperArm", "side": "anterior", "along": [-0.02, 0.1], "offset": 0.035, "w": 0.05},
+      "joints": ["shoulder-flex", "shoulder-abd"]
     },
     {
       "id": "lateral-deltoid",
@@ -105,8 +105,8 @@
       "joint": "shoulder-abd",
       "weight": [[0, 1], [180, 1]],
       "sign": 1,
-      "note": "Abductor: works when the hands are wider than the shoulders, so the load hangs outside them. Wider grips load it more.",
-      "source": "TODO: check against EMG literature",
+      "note": "Abductor: works when the hands are wider than the shoulders, so the load hangs outside them. Wider grips load it more. 28% of maximum at 60% 1RM (Campos et al.); 15% lower seated than standing with dumbbells (Saeterbakken & Fimland).",
+      "source": "Campos YAC, Vianna JM, Guimarães MP, Oliveira JLD, Hernández-Mosqueira C, da Silva SF, Marchetti PH (2020). Different shoulder exercises affect the activation of deltoid portions in resistance-trained individuals. J Hum Kinet 75:5–14. doi:10.2478/hukin-2020-0033 (13 men, 60% 1RM, % of maximal isometric activation); Saeterbakken AH, Fimland MS (2013). Effects of body position and loading modality on muscle activity and strength in shoulder presses. J Strength Cond Res 27(7):1824–1831. doi:10.1519/JSC.0b013e318276b873 (15 men, 80% 1RM)",
       "draw3d": {"seg": "upperArm", "side": "lateral", "along": [-0.02, 0.1], "offset": 0.04, "w": 0.05}
     },
     {
@@ -120,8 +120,8 @@
       "joint": "elbow",
       "weight": [[0, 0.9], [90, 1], [150, 1]],
       "sign": 1,
-      "note": "Elbow extensor: works while the forearm leans away from vertical, most in the middle of the press.",
-      "source": "TODO: check against EMG literature",
+      "note": "Elbow extensor: works while the forearm leans away from vertical, most in the middle of the press. 39% higher with a standing barbell than dumbbells (Saeterbakken & Fimland).",
+      "source": "Saeterbakken AH, Fimland MS (2013). Effects of body position and loading modality on muscle activity and strength in shoulder presses. J Strength Cond Res 27(7):1824–1831. doi:10.1519/JSC.0b013e318276b873 (15 men, 80% 1RM)",
       "draw3d": {"seg": "upperArm", "side": "posterior", "along": [0.06, 0.27], "offset": 0.04, "w": 0.055}
     },
     {

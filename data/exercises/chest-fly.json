@@ -4,6 +4,7 @@
   "joint": "Shoulder horizontal adduction",
   "movingJoint": "proximal",
   "view": "top",
+  "figure3d": {"kind": "chain", "base": "shoulder", "plane": "transverse", "both": true, "start": "3d"},
   "angleLabel": "Arm angle",
   "angleOffset": 90,
   "angleRange": [-20, 90],
@@ -24,7 +25,7 @@
   "ui": {"load": [0.5, 40, 0.5], "strength": [20, 150]},
   "strengthCurve": {
     "label": "Horizontal adductor strength",
-    "points": [[-30, 1.0], [60, 1.0], [90, 0.75], [120, 0.45]],
+    "points": [[-30, 1], [60, 1], [90, 0.75], [120, 0.45]],
     "note": "Relative horizontal-adduction strength vs arm angle (0° = arms out in line with the shoulders): constant from 30° behind that line to 60° in front, then a sharp drop (Williams & Stutzman, 10 men; Whitley, 31 men, found no change over 60°; both via Kulig et al.). How far it drops by 90–120° isn't given numerically, so those values are estimates.",
     "source": "Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (shape; drop beyond 60° estimated)"
   },
@@ -33,17 +34,17 @@
       {"shape": "seg", "from": [-0.36, -0.17], "to": [-0.02, -0.17], "w": 0.06, "class": "equipment"},
       {"shape": "seg", "from": [-0.19, -0.18], "to": [-0.19, -0.62], "w": 0.04, "class": "equipment"},
       {"shape": "ellipse", "at": [-0.19, -0.02], "rx": 0.2, "ry": 0.12},
-      {"shape": "circle", "at": [-0.19, 0.0], "r": 0.1}
+      {"shape": "circle", "at": [-0.19, 0], "r": 0.1}
     ],
     "standing": [
       {"shape": "ellipse", "at": [-0.19, 0], "rx": 0.2, "ry": 0.12},
-      {"shape": "circle", "at": [-0.19, 0.0], "r": 0.1},
+      {"shape": "circle", "at": [-0.19, 0], "r": 0.1},
       {"shape": "circle", "at": [-0.19, 0.1], "r": 0.025}
     ],
     "seated": [
       {"shape": "seg", "from": [-0.42, -0.16], "to": [0.04, -0.16], "w": 0.05, "class": "equipment"},
       {"shape": "ellipse", "at": [-0.19, 0], "rx": 0.2, "ry": 0.12},
-      {"shape": "circle", "at": [-0.19, 0.0], "r": 0.1},
+      {"shape": "circle", "at": [-0.19, 0], "r": 0.1},
       {"shape": "circle", "at": [-0.19, 0.1], "r": 0.025}
     ]
   },
@@ -56,9 +57,9 @@
       "wgerId": 4,
       "role": "Prime mover",
       "driver": "jointEffort",
-      "weight": [[-20, 1.0], [45, 1.0], [90, 0.85]],
+      "weight": [[-20, 1], [45, 1], [90, 0.85]],
       "note": "Main horizontal adductor.",
-      "source": "TODO: check against EMG literature",
+      "source": "Campos YAC, Vianna JM, Guimarães MP, Oliveira JLD, Hernández-Mosqueira C, da Silva SF, Marchetti PH (2020). Different shoulder exercises affect the activation of deltoid portions in resistance-trained individuals. J Hum Kinet 75:5–14. doi:10.2478/hukin-2020-0033 (13 men, 60% 1RM, % of maximal isometric activation)",
       "draw": {"seg": "proximal", "origin": [-0.16, 0.06], "insert": 0.07, "offset": 0.03, "w": 0.06, "layer": 0}
     },
     {
@@ -69,8 +70,8 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "weight": [[-20, 0.5], [90, 0.6]],
-      "note": "Assists horizontal adduction.",
-      "source": "TODO: check against EMG literature",
+      "note": "Assists horizontal adduction. 19% of maximum at 60% 1RM, the same as in the bench press (Campos et al.).",
+      "source": "Campos YAC, Vianna JM, Guimarães MP, Oliveira JLD, Hernández-Mosqueira C, da Silva SF, Marchetti PH (2020). Different shoulder exercises affect the activation of deltoid portions in resistance-trained individuals. J Hum Kinet 75:5–14. doi:10.2478/hukin-2020-0033 (13 men, 60% 1RM, % of maximal isometric activation)",
       "draw": {"seg": "proximal", "along": [-0.02, 0.11], "offset": 0.05, "w": 0.045, "layer": 1}
     },
     {
@@ -83,7 +84,7 @@
       "driver": "jointEffort",
       "weight": [[-20, 0.3], [90, 0.25]],
       "note": "Helps hold the soft elbow bend under load.",
-      "source": "TODO: check against EMG literature",
+      "source": "Campos YAC, Vianna JM, Guimarães MP, Oliveira JLD, Hernández-Mosqueira C, da Silva SF, Marchetti PH (2020). Different shoulder exercises affect the activation of deltoid portions in resistance-trained individuals. J Hum Kinet 75:5–14. doi:10.2478/hukin-2020-0033 (13 men, 60% 1RM, % of maximal isometric activation)",
       "draw": {"seg": "proximal", "along": [0.12, 0.26], "offset": 0.035, "w": 0.04, "layer": 2}
     }
   ],
@@ -117,7 +118,10 @@
       "equipment": "Cable",
       "posture": "standing",
       "gravity": {"x": 0, "y": 0},
-      "load": {"type": "cable", "pulley": {"x": 0.95, "y": -0.25}},
+      "load": {
+        "type": "cable",
+        "pulley": {"x": 0.95, "y": -0.25}
+      },
       "adjustablePulley": true,
       "defaultLoadKg": 6,
       "notes": "Standing, the arms move in a horizontal plane, so gravity has no torque in this plane (it still has to be held up, which this 2D model ignores). The cable keeps tension with the arms together."

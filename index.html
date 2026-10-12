@@ -29,6 +29,7 @@
   <main>
     <section class="card controls" aria-label="Controls">
       <h2 id="exercise-name">…</h2>
+      <p id="exercise-wip" class="wip-note" role="note" hidden></p>
       <p class="model-link"><a id="model-link" href="docs/model.html">How the model works</a> · what was computed, the assumptions and the sources</p>
       <div class="control-grid">
         <label>Exercise
@@ -50,6 +51,7 @@
           <input id="bodymass" type="range" min="40" max="140" step="1">
         </label>
       </div>
+      <p id="variant-summary" class="hint variant-summary"></p>
       <div id="pulley-controls" class="control-grid pulley" hidden>
         <label><span id="pulley-x-label">Pulley forward / back</span>
           <input id="pulley-x" type="range" min="-1.0" max="1.0" step="0.01">
@@ -82,6 +84,7 @@
         <button type="button" class="secondary" id="zoom-toggle" aria-pressed="false">Zoom to the joint</button>
       </div>
       <div id="view-buttons" class="view-buttons" role="group" aria-label="Camera" hidden>
+        <button type="button" class="secondary" data-cam="flat" hidden>2D</button>
         <button type="button" class="secondary" data-cam="3d">3D</button>
         <button type="button" class="secondary" data-cam="side">Side</button>
         <button type="button" class="secondary" data-cam="front">Front</button>
