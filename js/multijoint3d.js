@@ -323,7 +323,9 @@ export function squat3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const target = rad(P.shinPerKnee * x);
   let lo = rad(-85), hi = rad(45);
   for (let i = 0; i < 60; i++) { const mid = (lo + hi) / 2; if (legAt(mid).tilt < target) lo = mid; else hi = mid; }
-  const { H, K } = legAt((lo + hi) / 2);
+  const { H, K, tilt } = legAt((lo + hi) / 2);
+  // The search can fail in very deep, wide stances: no hip position gives that shin lean.
+  const shinOk = Math.abs(tilt - target) < rad(3);
 
   // Trunk lean for balance: centre of mass over the mid-foot.
   const pelvis = v3(H.x, H.y, 0);
@@ -350,7 +352,13 @@ export function squat3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   // Per leg, from the foot up: floor push W/2 at the mid-foot, then segment weights.
   const cop = add3(v3(A.x, 0, A.z), f, L.midfoot);
   const leg = legFromFloor(ex, P, { H, K, A, f, cop, Fy: (U.total * G) / 2, back: U.back, kneeAngle: x, kg, body, variant: v });
-  const { grf, dir, Mhip, Mknee, Mankle, joints, frames, ratio } = leg;
+  const { grf, dir, Mhip, Mknee, Mankle, joints, frames, ratio, contact } = leg;
+  // What the thigh–calf contact takes off the knee (per leg), and how far the shin leans.
+  const contactInfo = contact ? [{ text: `Thigh–calf contact: the thigh rests on the calf with ${Math.round(len3(contact.f))} N per leg (${Math.round((100 * len3(contact.f)) / (kg * G))}% of body weight), taking ${Math.round(len3(cross3(sub3(contact.at, K), contact.f)))} Nm off each knee's extensors.` }] : [];
+  const shinTilt = deg(Math.atan2(K.x - A.x, K.y - A.y));
+  const ankleInfo = shinTilt > 50
+    ? [{ warn: true, text: `The shin leans ${Math.round(shinTilt)}° forward: more than most ankles allow with the heels down (lunge test: about 50° in young adults, 41–42° in athletes). Real lifters raise their heels, wear lifting shoes or lean the trunk further.` }]
+    : shinTilt > 40 ? [{ text: `The shin leans ${Math.round(shinTilt)}° forward: near the limit with the heels down (lunge test: about 50° in young adults, 41–42° in athletes).` }] : [];
 
   const shoulder = add3(U.S, Z, 0.19);
   const hand = add3(U.bar, Z, 0.3);
@@ -369,13 +377,16 @@ export function squat3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       ...legPrims(H, K, A, add3(v3(A.x, 0.01, A.z), f, -L.heel), add3(v3(A.x, 0.01, A.z), f, L.footFront)),
       ...loadPrims,
     ],
-    forces: [{ at: cop, dir }, { at: mirror(cop), dir: mirror(dir) }],
+    forces: [{ at: cop, dir }, { at: mirror(cop), dir: mirror(dir) }, ...(contact ? [{ at: contact.at, dir: unit3(contact.f) }, { at: mirror(contact.at), dir: mirror(unit3(contact.f)) }] : [])],
     grf: grf.f,
     sidePush: ratio,
+    thighCalfN: contact ? len3(contact.f) : 0,
     // Bar on the back (or the front rack): the trunk holds it; a goblet dumbbell is in the hands.
     holding: holding({ pelvis, back: U.back, S: U.S, armCom: U.armCom, kg, body,
       ...(v.loadShape === "dumbbell" ? { hands: [weight(U.bar, loadKg / 2), weight(U.bar, loadKg / 2)] } : { loads: [weight(U.bar, loadKg)] }) }),
-    info: ok ? [sidePushInfo(leg)] : [{ warn: true, text: "Can't balance: no trunk angle keeps the centre of mass over the mid-foot here." }],
+    info: [...(ok ? [sidePushInfo(leg)] : [{ warn: true, text: "Can't balance: no trunk angle keeps the centre of mass over the mid-foot here." }]), ...contactInfo, ...ankleInfo,
+      ...(shinOk ? [] : [{ warn: true, text: "This stance can't reach this depth with the set shin lean: the posture shown isn't reachable, so its numbers aren't meaningful." }]),
+      ...(joints.hip?.angle > 140 ? [{ warn: true, text: `The hips would have to bend ${Math.round(joints.hip.angle)}°: the thighs would press into the belly long before (an estimate; hips usually bend about 120–130°). Lean the shins further.` }] : [])],
   };
 }
 
@@ -677,22 +688,40 @@ export function press3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
  * (+ = the right foot pushed inwards, i.e. the foot pushes outwards), plus the leg's own weights.
  * The ratio is P.sidePush, or the least-effort one when that is "auto" (the default).
  */
+/**
+ * Thigh–calf contact in deep knee flexion (exercise `thighCalf`: { points: [knee angle, force per
+ * leg as a share of body weight], at: distance down the calf from the knee, metres }): the back of
+ * the thigh presses on the calf, pushing the shank away from the thigh, perpendicular to it. It
+ * takes part of the knee's extension moment; the equal and opposite push on the thigh acts at
+ * the same spot, so the pair cancels at the hip. Measured in body-weight squats, so it follows the
+ * knee angle and body mass only, not the bar.
+ */
+function thighCalfForce(spec, { H, K, A, kneeAngle, kg }) {
+  if (!spec) return null;
+  const share = interp(spec.points, kneeAngle);
+  if (!(share > 0)) return null;
+  const sDir = unit3(sub3(A, K)), t = sub3(H, K);
+  const n = unit3(sub3(add3(v3(0, 0, 0), sDir, dot3(t, sDir)), t)); // away from the thigh, perpendicular to the shank
+  return { at: add3(K, sDir, spec.at), f: add3(v3(0, 0, 0), n, share * kg * G) };
+}
+
 function legFromFloor(ex, P, { H, K, A, f, cop, Fy, back, kneeAngle, kg, body, variant }) {
   const m = body.mass, c = body.com, L = body.lengths;
   const footW = weight(add3(A, f, L.midfoot), m.foot * kg);
   const shankW = weight(lerp3(A, K, c.shank), m.shank * kg);
   const thighW = weight(lerp3(K, H, c.thigh), m.thigh * kg);
+  const contact = thighCalfForce(ex.thighCalf, { H, K, A, kneeAngle, kg });
   const solveAt = (ratio) => {
     const grf = { at: cop, f: v3(0, Fy, -ratio * Fy) };
     const dir = unit3(grf.f);
     const Mankle = moment3(A, [grf, footW]);
-    const Mknee = moment3(K, [grf, footW, shankW]);
+    const Mknee = moment3(K, [grf, footW, shankW, ...(contact ? [contact] : [])]);
     const Mhip = moment3(H, [grf, footW, shankW, thighW]);
     return { grf, dir, Mhip, Mknee, Mankle, ...legComponents({ H, K, A, f, back, Mhip, Mknee, Mankle, knee: kneeAngle, line: { at: cop, dir } }) };
   };
   const auto = P.sidePush === "auto" || P.sidePush == null;
   const ratio = auto ? leastEffort(ex, (r) => solveAt(r).joints, -0.6, 0.6, variant) : P.sidePush;
-  return { ...solveAt(ratio), ratio, auto };
+  return { ...solveAt(ratio), ratio, auto, contact };
 }
 
 const sidePushInfo = (leg) => ({ text: `Feet push ${leg.ratio >= 0 ? "outwards" : "inwards"} against the floor with ${Math.round(Math.abs(leg.ratio) * 100)}% of the vertical force${leg.auto ? " (least-effort estimate)" : ""}.` });

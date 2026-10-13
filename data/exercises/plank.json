@@ -48,8 +48,8 @@
       "driver": "jointEffort",
       "joint": "lumbar",
       "weight": [[0, 1], [80, 1]],
-      "note": "Keeps the lower back from sagging. Measured in a forearm plank: 43% of its maximum (Ekstrom et al.), against about 46% of the trunk's flexion strength in this model.",
-      "source": "Ekstrom RA, Donatelli RA, Carp KC (2007). Electromyographic analysis of core trunk, hip, and thigh muscles during 9 rehabilitation exercises. J Orthop Sports Phys Ther 37(12):754–762. doi:10.2519/jospt.2007.2471 (Tables 1, 3 and 4: 30 healthy adults, % of maximal isometric activation)",
+      "note": "Keeps the lower back from sagging. Measured in a forearm plank: 43% of its maximum (Ekstrom et al.), against about 46% of the trunk's flexion strength in this model. How the plank is held matters a lot: with the shoulder blades pulled together and the pelvis tilted back, the rectus abdominis reached about 78% of maximum, the internal oblique 120% and the external oblique 111% (one study, in Oliva-Lozano & Muyor's review), far above a relaxed plank; this model has no pelvic tilt.",
+      "source": "Ekstrom RA, Donatelli RA, Carp KC (2007). Electromyographic analysis of core trunk, hip, and thigh muscles during 9 rehabilitation exercises. J Orthop Sports Phys Ther 37(12):754–762. doi:10.2519/jospt.2007.2471 (Tables 1, 3 and 4: 30 healthy adults, % of maximal isometric activation); Oliva-Lozano JM, Muyor JM (2020). Core muscle activity during physical fitness exercises: a systematic review. Int J Environ Res Public Health 17(12):4306. doi:10.3390/ijerph17124306 (results summary, values of the primary studies as reported there)",
       "draw": {"seg": "trunk", "along": [0.08, 0.38], "offset": -0.095, "w": 0.05}
     },
     {

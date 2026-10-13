@@ -7,8 +7,8 @@
   "view": "3d",
   "angleLabel": "Knee angle",
   "concentric": "decrease",
-  "angleRange": [0, 120],
-  "angleNote": "Knee flexion: 0° = standing, about 100–110° = thighs parallel, 120° = deep. Lifting makes the angle smaller. Torques are per leg; drag the figure to turn it.",
+  "angleRange": [0, 150],
+  "angleNote": "Knee flexion: 0° = standing, about 100–110° = thighs parallel, 120° = deep, 145–150° = all the way down (the back of the thigh on the calf). Lifting makes the angle smaller. Torques are per leg; drag the figure to turn it.",
   "momentArmNote": "Moment arm = the joint's 3D distance from the floor's push line under that foot; it feeds every component of that joint's torque.",
   "defaults": {"loadKg": 40, "variant": "high-bar", "bodyMassKg": 75},
   "ui": {"load": [0, 200, 2.5]},
@@ -33,7 +33,7 @@
       "peakTorqueNm": 200,
       "strength": {
         "points": [[0, 0.14], [15, 0.46], [30, 0.72], [45, 0.91], [60, 0.99], [75, 0.98], [90, 0.85], [103, 0.67]],
-        "note": "Relative isometric knee-extension torque vs knee flexion: weakest near full extension, peak about 65° (Anderson, tested 0–103°). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Lindahl et al. found the same shape (peak near 50°, about 50% of peak at 10°). Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m).",
+        "note": "Relative isometric knee-extension torque vs knee flexion: weakest near full extension, peak about 65° (Anderson, tested 0–103°). Relative curve = cos(C2·(θ − C3)) with the 18–25-year-old male means of Table 3; points only inside the tested range, so the app holds the end values flat beyond it. Lindahl et al. found the same shape (peak near 50°, about 50% of peak at 10°). Peak torque default from the same table's C1 (young men, scaled to 73 kg and 1.75 m). Below 103° (deep squat) the strength is held at the last measured value: not measured.",
         "source": "Anderson DE, Madigan ML, Nussbaum MA (2007). Maximum voluntary joint torque as a function of joint angle and angular velocity: model development and application to the lower limb. J Biomech 40(14):3105–3113. doi:10.1016/j.jbiomech.2007.03.022; Lindahl O, Movin A, Ringqvist I (1969/1972). Isometric knee extension strength as a function of joint angle, muscle length and motor unit activity. Acta Orthop Scand 43:138–147"
       },
       "negative": {
@@ -251,6 +251,11 @@
       "name": "Bottom",
       "range": [90, 120],
       "text": "Around and below parallel: the hips and knees have their largest moment arms. Whichever joint's effort peaks first is the sticking point."
+    },
+    {
+      "name": "All the way down",
+      "range": [120, 150],
+      "text": "Below about 130° the thigh starts to rest on the calf: that contact carries part of the load, so the knee's extensors have less to do than the joint angle alone suggests. The ankle needs a lot of bend here: most people raise their heels or lean further forward."
     }
   ],
   "variants": [
@@ -329,7 +334,8 @@
         "kneeTrack": 0,
         "sidePush": "auto"
       },
-      "notes": "High bar, feet wide and turned out, knees over the toes, shins kept fairly vertical (a common sumo cue). That sends the hips back: more hip and less knee work than the normal stance. Try the shin-lean slider: the hip/knee split depends mostly on it. The sideways floor push is the least-effort estimate."
+      "notes": "High bar, feet wide and turned out, knees over the toes, shins kept fairly vertical (a common sumo cue). That sends the hips back: more hip and less knee work than the normal stance. Try the shin-lean slider: the hip/knee split depends mostly on it. The sideways floor push is the least-effort estimate. Goes to 120° of knee bend: deeper, this wide, toes-out stance needs more hip bend in the model than hips allow, and its shins can't keep their lean.",
+      "angleRange": [0, 120]
     },
     {
       "id": "knees-in",
@@ -399,5 +405,15 @@
       "scale": 100,
       "auto": "Least effort (auto)"
     }
-  ]
+  ],
+  "thighCalf": {
+    "points": [[130, 0], [134.8, 0.05], [138, 0.072], [142, 0.113], [146, 0.177], [150, 0.279], [151.8, 0.342]],
+    "at": 0.151,
+    "note": "Deep in the squat the back of the thigh rests on the calf and pushes the shank away from it. Measured with a pressure mat in body-weight squats: no contact below about 130°, 5% of body weight per leg at 134.8° (start), rising steeply (exponentially) to 34.2% at the deepest point, 151.8°, centred 15.1 cm down the calf from the knee's axis (means; the spread was large: thicker thighs and calves press earlier and harder). Here the force follows those means (exponential between the two), acts perpendicular to the shank, and takes part of the knee's extension moment; the matching push on the thigh cancels at the hip. Zelle et al. found that including it lowered the knee's compressive force at full depth from about 4.9 to 2.9 times body weight. Measured without a bar, so it follows the knee angle and body mass only.",
+    "source": "Zelle J, Barink M, Loeffen R, De Waal Malefijt M, Verdonschot N (2007). Thigh–calf contact force measurements in deep knee flexion. Clin Biomech 22(7):821–826. doi:10.1016/j.clinbiomech.2007.03.009 (Table 1: 10 adults, body-weight squats with the heels off the floor, pressure mat between thigh and calf); Zelle J, Barink M, De Waal Malefijt M, Verdonschot N (2009). Thigh–calf contact: does it affect the loading of the knee in the high-flexion range? J Biomech 42(5):587–593. doi:10.1016/j.jbiomech.2008.12.015; Hartmann H, Wirth K, Klusemann M (2013). Analysis of the load on the knee joint and vertebral column with changes in squatting depth and weight load. Sports Med 43(10):993–1008. doi:10.1007/s40279-013-0073-6"
+  },
+  "ankleRange": {
+    "note": "Shin lean the ankle allows with the heel down: about 50° in young adults (Bennell et al., weight-bearing lunge) and 41–42° in elite athletes (Nagulkar et al.). The page notes a lean beyond 40° and warns beyond 50°.",
+    "source": "Bennell K, Talbot R, Wajswelner H, Techovanich W, Kelly D, Hall A (1998). Intra-rater and inter-rater reliability of a weight-bearing lunge measure of ankle dorsiflexion. Aust J Physiother 44(3):175–180. doi:10.1016/S0004-9514(14)60377-9 (13 young adults: shin 50 ± 8° from vertical, heel down); Nagulkar JM, Mehta S, Mathur C, Goyal S, Sharma A (2024). Functional assessment of ankle dorsiflexion and performance outcomes in elite athletes: a cross-sectional analytical study. Afr J Biomed Res 27(4S):18167–18171. doi:10.53555/AJBR.v27i4S.8555 (120 elite athletes: 42.1 ± 5.8° dominant, 40.7 ± 6.1° non-dominant; DOI as printed in the paper, not found on Crossref)"
+  }
 }

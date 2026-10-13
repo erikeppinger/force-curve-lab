@@ -822,6 +822,54 @@
       "citation": "Fenwick CMJ, Brown SHM, McGill SM (2009). Comparison of different rowing exercises: trunk muscle activation and lumbar spine motion, load, and stiffness. J Strength Cond Res 23(5):1408–1417.",
       "url": "https://doi.org/10.1519/JSC.0b013e3181b07334",
       "usedFor": "Bent-over row: back muscles and lumbar load."
+    },
+    {
+      "key": "Oliva-Lozano 2020",
+      "match": "Oliva-Lozano JM",
+      "group": "Muscle activity",
+      "citation": "Oliva-Lozano JM, Muyor JM (2020). Core muscle activity during physical fitness exercises: a systematic review. Int J Environ Res Public Health 17(12):4306.",
+      "url": "https://doi.org/10.3390/ijerph17124306",
+      "usedFor": "Core exercises: ranges of rectus abdominis, oblique and erector spinae activity in curl-ups, planks, side planks and back extensions."
+    },
+    {
+      "key": "Zelle 2007",
+      "match": "Zelle J, Barink M, Loeffen R",
+      "group": "Body data",
+      "citation": "Zelle J, Barink M, Loeffen R, De Waal Malefijt M, Verdonschot N (2007). Thigh–calf contact force measurements in deep knee flexion. Clin Biomech 22(7):821–826.",
+      "url": "https://doi.org/10.1016/j.clinbiomech.2007.03.009",
+      "usedFor": "Deep squat: the thigh–calf contact force by knee angle and where it acts on the calf."
+    },
+    {
+      "key": "Zelle 2009",
+      "match": "Zelle J, Barink M, De Waal Malefijt M",
+      "group": "Body data",
+      "citation": "Zelle J, Barink M, De Waal Malefijt M, Verdonschot N (2009). Thigh–calf contact: does it affect the loading of the knee in the high-flexion range? J Biomech 42(5):587–593.",
+      "url": "https://doi.org/10.1016/j.jbiomech.2008.12.015",
+      "usedFor": "Deep squat: how the contact lowers the knee's load (applied as a force on the calf, as here)."
+    },
+    {
+      "key": "Hartmann 2013",
+      "match": "Hartmann H, Wirth K",
+      "group": "Exercise biomechanics",
+      "citation": "Hartmann H, Wirth K, Klusemann M (2013). Analysis of the load on the knee joint and vertebral column with changes in squatting depth and weight load. Sports Med 43(10):993–1008.",
+      "url": "https://doi.org/10.1007/s40279-013-0073-6",
+      "usedFor": "Deep squat: knee and spine loads by depth; the role of thigh–calf contact."
+    },
+    {
+      "key": "Bennell 1998",
+      "match": "Bennell K, Talbot R",
+      "group": "Body data",
+      "citation": "Bennell K, Talbot R, Wajswelner H, Techovanich W, Kelly D, Hall A (1998). Intra-rater and inter-rater reliability of a weight-bearing lunge measure of ankle dorsiflexion. Aust J Physiother 44(3):175–180.",
+      "url": "https://doi.org/10.1016/S0004-9514(14)60377-9",
+      "usedFor": "Deep squat: how far the shin can lean with the heel down."
+    },
+    {
+      "key": "Nagulkar 2024",
+      "match": "Nagulkar JM",
+      "group": "Body data",
+      "citation": "Nagulkar JM, Mehta S, Mathur C, Goyal S, Sharma A (2024). Functional assessment of ankle dorsiflexion and performance outcomes in elite athletes: a cross-sectional analytical study. Afr J Biomed Res 27(4S):18167–18171.",
+      "url": "https://doi.org/10.53555/AJBR.v27i4S.8555",
+      "usedFor": "Deep squat: shin lean with the heel down in elite athletes."
     }
   ],
   "resources": [
