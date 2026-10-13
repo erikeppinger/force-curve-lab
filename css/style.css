@@ -505,7 +505,13 @@ body.dock-on { padding-bottom: 76px; }
 #figure .inset-axle { fill: var(--card); stroke: var(--equipment); }
 
 /* Expert mode: the "Sources and numbers" card (hidden in basic mode). */
-:root:not([data-mode="expert"]) #numbers-card { display: none; }
+:root:not([data-mode="expert"]) #numbers-card,
+:root:not([data-mode="expert"]) .expert-only { display: none !important; }
+.src-box { margin: 6px 0 2px; padding: 6px 10px; border-left: 3px solid var(--accent, #6ea8fe); background: color-mix(in srgb, var(--accent, #6ea8fe) 8%, transparent); border-radius: 4px; }
+.src-line { margin: 2px 0; font-size: 0.82rem; color: var(--muted); }
+.src-line a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.m-src { margin-top: 2px; }
+.charts .measured { fill: var(--text); stroke: var(--bg); stroke-width: 1.5; }
 .num-item { border-top: 1px solid var(--border); padding: 6px 0; }
 .num-item > summary { cursor: pointer; font-size: 0.9rem; color: var(--muted); }
 .num-item > summary strong { color: var(--text); font-weight: 600; }

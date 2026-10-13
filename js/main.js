@@ -1,4 +1,4 @@
-import { analyze, sampleCurve, rangeOf } from "./physics.js";
+import { analyze, sampleCurve, rangeOf, gravityOf } from "./physics.js";
 import { muscleActivation } from "./muscles.js";
 import { renderChart } from "./chart.js";
 import { renderFigure, figureBounds, zoomBounds, viewTitle, renderMultiFigure, multiBounds } from "./figure.js";
@@ -11,8 +11,8 @@ import { analyzeEdge, sampleEdge, idealEdge, liftProfile } from "./finger.js";
 import { renderFingersView, renderHandView, renderArmView } from "./edgefig.js";
 import { hipScene3d } from "./hipmodel.js";
 import { chainScene3d } from "./chain3d.js";
-import { trunkScene3d } from "./trunk3d.js";
-import { renderNumbers } from "./numbers.js";
+import { trunkScene3d, trunkChainScene3d, pallofScene3d } from "./trunk3d.js";
+import { renderNumbers, renderExpertInline, muscleSourceLine } from "./numbers.js";
 import { handScene3d, pinchValueOf, pinchBlock } from "./handfig3d.js";
 import { analyzePinch, samplePinch } from "./pinchlift.js";
 import { renderPinchView } from "./pinchfig.js";
@@ -120,7 +120,7 @@ const isTrunk3d = (ex) => Boolean(ex.trunk3d?.data) && state.chain3d;
 // sets it on the body, straight (the planks).
 const trunkPlace = (ex, r) => {
   const pose = ex.trunk3d?.pose;
-  if (!pose || !r?.segs) return undefined;
+  if (!(pose === "lumbar" || pose === "body") || !r?.segs) return undefined;
   const [H, P] = r.segs.pelvis ?? r.segs.trunk, l = Math.hypot(P.x - H.x, P.y - H.y) || 1;
   const L5 = r.joints.find((j) => j.id === "lumbar")?.at ?? P;
   return { flexDeg: pose === "lumbar" ? r.joints.find((j) => j.id === "lumbar")?.angle ?? 0 : 0, at: L5, up: { x: (P.x - H.x) / l, y: (P.y - H.y) / l },
@@ -159,6 +159,7 @@ function setVariant(id, pulley, load, placement) {
   state.pulley = anchored(v) ? { ...(pulley ?? v.load.pulley) } : null;
   $("variant").value = id;
   renderNumbers($("numbers"), state.exercise, v, { peakTorqueNm: state.peakTorqueNm }); // the variant's corrections
+  renderExpertInline($("strength-src"), $("torque-src"), state.exercise, v, state.references);
   $("pulley-controls").hidden = !anchored(v);
   const band = v.load?.type === "band";
   $("pulley-reset").textContent = band ? "Reset anchor" : "Reset pulley";
@@ -594,6 +595,7 @@ function setExercise(id, h = {}) {
   loadWger();
   renderReferences();
   renderNumbers($("numbers"), state.exercise, variant(), { peakTorqueNm: state.peakTorqueNm });
+  renderExpertInline($("strength-src"), $("torque-src"), state.exercise, variant(), state.references);
 }
 
 // ---------- render ----------
@@ -703,13 +705,15 @@ function renderMulti() {
   const act = muscleActivation(ex, v, r, state.angle);
   const { main, cmp, bounds } = curves();
   if (isTrunk3d(ex)) {
-    const prims = trunkScene3d(ex.trunk3d.data, ex, act, trunkPlace(ex, r));
+    // The Pallof press stands up from its top view; the others sit on their 2D result (trunkPlace).
+    const scene = (res) => (ex.trunk3d.pose === "standing" ? pallofScene3d(ex.trunk3d.data, ex, v, res, act, state.body) : trunkScene3d(ex.trunk3d.data, ex, act, trunkPlace(ex, res)));
+    const prims = scene(r);
     // A trunk that moves (back extension): bounds over the whole range, so the figure doesn't jump while animating.
     let bounds = bounds3d([prims], state.cam, 0.04);
     if (ex.trunk3d.pose) {
       const camKey = `trunk ${state.cam.yaw},${state.cam.pitch}`;
       if (curves().camKey !== camKey) {
-        const scenes = main.filter((_, i) => i % 10 === 0 || i === main.length - 1).map((s) => trunkScene3d(ex.trunk3d.data, ex, act, trunkPlace(ex, s)));
+        const scenes = main.filter((_, i) => i % 10 === 0 || i === main.length - 1).map(scene);
         Object.assign(curves(), { camKey, bounds3: bounds3d(scenes, state.cam, 0.04) });
       }
       bounds = curves().bounds3;
@@ -1014,8 +1018,12 @@ function renderView() {
   const { main, cmp, bounds } = curves();
 
   if (isTrunk3d(ex)) {
-    const prims = trunkScene3d(ex.trunk3d.data, ex, act);
-    renderView3d($("figure"), prims, state.cam, bounds3d([prims], state.cam, 0.04));
+    // Crunch and leg raise: the trunk model on the body, bending with the curl (bounds over the range, so it doesn't jump).
+    const scene = (res) => (ex.trunk3d.pose ? trunkChainScene3d(ex.trunk3d.data, ex, v, res, act, gravityOf(v)) : trunkScene3d(ex.trunk3d.data, ex, act));
+    const prims = scene(r);
+    const camKey = `trunk ${state.cam.yaw},${state.cam.pitch}`;
+    if (curves().camKey !== camKey) Object.assign(curves(), { camKey, bounds3: bounds3d(main.filter((_, i) => i % 6 === 0 || i === main.length - 1).map(scene), state.cam, 0.04) });
+    renderView3d($("figure"), prims, state.cam, curves().bounds3);
   } else if (is3d(ex)) {
     // Hip model: 3D figure with the muscles along their model paths; other single-joint exercises:
     // the 2D chain in its plane on a 3D body (chain3d.js). Bounds over the range for this camera
@@ -1042,7 +1050,10 @@ function renderView() {
     ...(cmp ? [{ points: cmp.map((s) => [s.angle, Math.max(0, s.jointTorque)]), className: "compare" }] : []),
     { points: main.map((s) => [s.angle, Math.max(0, s.jointTorque)]), className: "primary" },
   ];
-  renderChart($("torque-chart"), { onScrub: scrubAngle,
+  // Expert mode: dots where the strength curve was measured, on the strength line as drawn.
+  const capAt = (a) => { const i = main.findIndex((s) => s.angle >= a); if (i <= 0) return i === 0 ? main[0].capacity : NaN; const p = main[i - 1], q = main[i]; return p.capacity + ((q.capacity - p.capacity) * (a - p.angle)) / (q.angle - p.angle || 1); };
+  const dots = (ex.strengthCurve?.points ?? []).map(([a, rel]) => ({ x: a, y: capAt(a), className: "measured expert-only", title: `Measured: ${Math.round(rel * 100)}% of peak at ${a}°` }));
+  renderChart($("torque-chart"), { onScrub: scrubAngle, dots,
     xRange: chartRange(), series: torqueSeries, bands, marker: state.angle,
     xLabel: ex.angleLabel, yLabel: "Torque (Nm)", yFormat: (v) => v.toFixed(0),
   });
@@ -1123,6 +1134,9 @@ function renderMuscles(act) {
       li.querySelector(".m-name").textContent = m.name;
       li.querySelector(".m-role").textContent = m.role;
       li.querySelector(".m-note").textContent = m.note;
+      const src = muscleSourceLine(state.exercise, state.exercise.muscles?.find((x) => x.id === m.id), state.references);
+      src.classList.add("m-src", "expert-only");
+      li.append(src);
       return li;
     }));
   }
@@ -1208,7 +1222,8 @@ function bind() {
     showTheme();
   });
   showTheme();
-  // Basic / Expert: expert mode adds the "Sources and numbers" card.
+  // Basic / Expert: expert mode shows the curated numbers and their papers in place (beside the
+  // strength slider, as dots on the strength curve, under each muscle) and the "Sources and numbers" card.
   const modeButtons = [...document.querySelectorAll("[data-mode-set]")];
   const showMode = () => { const m = document.documentElement.dataset.mode ?? "basic"; for (const b of modeButtons) b.setAttribute("aria-pressed", String(b.dataset.modeSet === m)); };
   for (const b of modeButtons) b.addEventListener("click", () => {
@@ -1216,6 +1231,8 @@ function bind() {
     if (m === "basic") delete document.documentElement.dataset.mode; else document.documentElement.dataset.mode = m;
     try { if (m === "basic") localStorage.removeItem("mode"); else localStorage.setItem("mode", m); } catch (e) { /* storage blocked */ }
     showMode();
+    // Switching to expert opens the full card at the bottom too (the numbers also appear in place).
+    if (m === "expert") { chosen.numbers = false; applyFold($("numbers-card")); }
   });
   showMode();
   for (const b of document.querySelectorAll("[data-edge-view]")) b.addEventListener("click", () => { state.edgeView = b.dataset.edgeView; render(); });
@@ -1269,7 +1286,8 @@ function bind() {
     btn.addEventListener("click", () => { chosen[box.dataset.fold] = !box.classList.contains("folded"); applyFold(box); });
   }
   const applyFold = (box) => {
-    const shut = chosen[box.dataset.fold] ?? narrow();
+    // In expert mode the "Sources and numbers" card starts open, on narrow screens too.
+    const shut = chosen[box.dataset.fold] ?? (box.dataset.fold === "numbers" && document.documentElement.dataset.mode === "expert" ? false : narrow());
     box.classList.toggle("folded", shut);
     box.querySelector(".fold-toggle").setAttribute("aria-expanded", String(!shut));
   };
@@ -1393,6 +1411,7 @@ function setupIntro() {
   $("intro-open").addEventListener("click", open);
   let seen = false;
   try { seen = localStorage.getItem("introSeen") === "1"; } catch (e) { seen = true; /* can't remember it: don't nag */ }
+  if (new URLSearchParams(location.search).has("nointro")) seen = true; // e.g. an embedded page or a screenshot
   if (!seen && !navigator.webdriver) open();
 }
 

@@ -40,7 +40,7 @@ export function yScale(series, yMax, yMin = 0) {
  * bands:  [{ from, to, label }] shaded x-ranges (e.g. exercise phases)
  * marker: x position of the current-angle line
  */
-export function renderChart(svg, { xRange, yMax, yMin = 0, series, bands = [], marker, xLabel, yLabel, yFormat = (v) => v, xUnit = "°", xStep: xStepIn, onScrub }) {
+export function renderChart(svg, { xRange, yMax, yMin = 0, series, bands = [], marker, dots = [], xLabel, yLabel, yFormat = (v) => v, xUnit = "°", xStep: xStepIn, onScrub }) {
   // viewBox follows the rendered width (360–600) so labels stay legible on phones.
   const W = Math.round(Math.max(360, Math.min(600, svg.clientWidth || 600)));
   const H = Math.round(Math.max(220, W * 0.42));
@@ -74,6 +74,13 @@ export function renderChart(svg, { xRange, yMax, yMin = 0, series, bands = [], m
   for (const s of series) {
     const d = s.points.map(([x, y], i) => `${i ? "L" : "M"}${X(x).toFixed(1)},${Y(y).toFixed(1)}`).join("");
     el("path", { d, class: `line ${s.className}` }, svg);
+  }
+
+  // Single points (e.g. the measured angles of a strength curve), with a hover title.
+  for (const d of dots) {
+    if (d.x < x0 || d.x > x1 || !Number.isFinite(d.y)) continue;
+    const n = el("circle", { cx: X(d.x), cy: Y(d.y), r: 4, class: d.className ?? "dot" }, svg);
+    if (d.title) el("title", {}, n).textContent = d.title;
   }
 
   if (marker != null) {
