@@ -75,8 +75,8 @@
       "driver": "jointEffort",
       "joint": "lumbar",
       "weight": [[0, 0.6], [80, 0.6]],
-      "note": "34% of its maximum in the side bridge (Ekstrom et al.), 28 ± 20% in Horsak et al.'s.",
-      "source": "Ekstrom RA, Donatelli RA, Carp KC (2007). Electromyographic analysis of core trunk, hip, and thigh muscles during 9 rehabilitation exercises. J Orthop Sports Phys Ther 37(12):754–762. doi:10.2519/jospt.2007.2471 (Tables 1, 3 and 4: 30 healthy adults, % of maximal isometric activation); Horsak B, Wunsch R, Bernhart P, Gorgas AM, Bichler R, Lampel K (2017). Trunk muscle activation levels during eight stabilization exercises used in the functional kinetics concept: a controlled laboratory study. J Back Musculoskelet Rehabil 30:497–508. doi:10.3233/BMR-140259 (abstract and discussion: 20 young adults, 14 women, right side, % of maximal isometric activation)"
+      "note": "34% of its maximum in the side bridge (Ekstrom et al.), 28 ± 20% in Horsak et al.'s. With a maximal breath out it reached about 75% of maximum (Oliva-Lozano & Muyor's review).",
+      "source": "Ekstrom RA, Donatelli RA, Carp KC (2007). Electromyographic analysis of core trunk, hip, and thigh muscles during 9 rehabilitation exercises. J Orthop Sports Phys Ther 37(12):754–762. doi:10.2519/jospt.2007.2471 (Tables 1, 3 and 4: 30 healthy adults, % of maximal isometric activation); Horsak B, Wunsch R, Bernhart P, Gorgas AM, Bichler R, Lampel K (2017). Trunk muscle activation levels during eight stabilization exercises used in the functional kinetics concept: a controlled laboratory study. J Back Musculoskelet Rehabil 30:497–508. doi:10.3233/BMR-140259 (abstract and discussion: 20 young adults, 14 women, right side, % of maximal isometric activation); Oliva-Lozano JM, Muyor JM (2020). Core muscle activity during physical fitness exercises: a systematic review. Int J Environ Res Public Health 17(12):4306. doi:10.3390/ijerph17124306 (results summary, values of the primary studies as reported there)"
     },
     {
       "id": "gluteus-medius",

@@ -188,3 +188,21 @@ test("leg curl: toes pulled up vs pointed changes knee-flexion strength by the m
     assert.equal(up.jointTorque, pointed.jointTorque);
   }
 });
+
+test("hand-computed: deep squat, the thigh–calf contact takes force × lever off the knee (none above 130°), and leaves the hip alone", async () => {
+  const { analyzeMulti } = await import("../js/multijoint.js");
+  const ex = JSON.parse(readFileSync(new URL("../data/exercises/squat.json", import.meta.url)));
+  const body = JSON.parse(readFileSync(new URL("../data/body.json", import.meta.url)));
+  const v = ex.variants[0];
+  // Side push fixed: "auto" would re-optimise it when the knee load changes.
+  const run = (x, spec) => analyzeMulti({ ...ex, thighCalf: spec }, v, x, { loadKg: 40, bodyMassKg: 75, body, placement: { ...v.params, sidePush: 0 } });
+  const knee = (r) => r.joints.find((j) => j.id === "knee").torque, hip = (r) => r.joints.find((j) => j.id === "hip").torque;
+  // Above 130° nothing changes.
+  assert.equal(knee(run(120, ex.thighCalf)), knee(run(120, undefined)));
+  // At 150°: 27.9% of body weight per leg, perpendicular to the shank 15.1 cm below the knee → F × 0.151 m less knee torque.
+  const F = 0.279 * 75 * 9.81;
+  const withC = run(150, ex.thighCalf), without = run(150, undefined);
+  assert.ok(Math.abs(knee(without) - knee(withC) - F * 0.151) < 1, `${knee(without) - knee(withC)} vs ${F * 0.151}`);
+  assert.ok(Math.abs(hip(without) - hip(withC)) < 1e-6, "the hip is unchanged");
+  assert.ok(withC.forces.length === 4, "the contact is drawn as a force on each calf");
+});

@@ -63,8 +63,8 @@
       "role": "Prime mover",
       "driver": "jointEffort",
       "weight": [[-20, 1], [40, 1]],
-      "note": "Curls the ribcage towards the pelvis: in floor crunches 56% (upper part) and 48% (lower part) of its maximum (Escamilla et al.).",
-      "source": "Escamilla RF, Babb E, DeWitt R, Jew P, Kelleher P, Burnham T, Busch J, D'Anna K, Mowbray R, Imamura RT (2006). Electromyographic analysis of traditional and nontraditional abdominal exercises: implications for rehabilitation and training. Phys Ther 86(5):656–671. doi:10.1093/ptj/86.5.656 (Table 2: % of maximal isometric activation, 21 adults)",
+      "note": "Curls the ribcage towards the pelvis: in floor crunches 56% (upper part) and 48% (lower part) of its maximum (Escamilla et al.). Across studies (Oliva-Lozano & Muyor's review): up to 81% of maximum in a static curl-up with the hands behind the neck (hips 60°, knees 90°), 68% with the arms crossed on the chest.",
+      "source": "Escamilla RF, Babb E, DeWitt R, Jew P, Kelleher P, Burnham T, Busch J, D'Anna K, Mowbray R, Imamura RT (2006). Electromyographic analysis of traditional and nontraditional abdominal exercises: implications for rehabilitation and training. Phys Ther 86(5):656–671. doi:10.1093/ptj/86.5.656 (Table 2: % of maximal isometric activation, 21 adults); Oliva-Lozano JM, Muyor JM (2020). Core muscle activity during physical fitness exercises: a systematic review. Int J Environ Res Public Health 17(12):4306. doi:10.3390/ijerph17124306 (results summary, values of the primary studies as reported there)",
       "draw": {"seg": "proximal", "along": [0.03, 0.3], "offset": -0.085, "w": 0.05, "layer": 1}
     },
     {
@@ -75,8 +75,8 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "weight": [[-20, 0.5], [40, 0.5]],
-      "note": "Helps flex the trunk: 27% of its maximum in the floor crunch, about half the rectus abdominis (the internal oblique 42%; Escamilla et al.). It works much harder when the crunch twists, or in a sit-up (50%).",
-      "source": "Escamilla RF, Babb E, DeWitt R, Jew P, Kelleher P, Burnham T, Busch J, D'Anna K, Mowbray R, Imamura RT (2006). Electromyographic analysis of traditional and nontraditional abdominal exercises: implications for rehabilitation and training. Phys Ther 86(5):656–671. doi:10.1093/ptj/86.5.656 (Table 2: % of maximal isometric activation, 21 adults)",
+      "note": "Helps flex the trunk: 27% of its maximum in the floor crunch, about half the rectus abdominis (the internal oblique 42%; Escamilla et al.). It works much harder when the crunch twists, or in a sit-up (50%). Up to 71% of maximum in a curl-up with the hips at 90° and a maximal breath out (Oliva-Lozano & Muyor's review).",
+      "source": "Escamilla RF, Babb E, DeWitt R, Jew P, Kelleher P, Burnham T, Busch J, D'Anna K, Mowbray R, Imamura RT (2006). Electromyographic analysis of traditional and nontraditional abdominal exercises: implications for rehabilitation and training. Phys Ther 86(5):656–671. doi:10.1093/ptj/86.5.656 (Table 2: % of maximal isometric activation, 21 adults); Oliva-Lozano JM, Muyor JM (2020). Core muscle activity during physical fitness exercises: a systematic review. Int J Environ Res Public Health 17(12):4306. doi:10.3390/ijerph17124306 (results summary, values of the primary studies as reported there)",
       "draw": {"seg": "proximal", "along": [0.06, 0.24], "offset": -0.05, "w": 0.05, "layer": 0}
     }
   ],
