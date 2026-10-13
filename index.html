@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Force Curve Lab</title>
   <meta name="description" content="Interactive teaching tool: resistance curves, strength curves and muscle involvement for strength exercises across equipment variants.">
-  <script>try { const t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; const l = localStorage.getItem("layout"); if (l === "side" || l === "stacked") document.documentElement.dataset.layout = l; } catch (e) {}</script>
+  <script>try { const t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; const l = localStorage.getItem("layout"); if (l === "side" || l === "stacked") document.documentElement.dataset.layout = l; if (localStorage.getItem("mode") === "expert") document.documentElement.dataset.mode = "expert"; } catch (e) {}</script>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -21,6 +21,10 @@
         <button type="button" data-layout-set="auto" title="Figure beside the curves on wide screens, one column on narrow ones">Auto</button>
         <button type="button" data-layout-set="side" title="Figure stays beside the curves while you scroll">Side by side</button>
         <button type="button" data-layout-set="stacked" title="One column, sections fold">Stacked</button>
+      </div>
+      <div class="theme-switch" role="group" aria-label="Detail">
+        <button type="button" data-mode-set="basic" title="The lesson: figure, curves, muscles">Basic</button>
+        <button type="button" data-mode-set="expert" title="Also the measured numbers and sources behind each curve and muscle share">Expert</button>
       </div>
     </div>
     <p class="tagline">How equipment and positioning change where an exercise is hard and which muscles do the work.</p>
@@ -179,6 +183,12 @@
         </div>
         <p class="hint"><span id="wger-img-credit"></span> · Text CC-BY-SA 3.0 · <a id="wger-link" target="_blank" rel="noopener">View on wger.de</a></p>
       </div>
+    </section>
+
+    <section class="card numbers" id="numbers-card" aria-label="Sources and numbers" data-fold="numbers">
+      <h3>Sources and numbers</h3>
+      <p class="hint">The curated numbers behind this exercise, as the model uses them: each joint's measured strength curve and peak torque, each muscle's share and the corrections, with the note and source of each. Open an item for its table.</p>
+      <div id="numbers"></div>
     </section>
 
     <section class="card references" id="references-card" aria-label="References" data-fold="references">

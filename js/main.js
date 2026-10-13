@@ -12,6 +12,7 @@ import { renderFingersView, renderHandView, renderArmView } from "./edgefig.js";
 import { hipScene3d } from "./hipmodel.js";
 import { chainScene3d } from "./chain3d.js";
 import { trunkScene3d } from "./trunk3d.js";
+import { renderNumbers } from "./numbers.js";
 import { handScene3d, pinchValueOf, pinchBlock } from "./handfig3d.js";
 import { analyzePinch, samplePinch } from "./pinchlift.js";
 import { renderPinchView } from "./pinchfig.js";
@@ -157,6 +158,7 @@ function setVariant(id, pulley, load, placement) {
   if (kg != null) { state.loadKg = kg; $("load").value = kg; $("load-out").textContent = `${kg} kg`; }
   state.pulley = anchored(v) ? { ...(pulley ?? v.load.pulley) } : null;
   $("variant").value = id;
+  renderNumbers($("numbers"), state.exercise, v, { peakTorqueNm: state.peakTorqueNm }); // the variant's corrections
   $("pulley-controls").hidden = !anchored(v);
   const band = v.load?.type === "band";
   $("pulley-reset").textContent = band ? "Reset anchor" : "Reset pulley";
@@ -201,6 +203,17 @@ function setZoom(on) {
   $("zoom-toggle").textContent = on ? "Show the whole body" : "Zoom to the joint";
 }
 
+/** An ⓘ button whose explanation floats beside it (hover, keyboard focus or tap; see bind()). */
+function infoTip(text, about) {
+  const wrap = Object.assign(document.createElement("span"), { className: "info" });
+  const btn = Object.assign(document.createElement("button"), { type: "button", className: "info-btn", textContent: "i" });
+  btn.setAttribute("aria-expanded", "false");
+  btn.setAttribute("aria-label", `What does ${about} do?`);
+  const tip = Object.assign(document.createElement("span"), { className: "info-text", role: "tooltip", textContent: text });
+  wrap.append(btn, tip);
+  return wrap;
+}
+
 /** Foot-placement sliders (3D lifts): start from the variant's preset. */
 function setPlacement(v, override = {}) {
   // A slider can belong to some variants only (e.g. the trunk lean of a seated machine).
@@ -227,8 +240,9 @@ function setPlacement(v, override = {}) {
       for (const [v, text] of s.options) sel.append(new Option(text, v));
       sel.value = state.placement[s.key];
       sel.addEventListener("change", () => { state.placement[s.key] = sel.value; writeHash(); render(); });
-      label.append(`${s.label} `, sel);
-      if (s.hint) label.append(Object.assign(document.createElement("small"), { className: "slider-hint", textContent: s.hint }));
+      const row = Object.assign(document.createElement("span"), { className: "label-row" });
+      row.append(s.label, ...(s.hint ? [infoTip(s.hint, s.label.toLowerCase())] : []));
+      label.append(row, sel);
       return [label];
     }
     const label = document.createElement("label");
@@ -237,8 +251,9 @@ function setPlacement(v, override = {}) {
     const input = Object.assign(document.createElement("input"), { type: "range", min: s.min, max: s.max, step: s.step, value: isAuto() ? 0 : state.placement[s.key] });
     const show = () => { out.textContent = isAuto() ? "auto" : `${s.decimals != null ? (state.placement[s.key] * s.scale).toFixed(s.decimals) : Math.round(state.placement[s.key] * s.scale)} ${s.unit}`.trim(); input.disabled = isAuto(); };
     input.addEventListener("input", () => { state.placement[s.key] = +input.value; show(); writeHash(); renderSoon(); });
-    label.append(`${s.label} `, out, input);
-    if (s.hint) label.append(Object.assign(document.createElement("small"), { className: "slider-hint", textContent: s.hint }));
+    const row = Object.assign(document.createElement("span"), { className: "label-row" });
+    row.append(`${s.label} `, out, ...(s.hint ? [infoTip(s.hint, s.label.toLowerCase())] : []));
+    label.append(row, input);
     if (s.auto) {
       // A value the model can pick itself (e.g. the least-effort sideways floor push).
       const box = Object.assign(document.createElement("input"), { type: "checkbox", checked: isAuto() });
@@ -313,9 +328,9 @@ function edgeBars(specs) {
   });
   const auto = Object.assign(document.createElement("label"), { className: "auto-toggle" });
   auto.append(autoBox, " Fits this hand (every finger in the grip's own angles)");
-  const hint = Object.assign(document.createElement("small"), { className: "slider-hint", textContent: "All at 0 = a straight edge. Only the differences between the fingers matter. Shaped blocks raise or lower the edge under some fingers; the fitted profile shows what a hand of these lengths would need." });
+  head.append(" ", infoTip("All at 0 = a straight edge. Only the differences between the fingers matter. Shaped blocks raise or lower the edge under some fingers; the fitted profile shows what a hand of these lengths would need.", "the edge height"));
   grid.append(...cols.map((c) => c.col));
-  box.append(head, grid, auto, hint);
+  box.append(head, grid, auto);
   box.refresh = show;
   show();
   return box;
@@ -374,7 +389,7 @@ function strengthInfo(ex) {
   const why = "Why it matters: effort = the load's torque ÷ strength at that angle, so strength decides how hard the same load feels, where it fails (the sticking point is where effort peaks) and how much load is possible. It doesn't move the resistance curve: a stronger lifter has the same hardest point, just further from the limit.";
   if (ex.model === "finger") return `100% = typical maximum finger forces measured in recreational climbers (the reference tendon tensions and fingertip forces in the sources). The percentage scales every finger's maximum together. Strong climbers are often well above 100%: climbers around French 7a (IRCRA 20) held 133% of their body mass for 5 s in a two-arm hang on a 21 mm edge (Ferrer-Uris et al. 2023), which this model reaches at about 125% (half crimp) to 150% (full crimp); in one-arm hangs on a 20 mm rung, 421 intermediate to elite climbers held about 85% (men, about 60 kg) and 80% (women, about 44 kg) of body mass (Torr et al. 2022): about 160% and 115% here in the half crimp. ${why}`;
   if (ex.model === "pinch") return `100% = the mean maximal pinch of advanced climbers (about 60 kg, men and women) on 5–8 cm wooden pinch holds, about 194 N on each face (Huang et al.); a pinch gauge between thumb and two finger pads gives about half that in untrained adults. ${why}`;
-  if (ex.model === "multi") return `100% = typical peak torques of each joint (hip, knee, ankle, shoulder, elbow …) for young adults, from the studies listed under References; each joint keeps its own strength curve over its angle. The percentage scales them all together. ${why}`;
+  if (ex.model === "multi") return `100% = typical peak torques of each joint (hip, knee, ankle, shoulder, elbow …) measured on strength-testing machines in young adults, mostly untrained or recreationally active, from the studies listed under References; each joint keeps its own strength curve over its angle. The percentage scales them all together. Machine tests measure less than people manage in a free lift, and trained lifters are much stronger, so at 100% the lifts come out light (a 75 kg adult: about a 40 kg deadlift and a 43 kg squat). For people who train, roughly 150–200% is closer (an estimate, not a measured value). ${why}`;
   return `The most torque the muscles doing this lift can produce about the ${ex.joint.toLowerCase().replace(/ (flexion|extension|abduction|adduction|horizontal adduction).*$/, "")} at their strongest angle, in newton-metres; the default is a typical untrained to recreationally trained adult from the strength study in References. Over the range it follows the strength curve (the dotted line in the chart): muscles are weaker at some angles than others. ${why}`;
 }
 
@@ -531,7 +546,7 @@ function setExercise(id, h = {}) {
   state.peakTorqueNm = ex.defaults.peakTorqueNm;
   state.bodyMassKg = ex.defaults.bodyMassKg ?? 75;
   [$("load").min, $("load").max, $("load").step] = ui.load;
-  [$("strength").min, $("strength").max] = pct ? [50, 150] : ui.strength;
+  [$("strength").min, $("strength").max] = pct ? [50, 200] : ui.strength;
   state.strengthPct = 100;
   $("bodymass-control").hidden = !usesBodyMass(ex);
   $("bodymass").value = state.bodyMassKg; $("bodymass-out").textContent = `${state.bodyMassKg} kg`;
@@ -578,6 +593,7 @@ function setExercise(id, h = {}) {
   buildDetail();
   loadWger();
   renderReferences();
+  renderNumbers($("numbers"), state.exercise, variant(), { peakTorqueNm: state.peakTorqueNm });
 }
 
 // ---------- render ----------
@@ -731,7 +747,9 @@ function renderMulti() {
 
   $("angle-out").textContent = `${state.angle.toFixed(0)}${unit}`;
   const body = $("joint-table").tBodies[0];
-  body.replaceChildren(...r.joints.map((j) => {
+  // Components with no torque anywhere in this lift (e.g. abduction in the bench plane on a flat bench) are left out.
+  const used = new Set(main.flatMap((s) => s.joints.filter((j) => Math.abs(j.torque) > 0.5).map((j) => j.id)));
+  body.replaceChildren(...r.joints.filter((j) => used.has(j.id)).map((j) => {
     const tr = document.createElement("tr");
     const opposite = j.torque < -0.5;
     const action = opposite && j.negative ? j.negative.action : j.action;
@@ -1190,17 +1208,41 @@ function bind() {
     showTheme();
   });
   showTheme();
+  // Basic / Expert: expert mode adds the "Sources and numbers" card.
+  const modeButtons = [...document.querySelectorAll("[data-mode-set]")];
+  const showMode = () => { const m = document.documentElement.dataset.mode ?? "basic"; for (const b of modeButtons) b.setAttribute("aria-pressed", String(b.dataset.modeSet === m)); };
+  for (const b of modeButtons) b.addEventListener("click", () => {
+    const m = b.dataset.modeSet;
+    if (m === "basic") delete document.documentElement.dataset.mode; else document.documentElement.dataset.mode = m;
+    try { if (m === "basic") localStorage.removeItem("mode"); else localStorage.setItem("mode", m); } catch (e) { /* storage blocked */ }
+    showMode();
+  });
+  showMode();
   for (const b of document.querySelectorAll("[data-edge-view]")) b.addEventListener("click", () => { state.edgeView = b.dataset.edgeView; render(); });
 // Info buttons: the explanation floats next to the button on hover or keyboard focus; a tap
   // (touch screens) pins it open until the next tap anywhere.
-  for (const b of document.querySelectorAll(".info-btn")) b.addEventListener("click", (e) => {
-    e.preventDefault(); // inside a <label>: don't move focus to the slider
-    e.stopPropagation();
-    const open = b.getAttribute("aria-expanded") !== "true";
+  // Keep an open explanation inside the screen: it is centred on its button, which near an edge
+  // (phones) would put part of it off-screen.
+  const fitTip = (b) => {
+    const tip = b?.nextElementSibling;
+    if (!tip?.classList.contains("info-text")) return;
+    tip.style.marginLeft = "0px";
+    const r = tip.getBoundingClientRect(), pad = 8, W = document.documentElement.clientWidth;
+    if (!r.width) return; // not shown (yet)
+    const dx = r.left < pad ? pad - r.left : r.right > W - pad ? W - pad - r.right : 0;
+    tip.style.marginLeft = `${Math.round(dx)}px`;
+  };
+  for (const ev of ["pointerover", "focusin"]) document.addEventListener(ev, (e) => { const b = e.target.closest?.(".info-btn"); if (b) fitTip(b); });
+  // Delegated, so buttons built later (the set-up sliders' ⓘ) work too.
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest?.(".info-btn");
+    const wasOpen = b?.getAttribute("aria-expanded") === "true";
     for (const o of document.querySelectorAll(".info-btn")) o.setAttribute("aria-expanded", "false");
-    b.setAttribute("aria-expanded", String(open));
+    if (!b) return;
+    e.preventDefault(); // inside a <label>: don't move focus to the slider
+    b.setAttribute("aria-expanded", String(!wasOpen));
+    fitTip(b);
   });
-  document.addEventListener("click", () => { for (const o of document.querySelectorAll(".info-btn")) o.setAttribute("aria-expanded", "false"); });
   // Floating control bar: appears once the main slider has scrolled off the top of the screen.
   $("dock-angle").addEventListener("input", (e) => { $("angle").value = e.target.value; $("angle").dispatchEvent(new Event("input")); });
   $("dock-play").addEventListener("click", () => $("play").click());

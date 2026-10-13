@@ -147,12 +147,13 @@
       "wgerId": 11,
       "role": "Synergist",
       "driver": "jointEffort",
-      "joint": "hip",
       "weight": [[0, 0.4], [90, 0.64]],
-      "note": "Extend the hip; with the knee bending at the same time they change length little, so they help less in squats than in hinges. Measured 20% lower than in a barbell deadlift at 1RM (Andersen et al.), so these weights are 0.8 of the earlier estimate; 2.7 times the back squat's biceps femoris at 10RM (Contreras et al.).",
+      "note": "Extend the hip; with the knee bending at the same time they change length little, so they help less in squats than in hinges. Measured 20% lower than in a barbell deadlift at 1RM (Andersen et al.), so these weights are 0.8 of the earlier estimate; 2.7 times the back squat's biceps femoris at 10RM (Contreras et al.). With the feet far out (bridge) the knee also needs flexing against the load; the hamstrings take that too (the larger of the two demands).",
       "source": "Andersen V, Fimland MS, Mo DA, Iversen VM, Vederhus T, Rockland Hellebø LR, Nordaune KI, Saeterbakken AH (2018). Electromyographic comparison of barbell deadlift, hex bar deadlift, and hip thrust exercises: a cross-over study. J Strength Cond Res 32(3):587–593. doi:10.1519/JSC.0000000000001826 (13 trained men, 1RM); Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J (2015). A comparison of gluteus maximus, biceps femoris, and vastus lateralis electromyographic activity in the back squat and barbell hip thrust exercises. J Appl Biomech 31(6):452–458. doi:10.1123/jab.2014-0301 (13 trained women, 10RM, mean % of maximal isometric activation)",
       "draw": {"seg": "thigh", "along": [0.06, 0.34], "offset": 0.045, "w": 0.055},
-      "draw3d": {"seg": "thigh", "side": "posterior", "along": [0.12, 0.36], "offset": 0.06, "w": 0.06}
+      "draw3d": {"seg": "thigh", "side": "posterior", "along": [0.12, 0.36], "offset": 0.06, "w": 0.06},
+      "joints": ["hip", "knee"],
+      "jointSign": {"knee": -1}
     },
     {
       "id": "adductor-magnus",
@@ -177,10 +178,12 @@
       "driver": "jointEffort",
       "joint": "knee",
       "weight": [[0, 1], [130, 1]],
-      "note": "Knee extensors: their share follows the knee torque. The vastus lateralis was as active as in the back squat (Contreras et al.: 100% vs 110% of maximum at 10RM), well above this model (knee torque only): it also holds the bent knee against the hamstrings.",
+      "note": "Knee extensors: their share follows the knee torque. The vastus lateralis was as active as in the back squat (Contreras et al.: 100% vs 110% of maximum at 10RM), well above a model driven by the knee torque alone: they also hold the bent knee against the hamstrings. So here they carry the knee torque plus the active hamstrings' pull (their activation × knee-flexion strength × 0.75, the hamstrings' share of it, an estimate; the rest is mostly the gastrocnemius). Still well below the measured level: in the lower half of the thrust the knee needs flexing overall, and the hamstrings' modelled pull doesn't exceed that, so the model has the quadriceps nearly idle there (mean 0.08 at 75% 1RM vs the squat's 0.35). The measured activity points to co-contraction for knee stability beyond these mechanics. Apart from that pull they work only when the knee needs extending; in a bridge (feet far out) the knee needs flexing throughout, which the hamstrings take.",
       "source": "Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J (2015). A comparison of gluteus maximus, biceps femoris, and vastus lateralis electromyographic activity in the back squat and barbell hip thrust exercises. J Appl Biomech 31(6):452–458. doi:10.1123/jab.2014-0301 (13 trained women, 10RM, mean % of maximal isometric activation)",
       "draw": {"seg": "thigh", "along": [0.08, 0.36], "offset": -0.05, "w": 0.065},
-      "draw3d": {"seg": "thigh", "side": "anterior", "along": [0.08, 0.36], "offset": 0.05, "w": 0.065}
+      "draw3d": {"seg": "thigh", "side": "anterior", "along": [0.08, 0.36], "offset": 0.05, "w": 0.065},
+      "coContract": {"with": "hamstrings", "joint": "knee", "share": 0.75},
+      "sign": 1
     },
     {
       "id": "adductors",

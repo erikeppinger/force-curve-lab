@@ -136,9 +136,10 @@
       "driver": "jointEffort",
       "joint": "knee",
       "weight": [[0, 1], [130, 1]],
-      "note": "Knee extensors: their share follows the knee torque. Net joint torques can't say how stance or toe angle shifts work between the four heads. No change with the toe angle (Escamilla et al. 2001); vastus lateralis 110% of maximum at 10RM (Contreras et al.), the same in partial and full squats (da Silva et al.).",
+      "note": "Knee extensors: their share follows the knee torque. Net joint torques can't say how stance or toe angle shifts work between the four heads. No change with the toe angle (Escamilla et al. 2001); vastus lateralis 110% of maximum at 10RM (Contreras et al.), the same in partial and full squats (da Silva et al.). They work only when the knee needs extending; near lockout (or in a bridge) the knee's torque can point the other way, which the knee flexors or the locked knee take.",
       "source": "Escamilla RF, Fleisig GS, Zheng N, Lander JE, Barrentine SW, Andrews JR, Bergemann BW, Moorman CT (2001). Effects of technique variations on knee biomechanics during the squat and leg press. Med Sci Sports Exerc 33(9):1552–1566. doi:10.1097/00005768-200109000-00020 (10 experienced lifters, 12RM); Contreras B, Vigotsky AD, Schoenfeld BJ, Beardsley C, Cronin J (2015). A comparison of gluteus maximus, biceps femoris, and vastus lateralis electromyographic activity in the back squat and barbell hip thrust exercises. J Appl Biomech 31(6):452–458. doi:10.1123/jab.2014-0301 (13 trained women, 10RM, mean % of maximal isometric activation); da Silva JJ, Schoenfeld BJ, Marchetti PN, Pecoraro SL, Greve JM, Marchetti PH (2017). Muscle activation differs between partial and full back squat exercise with external load equated. J Strength Cond Res 31(6):1688–1693. doi:10.1519/JSC.0000000000001713 (15 trained men, 10RM)",
-      "draw3d": {"seg": "thigh", "side": "anterior", "along": [0.08, 0.36], "offset": 0.05, "w": 0.065}
+      "draw3d": {"seg": "thigh", "side": "anterior", "along": [0.08, 0.36], "offset": 0.05, "w": 0.065},
+      "sign": 1
     },
     {
       "id": "gluteus-maximus",

@@ -135,10 +135,11 @@
       "driver": "jointEffort",
       "joint": "knee",
       "weight": [[0, 1], [130, 1]],
-      "note": "Knee extensors: their share follows the knee torque.",
+      "note": "Knee extensors: their share follows the knee torque. They work only when the knee needs extending; near lockout (or in a bridge) the knee's torque can point the other way, which the knee flexors or the locked knee take.",
       "source": "McCurdy K, Walker J, Yuen D (2018). Gluteus maximus and hamstring activation during selected weight-bearing resistance exercises. J Strength Cond Res 32(3):594–601. doi:10.1519/JSC.0000000000001893 (18 trained women, 8RM, % of maximal isometric activation)",
       "draw": {"seg": "thigh", "along": [0.08, 0.36], "offset": -0.05, "w": 0.065},
-      "draw3d": {"seg": "thigh", "side": "anterior", "along": [0.08, 0.36], "offset": 0.05, "w": 0.065}
+      "draw3d": {"seg": "thigh", "side": "anterior", "along": [0.08, 0.36], "offset": 0.05, "w": 0.065},
+      "sign": 1
     },
     {
       "id": "gluteus-maximus",

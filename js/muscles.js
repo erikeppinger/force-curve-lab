@@ -39,7 +39,7 @@ export function muscleActivation(exercise, variant, result, angleDeg) {
     });
   }
   if (exercise.model === "multi") {
-    return exercise.muscles.map((m) => {
+    const acts = exercise.muscles.map((m) => {
       if (m.driver === "none") return { ...m, value: null };
       // A muscle can serve several joint components (`joints`, e.g. the lats: shoulder extension
       // and adduction); it takes the largest demand among them.
@@ -47,12 +47,33 @@ export function muscleActivation(exercise, variant, result, angleDeg) {
       const value = Math.max(...(m.joints ?? [m.joint]).map((id) => {
         const j = result.joints.find((x) => x.id === id);
         // Two-sided joints: a muscle with `sign` only works when the torque has that sign.
-        if (m.sign && Math.sign(j.torque) !== m.sign) return 0;
+        // `jointSign` sets it per joint (the hip thrust's hamstrings: hip extension, knee flexion).
+        const sign = m.jointSign?.[id] ?? m.sign;
+        if (sign && Math.sign(j.torque) !== sign) return 0;
         // `jointScale`: a joint the muscle follows at a fraction (e.g. the lats with the elbow in a pull).
         return j.effort * interp(m.weight, j.angle) * (m.jointScale?.[id] ?? 1);
       }));
       return { ...m, value: Math.min(1, Math.max(0, value * mod)) };
     });
+    // `coContract` { with, joint, share }: a muscle that also has to hold against another muscle's
+    // pull at its joint (the quadriceps against the hamstrings at the knee in a hip thrust). Its
+    // load is the net torque plus the other muscle's activation × the opposite direction's
+    // strength × its share of that strength, over this direction's strength.
+    for (const m of acts) {
+      const c = m.coContract;
+      if (!c || m.value == null) continue;
+      const other = acts.find((x) => x.id === c.with), j = result.joints.find((x) => x.id === c.joint);
+      if (!other?.value || !j?.negative || !(j.capacity > 0)) continue;
+      // Both directions' strength at this angle, with the joint's scale (strength slider, posture)
+      // recovered from the capacity it reports for the direction its torque points in. The net
+      // torque may point the other way (a bridge's knee): the muscle then holds only the excess.
+      const pos = interp(j.strength.points, j.angle) * j.peakTorqueNm;
+      const neg = interp(j.negative.points ?? j.strength.points, j.angle) * j.negative.peakTorqueNm;
+      const k = j.capacity / (j.torque < 0 ? neg : pos);
+      const load = (j.torque + other.value * neg * k * (c.share ?? 1)) / (pos * k);
+      m.value = Math.min(1, Math.max(m.value, load * interp(m.weight, j.angle) * (variant.muscleModifiers?.[m.id] ?? 1)));
+    }
+    return acts;
   }
   const geo = exercise.hipModel?.geometry;
   const hipActs = geo && result.hip ? hipActivations(exercise, variant, result, geo) : null;
