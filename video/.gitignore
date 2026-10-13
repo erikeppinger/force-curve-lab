@@ -1,0 +1,5 @@
+# Generated: frames, check images, the recording browser profile, the full-size video
+frames/
+check/
+.edge-profile/
+*.mp4

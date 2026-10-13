@@ -1375,6 +1375,27 @@ function renderReferences() {
   }));
 }
 
+/** The intro video: shown once on the first visit, then from the header button. */
+function setupIntro() {
+  const dlg = $("intro"), video = $("intro-video");
+  if (!dlg?.showModal) return; // very old browsers: no dialog, no intro
+  const open = () => {
+    if (!dlg.open) dlg.showModal();
+    video.play().catch(() => { /* autoplay refused: the play button is there */ });
+  };
+  const close = () => dlg.open && dlg.close();
+  dlg.addEventListener("close", () => {
+    video.pause();
+    try { localStorage.setItem("introSeen", "1"); } catch (e) { /* storage blocked: it may show again */ }
+  });
+  for (const b of dlg.querySelectorAll("[data-intro-close]")) b.addEventListener("click", close);
+  dlg.addEventListener("click", (e) => { if (e.target === dlg) close(); }); // a click on the backdrop
+  $("intro-open").addEventListener("click", open);
+  let seen = false;
+  try { seen = localStorage.getItem("introSeen") === "1"; } catch (e) { seen = true; /* can't remember it: don't nag */ }
+  if (!seen && !navigator.webdriver) open();
+}
+
 async function init() {
   const h = readHash();
   const [all, body, refs] = await Promise.all([Promise.all(EXERCISES.map(loadExercise)), fetch("data/body.json").then((r) => r.json()),
@@ -1392,6 +1413,7 @@ async function init() {
   }
   setExercise(EXERCISES.includes(h.ex) ? h.ex : EXERCISES[0], h);
   bind();
+  setupIntro();
   addEventListener("resize", () => { if (!state.playing) render(); });
   // A pasted or clicked link with a new #… (no reload): apply it. Our own writeHash uses
   // history.replaceState, which doesn't fire this event.

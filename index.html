@@ -27,7 +27,7 @@
         <button type="button" data-mode-set="expert" title="Also the measured numbers and sources behind each curve and muscle share">Expert</button>
       </div>
     </div>
-    <p class="tagline">How equipment and positioning change where an exercise is hard and which muscles do the work.</p>
+    <p class="tagline">How equipment and positioning change where an exercise is hard and which muscles do the work. <button type="button" id="intro-open" class="link-button">▶ Intro video</button></p>
   </header>
 
   <main>
@@ -213,6 +213,21 @@
     <p>Educational model: idealised 2D statics (no acceleration, friction or pulley ratios). Strength curves are approximate shapes; muscle activation values are illustrative estimates. Exercise descriptions and muscle images from <a href="https://wger.de" target="_blank" rel="noopener">wger.de</a> (CC-BY-SA). Code: MIT. Content: CC BY 4.0.</p>
   </footer>
 
+  <!-- Welcome: opens on the first visit (and from "Intro video"); the video loads only then. -->
+  <dialog id="intro" class="intro" aria-labelledby="intro-title">
+    <div class="intro-head">
+      <h2 id="intro-title">Welcome to Force Curve Lab</h2>
+      <button type="button" class="intro-close" data-intro-close aria-label="Close the intro">✕</button>
+    </div>
+    <p class="hint">A three-minute tour of what the site shows and where its numbers come from. Captions only, no sound.</p>
+    <video id="intro-video" controls muted playsinline preload="none" poster="assets/intro/intro-poster.jpg">
+      <source src="assets/intro/intro-720p.mp4" type="video/mp4">
+    </video>
+    <div class="intro-foot">
+      <span class="hint">For teaching: model estimates, not medical or training advice. Reopen it any time from “Intro video” at the top.</span>
+      <button type="button" data-intro-close>Start exploring</button>
+    </div>
+  </dialog>
   <script type="module" src="js/main.js"></script>
 </body>
 </html>

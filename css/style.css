@@ -514,3 +514,15 @@ body.dock-on { padding-bottom: 76px; }
 .num-table th { color: var(--muted); font-weight: 500; }
 .num-note, .num-source, .num-sub { font-size: 0.85rem; margin: 4px 0; }
 .num-source { color: var(--muted); }
+
+/* Intro video dialog (first visit, or "Intro video" in the header). */
+.link-button { background: none; border: 0; padding: 0; min-height: 0; color: var(--accent); font: inherit; font-weight: 600; cursor: pointer; white-space: nowrap; }
+.link-button:hover { text-decoration: underline; }
+.intro { width: min(960px, 94vw); max-height: 94vh; padding: 16px 18px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--text); box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45); }
+.intro::backdrop { background: rgba(0, 0, 0, 0.6); }
+.intro-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.intro-head h2 { margin: 0; font-size: 1.2rem; }
+.intro-close { background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; width: 36px; height: 36px; min-height: 36px; padding: 0; }
+.intro video { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; background: #000; border-radius: 10px; margin: 8px 0 10px; }
+.intro-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.intro-foot .hint { margin: 0; flex: 1 1 260px; }
