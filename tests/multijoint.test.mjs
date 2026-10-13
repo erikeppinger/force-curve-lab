@@ -738,3 +738,56 @@ test("incline bench, elbows set by hand: the elbow stays on the feet side all th
     }
   }
 });
+
+test("hand-computed: incline bench at lockout, the abductors hold half the bar × the hand's sideways offset × sin(incline); none on a flat bench", async () => {
+  const { analyzeMulti } = await import("../js/multijoint.js");
+  const ex = load("bench-press");
+  const run = (id) => { const v = ex.variants.find((x) => x.id === id); return [v, analyzeMulti(ex, v, 100, { loadKg: 60, bodyMassKg: 75, body, placement: { ...v.params, barSpread: 0 } })]; };
+  const [, flat] = run("flat");
+  close(flat.joints.find((j) => j.id === "shoulder-abd").torque, 0, 1e-9);
+  const [v, inc] = run("incline");
+  // Bar over the shoulders at lockout: the only lever is sideways (grip half-width − shoulder half-width).
+  const dz = v.params.gripHalf - body.lengths.shoulderHalfWidth;
+  const m = inc.moments.shoulder; // includes the arm's own weight, so compare the bar's part via the total about the trunk's axes
+  const t = (v.params.incline * Math.PI) / 180;
+  const abd = inc.joints.find((j) => j.id === "shoulder-abd").torque;
+  close(abd, m.x * Math.sin(t) + m.y * Math.cos(t), 1e-9);
+  // The bar's share alone: 30 kg × g × dz × sin 30°, the arm adding a little.
+  const bar = 30 * 9.81 * dz * Math.sin(t);
+  assert.ok(abd > bar * 0.95 && abd < bar * 1.4, `${abd} vs bar ${bar}`);
+});
+
+test("hand-computed: hip thrust quadriceps = (knee torque + hamstrings' activation × knee-flexion strength × 0.75) ÷ knee-extension strength", async () => {
+  const { analyzeMulti } = await import("../js/multijoint.js");
+  const { interp } = await import("../js/physics.js");
+  const ex = load("hip-thrust");
+  const v = ex.variants[0];
+  const r = analyzeMulti(ex, v, 10, { loadKg: 50, bodyMassKg: 75, body, placement: v.params });
+  const act = Object.fromEntries(muscleActivation(ex, v, r, 10).map((m) => [m.id, m.value]));
+  const k = r.joints.find((j) => j.id === "knee");
+  assert.ok(k.torque > 0);
+  const flex = interp(k.negative.points, k.angle) * k.negative.peakTorqueNm; // strength 100%, no posture correction
+  const q = ex.muscles.find((m) => m.id === "quadriceps");
+  const expected = ((k.torque + act.hamstrings * flex * 0.75) / k.capacity) * interp(q.weight, k.angle);
+  close(act.quadriceps, Math.max(k.effort * interp(q.weight, k.angle), expected), 1e-9);
+  assert.ok(act.quadriceps > k.effort * interp(q.weight, k.angle) + 0.02, "the hamstrings' pull adds to the quadriceps");
+});
+
+test("knee direction: the quadriceps only work when the knee needs extending; in a bridge the hamstrings take the knee's flexion", async () => {
+  const { sampleMulti } = await import("../js/multijoint.js");
+  for (const id of ["squat", "deadlift", "hip-thrust", "leg-press", "split-squat"]) {
+    const ex = load(id);
+    for (const v of ex.variants) for (const r of sampleMulti(ex, v, { loadKg: ex.defaults.loadKg, bodyMassKg: 75, body, placement: v.params })) {
+      const k = r.joints.find((j) => j.id === "knee");
+      if (k.torque >= 0) continue;
+      const q = muscleActivation(ex, v, r, r.angle).find((m) => m.id === "quadriceps");
+      if (!q.coContract) assert.equal(q.value, 0, `${id}/${v.id} @${r.angle}`); // co-contraction (hip thrust) may hold against the hamstrings' excess
+    }
+  }
+  const ex = load("hip-thrust"), v = ex.variants.find((x) => x.id === "bridge");
+  const r = analyzeMulti(ex, v, 60, { loadKg: 60, bodyMassKg: 75, body, placement: v.params });
+  const k = r.joints.find((j) => j.id === "knee");
+  assert.ok(k.torque < 0);
+  const h = muscleActivation(ex, v, r, 60).find((m) => m.id === "hamstrings");
+  assert.ok(h.value >= Math.min(1, k.effort * interp(h.weight, k.angle)) - 1e-9);
+});

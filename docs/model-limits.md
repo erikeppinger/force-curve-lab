@@ -271,7 +271,7 @@ Shoulder **and** elbow (`bench3d`), with both hands on a rigid bar.
   - Grip widths and touch points are derived from Mausehund et al. (see below). The chest is raised 20 cm above the shoulder joints for the arch; that height is an estimate.
 - **Forces:** each hand pushes straight up with half the bar (the bar isn't pulled apart or squeezed).
 - **Components:**
-  - **Shoulder:** horizontal adduction (pecs), flexion (front delts), rotation (rotator cuff).
+  - **Shoulder:** horizontal adduction (pecs), flexion (front delts), rotation (rotator cuff), and abduction in the bench plane (deltoid; added 2026-10-13). On a flat bench the bar's moment has no part about the chest's normal; on an incline it does (about half the horizontal-adduction moment at 30°): the weight also swings the arm towards the feet within the bench plane. Before, that part was dropped, which made the incline press too easy. Flexion strength follows the arm's elevation from the trunk (the overhead press's curve), so the incline, with the arm further overhead, works where the flexors are a little weaker.
   - **Elbow:** extension (triceps), plus its sideways moment (ligaments).
 - **Tests:** the shoulder components match their hand formulas (flexion = F × forward distance, horizontal adduction = F × grip offset from the shoulder). The elbow's moment equals F × the horizontal elbow–hand distance. Close grip loads the triceps, wide grip the pecs.
 
@@ -528,10 +528,11 @@ Checked, matching:
 
 Checked, not matching (left, noted):
 - **Glutes across lifts:** the studies disagree with each other (McCurdy et al.: stiff-leg deadlift = squat; Contreras et al.: hip thrust ≈ 2 × squat; Andersen et al.: hip thrust ≈ barbell deadlift), so no refit. The model gives the hinge more glute than the squat.
-- **Quadriceps in the hip thrust:** measured as high as in the squat (Contreras et al.: 100% vs 110%), the model much lower (knee torque only); they also hold the bent knee against the hamstrings.
+- **Quadriceps in the hip thrust:** measured as high as in the squat (Contreras et al.: 100% vs 110%), the model much lower. Since 2026-10-13 they also hold against the hamstrings' pull at the knee (`coContract` in muscles.js: the net knee torque plus the hamstrings' activation × knee-flexion strength × 0.75, their estimated share), but in the lower half of the thrust the knee needs flexing overall and that pull doesn't exceed it, so the model still has them nearly idle there (mean 0.08 vs the squat's 0.35 at 75% 1RM). The EMG points to co-contraction for knee stability beyond these mechanics.
+- **Fixed 2026-10-13: the quadriceps followed the knee whichever way its torque pointed.** Near lockout in the squat, deadlift and leg press, and through most of the hip thrust's bridge variants, the knee needs flexing (or rests on the locked joint), yet the quadriceps showed up to 30% (squat, deadlift) and up to 100% (bridges). They now work only for knee extension (`sign`); the hip thrust's hamstrings also take the knee's flexion demand (`jointSign`). The RDL and rows keep the hamstrings on the hip alone: their knee-flexion demand is held largely by the nearly straight, locked knee, and adding it would push the hamstrings above McCurdy et al.'s measurements.
 - **Biceps across pull grips:** measured nearly constant (Lusk et al.), the model's grip effect is larger.
-- **Bench press incline:** the anterior deltoid rose at every incline (Trebs et al. 2010), while the model gives it less. The model also makes the incline press stronger (1RM about 90 kg vs 80 kg flat), which is wrong: worth a look in `bench3d`.
-- **Absolute strength:** the model's 1RMs are low (75 kg man: deadlift about 40 kg, squat 43 kg, bench 80 kg) because the strength curves come from dynamometer studies of ordinary adults (Anderson et al. 2007); the strength slider scales them.
+- **Bench press incline (fixed 2026-10-13):** the anterior deltoid rose at every incline (Trebs et al. 2010) while the model gave it less, and the model made the incline press stronger (1RM about 90 kg vs 80 kg flat). Cause: the shoulder moment about the chest's normal (abduction in the bench plane) wasn't carried by any joint component. With it, and flexion strength by arm elevation: incline 1RM about 77 kg vs 76 kg flat (lifters are usually somewhat weaker on the incline; the remaining gap would need incline strength data), anterior deltoid 0.65 vs 0.37 at 70% 1RM, pectoralis 0.45 vs 0.52.
+- **Absolute strength:** the model's 1RMs are low (75 kg man: deadlift about 40 kg, squat 43 kg, bench 80 kg) because the strength curves come from dynamometer studies of ordinary adults (Anderson et al. 2007); the strength slider scales them. Since 2026-10-13 it reaches 200% (multi-joint lifts, edge and pinch lift), and its ⓘ text says what 100% means and that people who train sit around 150–200% (an estimate).
 
 Not usable: the triceps heads' study (Kholinne et al. 2018) was unloaded (notes only); the oblique-thickness study (J Sport Rehabil 2021) is a training study, not EMG; the scan `00124278-199508000-00011.pdf` (Signorile et al. 1995, J Strength Cond Res) has no text layer. Still without EMG: the Pallof press, the subscapularis, the pectineus in hip adduction.
 
@@ -556,9 +557,9 @@ Every exercise × variant × start, middle and end of the range × extreme setti
 Checked, not changed:
 
 - **Leg extension at lockout:** strength is 14% of peak at 0° (Anderson et al.'s fitted curve, inside their tested range), so effort drops steeply over the last 5° (10 kg stack: 133% at 0°, 75% at 5°). Lindahl et al. measured about 50% at 10° where the curve gives 35%: a data question, not a bug.
-- **Deadlift with the knee-bend slider at its maximum (130% of the hip bend):** the sumo and trap-bar starts reach knee angles the balance can't hold; the page warns "Can't balance" and the joint numbers there aren't meaningful.
-- **Bench press, close grip, elbows fully inside:** the upper arm runs just inside the shoulder line (flare −1°), where it would touch the ribs.
-- **Speed:** 2–80 ms per slider step on a fresh page (3D trunk view about 40 ms, pull-up up to 80 ms, split squat toe slider up to 0.5 s while it recomputes the curves; edge lift as before). A test that drives thousands of states in one page session gets slower over time (memory), which a user won't reach.
+- **Deadlift with the knee-bend slider above 100% of the hip bend:** the sumo start couldn't balance at the bottom (from 110%; conventional and trap bar from 130%). Since 2026-10-13 the slider stops at 100%.
+- **Bench press, close grip, elbows fully inside:** the upper arm runs just inside the shoulder line (flare −1°), where it would touch the ribs; since 2026-10-13 the page warns.
+- **Speed:** 2–80 ms per slider step on a fresh page (3D trunk view about 40 ms, pull-up up to 80 ms, the split squat's curve recomputation after a slider stops under 50 ms; edge lift as before). A test that drives thousands of states in one page session gets slower over time (memory), which a user won't reach.
 
 ## Sources for the curated numbers
 

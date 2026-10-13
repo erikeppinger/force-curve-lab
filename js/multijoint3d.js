@@ -496,11 +496,12 @@ export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       eSide: unit3(cross3(unit3(cross3(dU, dF)), dF)), // turning about it moves the hand inwards
       horizAdd: deg(Math.atan2(dot3(dU, front), dot3(dU, Z))), // 0 = out to the side, 90 = up
       elbowFlex: angleBetween3(dU, dF),
+      elevation: angleBetween3(dU, toFeet), // upper arm from the trunk's long axis: 0 = by the side, 90 = straight out
     };
   };
   const arm = armAt();
   const solveAt = (spread) => {
-    const { E, foreW, upperW, dU, eFlex, eSide, horizAdd, elbowFlex } = arm;
+    const { E, foreW, upperW, dU, eFlex, eSide, horizAdd, elbowFlex, elevation } = arm;
     const bar = { at: hand, f: v3(0, -Fv, -spread * Fv) };
     const Mel = moment3(E, [bar, foreW]);
     const Msh = moment3(S, [bar, foreW, upperW]);
@@ -508,7 +509,10 @@ export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     return {
       bar, Mel, Msh, joints: {
         "shoulder-h": { at: S, angle: horizAdd, torque: dot3(Msh, toFeet), ...toLine(S, line.at, line.dir) },
-        "shoulder-flex": { at: S, angle: horizAdd, torque: -dot3(Msh, Z) },
+        "shoulder-flex": { at: S, angle: elevation, torque: -dot3(Msh, Z) },
+        // About the chest's normal: on an incline the bar's weight also swings the arm towards the
+        // feet within the bench plane, which the abductors (deltoid) hold. Zero on a flat bench.
+        "shoulder-abd": { at: S, angle: elevation, torque: dot3(Msh, front) },
         "shoulder-rotation": { at: S, angle: horizAdd, torque: -dot3(Msh, dU) },
         elbow: { at: E, angle: elbowFlex, torque: dot3(Mel, eFlex), ...toLine(E, line.at, line.dir) },
         "elbow-side": { at: E, angle: elbowFlex, torque: dot3(Mel, eSide) },
@@ -555,7 +559,8 @@ export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     abduction, forearmTilt,
     info: [{ text: `Elbow flare (upper arm from the body, seen from above): ${Math.round(flare)}°. Upper arm ${Math.round(abduction)}° from the trunk; forearm tilted ${Math.abs(Math.round(forearmTilt))}° ${forearmTilt >= 0 ? "with the hand outside" : "with the elbow outside"} (front view).` },
       ...(Math.abs(spread) > 0.005 ? [{ text: `Hands ${spread > 0 ? "pull the bar apart" : "squeeze the bar inwards"} with ${Math.round(Math.abs(spread) * 100)}% of the vertical force${auto ? " (least-effort estimate)" : ""}.` }] : []),
-      ...(ok ? [] : [{ warn: true, text: "The elbows can't sit that far from the hands at this bar height; shown as close as the arm allows." }])],
+      ...(ok ? [] : [{ warn: true, text: "The elbows can't sit that far from the hands at this bar height; shown as close as the arm allows." }]),
+      ...(flare < 0 ? [{ warn: true, text: "The upper arm runs inside the shoulder line here: it would press into the ribs, so real elbows stay further out." }] : [])],
   };
 }
 

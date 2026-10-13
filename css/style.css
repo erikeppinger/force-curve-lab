@@ -158,7 +158,7 @@ label output { color: var(--text); font-weight: 600; }
 .info-btn { width: 24px; height: 24px; min-height: 24px; padding: 0; border-radius: 50%; background: transparent; color: var(--accent); border: 1.5px solid var(--accent); font: italic 700 0.8rem/1 Georgia, serif; }
 .info-btn[aria-expanded="true"] { background: var(--accent); color: #fff; }
 .info { position: relative; display: inline-flex; }
-.info-text { display: none; position: absolute; z-index: 20; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); width: min(320px, 86vw); font-size: 0.8rem; font-weight: 400; color: var(--text); background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; line-height: 1.45; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); }
+.info-text { display: none; position: absolute; z-index: 20; top: calc(100% + 6px); left: 50%; transform: translateX(-50%); width: min(320px, 86vw); max-height: 60vh; overflow-y: auto; white-space: normal; text-transform: none; font-size: 0.8rem; font-weight: 400; color: var(--text); background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; line-height: 1.45; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); }
 .info-btn:hover + .info-text, .info-btn:focus-visible + .info-text, .info-btn[aria-expanded="true"] + .info-text { display: block; }
 .model-link { margin: 2px 0 10px; font-size: 0.9rem; color: var(--muted); }
 select, button {
@@ -464,16 +464,16 @@ footer { color: var(--muted); font-size: 0.8rem; padding-bottom: 24px; }
 .legend .sw.fi-ring { border-color: var(--f-ring); }
 .legend .sw.fi-little { border-color: var(--f-little); }
 
-/* Layout: figure kept beside the curves (wide screens or chosen), or one column. */
+/* Layout: on wide screens (or chosen) the figure stays pinned on the left beside the controls and
+   the curves, so a slider's effect is in view while dragging it; one column otherwise. */
 @media (min-width: 1100px) {
   :root:not([data-layout="stacked"]) main { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
-  :root:not([data-layout="stacked"]) .figure-card { grid-column: 1; grid-row: 2 / span 20; position: sticky; top: 8px; max-height: calc(100vh - 16px); overflow-y: auto; }
-  :root:not([data-layout="stacked"]) main > section:not(.controls):not(.figure-card) { grid-column: 2; }
+  :root:not([data-layout="stacked"]) .figure-card { grid-column: 1; grid-row: 1 / span 20; position: sticky; top: 8px; max-height: calc(100vh - 16px); overflow-y: auto; }
+  :root:not([data-layout="stacked"]) main > section:not(.figure-card) { grid-column: 2; }
 }
 :root[data-layout="side"] main { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
-:root[data-layout="side"] .controls { grid-column: 1 / -1; }
-:root[data-layout="side"] .figure-card { grid-column: 1; grid-row: 2 / span 20; position: sticky; top: 8px; max-height: calc(100vh - 16px); overflow-y: auto; }
-:root[data-layout="side"] main > section:not(.controls):not(.figure-card) { grid-column: 2; }
+:root[data-layout="side"] .figure-card { grid-column: 1; grid-row: 1 / span 20; position: sticky; top: 8px; max-height: calc(100vh - 16px); overflow-y: auto; }
+:root[data-layout="side"] main > section:not(.figure-card) { grid-column: 2; }
 :root[data-layout="stacked"] main { grid-template-columns: minmax(0, 1fr); }
 :root[data-layout="stacked"] main > section { grid-column: 1; }
 .theme-switch button[aria-pressed="true"] { background: var(--accent); color: #fff; }
@@ -503,3 +503,14 @@ body.dock-on { padding-bottom: 76px; }
 #figure .inset-belt { stroke: var(--equipment); stroke-width: 2; }
 #figure .inset-stack { fill: var(--equipment); }
 #figure .inset-axle { fill: var(--card); stroke: var(--equipment); }
+
+/* Expert mode: the "Sources and numbers" card (hidden in basic mode). */
+:root:not([data-mode="expert"]) #numbers-card { display: none; }
+.num-item { border-top: 1px solid var(--border); padding: 6px 0; }
+.num-item > summary { cursor: pointer; font-size: 0.9rem; color: var(--muted); }
+.num-item > summary strong { color: var(--text); font-weight: 600; }
+.num-table { border-collapse: collapse; margin: 6px 0; font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+.num-table th, .num-table td { padding: 2px 12px 2px 0; text-align: left; }
+.num-table th { color: var(--muted); font-weight: 500; }
+.num-note, .num-source, .num-sub { font-size: 0.85rem; margin: 4px 0; }
+.num-source { color: var(--muted); }
