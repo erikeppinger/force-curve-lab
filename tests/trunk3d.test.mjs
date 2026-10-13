@@ -85,3 +85,47 @@ test("planks: the trunk set on the body, belly down in the plank, left side down
   assert.ok(meanY(ps, /\(left\)/) < meanY(ps, /\(right\)/) - 0.05, "left side down");
   assert.ok(ps.some((p) => p.cls === "floor3d"));
 });
+
+const finite = (prims) => prims.every((p) => (p.kind === "line" ? [p.a, p.b] : p.kind === "dot" ? [p.c] : p.pts).every((q) => [q.x, q.y, q.z].every(Number.isFinite)));
+const lowest = (prims, cls) => Math.min(...prims.filter((p) => p.cls === cls).flatMap((p) => p.pts.map((q) => q.y)));
+
+test("crunch and leg raise: the model on the body, bent by the curl, gravity down, floor under lying variants", async () => {
+  const { trunkChainScene3d } = await import("../js/trunk3d.js");
+  const { analyze, gravityOf } = await import("../js/physics.js");
+  const opts = { loadKg: 0, bodyMassKg: 75 };
+  for (const id of ["crunch", "leg-raise"]) {
+    const ex = load(id);
+    for (const v of ex.variants) {
+      for (const a of [ex.angleRange?.[0] ?? 0, 30, 60]) {
+        const r = analyze(ex, v, a, opts);
+        const prims = trunkChainScene3d(lumbar, ex, v, r, [{ id: ex.muscles[0].id, value: 0.5 }], gravityOf(v));
+        assert.ok(finite(prims), `${id}/${v.id}/${a}`);
+        assert.ok(prims.some((p) => p.part === "spine"), `${id}/${v.id}: model drawn`);
+        assert.equal(prims.some((p) => p.cls === "floor3d"), v.posture !== "hanging", `${id}/${v.id}: floor`);
+        if (v.posture === "floor" || v.posture === "lying") assert.ok(!prims.some((p) => p.cls === "equipment"), `${id}/${v.id}: no floor rails`);
+      }
+    }
+  }
+  // The crunch's model bends with the curl: the thorax end moves away from the upright line.
+  const ex = load("crunch"), v = ex.variants[0];
+  const tip = (a) => { const s = trunkChainScene3d(lumbar, ex, v, analyze(ex, v, a, opts), [], { x: 0, y: -1 }).filter((p) => p.part === "spine"); return s.at(-1).b; };
+  const t0 = tip(0), t40 = tip(40);
+  assert.ok(t40.x > t0.x + 0.05, `curled forward: ${t0.x} → ${t40.x}`);
+});
+
+test("Pallof press: a standing (or half-kneeling) body, the model upright at L5, the cable at hand height", async () => {
+  const { pallofScene3d } = await import("../js/trunk3d.js");
+  const { analyzeMulti } = await import("../js/multijoint.js");
+  const body = JSON.parse(readFileSync(new URL("../data/body.json", import.meta.url)));
+  const ex = load("pallof-press");
+  for (const v of ex.variants) {
+    const r = analyzeMulti(ex, v, 0.3, { loadKg: 10, bodyMassKg: 75, body });
+    const prims = pallofScene3d(lumbar, ex, v, r, [{ id: "external-oblique", value: 0.5 }], body);
+    assert.ok(finite(prims), v.id);
+    const spine = prims.filter((p) => p.part === "spine");
+    assert.ok(spine.length && spine.every((p) => Math.abs(p.a.x) < 0.1 && Math.abs(p.a.z) < 0.1), `${v.id}: upright on the body`);
+    assert.ok(Math.abs(lowest(prims, "floor3d")) < 1e-9, `${v.id}: floor at 0`);
+    const cable = prims.find((p) => p.cls === "cable");
+    if (cable) assert.ok(Math.abs(cable.a.y - cable.b.y) < 1e-9, `${v.id}: level cable`);
+  }
+});

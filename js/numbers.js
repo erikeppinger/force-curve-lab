@@ -75,3 +75,79 @@ export function renderNumbers(box, ex, variant, { peakTorqueNm } = {}) {
   if (mus.length) parts.push(el("h4", { textContent: "Muscle shares" }), ...mus);
   box.replaceChildren(...(parts.length ? parts : [el("p", { textContent: "This exercise's numbers are on its model page (How the model works)." })]));
 }
+
+// ---------- expert mode, in place: the numbers next to the controls, curves and muscles ----------
+
+/** The papers a source text cites (by the `match` text of data/references.json), in the order it names them. */
+export function citedRefs(src, refs) {
+  if (!src || !refs?.references) return [];
+  // By the reference's match text, or its short key as written in running text ("Murray et al. 1995").
+  const at = (r) => {
+    const m = /^(.+) (\d{4})[a-z]?$/.exec(r.key);
+    const names = [r.match, ...(m ? [`${m[1]} et al. ${m[2]}`, `${m[1]} ${m[2]}`] : [])];
+    const hits = names.map((n) => src.indexOf(n)).filter((i) => i >= 0);
+    return hits.length ? Math.min(...hits) : -1;
+  };
+  return refs.references.map((r) => ({ r, i: at(r) })).filter((x) => x.i >= 0).sort((a, b) => a.i - b.i).map((x) => x.r);
+}
+
+/** "Label: Key 2007 · Key 2010" with links to the papers; an unchecked (TODO) source says so. */
+export function sourceLine(src, refs, label = "Source") {
+  const p = el("p", { className: "src-line" });
+  const list = citedRefs(src, refs);
+  if (!list.length) {
+    p.textContent = !src || /^TODO/.test(src) ? `${label}: none checked yet (an estimate)` : `${label}: ${src}`;
+    return p;
+  }
+  p.append(`${label}: `);
+  list.forEach((r, i) => {
+    if (i) p.append(" · ");
+    p.append(r.url ? el("a", { href: r.url, target: "_blank", rel: "noopener", textContent: r.key }) : r.key);
+  });
+  if (/TODO/.test(src)) p.append(" (in part still an estimate)");
+  return p;
+}
+
+const peakAt = (points) => points.reduce((b, p) => (p[1] > b[1] ? p : b), points[0]);
+
+/**
+ * Fill the expert-only boxes beside the strength slider (`strengthBox`) and under the torque chart
+ * (`chartBox`): the default peak torque(s), where the measured curve peaks, and its papers.
+ */
+export function renderExpertInline(strengthBox, chartBox, ex, variant, refs) {
+  const s = [], c = [];
+  if (ex.strengthCurve?.points) {
+    const [a] = peakAt(ex.strengthCurve.points), unit = ex.angleUnit ?? "°";
+    s.push(el("p", { className: "src-line", textContent: `Typical peak (the slider's default): ${num(ex.defaults?.peakTorqueNm)} Nm, strongest at ${num(a)}${unit}.` }), sourceLine(ex.strengthCurve.source, refs, "Strength curve"));
+    c.push(el("p", { className: "src-line", textContent: "Dots: the angles the strength curve was measured at (relative values × the peak set above)." }));
+  }
+  if (ex.joints) {
+    for (const j of ex.joints.filter((x) => x.strength)) {
+      const pk = j.strength.points ? peakAt(j.strength.points) : null;
+      const line = sourceLine(j.strength.source, refs, j.peakTorqueNm != null ? `${j.name}: ${num(j.peakTorqueNm)} Nm${pk ? `, strongest at ${num(pk[0])}°` : ""}` : j.name);
+      s.push(line);
+    }
+    if (s.length) c.push(el("p", { className: "src-line", textContent: "Strength lines: each joint's measured curve × its typical peak × the strength slider (posture corrections in Sources and numbers, below)." }));
+  }
+  if (ex.pinch) {
+    s.push(el("p", { className: "src-line", textContent: `Maximal squeeze per face (the slider's 100%): ${num(ex.pinch.capacity)} N.` }), sourceLine(ex.pinch.capacitySource, refs, "Squeeze"),
+      sourceLine(ex.pinch.frictionSource, refs, "Finger-pad friction"), sourceLine(ex.pinch.wristSource, refs, "Wrist angle"));
+  }
+  if (ex.finger) {
+    s.push(sourceLine(ex.finger.momentArmsSource, refs, "Tendon moment arms"), sourceLine(ex.finger.pulleyStrengthSource, refs, "Pulley strength"),
+      sourceLine(ex.finger.referenceTensionSource, refs, "Tendon tension check"));
+    if (variant?.source) s.push(sourceLine(variant.source, refs, "Grip posture"));
+  }
+  if (variant?.strengthScale?.source) s.push(sourceLine(variant.strengthScale.source, refs, "Correction for this variant"));
+  strengthBox.replaceChildren(...s);
+  strengthBox.hidden = !s.length;
+  chartBox.replaceChildren(...c);
+  chartBox.hidden = !c.length;
+}
+
+/** A muscle's source line: its curated share's papers, or the model that computes it (edge lift, pinch lift). */
+export function muscleSourceLine(ex, m, refs) {
+  if (m?.driver === "tendon") return sourceLine(ex.finger?.momentArmsSource, refs, "Computed from the finger statics (no curated share); moment arms");
+  if (m?.parts && ex.handModel) return sourceLine(ex.handModel.source, refs, "Computed by the ARMS hand model (non-commercial use only; no curated share)");
+  return sourceLine(m?.source, refs, "Muscle share");
+}

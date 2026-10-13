@@ -55,6 +55,7 @@
           <input id="bodymass" type="range" min="40" max="140" step="1">
         </label>
       </div>
+      <div id="strength-src" class="expert-only src-box" hidden></div>
       <p id="variant-summary" class="hint variant-summary"></p>
       <div id="pulley-controls" class="control-grid pulley" hidden>
         <label><span id="pulley-x-label">Pulley forward / back</span>
@@ -143,6 +144,7 @@
       <h3 id="torque-title">Resistance vs strength</h3>
       <ul class="legend" id="torque-legend"></ul>
       <svg id="torque-chart" role="img" aria-label="Load torque and strength over the range of motion"></svg>
+      <div id="torque-src" class="expert-only src-box" hidden></div>
       <div id="lift-chart-box" hidden>
         <h3>Force on the hand over one lift</h3>
         <p class="hint">Play runs one lift: the pull builds while the block still rests on the floor, the block comes off the floor (force above its weight while it speeds up), is held (exactly its weight), set down (the force dips, then peaks as it is slowed) and released. The fingers, wrist, elbow and shoulder all carry this same pull. Dashed: the block's weight.</p>

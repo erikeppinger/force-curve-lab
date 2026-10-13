@@ -167,7 +167,8 @@
     }
   ],
   "trunk3d": {
-    "note": "3D view: the trunk muscles of the OpenSim lumbar spine model (Christophy et al. 2012, MIT licence) in its upright posture, shaded by this exercise's muscle effort. Groups the exercise doesn't load stay grey.",
+    "pose": "chain",
+    "note": "3D view: the trunk muscles of the OpenSim lumbar spine model (Christophy et al. 2012, MIT licence), shaded by this exercise's muscle effort. Groups the exercise doesn't load stay grey. Set on the body as it lies or hangs; the legs move, the trunk stays straight.",
     "map": {
       "iliopsoas": ["psoas"],
       "rectus-abdominis": ["rectus-abdominis"],

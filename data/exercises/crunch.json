@@ -147,7 +147,8 @@
     }
   ],
   "trunk3d": {
-    "note": "3D view: the trunk muscles of the OpenSim lumbar spine model (Christophy et al. 2012, MIT licence) in its upright posture, shaded by this exercise's muscle effort. Groups the exercise doesn't load stay grey.",
+    "pose": "curl",
+    "note": "3D view: the trunk muscles of the OpenSim lumbar spine model (Christophy et al. 2012, MIT licence), shaded by this exercise's muscle effort. Groups the exercise doesn't load stay grey. Bends with the curl: the whole curl is shown as lower-back bend (the model's upper body is one rigid piece above L1), while a real crunch curls the upper back most.",
     "map": {"rectus-abdominis": ["rectus-abdominis"], "external-oblique": ["external-oblique", "internal-oblique"]}
   }
 }

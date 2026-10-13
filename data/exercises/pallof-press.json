@@ -119,7 +119,8 @@
   ],
   "hold": true,
   "trunk3d": {
-    "note": "3D view: the trunk muscles of the OpenSim lumbar spine model (Christophy et al. 2012, MIT licence) in its upright posture, shaded by this exercise's muscle effort. Groups the exercise doesn't load stay grey. Cable on the left: the left external and right internal oblique stop the twist, the right side's back muscles the side-bend.",
+    "pose": "standing",
+    "note": "3D view: the trunk muscles of the OpenSim lumbar spine model (Christophy et al. 2012, MIT licence), shaded by this exercise's muscle effort. Groups the exercise doesn't load stay grey. Cable on the left: the left external and right internal oblique stop the twist, the right side's back muscles the side-bend. Shown standing (or half kneeling) with the cable at hand height; the trunk holds still, so the model stays straight.",
     "map": {
       "external-oblique": ["external-oblique:l", "internal-oblique:r"],
       "rectus-abdominis": ["rectus-abdominis"],

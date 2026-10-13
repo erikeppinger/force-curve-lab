@@ -97,9 +97,11 @@ export function trunkScene3d(data, exercise, activation, place) {
   let X = ([x, y, z]) => ({ x, y, z });
   let F = null;
   if (place) {
-    F = bodyFrame(place.plane, place.up);
-    const o = data.bodies.lumbar5, at = F.W(place.at);
-    const k = place.top ? Math.hypot(place.top.x - place.at.x, place.top.y - place.at.y) / Math.hypot(data.bodies.thorax[0] - o[0], data.bodies.thorax[1] - o[1]) : 1;
+    // `place.frame`: a ready 3D frame ({ X, Y, Z, at, trunk }) for scenes that aren't a side or front view (the Pallof press, seen from above).
+    F = place.frame ?? bodyFrame(place.plane, place.up);
+    const o = data.bodies.lumbar5, at = place.frame ? place.frame.at : F.W(place.at);
+    const trunkLen = place.frame ? place.frame.trunk : place.top ? Math.hypot(place.top.x - place.at.x, place.top.y - place.at.y) : null;
+    const k = trunkLen ? trunkLen / Math.hypot(data.bodies.thorax[0] - o[0], data.bodies.thorax[1] - o[1]) : 1;
     X = ([x, y, z]) => plus(plus(plus(at, F.X, (x - o[0]) * k), F.Y, (y - o[1]) * k), F.Z, (z - o[2]) * k);
   }
   const L = (a, b, w, cls, extra) => prims.push({ kind: "line", a: X(a), b: X(b), w, cls, ...extra });
@@ -192,4 +194,124 @@ function bodyAround(r, exercise, activation, F, place) {
     }
   }
   return out;
+}
+
+const rotZ = (th) => (p) => ({ x: p.x * Math.cos(th) - p.y * Math.sin(th), y: p.x * Math.sin(th) + p.y * Math.cos(th), z: p.z });
+const mapPrims = (prims, T) => prims.map((p) => (p.kind === "line" ? { ...p, a: T(p.a), b: T(p.b) } : p.kind === "dot" ? { ...p, c: T(p.c) } : { ...p, pts: p.pts.map(T) }));
+
+/**
+ * Single-joint core exercises (crunch: `trunk3d.pose` "curl"; leg raise: "chain"): the lumbar model
+ * on the body built from the exercise's 2D posture shapes and moving chain, in the exercise frame
+ * (x towards the belly, y towards the head), then turned so the variant's gravity points down. In
+ * the crunch the model bends by the curl angle (the whole curl as lumbar bend, a simplification:
+ * a real crunch curls the upper back most); in the leg raise the trunk stays straight.
+ */
+export function trunkChainScene3d(data, exercise, variant, result, activation, gravity) {
+  const curl = exercise.trunk3d.pose === "curl";
+  const { base, mid, tip } = result.pose;
+  const out = [];
+  const W = (p, z = 0) => ({ x: p.x, y: p.y, z });
+  const line = (a, b, w, cls, extra) => out.push({ kind: "line", a, b, w, cls, ...extra });
+  const HIP = 0.09, SH = 0.19;
+  const P2 = ([x, y]) => ({ x, y });
+  // The still body: wide pieces (pelvis, trunk) as a see-through outline, limbs on both sides
+  // (arms above the hips, legs below), equipment as two rails.
+  for (const sh of exercise.postures?.[variant.posture] ?? []) {
+    if (sh.shape === "circle") { out.push({ kind: "dot", c: W(P2(sh.at)), r: sh.r, cls: sh.class ?? "body", ...(sh.class ? {} : { part: "head" }) }); continue; }
+    const a = P2(sh.from), b = P2(sh.to);
+    if (sh.class === "equipment") {
+      // Lying on the floor: the floor plane replaces the 2D floor line. Hanging: the bar runs across. Benches: two rails.
+      if (variant.posture === "floor" || variant.posture === "lying") continue;
+      if (variant.posture === "hanging") { const m = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; line(W(m, -0.45), W(m, 0.45), 0.035, "equipment"); continue; }
+      for (const z of [0.2, -0.2]) line(W(a, z), W(b, z), sh.w, "equipment");
+      continue;
+    }
+    if (sh.w >= 0.18) { line(W(a), W(b), sh.w * 1.15, "body ghost", { part: "torso" }); continue; }
+    const s = Math.min(a.y, b.y) > 0.3 ? SH : HIP;
+    for (const z of [s, -s]) line(W(a, z), W(b, z), sh.w, z > 0 ? "body" : "body back", { part: `limb${z > 0 ? "R" : "L"}${s}` });
+  }
+  // The moving chain: the curling upper trunk (outline + head) or the legs.
+  const SD = exercise.segments.draw;
+  if (curl) {
+    line(W(base), W(mid), (SD?.w?.[0] ?? 0.24) * 1.15, "body ghost", { part: "torso" });
+    const h = SD?.head ? { x: mid.x + (tip.x - mid.x) * SD.head.at, y: mid.y + (tip.y - mid.y) * SD.head.at } : tip;
+    out.push({ kind: "dot", c: W(h), r: SD?.head?.r ?? 0.11, cls: "body", part: "head" });
+  } else {
+    for (const z of [HIP, -HIP]) {
+      const o = { part: `leg${z > 0 ? "R" : "L"}` }, cls = z > 0 ? "body" : "body back";
+      line(W(base, z), W(mid, z), SD?.w?.[0] ?? 0.14, cls, o);
+      line(W(mid, z), W(tip, z), SD?.w?.[1] ?? 0.1, cls, o);
+    }
+    // Muscles drawn on the legs (e.g. the rectus femoris), shaded by their effort.
+    const act = Object.fromEntries(activation.map((m) => [m.id, m.value ?? 0]));
+    const segs = { proximal: [base, mid], distal: [mid, tip] };
+    for (const m of exercise.muscles.filter((x) => x.draw && segs[x.draw.seg] && x.draw.along)) {
+      const [from, to] = segs[m.draw.seg];
+      const l = Math.hypot(to.x - from.x, to.y - from.y) || 1, u = { x: (to.x - from.x) / l, y: (to.y - from.y) / l }, n = { x: -u.y, y: u.x };
+      const at = (t) => ({ x: from.x + u.x * t + n.x * (m.draw.offset ?? 0), y: from.y + u.y * t + n.y * (m.draw.offset ?? 0) });
+      const v = act[m.id] ?? 0, title = `${m.name}: ${Math.round(v * 100)}%`;
+      for (const z of [HIP, -HIP]) {
+        line(W(at(m.draw.along[0]), z), W(at(m.draw.along[1]), z), m.draw.w, "muscle-base", { title, top: 0.05 });
+        line(W(at(m.draw.along[0]), z), W(at(m.draw.along[1]), z), m.draw.w, "muscle-on", { opacity: v, title, top: 0.05 });
+      }
+    }
+  }
+  // The lumbar model: on the pivot (crunch) or 10 cm above the hip (leg raise), trunk along +y.
+  const place = curl
+    ? { flexDeg: result.angle ?? 0, at: W(base), up: { x: 0, y: 1 }, top: mid, plane: "sagittal" }
+    : { flexDeg: 0, at: { x: 0, y: 0.1 }, up: { x: 0, y: 1 }, top: { x: 0, y: 0.52 }, plane: "sagittal" };
+  const all = [...trunkScene3d(data, exercise, activation, place), ...out];
+  // Turn the scene so gravity points down (lying: the back on the floor), and add the floor.
+  const g = gravity ?? { x: 0, y: -1 };
+  const turned = Math.hypot(g.x, g.y) > 1e-9 ? mapPrims(all, rotZ(Math.atan2(-1, 0) - Math.atan2(g.y, g.x))) : all;
+  if (variant.posture === "hanging") return turned;
+  const ys = turned.flatMap((p) => (p.kind === "line" ? [p.a.y - p.w / 2, p.b.y - p.w / 2] : p.kind === "dot" ? [p.c.y - p.r] : p.pts.map((q) => q.y)));
+  const xs = turned.flatMap((p) => (p.kind === "line" ? [p.a.x, p.b.x] : p.kind === "dot" ? [p.c.x] : p.pts.map((q) => q.x)));
+  const y0 = Math.min(...ys) - 0.005, x0 = Math.min(...xs) - 0.2, x1 = Math.max(...xs) + 0.2;
+  return [{ kind: "poly", pts: [[x0, -0.6], [x1, -0.6], [x1, 0.6], [x0, 0.6]].map(([x, z]) => ({ x, y: y0, z })), cls: "floor3d" }, ...turned];
+}
+
+/**
+ * The Pallof press (`trunk3d.pose` "standing"): the solver's top view (x the right side, y forward)
+ * stood up: an upright body (or half kneeling) with the lumbar model straight on it, the arms from
+ * the shoulders to the hands at the solver's hand height, and the cable level to its anchor.
+ */
+export function pallofScene3d(data, exercise, variant, result, activation, body) {
+  const L = body.lengths, P = variant.params ?? {};
+  const kneel = /kneel/.test(variant.id);
+  const hipY = kneel ? L.thigh + 0.05 : L.ankleHeight + L.shank + L.thigh;
+  const l5Y = hipY + body.trunkParts.l5s1, sY = hipY + L.trunk, hY = l5Y + (P.handHeight ?? 0.35);
+  const T = (p, h) => ({ x: p.y, y: h, z: p.x }); // top view → world: forward = 2D y, the right side = 2D x
+  const out = [];
+  const line = (a, b, w, cls, extra) => out.push({ kind: "line", a, b, w, cls, ...extra });
+  const HIP = 0.09;
+  // Legs: standing, or half kneeling (front thigh level, back knee on the floor).
+  for (const [z, front] of [[HIP, true], [-HIP, false]]) {
+    const o = { part: `leg${z > 0 ? "R" : "L"}` }, cls = z > 0 ? "body" : "body back";
+    const hip = { x: 0, y: hipY, z };
+    if (!kneel) {
+      const knee = { x: 0, y: hipY - L.thigh, z }, ankle = { x: 0, y: L.ankleHeight, z };
+      line(hip, knee, 0.14, cls, o); line(knee, ankle, 0.1, cls, o); line({ x: -L.heel, y: 0.03, z }, { x: L.footFront, y: 0.03, z }, 0.06, cls, o);
+    } else if (front) {
+      const knee = { x: L.thigh, y: L.ankleHeight + L.shank, z }, ankle = { x: L.thigh, y: L.ankleHeight, z };
+      line(hip, knee, 0.14, cls, o); line(knee, ankle, 0.1, cls, o); line({ x: L.thigh - L.heel, y: 0.03, z }, { x: L.thigh + L.footFront, y: 0.03, z }, 0.06, cls, o);
+    } else {
+      const knee = { x: 0, y: 0.05, z };
+      line(hip, knee, 0.14, cls, o); line(knee, { x: -L.shank, y: 0.05, z }, 0.1, cls, o);
+    }
+  }
+  line({ x: 0, y: hipY, z: 0 }, { x: 0, y: sY, z: 0 }, 0.3 * 1.15, "body ghost", { part: "torso" });
+  out.push({ kind: "dot", c: { x: 0, y: sY + 0.22, z: 0 }, r: 0.11, cls: "body", part: "head" });
+  for (const { from, to, elbow } of result.arms ?? []) {
+    const s = T(from, sY), e = T(elbow ?? { x: (from.x + to.x) / 2, y: (from.y + to.y) / 2 }, (sY + hY) / 2), h = T(to, hY);
+    const cls = from.x > 0 ? "body" : "body back", part = `arm${from.x > 0 ? "R" : "L"}`;
+    line(s, e, 0.07, cls, { part }); line(e, h, 0.06, cls, { part });
+  }
+  for (const p of result.props ?? []) {
+    if (p.cls === "cable") line(T(p.a, hY), T(p.b, hY), 0.012, "cable");
+    else { const c = T({ x: (p.a.x + p.b.x) / 2, y: (p.a.y + p.b.y) / 2 }, 0); line(c, { ...c, y: hY + 0.4 }, 0.06, "equipment"); }
+  }
+  out.push({ kind: "poly", pts: [[-0.8, -1.7], [1.0, -1.7], [1.0, 0.6], [-0.8, 0.6]].map(([x, z]) => ({ x, y: 0, z })), cls: "floor3d" });
+  const frame = { X: { x: 1, y: 0, z: 0 }, Y: { x: 0, y: 1, z: 0 }, Z: { x: 0, y: 0, z: 1 }, at: { x: 0, y: l5Y, z: 0 }, trunk: L.trunk - body.trunkParts.l5s1 };
+  return [...trunkScene3d(data, exercise, activation, { frame, flexDeg: 0 }), ...out];
 }
