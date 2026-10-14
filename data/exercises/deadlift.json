@@ -8,7 +8,7 @@
   "angleLabel": "Hip angle",
   "concentric": "decrease",
   "angleRange": [0, 135],
-  "angleNote": "Hip flexion (side view): 0° = standing, 135° = bar about at plate height (22 cm) off the floor in the conventional pull. The knees bend in step with the hips (slider: degrees of knee bend per degree of hip bend). Lifting makes the angle smaller. Torques are per leg; the 3D view also shows the hip's sideways and rotation loads and the knee's sideways load.",
+  "angleNote": "Hip flexion (side view): 0° = standing, 135° = bar about at plate height (22 cm) off the floor in the conventional pull. At the deepest point the bar rests on the floor until you pull: the curves there show the effort to break it off. The knees bend in step with the hips (slider: degrees of knee bend per degree of hip bend). Lifting makes the angle smaller. Torques are per leg; the 3D view also shows the hip's sideways and rotation loads and the knee's sideways load.",
   "defaults": {"loadKg": 50, "variant": "conventional", "bodyMassKg": 75},
   "ui": {"load": [0, 250, 2.5]},
   "joints": [
