@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { analyze, interp, G, strengthScaleAt } from "../js/physics.js";
+import { analyze, interp, G, strengthScaleAt, camOf } from "../js/physics.js";
 import { muscleActivation } from "../js/muscles.js";
 
 const load = (id) => JSON.parse(readFileSync(new URL(`../data/exercises/${id}.json`, import.meta.url)));
@@ -29,7 +29,7 @@ const variantOf = (ex) => (id) => ex.variants.find((x) => x.id === id);
   });
 
   test("leg extension machine: m·g·r(angle) plus the lower leg's weight", () => {
-    const { camProfile } = v("machine").load;
+    const camProfile = camOf(v("machine").load);
     for (const a of [0, 45, 90]) {
       const r = analyze(ex, v("machine"), a, opts);
       close(r.loadTorque, 10 * G * interp(camProfile.points, a));

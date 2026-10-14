@@ -386,7 +386,7 @@ export function squat3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       ...(v.loadShape === "dumbbell" ? { hands: [weight(U.bar, loadKg / 2), weight(U.bar, loadKg / 2)] } : { loads: [weight(U.bar, loadKg)] }) }),
     info: [...(ok ? [sidePushInfo(leg)] : [{ warn: true, text: "Can't balance: no trunk angle keeps the centre of mass over the mid-foot here." }]), ...contactInfo, ...ankleInfo,
       ...(shinOk ? [] : [{ warn: true, text: "This stance can't reach this depth with the set shin lean: the posture shown isn't reachable, so its numbers aren't meaningful." }]),
-      ...(joints.hip?.angle > 140 ? [{ warn: true, text: `The hips would have to bend ${Math.round(joints.hip.angle)}°: the thighs would press into the belly long before (an estimate; hips usually bend about 120–130°). Lean the shins further.` }] : [])],
+      ...(joints.hip?.angle > 140 ? [{ warn: true, text: `The hips would have to bend ${Math.round(joints.hip.angle)}°: more than almost any hip bends (passive hip flexion in adult men: 120° on average, 90–150°). Lean the shins further.` }] : [])],
   };
 }
 

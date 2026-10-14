@@ -79,7 +79,18 @@ export function pose(exercise, variant, angleDeg) {
  * A gravity load acts at the tip, or with load.on ("proximal" / "distal") and load.along
  * (fraction from that segment's start) at a point on a segment (e.g. a plate held at the chest).
  */
-export function loadForce(exercise, variant, p, angleDeg, { loadKg, pulley, bodyMassKg = 75 }) {
+/** A machine's cam: the shape chosen in the set-up (`placement.cam`), else its first (`camProfiles`), or its only one (`camProfile`). */
+export const camOf = (load, placement) => load?.camProfiles?.find((c) => c.id === placement?.cam) ?? load?.camProfiles?.[0] ?? load?.camProfile;
+
+/** The set-up choice between a machine's cam shapes, when it offers more than one. */
+export function camChoice(variant) {
+  const cams = variant?.load?.camProfiles;
+  if (!(cams?.length > 1)) return null;
+  return { key: "cam", label: "Cam shape", type: "choice", options: cams.map((c) => [c.id, c.label]),
+    hint: "Machines differ in the cam (or linkage) between the weight stack and the arm, and that sets how the resistance changes through the movement. Pick the one closest to your machine; each shape's source is in Expert mode and on the model page." };
+}
+
+export function loadForce(exercise, variant, p, angleDeg, { loadKg, pulley, bodyMassKg = 75, placement }) {
   const { load } = variant;
   const mag = loadKg * G;
   if (load.type === "machine") {
@@ -87,7 +98,7 @@ export function loadForce(exercise, variant, p, angleDeg, { loadKg, pulley, body
     const len = Math.hypot(d.x, d.y);
     const u = { x: d.x / len, y: d.y / len };
     const at = { x: p.joint.x + u.x * load.padDistance, y: p.joint.y + u.y * load.padDistance };
-    const F = (mag * interp(load.camProfile.points, angleDeg)) / load.padDistance;
+    const F = (mag * interp(camOf(load, placement).points, angleDeg)) / load.padDistance;
     const w = workSense(exercise);
     return { x: w * F * u.y, y: -w * F * u.x, mag: F, at };
   }

@@ -144,7 +144,12 @@
       "defaultLoadKg": 2,
       "notes": "Standing on the other leg, cable from a low pulley on that side. The cable loads the start; the leg's own weight adds a little as it rises.",
       "hip": {"flexion": 0, "flexSlider": true},
-      "strengthScale": {"by": "hipFlexion", "points": [[0,1], [45,1], [60,0.87], [75,0.71], [90,0.54], [105,0.42], [120,0.41]], "note": "By the hip bend set with the slider, as for the seated machine: Abduction strength vs hip bend: about the same as straight up to 45° of hip flexion (two datasets in Chen & Franklin's Fig. 6 bottom left; the OpenSim model's summed force × moment arm agrees, −5%). Beyond 45° nothing is measured: the points follow the model's summed force × moment arm (at 10° of abduction) relative to 45°, so upright (90°) is about half of standing. An estimate: the model has no obturators, gemelli or quadratus femoris, which Dostal et al. found turn into abductors with the hip bent, so it is likely too low. With force–length (OpenSim) the model drops further (about 0.41 at 90°), but it already overstates the drop to 45°, so the leverage-only values are kept until a measurement is found.", "source": "Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183 (bioRxiv preprint, CC BY 4.0: Fig. 6, read off the figure); beyond 45°: Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079, with the hip abductor paths of Uhlrich SD, Jackson RW, Seth A, Kolesar JA, Delp SL (2022). Muscle coordination retraining inspired by musculoskeletal simulations reduces knee contact force. Sci Rep 12 (Rajagopal2016.osim, abductor paths from RajagopalLaiUhlrich2023.osim, both from opensim-org/opensim-models, MIT licence; straight segments wrapped over the model's cylinders)"}
+      "strengthScale": {
+        "by": "hipFlexion",
+        "points": [[0, 1], [45, 1], [60, 0.87], [75, 0.71], [90, 0.54], [105, 0.42], [120, 0.41]],
+        "note": "By the hip bend set with the slider, as for the seated machine: Abduction strength vs hip bend: about the same as straight up to 45° of hip flexion (two datasets in Chen & Franklin's Fig. 6 bottom left; the OpenSim model's summed force × moment arm agrees, −5%). Beyond 45° nothing is measured: the points follow the model's summed force × moment arm (at 10° of abduction) relative to 45°, so upright (90°) is about half of standing. An estimate: the model has no obturators, gemelli or quadratus femoris, which Dostal et al. found turn into abductors with the hip bent, so it is likely too low. With force–length (OpenSim) the model drops further (about 0.41 at 90°), but it already overstates the drop to 45°, so the leverage-only values are kept until a measurement is found.",
+        "source": "Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183 (bioRxiv preprint, CC BY 4.0: Fig. 6, read off the figure); beyond 45°: Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079, with the hip abductor paths of Uhlrich SD, Jackson RW, Seth A, Kolesar JA, Delp SL (2022). Muscle coordination retraining inspired by musculoskeletal simulations reduces knee contact force. Sci Rep 12 (Rajagopal2016.osim, abductor paths from RajagopalLaiUhlrich2023.osim, both from opensim-org/opensim-models, MIT licence; straight segments wrapped over the model's cylinders)"
+      }
     },
     {
       "id": "side-lying",
@@ -165,16 +170,39 @@
       "load": {
         "type": "machine",
         "padDistance": 0.4,
-        "camProfile": {
-          "points": [[0, 0.3], [20, 0.34], [45, 0.34]],
-          "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
-          "source": "TODO: replace with a measured profile for a real machine"
-        }
+        "camProfiles": [
+          {
+            "id": "even",
+            "label": "Even (illustrative)",
+            "points": [[0, 0.3], [20, 0.34], [45, 0.34]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
+            "source": "TODO: replace with a measured profile for a real machine"
+          },
+          {
+            "id": "falling",
+            "label": "Falling cam (estimate)",
+            "points": [[0, 0.36], [60, 0.26]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight. One maker describes its abductor's cam as giving a decreasing resistance as the legs open, to follow the abductors, which are strongest with the legs together (Panatta; no numbers). How much it falls isn't published: here about 30% over the range, an estimate.",
+            "source": "Panatta (manufacturer product descriptions, read 2026-10-14: Fantastic Vertical Pek Dek, \"progressively increasing\" resistance; Standing Abductor, \"decreasing\" resistance in the lifting phase; no numbers given)"
+          },
+          {
+            "id": "round",
+            "label": "Round pulley (constant)",
+            "points": [[0, 0.3], [60, 0.3]],
+            "note": "A plain round pulley: the lever between the belt and the axle never changes, so the resistance torque is the same at every angle (physics, no source needed). Many plate-loaded and budget machines work like this. Radius 0.30 m, nominal (stack kg don't compare between machines).",
+            "source": "Physics: a round pulley's radius is constant (no source needed)"
+          }
+        ]
       },
       "defaultLoadKg": 5,
       "notes": "Pad on the outside of the thigh above the knee. For the seated machines see the two seated variants.",
       "hip": {"flexion": 0, "flexSlider": true},
-      "strengthScale": {"by": "hipFlexion", "points": [[0,1], [45,1], [60,0.87], [75,0.71], [90,0.54], [105,0.42], [120,0.41]], "note": "By the hip bend set with the slider, as for the seated machine: Abduction strength vs hip bend: about the same as straight up to 45° of hip flexion (two datasets in Chen & Franklin's Fig. 6 bottom left; the OpenSim model's summed force × moment arm agrees, −5%). Beyond 45° nothing is measured: the points follow the model's summed force × moment arm (at 10° of abduction) relative to 45°, so upright (90°) is about half of standing. An estimate: the model has no obturators, gemelli or quadratus femoris, which Dostal et al. found turn into abductors with the hip bent, so it is likely too low. With force–length (OpenSim) the model drops further (about 0.41 at 90°), but it already overstates the drop to 45°, so the leverage-only values are kept until a measurement is found.", "source": "Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183 (bioRxiv preprint, CC BY 4.0: Fig. 6, read off the figure); beyond 45°: Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079, with the hip abductor paths of Uhlrich SD, Jackson RW, Seth A, Kolesar JA, Delp SL (2022). Muscle coordination retraining inspired by musculoskeletal simulations reduces knee contact force. Sci Rep 12 (Rajagopal2016.osim, abductor paths from RajagopalLaiUhlrich2023.osim, both from opensim-org/opensim-models, MIT licence; straight segments wrapped over the model's cylinders)"}
+      "strengthScale": {
+        "by": "hipFlexion",
+        "points": [[0, 1], [45, 1], [60, 0.87], [75, 0.71], [90, 0.54], [105, 0.42], [120, 0.41]],
+        "note": "By the hip bend set with the slider, as for the seated machine: Abduction strength vs hip bend: about the same as straight up to 45° of hip flexion (two datasets in Chen & Franklin's Fig. 6 bottom left; the OpenSim model's summed force × moment arm agrees, −5%). Beyond 45° nothing is measured: the points follow the model's summed force × moment arm (at 10° of abduction) relative to 45°, so upright (90°) is about half of standing. An estimate: the model has no obturators, gemelli or quadratus femoris, which Dostal et al. found turn into abductors with the hip bent, so it is likely too low. With force–length (OpenSim) the model drops further (about 0.41 at 90°), but it already overstates the drop to 45°, so the leverage-only values are kept until a measurement is found.",
+        "source": "Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183 (bioRxiv preprint, CC BY 4.0: Fig. 6, read off the figure); beyond 45°: Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079, with the hip abductor paths of Uhlrich SD, Jackson RW, Seth A, Kolesar JA, Delp SL (2022). Muscle coordination retraining inspired by musculoskeletal simulations reduces knee contact force. Sci Rep 12 (Rajagopal2016.osim, abductor paths from RajagopalLaiUhlrich2023.osim, both from opensim-org/opensim-models, MIT licence; straight segments wrapped over the model's cylinders)"
+      }
     },
     {
       "id": "seated",
@@ -185,11 +213,29 @@
       "load": {
         "type": "machine",
         "padDistance": 0.4,
-        "camProfile": {
-          "points": [[0, 0.3], [20, 0.34], [45, 0.34]],
-          "note": "Effective radius in metres: joint torque per unit of stack weight. Illustrative shape, as for the standing machine.",
-          "source": "TODO: replace with a measured profile for a real machine"
-        }
+        "camProfiles": [
+          {
+            "id": "even",
+            "label": "Even (illustrative)",
+            "points": [[0, 0.3], [20, 0.34], [45, 0.34]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight. Illustrative shape, as for the standing machine.",
+            "source": "TODO: replace with a measured profile for a real machine"
+          },
+          {
+            "id": "falling",
+            "label": "Falling cam (estimate)",
+            "points": [[0, 0.36], [60, 0.26]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight. One maker describes its abductor's cam as giving a decreasing resistance as the legs open, to follow the abductors, which are strongest with the legs together (Panatta; no numbers). How much it falls isn't published: here about 30% over the range, an estimate.",
+            "source": "Panatta (manufacturer product descriptions, read 2026-10-14: Fantastic Vertical Pek Dek, \"progressively increasing\" resistance; Standing Abductor, \"decreasing\" resistance in the lifting phase; no numbers given)"
+          },
+          {
+            "id": "round",
+            "label": "Round pulley (constant)",
+            "points": [[0, 0.3], [60, 0.3]],
+            "note": "A plain round pulley: the lever between the belt and the axle never changes, so the resistance torque is the same at every angle (physics, no source needed). Many plate-loaded and budget machines work like this. Radius 0.30 m, nominal (stack kg don't compare between machines).",
+            "source": "Physics: a round pulley's radius is constant (no source needed)"
+          }
+        ]
       },
       "defaultLoadKg": 5,
       "notes": "Seated, pad on the outside of the knees, the thighs move apart in a horizontal plane, so the legs' own weight doesn't load the movement; the pad's cam does. Use the trunk-lean slider: upright the hip is bent 90°, and the gluteus medius has lost most of its abduction leverage (OpenSim model: about 0.2–1.5 cm vs 4–5.5 cm standing); the upper gluteus maximus and piriformis take over, and abduction is weaker overall. Leaning back (less hip bend) brings the gluteus medius back in; leaning forward leaves mostly the upper gluteus maximus.",
@@ -235,10 +281,7 @@
       "step": 5,
       "unit": "°",
       "scale": 1,
-      "variants": [
-        "cable",
-        "machine"
-      ],
+      "variants": ["cable", "machine"],
       "hint": "0° = leg straight down; + = the leg swung forward before it is raised to the side, − = back. The side raise then happens in a tilted plane, so only cos(bend) of the leg's weight acts in it (holding the leg forward is the hip flexors' job, not analysed), and abduction strength drops beyond about 45° (Chen & Franklin's datasets; the OpenSim model beyond). The muscles change too, in the OpenSim hip model: with the hip bent the front parts of gluteus medius and minimus lose their abduction leverage, and the rear parts, the piriformis and the upper gluteus maximus take over; with the leg back, the front parts do most of it. The cable keeps the direction it has in the upright stance."
     }
   ]

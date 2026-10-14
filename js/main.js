@@ -1,4 +1,4 @@
-import { analyze, sampleCurve, rangeOf, gravityOf } from "./physics.js";
+import { analyze, sampleCurve, rangeOf, gravityOf, camOf, camChoice } from "./physics.js";
 import { muscleActivation } from "./muscles.js";
 import { renderChart } from "./chart.js";
 import { renderFigure, figureBounds, zoomBounds, viewTitle, renderMultiFigure, multiBounds } from "./figure.js";
@@ -84,7 +84,7 @@ function writeHash() {
     p.set("py", state.pulley.y.toFixed(2));
   }
   // Only placement values that differ from the variant's preset, so plain links stay short.
-  const changed = Object.entries(state.placement ?? {}).filter(([k, v]) => v !== variant().params?.[k]);
+  const changed = Object.entries(state.placement ?? {}).filter(([k, v]) => v !== (variant().params?.[k] ?? (k === "cam" ? variant().load?.camProfiles?.[0]?.id : undefined)));
   if (changed.length) p.set("pl", changed.map(([k, v]) => `${k}:${typeof v === "string" ? v : +v.toFixed(4)}`).join(","));
   if (state.camName) p.set("cam", state.camName);
   if (state.hand && state.exercise.fingers) p.set("hand", handList().map((x) => +(x * 1000).toFixed(1)).join(","));
@@ -218,7 +218,8 @@ function infoTip(text, about) {
 /** Foot-placement sliders (3D lifts): start from the variant's preset. */
 function setPlacement(v, override = {}) {
   // A slider can belong to some variants only (e.g. the trunk lean of a seated machine).
-  const spec = state.exercise.placement?.filter((s) => !s.variants || s.variants.includes(v.id));
+  // A machine with several cam shapes adds a choice between them.
+  const spec = [...(state.exercise.placement ?? []).filter((s) => !s.variants || s.variants.includes(v.id)), camChoice(v)].filter(Boolean);
   $("placement-controls").hidden = !spec?.length;
   if (!spec?.length) { state.placement = null; $("placement-sliders").replaceChildren(); return; }
   // Values from a link: "auto" only where the slider offers it, numbers kept inside the slider's range.

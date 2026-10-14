@@ -55,6 +55,15 @@ export function renderNumbers(box, ex, variant, { peakTorqueNm } = {}) {
   }
   if (ex.placementStrength) corr.push(el("details", { className: "num-item" }, el("summary", {}, el("strong", { textContent: `Set-up: ${ex.placementStrength.key}` }), ` — ${Object.entries(ex.placementStrength.values ?? {}).map(([k, v]) => `${k} × ${v}`).join(", ")}`), ...noteAndSource(ex.placementStrength)));
   if (corr.length) parts.push(el("h4", { textContent: `Corrections (${variant?.name ?? "this variant"})` }), ...corr);
+  // Machine cams: each shape on offer (effective radius = joint torque per unit of stack weight).
+  const cams = variant?.load?.camProfiles ?? (variant?.load?.camProfile ? [variant.load.camProfile] : []);
+  if (cams.length) {
+    parts.push(el("h4", { textContent: `Machine cam shapes (${variant.name})` }), ...cams.map((c) => {
+      const t = el("table", { className: "num-table" }, el("thead", {}, el("tr", {}, el("th", { textContent: "angle" }), el("th", { textContent: "effective radius" }))),
+        el("tbody", {}, ...c.points.map(([a, m]) => el("tr", {}, el("td", { textContent: `${num(a)}°` }), el("td", { textContent: `${num(m * 100, 1)} cm` })))));
+      return el("details", { className: "num-item" }, el("summary", {}, el("strong", { textContent: c.label ?? "Cam" })), t, ...noteAndSource(c));
+    }));
+  }
   // Muscles.
   const mus = [];
   for (const m of ex.muscles ?? []) {
@@ -139,6 +148,7 @@ export function renderExpertInline(strengthBox, chartBox, ex, variant, refs) {
     if (variant?.source) s.push(sourceLine(variant.source, refs, "Grip posture"));
   }
   if (variant?.strengthScale?.source) s.push(sourceLine(variant.strengthScale.source, refs, "Correction for this variant"));
+  for (const cam of variant?.load?.camProfiles ?? []) s.push(sourceLine(cam.source, refs, `Cam "${cam.label}"`));
   strengthBox.replaceChildren(...s);
   strengthBox.hidden = !s.length;
   chartBox.replaceChildren(...c);

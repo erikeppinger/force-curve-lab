@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { analyze, interp, sampleCurve, G } from "../js/physics.js";
+import { analyze, interp, sampleCurve, G, camOf } from "../js/physics.js";
 import { muscleActivation } from "../js/muscles.js";
 
 const ex = JSON.parse(readFileSync(new URL("../data/exercises/lateral-raise.json", import.meta.url)));
@@ -53,7 +53,7 @@ test("cable curve is flatter than the dumbbell curve", () => {
 });
 
 test("machine torque = m·g·r(angle) from the cam table, applied at the pad", () => {
-  const { padDistance, camProfile } = v("machine").load;
+  const { padDistance } = v("machine").load, camProfile = camOf(v("machine").load);
   for (const [a, r] of camProfile.points) {
     const res = analyze(ex, v("machine"), a, opts);
     close(res.loadTorque, 5 * G * r);

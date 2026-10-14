@@ -201,11 +201,22 @@
       "load": {
         "type": "machine",
         "padDistance": 0.25,
-        "camProfile": {
-          "points": [[0, 0.3], [30, 0.36], [60, 0.38], [90, 0.34]],
-          "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
-          "source": "TODO: replace with a measured profile (torque per kg at each angle) for a real machine"
-        }
+        "camProfiles": [
+          {
+            "id": "illustrative",
+            "label": "Illustrative cam",
+            "points": [[0, 0.3], [30, 0.36], [60, 0.38], [90, 0.34]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
+            "source": "TODO: replace with a measured profile (torque per kg at each angle) for a real machine"
+          },
+          {
+            "id": "round",
+            "label": "Round pulley (constant)",
+            "points": [[0, 0.3], [180, 0.3]],
+            "note": "A plain round pulley: the lever between the belt and the axle never changes, so the resistance torque is the same at every angle (physics, no source needed). Many plate-loaded and budget machines work like this. Radius 0.30 m, nominal (stack kg don't compare between machines).",
+            "source": "Physics: a round pulley's radius is constant (no source needed)"
+          }
+        ]
       },
       "notes": "A pad on the upper arm near the elbow pushes against the raise, and the cam sets the resistance at each angle. This illustrative cam loads the start far more than a dumbbell and stays fairly even. Machine stack weights don't compare directly with dumbbell weights: the same number of kg gives a different torque.",
       "angleRange": [0, 90],

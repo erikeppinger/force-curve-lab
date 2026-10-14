@@ -870,6 +870,70 @@
       "citation": "Nagulkar JM, Mehta S, Mathur C, Goyal S, Sharma A (2024). Functional assessment of ankle dorsiflexion and performance outcomes in elite athletes: a cross-sectional analytical study. Afr J Biomed Res 27(4S):18167–18171.",
       "url": "https://doi.org/10.53555/AJBR.v27i4S.8555",
       "usedFor": "Deep squat: shin lean with the heel down in elite athletes."
+    },
+    {
+      "key": "Aronis 2025",
+      "match": "Aronis G, Kurz M",
+      "group": "Strength curves",
+      "citation": "Aronis G, Kurz M, Wimmer F, Hackl H, Angeli T, Gföhler M (2025). Maximum shoulder torque and muscle activation during standing arm flexion: reference data for biomechanical and ergonomic applications. J Funct Morphol Kinesiol 11(1):20.",
+      "url": "https://doi.org/10.3390/jfmk11010020",
+      "usedFor": "Shoulder flexion strength from 90° to 160° (overhead press, bench press, front raise); front raise deltoid and clavicular pectoralis shares overhead."
+    },
+    {
+      "key": "Roaas 1982",
+      "match": "Roaas A, Andersson GBJ",
+      "group": "Body data",
+      "citation": "Roaas A, Andersson GBJ (1982). Normal range of motion of the hip, knee and ankle joints in male subjects, 30–40 years of age. Acta Orthop Scand 53(2):205–208.",
+      "url": "https://doi.org/10.3109/17453678208992202",
+      "usedFor": "Squat: how far the hip bends (the hip-flexion warning)."
+    },
+    {
+      "key": "McMillin 2024",
+      "match": "McMillin C, Melton B",
+      "group": "Exercise biomechanics",
+      "citation": "McMillin C, Melton B, Murray N, D'Adamo C (2024). Machine resistance curve analysis of seven resistance training machines. Res Dir Strength Perform 4(1):4.",
+      "url": "https://doi.org/10.53520/rdsp2024.105118",
+      "usedFor": "Leg extension machine: cross-check of the cam shape (start, middle, end of the stroke)."
+    },
+    {
+      "key": "Harman 1983",
+      "match": "Harman E (1983)",
+      "group": "Exercise biomechanics",
+      "citation": "Harman E (1983). Resistive torque analysis of 5 Nautilus exercise machines. Med Sci Sports Exerc 15(2):113 (abstract).",
+      "url": "https://doi.org/10.1249/00005768-198315020-00117",
+      "usedFor": "Leg curl, pec deck, leg extension machines: qualitative cam shapes of 1980s Nautilus machines."
+    },
+    {
+      "key": "Cunningham 2010",
+      "match": "Cunningham TJ (2010)",
+      "group": "Exercise biomechanics",
+      "citation": "Cunningham TJ (2010). Exercise apparatus. US Patent 7,744,507 B2 (filed 2007).",
+      "url": "https://patents.google.com/patent/US7744507B2/en",
+      "usedFor": "Leg curl: cam radii of commercial leg machines (6 in straight → 12 in at the end of the curl)."
+    },
+    {
+      "key": "Maag 1989",
+      "match": "Maag HH (1989)",
+      "group": "Exercise biomechanics",
+      "citation": "Maag HH (1989). Four-bar rigid-drive variable resistance pectoral fly machine. US Patent 4,840,373.",
+      "url": "https://patents.google.com/patent/US4840373A/en",
+      "usedFor": "Pec deck: the linkage machine's computed resistance curve (FIG. 4)."
+    },
+    {
+      "key": "Pizzimenti 1992",
+      "match": "Pizzimenti MA (1992)",
+      "group": "Exercise biomechanics",
+      "citation": "Pizzimenti MA (1992). Mechanical analysis of the Nautilus leg curl machine. Can J Sport Sci 17(1):41–48.",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/1322768/",
+      "usedFor": "Leg curl: the Nautilus machine's resistance didn't match knee-flexor strength (abstract only)."
+    },
+    {
+      "key": "Panatta 2026",
+      "match": "Panatta (manufacturer",
+      "group": "Exercise biomechanics",
+      "citation": "Panatta Sport. Product descriptions: Fantastic Vertical Pek Dek; Standing Abductor (manufacturer web pages, read 2026-10-14; claims, not measurements).",
+      "url": "https://www.panattasport.com/en/fantastic/fantastic-vertical-pek-dek/",
+      "usedFor": "Pec deck and hip abduction: only the direction of the estimated cam shapes (rising, falling)."
     }
   ],
   "resources": [
