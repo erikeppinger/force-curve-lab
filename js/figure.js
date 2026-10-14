@@ -4,7 +4,7 @@
 // gravity points down the screen (lying postures appear lying). With no in-plane gravity
 // (a top view) nothing is rotated.
 
-import { gravityOf, leanFrame, interp } from "./physics.js";
+import { gravityOf, leanFrame, interp, camOf } from "./physics.js";
 
 const NS = "http://www.w3.org/2000/svg";
 const BASE_S = 150; // px per metre
@@ -293,7 +293,7 @@ export function renderFigure(svg, { exercise, variant: variant0, result, activat
   const footSpec = exercise.placement?.find((s) => s.key === "footAngle" && (!s.variants || s.variants.includes(variant.id)));
   if (footSpec) footInset(svg, (V.x1 - V.x0) * S, Number(result.placement?.footAngle ?? variant.params?.footAngle ?? 0));
   // A machine's cam (leg extension, leg curl ...): its shape and where the belt leaves it now.
-  const prof = variant.load.type === "machine" ? variant.load.camProfile?.points : null;
+  const prof = variant.load.type === "machine" ? camOf(variant.load, result.placement)?.points : null;
   if (prof && result.angle != null) camInset(svg, (V.x1 - V.x0) * S, prof, result.angle, exercise.angleRange ?? [prof[0][0], prof.at(-1)[0]], exercise.angleSense ?? 1);
 }
 

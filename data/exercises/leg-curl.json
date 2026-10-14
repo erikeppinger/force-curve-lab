@@ -100,11 +100,29 @@
       "load": {
         "type": "machine",
         "padDistance": 0.38,
-        "camProfile": {
-          "points": [[0, 0.26], [60, 0.3], [120, 0.24]],
-          "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
-          "source": "TODO: replace with a measured profile for a real machine"
-        }
+        "camProfiles": [
+          {
+            "id": "rising",
+            "label": "Rising cam (most commercial machines)",
+            "points": [[0, 0.15], [60, 0.225], [120, 0.3]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight. An estimate: one patent's survey of several commercial leg machines found cam radii of 6 inches with the leg straight rising to 12 inches at the end of the curl (Cunningham), and a 1983 check of a Nautilus leg curl found the resistance rising through most of the movement (Harman). Here: doubling from straight to fully bent, linear in between (the in-between shape isn't known), 0.30 m at the top, nominal. The knee flexors are strongest near straight, so this shape fights the strength curve; a 1992 study of the Nautilus leg curl found the same mismatch (Pizzimenti, abstract only).",
+            "source": "Cunningham TJ (2010). Exercise apparatus. US Patent 7,744,507 B2 (filed 2007; background: cam radii observed on several commercial leg machines); Harman E (1983). Resistive torque analysis of 5 Nautilus exercise machines. Med Sci Sports Exerc 15(2):113. doi:10.1249/00005768-198315020-00117 (conference abstract; cam radii from photographs); Pizzimenti MA (1992). Mechanical analysis of the Nautilus leg curl machine. Can J Sport Sci 17(1):41–48 (abstract)"
+          },
+          {
+            "id": "peak-mid",
+            "label": "Peak mid-range (illustrative)",
+            "points": [[0, 0.26], [60, 0.3], [120, 0.24]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
+            "source": "TODO: no machine measured; illustrative"
+          },
+          {
+            "id": "round",
+            "label": "Round pulley (constant)",
+            "points": [[0, 0.3], [120, 0.3]],
+            "note": "A plain round pulley: the lever between the belt and the axle never changes, so the resistance torque is the same at every angle (physics, no source needed). Many plate-loaded and budget machines work like this. Radius 0.30 m, nominal (stack kg don't compare between machines).",
+            "source": "Physics: a round pulley's radius is constant (no source needed)"
+          }
+        ]
       },
       "defaultLoadKg": 15,
       "notes": "Face down with the hip straight. The pad is behind the ankle; lifting the lower leg's weight also adds torque until it passes vertical (90°).",
@@ -123,11 +141,29 @@
       "load": {
         "type": "machine",
         "padDistance": 0.38,
-        "camProfile": {
-          "points": [[0, 0.26], [60, 0.3], [120, 0.24]],
-          "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
-          "source": "TODO: replace with a measured profile for a real machine"
-        }
+        "camProfiles": [
+          {
+            "id": "rising",
+            "label": "Rising cam (most commercial machines)",
+            "points": [[0, 0.15], [60, 0.225], [120, 0.3]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight. An estimate: one patent's survey of several commercial leg machines found cam radii of 6 inches with the leg straight rising to 12 inches at the end of the curl (Cunningham), and a 1983 check of a Nautilus leg curl found the resistance rising through most of the movement (Harman). Here: doubling from straight to fully bent, linear in between (the in-between shape isn't known), 0.30 m at the top, nominal. The knee flexors are strongest near straight, so this shape fights the strength curve; a 1992 study of the Nautilus leg curl found the same mismatch (Pizzimenti, abstract only).",
+            "source": "Cunningham TJ (2010). Exercise apparatus. US Patent 7,744,507 B2 (filed 2007; background: cam radii observed on several commercial leg machines); Harman E (1983). Resistive torque analysis of 5 Nautilus exercise machines. Med Sci Sports Exerc 15(2):113. doi:10.1249/00005768-198315020-00117 (conference abstract; cam radii from photographs); Pizzimenti MA (1992). Mechanical analysis of the Nautilus leg curl machine. Can J Sport Sci 17(1):41–48 (abstract)"
+          },
+          {
+            "id": "peak-mid",
+            "label": "Peak mid-range (illustrative)",
+            "points": [[0, 0.26], [60, 0.3], [120, 0.24]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
+            "source": "TODO: no machine measured; illustrative"
+          },
+          {
+            "id": "round",
+            "label": "Round pulley (constant)",
+            "points": [[0, 0.3], [120, 0.3]],
+            "note": "A plain round pulley: the lever between the belt and the axle never changes, so the resistance torque is the same at every angle (physics, no source needed). Many plate-loaded and budget machines work like this. Radius 0.30 m, nominal (stack kg don't compare between machines).",
+            "source": "Physics: a round pulley's radius is constant (no source needed)"
+          }
+        ]
       },
       "defaultLoadKg": 15,
       "notes": "Hip bent 90°, so the hamstrings work from a longer length. Here the lower leg's weight helps the curl. The extra strength from the longer hamstrings is not modelled.",

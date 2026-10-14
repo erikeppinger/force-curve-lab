@@ -130,7 +130,12 @@
       "defaultLoadKg": 5,
       "notes": "Standing on the other leg, cable from a low pulley well out to the working leg's side (about ankle height), pulling the leg in towards (and past) the other one. The cable pulls outwards over the whole range; its lever is longest with the leg crossed in. With the leg far out, its own weight pulls it back in about as hard as the cable pulls out, so the start is nearly free.",
       "hip": {"flexion": 0, "flexSlider": true},
-      "strengthScale": {"by": "hipFlexion", "points": [[0,1], [45,0.6], [120,0.6]], "note": "By the hip bend set with the slider, as for the seated machine: Adduction strength vs hip bend: about 40% lower at 45° of hip flexion than straight in the one dataset Chen & Franklin collected across hip flexion (Fig. 6, bottom left); held to 120° (extrapolation). The OpenSim model's leverage alone would predict little change, so the loss is more likely the adductors working at a shorter length (not in the leverage model).", "source": "Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183 (bioRxiv preprint, CC BY 4.0: Fig. 6, read off the figure)"}
+      "strengthScale": {
+        "by": "hipFlexion",
+        "points": [[0, 1], [45, 0.6], [120, 0.6]],
+        "note": "By the hip bend set with the slider, as for the seated machine: Adduction strength vs hip bend: about 40% lower at 45° of hip flexion than straight in the one dataset Chen & Franklin collected across hip flexion (Fig. 6, bottom left); held to 120° (extrapolation). The OpenSim model's leverage alone would predict little change, so the loss is more likely the adductors working at a shorter length (not in the leverage model).",
+        "source": "Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183 (bioRxiv preprint, CC BY 4.0: Fig. 6, read off the figure)"
+      }
     },
     {
       "id": "side-lying",
@@ -153,11 +158,22 @@
       "load": {
         "type": "machine",
         "padDistance": 0.4,
-        "camProfile": {
-          "points": [[0, 0.34], [20, 0.34], [60, 0.3]],
-          "note": "Effective radius in metres: joint torque per unit of stack weight. Illustrative shape.",
-          "source": "TODO: replace with a measured profile for a real machine"
-        }
+        "camProfiles": [
+          {
+            "id": "illustrative",
+            "label": "Illustrative cam",
+            "points": [[0, 0.34], [20, 0.34], [60, 0.3]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight. Illustrative shape.",
+            "source": "TODO: replace with a measured profile for a real machine"
+          },
+          {
+            "id": "round",
+            "label": "Round pulley (constant)",
+            "points": [[-20, 0.3], [60, 0.3]],
+            "note": "A plain round pulley: the lever between the belt and the axle never changes, so the resistance torque is the same at every angle (physics, no source needed). Many plate-loaded and budget machines work like this. Radius 0.30 m, nominal (stack kg don't compare between machines).",
+            "source": "Physics: a round pulley's radius is constant (no source needed)"
+          }
+        ]
       },
       "defaultLoadKg": 20,
       "notes": "Seated, pads on the inside of the knees, the thighs squeeze together in a horizontal plane: the legs' own weight doesn't load the movement; the pad's cam does. The trunk-lean slider changes the hip bend; the adductors keep their leverage much better than the gluteus medius does in the abduction machine, so leaning shifts less here.",
@@ -200,9 +216,7 @@
       "step": 5,
       "unit": "°",
       "scale": 1,
-      "variants": [
-        "cable"
-      ],
+      "variants": ["cable"],
       "hint": "0° = leg straight down; + = the leg swung forward before it is pulled across, − = back. The movement then happens in a tilted plane, so only cos(bend) of the leg's weight acts in it, and adduction strength drops with the hip bent (Chen & Franklin's datasets). In the OpenSim hip model the adductor longus and brevis (also hip flexors) take a larger share as the hip bends, and the psoas joins in. The cable keeps the direction it has in the upright stance."
     }
   ]

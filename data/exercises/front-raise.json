@@ -25,9 +25,9 @@
   "ui": {"load": [0.5, 25, 0.5], "strength": [20, 110]},
   "strengthCurve": {
     "label": "Shoulder flexor strength",
-    "points": [[0, 1], [45, 0.96], [90, 0.92]],
-    "note": "Relative shoulder-flexion strength vs flexion: \"descending\" in all three studies Kulig et al. reviewed, strongest low, with a plateau around 45–90° and a clear drop only beyond about 110°. The size of the drop across 0–90° isn't given numerically, so these values are an estimate of that shape; Mayer et al. found the isometric peak at 35–72° (men). Peak torque default: Mayer's isometric shoulder flexion, men, 68 ± 18 Nm. Above 90° (the overhead variant) the 90° value is held: no measured curve was found that goes higher (Mayer et al. place the isometric peaks in front of the body and below head level; Kulig et al. describe a clear drop in flexion strength beyond about 110°, without numbers), so effort overhead is probably underestimated.",
-    "source": "Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (shape); Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25. doi:10.1055/s-2007-1021105 (peak torque)"
+    "points": [[0, 1], [45, 0.96], [90, 0.92], [100, 0.85], [110, 0.82], [120, 0.77], [130, 0.71], [140, 0.62], [150, 0.58], [160, 0.51]],
+    "note": "Relative shoulder-flexion strength vs flexion: \"descending\" in all three studies Kulig et al. reviewed, strongest low, with a plateau around 45–90° and a clear drop only beyond about 110°. The size of the drop across 0–90° isn't given numerically, so these values are an estimate of that shape; Mayer et al. found the isometric peak at 35–72° (men). Peak torque default: Mayer's isometric shoulder flexion, men, 68 ± 18 Nm. From 90° to 160° the drop is measured: standing isometric shoulder flexion fell almost linearly, to 56% of its 90° value at 160° (Aronis et al., Table 1); the points here are those ratios applied to the 90° value, held flat beyond 160° (not measured). Their mean at 90° was 77 Nm including the arm's own weight, above this curve's 63 Nm there; the default peak stays at Mayer's value.",
+    "source": "Kulig K, Andrews JG, Hay JG (1984). Human strength curves. Exerc Sport Sci Rev 12:417–466 (shape); Mayer F, Horstmann T, Röcker K, Heitkamp HC, Dickhuth HH (1994). Int J Sports Med 15:S19–S25. doi:10.1055/s-2007-1021105 (peak torque); Aronis G, Kurz M, Wimmer F, Hackl H, Angeli T, Gföhler M (2025). Maximum shoulder torque and muscle activation during standing arm flexion: reference data for biomechanical and ergonomic applications. J Funct Morphol Kinesiol 11(1):20. doi:10.3390/jfmk11010020 (14 men, standing, isometric, 90–160° every 10°; Table 1 torque, Table 2 EMG)"
   },
   "postures": {
     "standing": [
@@ -51,9 +51,9 @@
       "wgerId": 2,
       "role": "Prime mover",
       "driver": "jointEffort",
-      "weight": [[0, 0.8], [45, 1], [90, 1]],
-      "note": "Main shoulder flexor.",
-      "source": "Campos YAC, Vianna JM, Guimarães MP, Oliveira JLD, Hernández-Mosqueira C, da Silva SF, Marchetti PH (2020). Different shoulder exercises affect the activation of deltoid portions in resistance-trained individuals. J Hum Kinet 75:5–14. doi:10.2478/hukin-2020-0033 (13 men, 60% 1RM, % of maximal isometric activation)",
+      "weight": [[0, 0.8], [45, 1], [90, 1], [160, 1]],
+      "note": "Main shoulder flexor. Stays fully active overhead: 95–102% of its 90° level up to 160° (Aronis et al.).",
+      "source": "Campos YAC, Vianna JM, Guimarães MP, Oliveira JLD, Hernández-Mosqueira C, da Silva SF, Marchetti PH (2020). Different shoulder exercises affect the activation of deltoid portions in resistance-trained individuals. J Hum Kinet 75:5–14. doi:10.2478/hukin-2020-0033 (13 men, 60% 1RM, % of maximal isometric activation); Aronis G, Kurz M, Wimmer F, Hackl H, Angeli T, Gföhler M (2025). Maximum shoulder torque and muscle activation during standing arm flexion: reference data for biomechanical and ergonomic applications. J Funct Morphol Kinesiol 11(1):20. doi:10.3390/jfmk11010020 (14 men, standing, isometric, 90–160° every 10°; Table 1 torque, Table 2 EMG)",
       "draw": {"seg": "proximal", "along": [-0.03, 0.15], "offset": 0.035, "w": 0.055, "layer": 2}
     },
     {
@@ -63,9 +63,9 @@
       "wgerId": 4,
       "role": "Synergist",
       "driver": "jointEffort",
-      "weight": [[0, 0.5], [60, 0.6], [90, 0.5]],
-      "note": "Upper chest; assists flexion in the lower and middle range. The clavicular head works with the front deltoid in flexion; inclining a press shifts the pectoral work to it (Trebs et al.).",
-      "source": "Trebs AA, Brandenburg JP, Pitney WA (2010). An electromyography analysis of 3 muscles surrounding the shoulder joint during the performance of a chest press exercise at several angles. J Strength Cond Res 24(7):1925–1930. doi:10.1519/JSC.0b013e3181ddfae7 (15 men, 70% 1RM, Smith machine; values in figures only)",
+      "weight": [[0, 0.5], [60, 0.6], [90, 0.5], [120, 0.39], [140, 0.22], [160, 0.14]],
+      "note": "Upper chest; assists flexion in the lower and middle range. The clavicular head works with the front deltoid in flexion; inclining a press shifts the pectoral work to it (Trebs et al.). Overhead its share falls: in maximal standing flexion its EMG dropped from 69% of maximum at 90° to 20% at 160° (Aronis et al.); the weights above 90° follow that ratio.",
+      "source": "Trebs AA, Brandenburg JP, Pitney WA (2010). An electromyography analysis of 3 muscles surrounding the shoulder joint during the performance of a chest press exercise at several angles. J Strength Cond Res 24(7):1925–1930. doi:10.1519/JSC.0b013e3181ddfae7 (15 men, 70% 1RM, Smith machine; values in figures only); Aronis G, Kurz M, Wimmer F, Hackl H, Angeli T, Gföhler M (2025). Maximum shoulder torque and muscle activation during standing arm flexion: reference data for biomechanical and ergonomic applications. J Funct Morphol Kinesiol 11(1):20. doi:10.3390/jfmk11010020 (14 men, standing, isometric, 90–160° every 10°; Table 1 torque, Table 2 EMG)",
       "draw": {
         "points": [[0.1, -0.08], [0.05, -0.02]],
         "w": 0.05,
@@ -80,9 +80,9 @@
       "wgerId": null,
       "role": "Synergist",
       "driver": "jointEffort",
-      "weight": [[0, 0.3], [90, 0.45]],
-      "note": "Helps more if the arm drifts out to the side.",
-      "source": "Campos YAC, Vianna JM, Guimarães MP, Oliveira JLD, Hernández-Mosqueira C, da Silva SF, Marchetti PH (2020). Different shoulder exercises affect the activation of deltoid portions in resistance-trained individuals. J Hum Kinet 75:5–14. doi:10.2478/hukin-2020-0033 (13 men, 60% 1RM, % of maximal isometric activation)",
+      "weight": [[0, 0.3], [90, 0.45], [120, 0.53], [150, 0.56], [160, 0.53]],
+      "note": "Helps more if the arm drifts out to the side. Overhead it works more: in maximal standing flexion its EMG rose from 88% of maximum at 90° to 109% at 150° (Aronis et al.); the weights above 90° follow that ratio.",
+      "source": "Campos YAC, Vianna JM, Guimarães MP, Oliveira JLD, Hernández-Mosqueira C, da Silva SF, Marchetti PH (2020). Different shoulder exercises affect the activation of deltoid portions in resistance-trained individuals. J Hum Kinet 75:5–14. doi:10.2478/hukin-2020-0033 (13 men, 60% 1RM, % of maximal isometric activation); Aronis G, Kurz M, Wimmer F, Hackl H, Angeli T, Gföhler M (2025). Maximum shoulder torque and muscle activation during standing arm flexion: reference data for biomechanical and ergonomic applications. J Funct Morphol Kinesiol 11(1):20. doi:10.3390/jfmk11010020 (14 men, standing, isometric, 90–160° every 10°; Table 1 torque, Table 2 EMG)",
       "draw": {"seg": "proximal", "along": [-0.03, 0.12], "offset": 0, "w": 0.05, "layer": 0}
     },
     {

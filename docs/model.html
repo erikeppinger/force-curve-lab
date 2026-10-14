@@ -143,7 +143,30 @@ function exerciseSection(ex, refs) {
     h("dt", {}, `${v.name}${v.equipment ? ` (${v.equipment})` : ""}`),
     h("dd", {}, v.notes ?? ""), ...(v.source ? [h("dd", { className: "src" }, `Source: ${v.source}`)] : []),
     ...(v.strengthScale?.note ? [h("dd", { className: "src" }, `Strength in this posture: ${v.strengthScale.note}${v.strengthScale.source ? ` Source: ${v.strengthScale.source}` : ""}`)] : []),
+    // Machines: every cam shape on offer (the set-up's "Cam shape" choice), each with its note and source.
+    ...(v.load?.camProfiles ?? (v.load?.camProfile ? [v.load.camProfile] : [])).flatMap((c, i, all) => [
+      h("dd", {}, `${all.length > 1 ? `Cam shape "${c.label}"${i === 0 ? " (default)" : ""}` : "Cam"}: ${c.note ?? ""}`),
+      ...(c.source ? [h("dd", { className: "src" }, `Source: ${c.source}`)] : []),
+    ]),
   ])));
+
+  // Set-up options (sliders and choices) with their explanations.
+  if (ex.placement?.length) {
+    out.push(h("h3", {}, "Set-up options"));
+    out.push(h("dl", { className: "items" }, ...ex.placement.flatMap((s) => [
+      h("dt", {}, `${s.label}${s.variants ? ` (${s.variants.map((id) => ex.variants.find((v) => v.id === id)?.name ?? id).join(", ")})` : ""}`),
+      h("dd", {}, [s.hint, s.type === "choice" ? `Options: ${s.options.map(([, t]) => t).join("; ")}.` : s.min != null ? `Range ${s.min * (s.scale ?? 1)} to ${s.max * (s.scale ?? 1)} ${s.unit ?? ""}.` : ""].filter(Boolean).join(" ")),
+    ])));
+  }
+
+  // Other notes the exercise file carries (contact forces, ranges of motion, the 3D trunk view ...).
+  const NAMES = { thighCalf: "Thigh–calf contact", ankleRange: "Ankle range of motion", hipRange: "Hip range of motion", trunk3d: "3D trunk view", handModel: "Hand model", placementStrength: "Set-up and strength" };
+  const SHOWN = new Set(["wger", "strengthCurve", "segments", "hipModel", "jointScale", "defaults", "ui", "finger", "fingers", "pinch", "pincer", "arm"]);
+  const extra = Object.entries(ex).filter(([k, v]) => !SHOWN.has(k) && v && typeof v === "object" && !Array.isArray(v) && typeof v.note === "string");
+  if (extra.length) {
+    out.push(h("h3", {}, "Other data"));
+    out.push(h("dl", { className: "items" }, ...extra.flatMap(([k, v]) => [h("dt", {}, NAMES[k] ?? k), h("dd", {}, v.note), ...(v.source ? [h("dd", { className: "src" }, `Source: ${v.source}`)] : [])])));
+  }
 
   out.push(h("h3", {}, "Strength"));
   if (ex.strengthCurve) {
@@ -173,6 +196,8 @@ function exerciseSection(ex, refs) {
   }
 
   out.push(h("h3", {}, "Muscles"));
+  if (ex.weightsNote) out.push(para(ex.weightsNote, "muted"));
+  if (ex.weightsSource) out.push(sourceLine(ex.weightsSource));
   out.push(h("dl", { className: "items" }, ...ex.muscles.flatMap((m) => [
     h("dt", {}, `${m.name}${m.role ? ` — ${m.role}` : ""}`),
     ...(m.note ? [h("dd", {}, m.note)] : []),

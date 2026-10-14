@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { analyze, interp, sampleCurve, G } from "../js/physics.js";
+import { analyze, interp, sampleCurve, G, camOf } from "../js/physics.js";
 
 const load = (id) => JSON.parse(readFileSync(new URL(`../data/exercises/${id}.json`, import.meta.url)));
 const close = (a, b, eps = 1e-6) => assert.ok(Math.abs(a - b) < eps, `${a} ≉ ${b}`);
@@ -93,7 +93,7 @@ const cableTorque = (joint, tip, pulley, m, w) => {
   });
 
   test("pec deck: torque = m·g·r(angle) from the cam table", () => {
-    const { camProfile } = v("pec-deck").load;
+    const camProfile = camOf(v("pec-deck").load);
     for (const a of [-20, 10, 60, 90]) close(analyze(ex, v("pec-deck"), a, opts).loadTorque, 8 * G * interp(camProfile.points, a));
   });
 }

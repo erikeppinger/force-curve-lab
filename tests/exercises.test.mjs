@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { analyze, sampleCurve, gravityOf } from "../js/physics.js";
+import { analyze, sampleCurve, gravityOf, camOf } from "../js/physics.js";
 import { screenRotation } from "../js/figure.js";
 
 const main = readFileSync(new URL("../js/main.js", import.meta.url), "utf8");
@@ -92,8 +92,10 @@ for (const id of single) {
         assert.ok(sc.points ? sorted(sc.points) && sc.points.every(([, f]) => f > 0.3 && f < 3) : sc.factor > 0.3 && sc.factor < 1.5, `${v.id}: strength scale`);
       }
       if (v.load.type === "machine") {
-        const cam = v.load.camProfile;
-        assert.ok(sorted(cam.points) && cam.note && cam.source, `${v.id} cam`);
+        // Every cam shape on offer: sorted points, a note and a source; ids unique, labels for the choice.
+        const cams = v.load.camProfiles ?? [camOf(v.load)];
+        for (const cam of cams) assert.ok(sorted(cam.points) && cam.note && cam.source && (cams.length === 1 || (cam.id && cam.label)), `${v.id} cam ${cam.id}`);
+        assert.equal(new Set(cams.map((c) => c.id)).size, cams.length, `${v.id}: cam ids`);
         assert.ok(v.load.padDistance > 0);
       }
     }

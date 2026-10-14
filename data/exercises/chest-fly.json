@@ -136,11 +136,29 @@
       "load": {
         "type": "machine",
         "padDistance": 0.28,
-        "camProfile": {
-          "points": [[-20, 0.3], [30, 0.34], [90, 0.3]],
-          "note": "Effective radius in metres: joint torque per unit of stack weight. Illustrative shape, not measured from a specific machine.",
-          "source": "TODO: replace with a measured profile for a real machine"
-        }
+        "camProfiles": [
+          {
+            "id": "linkage",
+            "label": "Linkage machine (1989 patent)",
+            "points": [[-10, 0.272], [0, 0.294], [10, 0.312], [20, 0.328], [30, 0.336], [40, 0.339], [50, 0.336], [60, 0.326], [70, 0.305], [80, 0.266], [90, 0.19]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight. The designer's computed curve for a pec deck driven by a four-bar linkage instead of a cam (US patent 4,840,373, FIG. 4, read off every 10°): the force at the arm pads rises from 97% of the stack weight to 121% at mid-range and falls steeply to 68% as the arms close. The pads start 20° behind the shoulder line and turn 110°, the same range as here, so pad rotation 10° = −10° here. Torque = that force × the pad distance (0.28 m here; the patent's pad radius isn't stated). Held flat before 10° of rotation (not plotted).",
+            "source": "Maag HH (1989). Four-bar rigid-drive variable resistance pectoral fly machine. US Patent 4,840,373 (FIG. 4: force at the arm pads as % of the stack weight vs pad rotation, from the designer's kinematic analysis)"
+          },
+          {
+            "id": "rising",
+            "label": "Rising cam (estimate)",
+            "points": [[-20, 0.24], [60, 0.34], [90, 0.34]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight. A 1983 check of a Nautilus chest fly found the resistance rising through most of the movement (Harman, cam radii from photographs, no numbers published), and one maker describes its pec deck cam as progressively increasing (Panatta). How much it rises isn't published: here about 40% from the stretch to mid-range, then flat, an estimate.",
+            "source": "Harman E (1983). Resistive torque analysis of 5 Nautilus exercise machines. Med Sci Sports Exerc 15(2):113. doi:10.1249/00005768-198315020-00117 (conference abstract; cam radii from photographs); Panatta (manufacturer product descriptions, read 2026-10-14: Fantastic Vertical Pek Dek, \"progressively increasing\" resistance; Standing Abductor, \"decreasing\" resistance in the lifting phase; no numbers given)"
+          },
+          {
+            "id": "round",
+            "label": "Round pulley (constant)",
+            "points": [[-20, 0.3], [90, 0.3]],
+            "note": "A plain round pulley: the lever between the belt and the axle never changes, so the resistance torque is the same at every angle (physics, no source needed). Many plate-loaded and budget machines work like this. Radius 0.30 m, nominal (stack kg don't compare between machines).",
+            "source": "Physics: a round pulley's radius is constant (no source needed)"
+          }
+        ]
       },
       "notes": "Seated, arms moving in a horizontal plane against pads at the elbows. The illustrative cam keeps the resistance fairly even across the range."
     }

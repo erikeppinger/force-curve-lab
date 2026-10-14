@@ -156,11 +156,22 @@
       "load": {
         "type": "machine",
         "padDistance": 0.35,
-        "camProfile": {
-          "points": [[-25, 0.32], [30, 0.3], [90, 0.28]],
-          "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
-          "source": "TODO: replace with a measured profile for a real machine"
-        }
+        "camProfiles": [
+          {
+            "id": "illustrative",
+            "label": "Illustrative cam",
+            "points": [[-25, 0.32], [30, 0.3], [90, 0.28]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight, including any lever or pulley ratio. Illustrative shape, not measured from a specific machine.",
+            "source": "TODO: replace with a measured profile for a real machine"
+          },
+          {
+            "id": "round",
+            "label": "Round pulley (constant)",
+            "points": [[-25, 0.3], [90, 0.3]],
+            "note": "A plain round pulley: the lever between the belt and the axle never changes, so the resistance torque is the same at every angle (physics, no source needed). Many plate-loaded and budget machines work like this. Radius 0.30 m, nominal (stack kg don't compare between machines).",
+            "source": "Physics: a round pulley's radius is constant (no source needed)"
+          }
+        ]
       },
       "defaultLoadKg": 10,
       "notes": "Pad behind the thigh above the knee. Illustrative cam that keeps the load on through hip extension.",

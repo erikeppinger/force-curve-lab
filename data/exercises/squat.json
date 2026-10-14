@@ -415,5 +415,9 @@
   "ankleRange": {
     "note": "Shin lean the ankle allows with the heel down: about 50° in young adults (Bennell et al., weight-bearing lunge) and 41–42° in elite athletes (Nagulkar et al.). The page notes a lean beyond 40° and warns beyond 50°.",
     "source": "Bennell K, Talbot R, Wajswelner H, Techovanich W, Kelly D, Hall A (1998). Intra-rater and inter-rater reliability of a weight-bearing lunge measure of ankle dorsiflexion. Aust J Physiother 44(3):175–180. doi:10.1016/S0004-9514(14)60377-9 (13 young adults: shin 50 ± 8° from vertical, heel down); Nagulkar JM, Mehta S, Mathur C, Goyal S, Sharma A (2024). Functional assessment of ankle dorsiflexion and performance outcomes in elite athletes: a cross-sectional analytical study. Afr J Biomed Res 27(4S):18167–18171. doi:10.53555/AJBR.v27i4S.8555 (120 elite athletes: 42.1 ± 5.8° dominant, 40.7 ± 6.1° non-dominant; DOI as printed in the paper, not found on Crossref)"
+  },
+  "hipRange": {
+    "note": "How far the hip bends: passive hip flexion (lying on the back, the other hip held bent) in 210 hips of randomly sampled 30–40-year-old men averaged 120° (SD 8°), from 90° to 150° (Roaas & Andersson, Table 1). The page warns when the posture needs more than 140°, which few hips reach; a loaded squat usually goes less deep at the hip than this passive test.",
+    "source": "Roaas A, Andersson GBJ (1982). Normal range of motion of the hip, knee and ankle joints in male subjects, 30–40 years of age. Acta Orthop Scand 53(2):205–208. doi:10.3109/17453678208992202"
   }
 }

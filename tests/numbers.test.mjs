@@ -16,10 +16,10 @@ test("the in-place sources resolve to reference keys", () => {
       ex.strengthCurve?.source, ...(ex.joints ?? []).map((j) => j.strength?.source), ...(ex.muscles ?? []).map((m) => m.source),
       ex.pinch?.capacitySource, ex.pinch?.frictionSource, ex.pinch?.wristSource,
       ex.finger?.momentArmsSource, ex.finger?.pulleyStrengthSource, ex.finger?.referenceTensionSource, ex.handModel?.source,
-      ...(ex.variants ?? []).flatMap((v) => [v.strengthScale?.source, ex.finger ? v.source : null]),
+      ...(ex.variants ?? []).flatMap((v) => [v.strengthScale?.source, ex.finger ? v.source : null, ...(v.load?.camProfiles ?? []).map((c) => c.source)]),
     ];
     for (const s of shown) {
-      if (!s || /^TODO|^Not (modelled|applicable)/.test(s)) continue;
+      if (!s || /^TODO|^Not (modelled|applicable)|^Physics:/.test(s)) continue;
       if (!citedRefs(s, refs).length) missing.push(`${ex.id}: ${s.slice(0, 80)}`);
     }
   }

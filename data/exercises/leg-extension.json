@@ -87,11 +87,22 @@
       "load": {
         "type": "machine",
         "padDistance": 0.38,
-        "camProfile": {
-          "points": [[20, 0.2676], [40, 0.2817], [60, 0.2799], [80, 0.2712], [100, 0.2478]],
-          "note": "Effective radius in metres: joint torque per unit of stack weight. Shape: the mean of eight knee-extension machines from six makers, as % of its peak torque at knee angles 20–100° (Fig. 2B, read off; agrees with Table I within about 2 points), held flat below 20°. Scale: 0.30 m at the peak, nominal; the machines' absolute torque for a similar stack load differed widely (their Fig. 2A), so stack kg don't compare between machines or with free weights.",
-          "source": "Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. doi:10.1080/02640410701370663"
-        }
+        "camProfiles": [
+          {
+            "id": "measured",
+            "label": "Average of eight machines (2008)",
+            "points": [[20, 0.2676], [40, 0.2817], [60, 0.2799], [80, 0.2712], [100, 0.2478]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight. Shape: the mean of eight knee-extension machines from six makers, as % of its peak torque at knee angles 20–100° (Fig. 2B, read off; agrees with Table I within about 2 points), held flat below 20°. Scale: 0.30 m at the peak, nominal; the machines' absolute torque for a similar stack load differed widely (their Fig. 2A), so stack kg don't compare between machines or with free weights. Cross-check: McMillin et al. measured a Life Fitness leg extension at the pad at the start, middle and end of the stroke; with light to moderate stacks the resistance rose from about 65–75% of its peak at the start (knee bent) to the peak at mid-stroke and stayed near it, and with the lightest stack the lever's own weight made it rise all the way. Three points per machine, so not used for the shape. Harman (Nautilus, 1983) also found resistance rising through the range.",
+            "source": "Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. doi:10.1080/02640410701370663; McMillin C, Melton B, Murray N, D'Adamo C (2024). Machine resistance curve analysis of seven resistance training machines. Res Dir Strength Perform 4(1):4. doi:10.53520/rdsp2024.105118 (three leg extensions, two chest presses, two seated rows; start/mid/end only); Harman E (1983). Resistive torque analysis of 5 Nautilus exercise machines. Med Sci Sports Exerc 15(2):113. doi:10.1249/00005768-198315020-00117 (conference abstract; cam radii from photographs)"
+          },
+          {
+            "id": "round",
+            "label": "Round pulley (constant)",
+            "points": [[0, 0.3], [100, 0.3]],
+            "note": "A plain round pulley: the lever between the belt and the axle never changes, so the resistance torque is the same at every angle (physics, no source needed). Many plate-loaded and budget machines work like this. Radius 0.30 m, nominal (stack kg don't compare between machines).",
+            "source": "Physics: a round pulley's radius is constant (no source needed)"
+          }
+        ]
       },
       "defaultLoadKg": 10,
       "notes": "Pad on the shin near the ankle. The mean of eight measured machines stays within about 80–95% of its peak resistance across the range, while the quadriceps drop to about 40% of their peak near lockout (Folland & Morris: 75% at 100°, 40% at 20° of knee bend). So no machine matched the muscles: the effort still rises sharply towards lockout. The lower leg's own weight adds torque too."
@@ -105,11 +116,22 @@
       "load": {
         "type": "machine",
         "padDistance": 0.38,
-        "camProfile": {
-          "points": [[20, 0.3], [40, 0.2631], [60, 0.2178], [80, 0.1908], [100, 0.1599]],
-          "note": "Effective radius in metres: joint torque per unit of stack weight. Shape: the Strive S106 leg extension as measured in 2008, as % of its peak torque at knee angles 20–100° (Fig. 2B, read off; agrees with Table I within about 2 points), held flat below 20°. Scale: 0.30 m at the peak, nominal; the machines' absolute torque for a similar stack load differed widely (their Fig. 2A), so stack kg don't compare between machines or with free weights.",
-          "source": "Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. doi:10.1080/02640410701370663"
-        }
+        "camProfiles": [
+          {
+            "id": "measured",
+            "label": "Strive S106 (2008)",
+            "points": [[20, 0.3], [40, 0.2631], [60, 0.2178], [80, 0.1908], [100, 0.1599]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight. Shape: the Strive S106 leg extension as measured in 2008, as % of its peak torque at knee angles 20–100° (Fig. 2B, read off; agrees with Table I within about 2 points), held flat below 20°. Scale: 0.30 m at the peak, nominal; the machines' absolute torque for a similar stack load differed widely (their Fig. 2A), so stack kg don't compare between machines or with free weights.",
+            "source": "Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. doi:10.1080/02640410701370663"
+          },
+          {
+            "id": "round",
+            "label": "Round pulley (constant)",
+            "points": [[0, 0.3], [100, 0.3]],
+            "note": "A plain round pulley: the lever between the belt and the axle never changes, so the resistance torque is the same at every angle (physics, no source needed). Many plate-loaded and budget machines work like this. Radius 0.30 m, nominal (stack kg don't compare between machines).",
+            "source": "Physics: a round pulley's radius is constant (no source needed)"
+          }
+        ]
       },
       "defaultLoadKg": 10,
       "notes": "Resistance highest at lockout and falling as the knee bends (54% of peak at 100°): the opposite of the quadriceps' strength curve, so it is hardest exactly where the muscles are weakest. The machine as measured by Folland & Morris in 2008; current models may differ."
@@ -123,11 +145,22 @@
       "load": {
         "type": "machine",
         "padDistance": 0.38,
-        "camProfile": {
-          "points": [[20, 0.2373], [40, 0.2517], [60, 0.2748], [80, 0.2964], [100, 0.2913]],
-          "note": "Effective radius in metres: joint torque per unit of stack weight. Shape: the Technogym Rehabilitation leg extension as measured in 2008, as % of its peak torque at knee angles 20–100° (Fig. 2B, read off; agrees with Table I within about 2 points), held flat below 20°. Scale: 0.30 m at the peak, nominal; the machines' absolute torque for a similar stack load differed widely (their Fig. 2A), so stack kg don't compare between machines or with free weights.",
-          "source": "Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. doi:10.1080/02640410701370663"
-        }
+        "camProfiles": [
+          {
+            "id": "measured",
+            "label": "Technogym Rehabilitation (2008)",
+            "points": [[20, 0.2373], [40, 0.2517], [60, 0.2748], [80, 0.2964], [100, 0.2913]],
+            "note": "Effective radius in metres: joint torque per unit of stack weight. Shape: the Technogym Rehabilitation leg extension as measured in 2008, as % of its peak torque at knee angles 20–100° (Fig. 2B, read off; agrees with Table I within about 2 points), held flat below 20°. Scale: 0.30 m at the peak, nominal; the machines' absolute torque for a similar stack load differed widely (their Fig. 2A), so stack kg don't compare between machines or with free weights.",
+            "source": "Folland J, Morris B (2008). Variable-cam resistance training machines: do they match the angle–torque relationship in humans? J Sports Sci 26(2):163–169. doi:10.1080/02640410701370663"
+          },
+          {
+            "id": "round",
+            "label": "Round pulley (constant)",
+            "points": [[0, 0.3], [100, 0.3]],
+            "note": "A plain round pulley: the lever between the belt and the axle never changes, so the resistance torque is the same at every angle (physics, no source needed). Many plate-loaded and budget machines work like this. Radius 0.30 m, nominal (stack kg don't compare between machines).",
+            "source": "Physics: a round pulley's radius is constant (no source needed)"
+          }
+        ]
       },
       "defaultLoadKg": 10,
       "notes": "Resistance lowest near lockout (79% of peak at 20°) and highest with the knee bent: the closest to the muscles' ascending side, but still much flatter than their drop to 40% at lockout. The machine as measured by Folland & Morris in 2008; current models may differ."
