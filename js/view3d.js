@@ -44,6 +44,16 @@ export function scene3d(exercise, result, activation) {
     const off = { anterior: fr.anterior, posterior: neg(fr.anterior), lateral: fr.lateral, medial: neg(fr.lateral) }[d.side];
     const a = add3(add3(fr.from, dir, d.along[0]), off, d.offset);
     const b = add3(add3(fr.from, dir, d.along[1]), off, d.offset);
+    // A muscle from the trunk to a limb (`origin`, e.g. the pectoralis from the collarbone and breastbone):
+    // a fan of fibres from the origin points to the insertion (`along[1]` on the segment), both sides.
+    const ori = d.origin && result.frames[d.origin]?.points;
+    if (ori) {
+      for (const o of ori) for (const [p, q] of result.asymmetric ? [[o, b]] : [[o, b], [mirrorZ(o), mirrorZ(b)]]) {
+        line(p, q, d.w, "muscle-base", { title: m.name });
+        line(p, q, d.w, "muscle-on", { opacity: act[m.id], title: `${m.name}: ${Math.round(act[m.id] * 100)}%` });
+      }
+      continue;
+    }
     const trunk = d.seg === "trunk";
     const sides = trunk ? [[add3(a, fr.lateral, d.spread ?? 0.06), add3(b, fr.lateral, d.spread ?? 0.06)], [add3(a, fr.lateral, -(d.spread ?? 0.06)), add3(b, fr.lateral, -(d.spread ?? 0.06))]]
       : result.asymmetric ? [[a, b]] : [[a, b], [mirrorZ(a), mirrorZ(b)]];
@@ -127,6 +137,31 @@ export function renderView3d(svg, prims, cam, V) {
     g.list.push({ p, d }); g.sum += d;
   }
   for (const g of parts.values()) g.d = g.sum / g.list.length;
+  // Muscles on a body part: drawn with that part, over it where they face the camera, under it on the
+  // far side. Sorted on their own they could fall behind the part's mean depth and vanish as the view
+  // turned (a muscle on the front of the thigh, behind the leg's average depth seen from the side).
+  const isBodyLine = (p) => p.kind === "line" && /(^| )body( |$)/.test(p.cls);
+  const onPart = (m) => {
+    const mid = { x: (m.a.x + m.b.x) / 2, y: (m.a.y + m.b.y) / 2, z: (m.a.z + m.b.z) / 2 };
+    let best = null;
+    for (const [name, g] of parts) for (const { p } of g.list) {
+      if (!isBodyLine(p) || /ghost/.test(p.cls)) continue;
+      const ab = sub3(p.b, p.a), L2 = ab.x * ab.x + ab.y * ab.y + ab.z * ab.z || 1;
+      const t = Math.max(0, Math.min(1, ((mid.x - p.a.x) * ab.x + (mid.y - p.a.y) * ab.y + (mid.z - p.a.z) * ab.z) / L2));
+      const c = add3(p.a, ab, t), dist = Math.hypot(mid.x - c.x, mid.y - c.y, mid.z - c.z);
+      if (dist < p.w / 2 + 0.06 && (!best || dist < best.dist)) best = { name, dist, front: px(mid).depth >= px(c).depth - 0.005 };
+    }
+    return best;
+  };
+  for (let i = items.length - 1; i >= 0; i--) {
+    const p = items[i].p;
+    if (!p || p.kind !== "line" || p.top === true || !/(^| )muscle-(base|on)( |$)/.test(p.cls)) continue;
+    const hit = onPart(p);
+    if (!hit) continue;
+    const g = parts.get(hit.name);
+    (hit.front ? (g.over ??= []) : (g.under ??= [])).push(items[i]);
+    items.splice(i, 1);
+  }
   items.sort((a, b) => a.d - b.d);
   const isBody = (p) => p.kind === "line" && /(^| )body( |$)/.test(p.cls);
   const edge = (p, parent, cls = p.cls) => {
@@ -157,10 +192,14 @@ export function renderView3d(svg, prims, cam, V) {
     if (it.p) { draw(it.p, svg); continue; }
     const list = it.list.sort((a, b) => a.d - b.d).map((x) => x.p);
     const back = list.every((p) => /(^| )back( |$)/.test(p.cls ?? ""));
+    // Its muscles on the far side first (the part then covers them), base before the activation shade.
+    const byDepth = (arr) => (arr ?? []).sort((a, b) => a.d - b.d || (/muscle-on/.test(a.p.cls) ? 1 : 0) - (/muscle-on/.test(b.p.cls) ? 1 : 0)).map((x) => x.p);
+    for (const p of byDepth(it.under)) draw(p, svg);
     const g = el("g", { class: back ? "part back" : "part" }, svg);
     const own = (p) => (back ? p.cls.replace(/(^| )back( |$)/, "$1").trim() : p.cls);
     for (const p of list) if (isBody(p)) edge(p, g, own(p));
     for (const p of list) draw(p, g, { withEdge: false, cls: own(p) });
+    for (const p of byDepth(it.over)) draw(p, svg);
   }
   const defs = el("defs", {}, svg);
   const mk = el("marker", { id: "arrow", viewBox: "0 0 10 10", refX: 5, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto-start-reverse" }, defs);

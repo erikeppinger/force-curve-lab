@@ -250,6 +250,14 @@ input[type="range"]:disabled { opacity: 0.4; }
 .joint-table .jt-knee-frontal { border-left-color: var(--j-knee-frontal); }
 .joint-table .jt-lumbar, .joint-table .jt-sidebend { border-left-color: var(--j-hip-frontal); }
 .joint-table .jt-rotation { border-left-color: var(--j-hip-rotation); }
+.joint-table .jt-shoulder-h { border-left-color: var(--j-hip); }
+.joint-table .jt-shoulder-flex { border-left-color: var(--j-shoulder); }
+.joint-table .jt-shoulder-ext { border-left-color: var(--j-shoulder); }
+.joint-table .jt-shoulder-abd { border-left-color: var(--j-hip-frontal); }
+.joint-table .jt-shoulder-add { border-left-color: var(--j-hip-frontal); }
+.joint-table .jt-shoulder-rotation { border-left-color: var(--j-hip-rotation); }
+.joint-table .jt-elbow { border-left-color: var(--j-ankle); }
+.joint-table .jt-elbow-side { border-left-color: var(--j-knee-frontal); }
 .joint-table tbody td small { display: block; font-size: 0.72rem; color: var(--muted); }
 .joint-table tbody th small { display: block; font-size: 0.75rem; font-weight: 400; color: var(--muted); }
 .joint-table td.over { color: var(--warning); font-weight: 700; }
@@ -288,6 +296,15 @@ input[type="range"]:disabled { opacity: 0.4; }
 /* Core holds: the lower back (abdominals or side-bend) and the trunk's twist. */
 .charts .line.joint-lumbar, .charts .line.joint-sidebend { stroke: var(--j-hip-frontal); }
 .charts .line.joint-rotation { stroke: var(--j-hip-rotation); }
+/* Upper-body joints (bench, presses, rows, pulls): the leg palette, by plane. */
+.charts .line.joint-shoulder-h { stroke: var(--j-hip); }
+.charts .line.joint-shoulder-flex { stroke: var(--j-shoulder); }
+.charts .line.joint-shoulder-ext { stroke: var(--j-shoulder); }
+.charts .line.joint-shoulder-abd { stroke: var(--j-hip-frontal); }
+.charts .line.joint-shoulder-add { stroke: var(--j-hip-frontal); }
+.charts .line.joint-shoulder-rotation { stroke: var(--j-hip-rotation); }
+.charts .line.joint-elbow { stroke: var(--j-ankle); }
+.charts .line.joint-elbow-side { stroke: var(--j-knee-frontal); stroke-width: 2; }
 /* Edge lift: tendons and pulleys (js/finger.js) */
 .charts .line.f-fdp { stroke: var(--j-hip); }
 .charts .line.f-fds { stroke: var(--j-knee); }
@@ -331,6 +348,14 @@ input[type="range"]:disabled { opacity: 0.4; }
 .legend .sw.joint-hip-frontal { border-color: var(--j-hip-frontal); }
 .legend .sw.joint-hip-rotation { border-color: var(--j-hip-rotation); }
 .legend .sw.joint-knee-frontal { border-color: var(--j-knee-frontal); }
+.legend .sw.joint-shoulder-h { border-color: var(--j-hip); }
+.legend .sw.joint-shoulder-flex { border-color: var(--j-shoulder); }
+.legend .sw.joint-shoulder-ext { border-color: var(--j-shoulder); }
+.legend .sw.joint-shoulder-abd { border-color: var(--j-hip-frontal); }
+.legend .sw.joint-shoulder-add { border-color: var(--j-hip-frontal); }
+.legend .sw.joint-shoulder-rotation { border-color: var(--j-hip-rotation); }
+.legend .sw.joint-elbow { border-color: var(--j-ankle); }
+.legend .sw.joint-elbow-side { border-color: var(--j-knee-frontal); }
 .legend .sw.cap { border-color: var(--muted); border-top-style: dotted; }
 .legend .sw.dash { border-color: var(--muted); border-top-style: dashed; }
 

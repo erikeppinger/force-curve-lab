@@ -549,6 +549,9 @@ export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     frames: {
       upperArm: { from: S, to: E, anterior: unit3(cross3(dU, eFlex)), lateral: unit3(cross3(dU, cross3(Z, dU))) },
       forearm: { from: E, to: hand, anterior: unit3(cross3(dF, eFlex)), lateral: unit3(cross3(dF, cross3(Z, dF))) },
+      // The pectoralis' origins on the chest surface (right side; mirrored for the left): the collarbone's
+      // inner half, and the breastbone at the shoulder line and lower down. Display only.
+      chest: { points: [add3(add3(mid, sub3(S, mid), 0.45), front, 0.09), add3(add3(add3(mid, Z, 0.02), front, 0.11), toFeet, 0.04), add3(add3(add3(mid, Z, 0.02), front, 0.11), toFeet, 0.2)] },
     },
     moments: { shoulder: Msh, elbow: Mel },
     scene: [
