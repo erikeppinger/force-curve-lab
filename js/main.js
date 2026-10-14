@@ -148,9 +148,14 @@ function chartRange() {
   return [Math.min(a[0], b[0]), Math.max(a[1], b[1])];
 }
 
+// A weight stack (machine or cable) rests on its pins at the start: the curves begin where it comes off.
+const stackRests = (ex, v) => ["machine", "cable"].includes(v.load?.type) || (ex.model === "multi" && ex.solver !== "pallof" && /^Cable/.test(v.equipment ?? "")); // the Pallof press is a hold: the cable is taut from the start
+const STACK_NOTE = "The weight stack rests on its pins until you lift it: the curves start at the moment it comes off, and each angle shows what it takes to hold the load there or move it slowly.";
+
 function setVariant(id, pulley, load, placement) {
   state.variantId = id;
   const v = variant();
+  $("angle-note").textContent = [state.exercise.angleNote, stackRests(state.exercise, v) ? STACK_NOTE : ""].filter(Boolean).join(" ");
   applyRange(v);
   // Machines, cables and ankle weights need very different loads: use the variant's default.
   // A load from a link is kept inside the slider's range.
@@ -238,7 +243,10 @@ function setPlacement(v, override = {}) {
     if (s.type === "choice") {
       // A few named options (e.g. which fingers go on the edge).
       const label = document.createElement("label");
-      const sel = document.createElement("select");
+      // The label names its control explicitly: otherwise the browser ties it to the first control
+      // inside, the ⓘ button, and hovering or clicking the dropdown opens the explanation.
+      const sel = Object.assign(document.createElement("select"), { id: `pl-${s.key}` });
+      label.htmlFor = sel.id;
       for (const [v, text] of s.options) sel.append(new Option(text, v));
       sel.value = state.placement[s.key];
       sel.addEventListener("change", () => { state.placement[s.key] = sel.value; writeHash(); render(); });
@@ -250,9 +258,10 @@ function setPlacement(v, override = {}) {
     const label = document.createElement("label");
     const out = document.createElement("output");
     const isAuto = () => state.placement[s.key] === "auto";
-    const input = Object.assign(document.createElement("input"), { type: "range", min: s.min, max: s.max, step: s.step, value: isAuto() ? 0 : state.placement[s.key] });
+    const input = Object.assign(document.createElement("input"), { id: `pl-${s.key}`, type: "range", min: s.min, max: s.max, step: s.step, value: isAuto() ? 0 : state.placement[s.key] });
     const show = () => { out.textContent = isAuto() ? "auto" : `${s.decimals != null ? (state.placement[s.key] * s.scale).toFixed(s.decimals) : Math.round(state.placement[s.key] * s.scale)} ${s.unit}`.trim(); input.disabled = isAuto(); };
     input.addEventListener("input", () => { state.placement[s.key] = +input.value; show(); writeHash(); renderSoon(); });
+    label.htmlFor = input.id; // see the dropdown above
     const row = Object.assign(document.createElement("span"), { className: "label-row" });
     row.append(`${s.label} `, out, ...(s.hint ? [infoTip(s.hint, s.label.toLowerCase())] : []));
     label.append(row, input);
