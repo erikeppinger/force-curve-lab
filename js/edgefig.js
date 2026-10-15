@@ -81,7 +81,8 @@ function sideGeometry(pose) {
 export function renderFingersView(svg, { set, exercise: ex, P, pipDeg }) {
   svg.replaceChildren();
   if (!set) return;
-  const narrow = (svg.clientWidth || 700) < 560;
+  // Four panels side by side need about 180 px each for their labels; narrower frames go 2 × 2.
+  const narrow = (svg.clientWidth || 760) < 720;
   const cols = narrow ? 2 : 4;
   const S = 2600; // px per metre
   // Every finger in a shared frame (pad at the origin, wrist above it) so the panels line up on the edge.
@@ -93,12 +94,21 @@ export function renderFingersView(svg, { set, exercise: ex, P, pipDeg }) {
   const xs = pts.map((p) => p.x), ys = pts.map((p) => p.y);
   const box = { x0: Math.min(...xs) - 0.03, x1: Math.max(...xs) + 0.035, y0: Math.min(...ys) - 0.045, y1: Math.max(...ys) + 0.01 };
   const pw = (box.x1 - box.x0) * S;
-  const k = textScale(svg, pw * cols);
-  const head = 58 * k, foot = 62 * k; // room for the labels above and below each panel (screen px × k)
-  const ph = (box.y1 - box.y0) * S + head + foot;
+  // The label room depends on the text scale, and the scale on the frame's height when the height is
+  // the tighter side (CSS caps it): lay out, measure on both sides, repeat until it settles.
   const rows = Math.ceil(items.length / cols);
-  svg.setAttribute("viewBox", `0 0 ${(pw * cols).toFixed(0)} ${(ph * rows).toFixed(0)}`);
+  let k = textScale(svg, pw * cols), head, foot, ph;
+  for (let i = 0; i < 4; i++) {
+    head = 58 * k; foot = (pw / k < 200 ? 78 : 62) * k; // room for the labels above and below each panel (screen px × k; a line more when narrow)
+    ph = (box.y1 - box.y0) * S + head + foot;
+    svg.setAttribute("viewBox", `0 0 ${(pw * cols).toFixed(0)} ${(ph * rows).toFixed(0)}`);
+    const k2 = textScale(svg, pw * cols, ph * rows);
+    if (Math.abs(k2 / k - 1) < 0.02) { k = k2; break; }
+    k = k2;
+  }
   arrowDefs(svg, "ef-arrow");
+  // Narrow panels (under about 200 px on screen) get shorter labels rather than smaller text.
+  const tight = pw / k < 200;
 
   items.forEach(({ f, pose, R, W }, i) => {
     const ox = (i % cols) * pw, oy = Math.floor(i / cols) * ph + head;
@@ -157,14 +167,16 @@ export function renderFingersView(svg, { set, exercise: ex, P, pipDeg }) {
     // Labels: name and share on top, effort and angles at the bottom.
     const cx = ox + pw / 2;
     el("text", { x: cx, y: oy - head + 26 * k, class: "ef-label ef-name", "text-anchor": "middle" }, g).textContent = f.label;
-    el("text", { x: cx, y: oy - head + 48 * k, class: "ef-label ef-share", "text-anchor": "middle" }, g).textContent = f.touches ? `${pct(f.share)} of the block` : f.leftOff ? "left off (chosen)" : "off the edge";
+    el("text", { x: cx, y: oy - head + 48 * k, class: "ef-label ef-share", "text-anchor": "middle" }, g).textContent = f.touches ? (tight ? pct(f.share) : `${pct(f.share)} of the block`) : f.leftOff ? (tight ? "left off" : "left off (chosen)") : "off the edge";
     if (f.touches) {
       const eff = el("text", { x: cx, y: oy + ph - head - foot + 16 * k, class: "ef-label ef-effort", "text-anchor": "middle" }, g);
       eff.textContent = `effort ${pct(f.effort)}`;
       if (f.effort > 1) eff.style.fill = "var(--warning)";
-      el("text", { x: cx, y: oy + ph - head - foot + 34 * k, class: "ef-label ef-small", "text-anchor": "middle" }, g).textContent =
-        `MCP ${Math.round(f.pose.mcpDeg)}° · PIP ${Math.round(f.pose.pipDeg)}° · DIP ${Math.round(f.pose.dipDeg)}°`;
-      if (f.pose.cmcDeg >= 1) el("text", { x: cx, y: oy + ph - head - foot + 50 * k, class: "ef-label ef-small", "text-anchor": "middle" }, g).textContent = `palm cupped ${Math.round(f.pose.cmcDeg)}°`;
+      const angles = tight
+        ? [`MCP ${Math.round(f.pose.mcpDeg)}° · PIP ${Math.round(f.pose.pipDeg)}°`, `DIP ${Math.round(f.pose.dipDeg)}°`]
+        : [`MCP ${Math.round(f.pose.mcpDeg)}° · PIP ${Math.round(f.pose.pipDeg)}° · DIP ${Math.round(f.pose.dipDeg)}°`];
+      if (f.pose.cmcDeg >= 1) angles.push(tight ? `cupped ${Math.round(f.pose.cmcDeg)}°` : `palm cupped ${Math.round(f.pose.cmcDeg)}°`);
+      angles.forEach((t, j) => { el("text", { x: cx, y: oy + ph - head - foot + (34 + 16 * j) * k, class: "ef-label ef-small", "text-anchor": "middle" }, g).textContent = t; });
     }
   });
 }
@@ -191,7 +203,11 @@ export function renderHandView(svg, { set, P }) {
   });
   const all = fingers.flatMap((x) => x.pts);
   const minY = Math.min(...all.map((p) => p.y));
-  const V = { z0: -0.075, z1: 0.075, y0: minY - 0.06, y1: 0.04 };
+  const notes = [];
+  if (Math.abs(set.deviationDeg) >= 1) notes.push(`tilted ${Math.abs(set.deviationDeg).toFixed(0)}° towards the ${set.deviationDeg > 0 ? "little finger" : "thumb"}`);
+  if (Math.abs(set.rollDeg ?? 0) >= 1) notes.push(`rolled ${Math.abs(set.rollDeg).toFixed(0)}°`);
+  // The note gets a line of its own under the finger labels.
+  const V = { z0: -0.075, z1: 0.075, y0: minY - 0.085 - (notes.length ? 0.03 : 0), y1: 0.04 };
   svg.setAttribute("viewBox", `0 0 ${((V.z1 - V.z0) * S).toFixed(0)} ${((V.y1 - V.y0) * S).toFixed(0)}`);
   const k = textScale(svg, (V.z1 - V.z0) * S, (V.y1 - V.y0) * S);
   const px = (p) => ({ x: (V.z1 - p.z) * S, y: (V.y1 - p.y) * S });
@@ -231,8 +247,10 @@ export function renderHandView(svg, { set, P }) {
       d.line({ x: c.x, y: c.y - 0.006 }, { x: c.x, y: c.y - 0.006 - len }, "ef-force", 0.0018, { "marker-end": "url(#eh-arrow)" });
       d.text({ x: c.x, y: c.y - 0.006 - len }, pct(f.share), "ef-share", 0, 18 * k);
     }
-    d.text({ x: c.x, y: minY - 0.045 }, f.label, f.touches ? "ef-name" : "ef-name ef-muted", 0, 0);
-    if (f.touches) { const t = d.text({ x: c.x, y: minY - 0.045 }, pct(f.effort), "ef-effort", 0, 18 * k); if (f.effort > 1) t.style.fill = "var(--warning)"; }
+    // Names on two staggered lines: neighbouring fingers are only 2 cm apart.
+    const line = (fingers.findIndex((x) => x.f === f) % 2) * 40 * k; // name and effort, one pair per line
+    d.text({ x: c.x, y: minY - 0.045 }, f.label, f.touches ? "ef-name" : "ef-name ef-muted", 0, line);
+    if (f.touches) { const t = d.text({ x: c.x, y: minY - 0.045 }, pct(f.effort), "ef-effort", 0, line + 18 * k); if (f.effort > 1) t.style.fill = "var(--warning)"; }
   }
 
   // Wrist: sideways moment as a curved arrow, and the hand's tilt and roll.
@@ -243,12 +261,9 @@ export function renderHandView(svg, { set, P }) {
     const arc = (a) => ({ x: s * r * Math.cos(a), y: 0.012 + r * Math.sin(a) });
     const p0 = px({ z: arc(a0).x, y: arc(a0).y }), p1 = px({ z: arc(a1).x, y: arc(a1).y });
     el("path", { d: `M${p0.x},${p0.y} A${r * S},${r * S} 0 0 ${s > 0 ? 0 : 1} ${p1.x},${p1.y}`, class: "ef-moment", "marker-end": "url(#eh-arrow)" }, svg);
-    d.text({ x: 0, y: 0.04 }, `wrist ${Math.abs(m).toFixed(1)} Nm sideways`, "ef-small", 0, -6);
+    d.text({ x: 0, y: 0.04 }, `wrist ${Math.abs(m).toFixed(1)} Nm sideways`, "ef-small", 0, 16 * k);
   }
-  const notes = [];
-  if (Math.abs(set.deviationDeg) >= 1) notes.push(`tilted ${Math.abs(set.deviationDeg).toFixed(0)}° towards the ${set.deviationDeg > 0 ? "little finger" : "thumb"}`);
-  if (Math.abs(set.rollDeg ?? 0) >= 1) notes.push(`rolled ${Math.abs(set.rollDeg).toFixed(0)}°`);
-  if (notes.length) d.text({ x: 0, y: minY - 0.045 }, `Hand ${notes.join(", ")}`, "ef-small", 0, 40 * k);
+  if (notes.length) d.text({ x: 0, y: V.y0 }, `Hand ${notes.join(", ")}`, "ef-small", 0, -8 * k);
 }
 
 // ---------- Arm: body from the front and the side ----------
@@ -258,7 +273,7 @@ export function renderArmView(svg, { arm, P, loadKg }) {
   if (!arm) return;
   const W = 700, H = 380;
   svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
-  textScale(svg, W, H);
+  const kArm = textScale(svg, W, H);
   arrowDefs(svg, "ea-arrow");
   const panel = (ox, title, angleDeg, side, torque, effort) => {
     // Schematic body in px: shoulder at the top of the trunk, the arm turned by angleDeg.
@@ -302,11 +317,30 @@ export function renderArmView(svg, { arm, P, loadKg }) {
     // Joints: ring coloured by effort, torque next to it.
     const joint = (p, e, label) => {
       el("circle", { cx: p.x, cy: p.y, r: 11, class: "ef-arm-joint", style: `fill: ${effortColour(e)}` }, g);
-      T(p.x + 20, p.y + 5, label, "ef-small", "start");
+      // Right of the joint if it fits, else left; on a small screen neither: two lines (name, then numbers)
+      // on the roomier side.
+      const em = 0.55 * 11 * kArm, right = ox + W / 2 - 12 - (p.x + 20), left = p.x - 20 - (ox + 12);
+      const side = (room) => (room === right ? [p.x + 20, "start"] : [p.x - 20, "end"]);
+      if (label.length * em <= right) T(p.x + 20, p.y + 5, label, "ef-small", "start");
+      else if (label.length * em <= left) T(p.x - 20, p.y + 5, label, "ef-small", "end");
+      else {
+        const [name, ...rest] = label.split(" "), [x, anchor] = side(Math.max(right, left));
+        T(x, p.y - 3 * kArm, name, "ef-small", anchor);
+        T(x, p.y + 13 * kArm, rest.join(" "), "ef-small", anchor);
+      }
     };
     joint(sh, effort.shoulder, `shoulder ${torque.shoulder.toFixed(0)} Nm · ${pct(effort.shoulder)}`);
     joint(elb, effort.elbow, `elbow ${torque.elbow.toFixed(0)} Nm · ${pct(effort.elbow)}`);
-    T(ox + W / 4, H - 18, Math.abs(angleDeg) < 0.5 ? (front ? "arm resting on the hip, block between the legs" : "arm resting on the front of the thigh") : `arm ${angleDeg.toFixed(0)}° ${front ? "out to the side" : "forward"} of resting`, "ef-small");
+    // The caption under each panel, on two lines when it doesn't fit the panel's width (about 0.55 em a character).
+    const caption = (text) => {
+      const fits = (W / 2 - 40) / (0.55 * 11 * kArm);
+      if (text.length <= fits) return T(ox + W / 4, H - 18, text, "ef-small");
+      const words = text.split(" "); let first = "";
+      while (words.length && (first + " " + words[0]).trim().length <= Math.max(fits, text.length / 2)) first = (first + " " + words.shift()).trim();
+      T(ox + W / 4, H - 18 - 16 * kArm, first, "ef-small");
+      return T(ox + W / 4, H - 18, words.join(" "), "ef-small");
+    };
+    caption(Math.abs(angleDeg) < 0.5 ? (front ? "arm resting on the hip, block between the legs" : "arm resting on the front of the thigh") : `arm ${angleDeg.toFixed(0)}° ${front ? "out to the side" : "forward"} of resting`);
   };
   const e = arm.effort;
   panel(0, "From the front", P.armSide ?? 0, "front", { shoulder: arm.shoulderSide, elbow: arm.elbow }, { shoulder: e.shoulderSide, elbow: e.elbow });

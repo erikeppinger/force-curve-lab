@@ -7,7 +7,8 @@
 //   yawKey: placement key that turns the plane about the vertical (degrees, + = outwards),
 //   cam: { yaw, pitch } the camera to start with }.
 // A muscle drawn by `points` (fixed to the trunk) may set `draw.z3d` [z of its first point, z of
-// its second] (right side, metres from the midline), so a trapezius runs in towards the neck.
+// its second] (right side, metres from the midline), so a trapezius runs in towards the neck, and
+// `draw.x3d` (metres forward, + / back, −) to lie on the back or the chest.
 // A variant may set `oneSided: true` (the other limb rests) or `yaw3d` (degrees).
 // The 2D frame's x and y axes are mapped onto the plane at the base joint of a standing body
 // (world: x forward, y up, z to the right, as in multijoint3d.js); then the scene is turned so the
@@ -174,6 +175,9 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
     }
     const A = map2(a), B = map2(b), v = act[m.id] ?? 0;
     if (d.z3d) [A.z, B.z] = d.z3d;
+    // `x3d`: forward (+) or back (−) off the plane, in metres: a muscle on the back or the chest's side
+    // when the arm moves in the frontal plane (the posterior deltoid, the lower trapezius).
+    if (d.x3d) { A.x += d.x3d; B.x += d.x3d; }
     const title = `${m.name}: ${Math.round(v * 100)}%`;
     for (const [p, q] of both ? [[A, B], [mirror(A), mirror(B)]] : [[A, B]]) {
       line(p, q, d.w, "muscle-base", { title, top: 50 });

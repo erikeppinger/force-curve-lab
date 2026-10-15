@@ -97,7 +97,8 @@
         "factor": [[1, 1.01, 0.96, 0.93, 0.92], [1, 1.14, 1.18, 1.14, 1.11], [1, 1.15, 1.45, 1.55, 1.56], [1, 0.83, 1.01, 1.34, 1.48], [1, 0.71, 0.59, 0.75, 0.93], [1, 0.81, 0.53, 0.44, 0.51]],
         "note": "Changes with the knee bend only through the share it takes from the hamstrings (one-joint muscle).",
         "source": "Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079 (Rajagopal2016.osim, OpenSim 4.6: static optimisation over all hip extensors, force × moment arm with force–length; ratio to the knee straight)"
-      }
+      },
+      "draw": {"seg": "proximal", "along": [0.05, 0.3], "offset": -0.02, "w": 0.05, "layer": 0}
     }
   ],
   "phases": [

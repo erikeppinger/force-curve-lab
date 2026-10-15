@@ -112,7 +112,13 @@
       "driver": "jointEffort",
       "weight": [[0, 0.1], [30, 0.3], [80, 0.6], [120, 0.9], [180, 0.95]],
       "note": "Turns the shoulder blade upwards (with the trapezius) so the arm can rise forward and up; its share grows as the arm goes up, and most of the motion above shoulder height is the shoulder blade turning. The model has no shoulder blade; the weights follow EMG. Loaded raises in the scapular plane (Ekstrom et al.): serratus anterior 62% of maximum below 80° and 96% above 120°, lower trapezius 50% and 61%, upper trapezius 72% and 79%.",
-      "source": "Ekstrom RA, Donatelli RA, Soderberg GL (2003). Surface electromyographic analysis of exercises for the trapezius and serratus anterior muscles. J Orthop Sports Phys Ther 33(5):247–258. doi:10.2519/jospt.2003.33.5.247 (Tables 1, 3, 4: 30 adults, loaded raises in the scapular plane, % of maximal isometric activation); direction from Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001 (direction only)"
+      "source": "Ekstrom RA, Donatelli RA, Soderberg GL (2003). Surface electromyographic analysis of exercises for the trapezius and serratus anterior muscles. J Orthop Sports Phys Ther 33(5):247–258. doi:10.2519/jospt.2003.33.5.247 (Tables 1, 3, 4: 30 adults, loaded raises in the scapular plane, % of maximal isometric activation); direction from Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001 (direction only)",
+      "draw": {
+        "points": [[0.03, -0.08], [0.02, -0.22]],
+        "w": 0.05,
+        "layer": 0,
+        "z3d": [0.15, 0.14]
+      }
     },
     {
       "id": "lower-trapezius",
@@ -124,7 +130,13 @@
       "driver": "jointEffort",
       "weight": [[0, 0.05], [30, 0.25], [80, 0.5], [120, 0.6], [180, 0.65]],
       "note": "Part of the upward-rotation pair with the serratus anterior and upper trapezius, mostly overhead. Loaded raises in the scapular plane (Ekstrom et al.): serratus anterior 62% of maximum below 80° and 96% above 120°, lower trapezius 50% and 61%, upper trapezius 72% and 79%.",
-      "source": "Ekstrom RA, Donatelli RA, Soderberg GL (2003). Surface electromyographic analysis of exercises for the trapezius and serratus anterior muscles. J Orthop Sports Phys Ther 33(5):247–258. doi:10.2519/jospt.2003.33.5.247 (Tables 1, 3, 4: 30 adults, loaded raises in the scapular plane, % of maximal isometric activation); direction from Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001 (direction only)"
+      "source": "Ekstrom RA, Donatelli RA, Soderberg GL (2003). Surface electromyographic analysis of exercises for the trapezius and serratus anterior muscles. J Orthop Sports Phys Ther 33(5):247–258. doi:10.2519/jospt.2003.33.5.247 (Tables 1, 3, 4: 30 adults, loaded raises in the scapular plane, % of maximal isometric activation); direction from Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967. doi:10.1016/j.jse.2009.02.001 (direction only)",
+      "draw": {
+        "points": [[-0.08, -0.05], [-0.09, -0.22]],
+        "w": 0.045,
+        "layer": 0,
+        "z3d": [0.09, 0.02]
+      }
     }
   ],
   "phases": [

@@ -39,7 +39,8 @@ export function renderPinchView(svg, { r }) {
   const S = 1000; // viewBox units per metre
   svg.setAttribute("viewBox", `0 0 ${((x1 - x0) * S).toFixed(0)} ${((y1 - y0) * S).toFixed(0)}`);
   const rect = svg.getBoundingClientRect();
-  svg.style.setProperty("--k", Math.max(((x1 - x0) * S) / (rect.width || (x1 - x0) * S), 0.2).toFixed(3));
+  // Text keeps one on-screen size: viewBox units per screen pixel, on whichever side is tighter.
+  svg.style.setProperty("--k", Math.max(((x1 - x0) * S) / (rect.width || (x1 - x0) * S), ((y1 - y0) * S) / (rect.height || (y1 - y0) * S), 0.2).toFixed(3));
   const px = (p) => ({ x: (p.x - x0) * S, y: (y1 - p.y) * S });
   const defs = el("defs", {}, svg);
   const mk = el("marker", { id: "pa", viewBox: "0 0 10 10", refX: 5, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto-start-reverse" }, defs);
