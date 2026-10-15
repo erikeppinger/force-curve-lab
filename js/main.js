@@ -1015,7 +1015,54 @@ function renderPinch() {
 
 function render() {
   renderView();
+  tidyFigure();
   syncDock();
+}
+
+/**
+ * After any figure is drawn: labels and thin marks keep one on-screen size (--k = viewBox units per
+ * screen pixel, used by the CSS; the edge and pinch figures set their own and are redrawn if it was
+ * stale), labels that land on
+ * each other are pushed apart, and labels are kept inside the frame.
+ */
+function tidyFigure() {
+  const svg = $("figure");
+  const vb = svg?.viewBox?.baseVal;
+  if (!vb?.width) return;
+  const rect = svg.getBoundingClientRect();
+  if (!rect.width) return;
+  const k = Math.max(vb.width / rect.width, vb.height / (rect.height || vb.height));
+  // The edge and pinch figures place their labels with the scale they measured while drawing; if the
+  // frame has settled to another size since, draw them once more so places and sizes agree.
+  if (isFinger() || isPinch()) {
+    const old = parseFloat(svg.style.getPropertyValue("--k"));
+    if (!(Math.abs(k / old - 1) > 0.03)) { tidyFigure.again = false; return; }
+    // Still off after a redraw: this view doesn't set its own (the 3D hand), so set it here.
+    if (tidyFigure.again) { tidyFigure.again = false; svg.style.setProperty("--k", k.toFixed(4)); return; }
+    tidyFigure.again = true;
+    renderView();
+    return tidyFigure();
+  }
+  svg.style.setProperty("--k", k.toFixed(4));
+  // Inset labels belong to their small picture; the rest are the figure's own.
+  const labels = [...svg.querySelectorAll("text.fig-label, text.ef-label")].filter((t) => !t.closest("g")?.querySelector(".inset-box") && t.textContent.trim());
+  const boxes = [];
+  for (const t of labels) {
+    let b = t.getBBox();
+    if (!b.width) continue;
+    // Inside the frame (a little margin).
+    const pad = 2 * Math.max(vb.width / rect.width, 0.01);
+    const dx = Math.max(vb.x + pad - b.x, 0) - Math.max(b.x + b.width - (vb.x + vb.width - pad), 0);
+    const dy = Math.max(vb.y + pad - b.y, 0) - Math.max(b.y + b.height - (vb.y + vb.height - pad), 0);
+    if (dx || dy) { t.setAttribute("x", +t.getAttribute("x") + dx); t.setAttribute("y", +t.getAttribute("y") + dy); b = t.getBBox(); }
+    // Off the labels already placed: step down (or up near the bottom) a line at a time.
+    for (let i = 0; i < 8 && boxes.some((o) => b.x < o.x + o.width && o.x < b.x + b.width && b.y < o.y + o.height && o.y < b.y + b.height); i++) {
+      const step = (b.height + pad) * (b.y + 2 * b.height > vb.y + vb.height ? -1 : 1);
+      t.setAttribute("y", +t.getAttribute("y") + step);
+      b = t.getBBox();
+    }
+    boxes.push(b);
+  }
 }
 function renderView() {
   if (isFinger()) return renderFinger();

@@ -57,13 +57,15 @@
       "id": "fcr", "name": "Flexor carpi radialis", "region": "forearm", "role": "Prime mover", "driver": "jointEffort",
       "weight": [[0, 0.34], [40, 0.22]],
       "note": "Wrist flexor on the thumb side.",
-      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)"
+      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)",
+      "draw": { "seg": "proximal", "along": [0.04, 0.19], "offset": 0.021, "w": 0.022, "layer": 2 }
     },
     {
       "id": "palmaris-longus", "name": "Palmaris longus", "region": "forearm", "role": "Synergist", "driver": "jointEffort",
       "weight": [[0, 0.16], [40, 0.11]],
       "note": "Small wrist flexor; absent in some people.",
-      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)"
+      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)",
+      "draw": { "seg": "proximal", "along": [0.08, 0.22], "offset": 0.036, "w": 0.014, "layer": 3 }
     },
     {
       "id": "fds", "name": "Flexor digitorum superficialis", "region": "forearm", "role": "Synergist", "driver": "jointEffort",
@@ -76,7 +78,8 @@
       "id": "fdp", "name": "Flexor digitorum profundus", "region": "forearm", "role": "Synergist", "driver": "jointEffort",
       "weight": [[0, 1], [40, 1]],
       "note": "Deep finger flexor; the only one that bends the fingertips. Its wrist potential is the largest of all wrist flexors, so it leads in a wrist curl.",
-      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)"
+      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)",
+      "draw": { "seg": "proximal", "along": [0.02, 0.21], "offset": 0.004, "w": 0.04, "layer": -1 }
     }
   ],
   "phases": [

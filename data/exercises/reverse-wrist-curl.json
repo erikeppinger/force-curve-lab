@@ -51,13 +51,15 @@
       "id": "ecrl", "name": "Extensor carpi radialis longus", "region": "forearm", "role": "Prime mover", "driver": "jointEffort",
       "weight": [[0, 0.33], [20, 0.34]],
       "note": "Wrist extensor on the thumb side; also a weak elbow flexor.",
-      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)"
+      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)",
+      "draw": { "seg": "proximal", "along": [0, 0.15], "offset": 0.042, "w": 0.026, "layer": 2 }
     },
     {
       "id": "ecu", "name": "Extensor carpi ulnaris", "region": "forearm", "role": "Prime mover", "driver": "jointEffort",
       "weight": [[0, 0.33], [20, 0.36]],
       "note": "Wrist extensor on the little-finger side.",
-      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)"
+      "source": "Weights: Gonzalez et al. 1997 (see weightsNote)",
+      "draw": { "seg": "proximal", "along": [0.05, 0.21], "offset": 0.02, "w": 0.024, "layer": 3 }
     },
     {
       "id": "edc", "name": "Extensor digitorum", "region": "forearm", "role": "Synergist", "driver": "jointEffort",

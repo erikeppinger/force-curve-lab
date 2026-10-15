@@ -149,7 +149,9 @@ export function renderView3d(svg, prims, cam, V) {
       const ab = sub3(p.b, p.a), L2 = ab.x * ab.x + ab.y * ab.y + ab.z * ab.z || 1;
       const t = Math.max(0, Math.min(1, ((mid.x - p.a.x) * ab.x + (mid.y - p.a.y) * ab.y + (mid.z - p.a.z) * ab.z) / L2));
       const c = add3(p.a, ab, t), dist = Math.hypot(mid.x - c.x, mid.y - c.y, mid.z - c.z);
-      if (dist < p.w / 2 + 0.06 && (!best || dist < best.dist)) best = { name, dist, front: px(mid).depth >= px(c).depth - 0.005 };
+      // On the camera's side unless its offset from the limb's axis points well away from the camera:
+      // a muscle at the limb's visible edge (offset across the view) stays on top.
+      if (dist < p.w / 2 + 0.06 && (!best || dist < best.dist)) best = { name, dist, front: px(mid).depth - px(c).depth >= -0.3 * dist };
     }
     return best;
   };

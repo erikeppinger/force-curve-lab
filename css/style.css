@@ -184,7 +184,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .body-edge { stroke: var(--body-edge); stroke-linecap: round; }
 #figure .body-edge.back { opacity: 0.55; }
 #figure .bone { stroke: var(--bone); stroke-linecap: round; }
-#figure .joint { fill: var(--card); stroke: var(--text); stroke-opacity: 0.7; stroke-width: 2.5; }
+#figure .joint { fill: var(--card); stroke: var(--text); stroke-opacity: 0.7; stroke-width: calc(2px * var(--k, 1)); }
 #figure .toe { fill: var(--body-edge); stroke: none; }
 #figure .muscle-base { stroke: var(--muscle-base); stroke-linecap: round; }
 #figure .muscle-on { stroke: var(--muscle-on); stroke-linecap: round; }
@@ -201,19 +201,19 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .band.slack { stroke-dasharray: 4 6; opacity: 0.6; }
 #figure .anchor { fill: var(--card); stroke: var(--compare); stroke-width: 3; }
 #figure .pulley { fill: var(--card); stroke: var(--cable); stroke-width: 3; }
-#figure .line-of-action { stroke: var(--accent); stroke-dasharray: 4 5; opacity: 0.6; }
-#figure .moment-arm { stroke: var(--compare); stroke-dasharray: 6 4; }
-#figure .force { stroke: var(--accent); }
+#figure .line-of-action { stroke: var(--accent); stroke-dasharray: calc(4px * var(--k, 1)) calc(5px * var(--k, 1)); opacity: 0.6; stroke-width: calc(1.5px * var(--k, 1)); }
+#figure .moment-arm { stroke: var(--compare); stroke-dasharray: calc(6px * var(--k, 1)) calc(4px * var(--k, 1)); stroke-width: calc(2.5px * var(--k, 1)); }
+#figure .force { stroke: var(--accent); stroke-width: calc(3px * var(--k, 1)); }
 #figure .arrowhead { fill: var(--accent); }
 #figure .hand-outline { stroke: var(--card); stroke-linecap: round; stroke-linejoin: round; }
 #figure .hand-fingers { stroke: var(--body); stroke-linecap: round; stroke-linejoin: round; }
 #figure .hand-label { font-size: 14px; font-weight: 600; }
-#figure .fig-label { fill: var(--text); font-size: 15px; font-weight: 600; paint-order: stroke; stroke: var(--card); stroke-width: 4px; }
+#figure .fig-label { fill: var(--text); font-size: calc(15px * var(--k, 1)); font-weight: 600; paint-order: stroke; stroke: var(--card); stroke-width: calc(4px * var(--k, 1)); }
 #figure .force-label { fill: var(--accent); }
 #figure .body.back { opacity: 0.55; }
 #figure g.part.back { opacity: 0.55; }
 #figure .balance { stroke: var(--muted); stroke-dasharray: 3 5; }
-#figure .ma-label { font-size: 12px; }
+#figure .ma-label { font-size: calc(13px * var(--k, 1)); }
 #figure .ma-hip { stroke: var(--j-hip); fill: var(--j-hip); }
 #figure .ma-knee { stroke: var(--j-knee); fill: var(--j-knee); }
 #figure .ma-ankle { stroke: var(--j-ankle); fill: var(--j-ankle); }
@@ -327,12 +327,12 @@ input[type="range"]:disabled { opacity: 0.4; }
 #figure .pulley-band { stroke-linecap: butt; }
 #figure .pulley-band.pl-a2 { stroke: var(--j-ankle); }
 #figure .pulley-band.pl-a4 { stroke: var(--compare); }
-#figure .fig-label.tendon-label, #figure .fig-label.pulley-label { font-size: 13px; }
+#figure .fig-label.tendon-label, #figure .fig-label.pulley-label { font-size: calc(13px * var(--k, 1)); }
 #figure .tl-fdp { fill: var(--j-hip); }
 #figure .tl-fds { fill: var(--j-knee); }
 #figure .pulley-label.pl-a2 { fill: var(--j-ankle); }
 #figure .pulley-label.pl-a4 { fill: var(--compare); }
-#figure .fig-label.joint-name { font-size: 10px; font-weight: 500; fill: var(--muted); }
+#figure .fig-label.joint-name { font-size: calc(11px * var(--k, 1)); font-weight: 500; fill: var(--muted); }
 .charts .line.cap { stroke-width: 1.5; stroke-dasharray: 2 4; opacity: 0.8; }
 .charts .line.lift-weight { stroke: var(--muted); stroke-dasharray: 6 5; }
 .charts .line.dash { stroke-dasharray: 7 5; opacity: 0.8; }
@@ -371,7 +371,15 @@ input[type="range"]:disabled { opacity: 0.4; }
 }
 :root[data-theme="dark"] .bodymap img:not(.overlay) { filter: invert(0.85) hue-rotate(180deg); }
 .muscle-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.m-head { display: flex; align-items: baseline; gap: 8px; }
+.m-head { display: flex; align-items: baseline; gap: 4px 8px; flex-wrap: wrap; }
+.m-head .m-name { flex: 1 1 auto; min-width: 0; }
+/* The muscles card sizes its own layout: next to the pinned figure it can be narrow on a wide screen,
+   so the body maps go above the list when the card (not the window) is narrow. */
+#muscles-card { container-type: inline-size; }
+@container (max-width: 440px) {
+  .muscle-layout { grid-template-columns: 1fr; }
+  .bodymaps { margin: 0 auto; }
+}
 .m-name { font-weight: 600; }
 .m-role { font-size: 0.78rem; color: var(--muted); }
 .m-val { margin-left: auto; font-variant-numeric: tabular-nums; font-weight: 600; }
@@ -459,7 +467,7 @@ footer { color: var(--muted); font-size: 0.8rem; padding-bottom: 24px; }
 #figure .ef-edge { stroke: var(--body-edge); stroke-linecap: round; }
 #figure .ef-palm { stroke: var(--body-edge); stroke-width: 3; }
 #figure .ef-bone { stroke: var(--bone); stroke-linecap: round; opacity: 0.8; }
-#figure .ef-joint { fill: var(--card); stroke: var(--text); stroke-opacity: 0.7; stroke-width: 2; }
+#figure .ef-joint { fill: var(--card); stroke: var(--text); stroke-opacity: 0.7; stroke-width: calc(2px * var(--k, 1)); }
 #figure .ef-edgeblock { fill: var(--equipment); opacity: 0.55; }
 #figure .ef-tendon { stroke-linecap: round; stroke-linejoin: round; opacity: 0.95; }
 #figure .ef-fdp { stroke: var(--j-hip); }
@@ -478,7 +486,7 @@ footer { color: var(--muted); font-size: 0.8rem; padding-bottom: 24px; }
 #figure .ef-weight { fill: var(--equipment); }
 #figure .ef-onweight { fill: var(--card); stroke: none; font-size: calc(11px * var(--k, 1)); font-weight: 700; }
 #figure .ef-lever { stroke: var(--accent); stroke-dasharray: 5 5; }
-#figure .ef-arm-joint { stroke: var(--text); stroke-opacity: 0.7; stroke-width: 2; }
+#figure .ef-arm-joint { stroke: var(--text); stroke-opacity: 0.7; stroke-width: calc(2px * var(--k, 1)); }
 #figure .ef-head { stroke: var(--body-edge); stroke-width: 3; }
 .charts .line.fi-index { stroke: var(--f-index); }
 .charts .line.fi-middle { stroke: var(--f-middle); }
@@ -521,7 +529,7 @@ svg.scrub { cursor: ew-resize; touch-action: pan-y; }
 body.dock-on { padding-bottom: 76px; }
 #figure .inset-box { fill: var(--card); stroke: var(--border); }
 #figure .inset-foot { fill: var(--body); stroke: var(--body-edge); stroke-width: 1.5; }
-#figure .inset-label { font-size: 11px; }
+#figure .inset-label { font-size: 11px; stroke-width: 3px; }
 #figure .ghost { opacity: 0.22; }
 #figure .inset-cam { fill: var(--equipment); fill-opacity: 0.35; stroke: var(--equipment); stroke-width: 1.5; }
 #figure .inset-lever { stroke: var(--compare); stroke-width: 2; stroke-dasharray: 3 2; }
