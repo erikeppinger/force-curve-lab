@@ -2,6 +2,8 @@
 
 An interactive teaching tool that shows **where an exercise is hard and which muscles do the work**, and how both change with equipment (dumbbell, barbell, cable, machine) and positioning (pulley height, arm angle).
 
+**For education.** Force Curve Lab is a teaching tool. Its numbers are model estimates for typical adults, not measurements of any person, and not medical, therapy or training advice. Parts of the data come from the ARMS hand model and are for non-commercial use only (see [Licences and credits](#licences-and-credits)).
+
 Exercises (2–5 equipment variants each):
 
 - **Arms and shoulders:** biceps curl, triceps extension, wrist curl and reverse wrist curl, lateral raise (with the Lu raise to overhead; elbow bend and arm rotation), front raise (with an overhead variant; elbow bend), chest fly, straight-arm pulldown / pullover (trunk lean). The raises, fly, curl, triceps extension and calf raise also have a 3D figure.
@@ -109,12 +111,15 @@ The physics (layer 1) is exact for the idealised model. Strength curves and musc
 - [x] Placement sliders (edge lift, 3D lifts) saved in shareable links
 - [x] Curl muscle weights over the elbow angle from measured moment arms (Murray et al. 1995); levels still estimates
 - [x] Zoom to the moving joint in the side view (single-joint lifts)
-- [ ] OpenSim: leg-muscle moment arms and force capacity from the Rajagopal model (`tools/opensim_export.py`), then the arm/hand model (Holzbaur 2005); see the reading list
+- [x] OpenSim (Rajagopal model): exported and checked against every leg exercise (`docs/model-limits.md`); used for the hip abduction and adduction muscle shares and the kickback's knee bend. Its strength curves and two-joint muscle shares disagree with measurements, so those stay measured
+- [ ] OpenSim muscle shares for the multi-joint leg lifts (squat, deadlift, lunge), only where an EMG paper confirms the model
 - [ ] Translations (DE), lowest priority: all at once later
 
 ## Licences and credits
 
 - Exercise descriptions, images and muscle-map SVGs: [wger.de](https://wger.de), **CC-BY-SA 3.0**, with attribution. Descriptions and images are loaded at runtime; the muscle-map SVGs are copied in `assets/wger` and stay CC-BY-SA.
 - Code (HTML, CSS, JavaScript, tests, tools): **MIT**, see [`LICENSE`](LICENSE).
-- Content (exercise data, curated numbers, notes, docs): **CC BY 4.0**, see [`LICENSE-CONTENT.md`](LICENSE-CONTENT.md).
+- Content (exercise data, curated numbers, notes, docs): **CC BY 4.0**, see [`LICENSE-CONTENT.md`](LICENSE-CONTENT.md), except the model data below.
+- Data derived from the ARMS hand and wrist model (McFarland et al. 2021): the edge lift's 3D hand and the pinch lift (`data/opensim/arms-hand.json`, `arms-pincer.json`, `arms-pinch-hand.json`, `pinch-whole.json`). **Non-commercial use only**, under the model's licence; not covered by CC BY 4.0.
+- Data derived from MIT-licensed OpenSim models: the hip muscles (Rajagopal et al. 2016; Uhlrich et al. 2022) and the lumbar spine (Christophy et al. 2012) (`data/opensim/hip-muscles.json`, `lumbar-muscles.json`). **MIT**, with the copyright notices in the files.
 - Cited papers are listed in the app's References section and in `data/references.json`; the papers themselves are not included.
