@@ -934,7 +934,55 @@
       "citation": "Panatta Sport. Product descriptions: Fantastic Vertical Pek Dek; Standing Abductor (manufacturer web pages, read 2026-10-14; claims, not measurements).",
       "url": "https://www.panattasport.com/en/fantastic/fantastic-vertical-pek-dek/",
       "usedFor": "Pec deck and hip abduction: only the direction of the estimated cam shapes (rising, falling)."
-    }
+    },
+     {
+      "key": "Bourne 2011",
+      "match": "Bourne R, Halaki M",
+      "group": "Strength curves",
+      "citation": "Bourne R, Halaki M, Vanwanseele B, Clarke J (2011). Measuring lifting forces in rock climbing: effect of hold size and fingertip structure. J Appl Biomech 27(1):40–46.",
+      "url": "https://doi.org/10.1123/jab.27.1.40",
+      "usedFor": "Edge lift: strength check, maximal one-hand lifts on edges 2.8–12.5 mm deep (about 40 kg on 12.5 mm); on shallow edges the fingertip pulp sets the limit."
+     },
+     {
+      "key": "Kilgas 2016",
+      "match": "Kilgas MA, Drum SN",
+      "group": "Two-joint muscles and grip",
+      "citation": "Kilgas MA, Drum SN, Jensen RL, Phillips KC, Watts PB (2016). The effect of magnesium carbonate (chalk) on geometric entropy, force, and electromyography during rock climbing. J Appl Biomech 32(6):553–557.",
+      "url": "https://doi.org/10.1123/jab.2016-0009",
+      "usedFor": "Edge lift: friction coefficient used while hanging on a hold (0.37–0.38, with or without chalk)."
+     },
+     {
+      "key": "Vigouroux 2015",
+      "match": "Vigouroux L, Goislard de Monsabert B, Berton E (2015)",
+      "group": "Strength curves",
+      "citation": "Vigouroux L, Goislard de Monsabert B, Berton E (2015). Estimation of hand and wrist muscle capacities in rock climbers. Eur J Appl Physiol 115:947–957.",
+      "url": "https://doi.org/10.1007/s00421-014-3076-6",
+      "usedFor": "Wrist curls: a second set of maximal wrist flexion and extension moments, with the fingers free and with the finger muscles helping (untrained men and climbers)."
+     },
+     {
+      "key": "Takeshita 2022",
+      "match": "Takeshita Y, Kawada M",
+      "group": "Muscle activity",
+      "citation": "Takeshita Y, Kawada M, Miyazaki T, Nakai Y, Araki S, Nakatsuji S, Matsuzawa Y, Nakashima S, Kiyama R (2022). Effects of knee flexion angles on the joint force and muscle force during bridging exercise: a musculoskeletal model simulation. J Healthc Eng 2022:7975827.",
+      "url": "https://doi.org/10.1155/2022/7975827",
+      "usedFor": "Hip thrust: hamstring and gluteus maximus EMG in the bridge at three knee angles, a check of the knee-angle effect."
+     },
+     {
+      "key": "Doheny 2008",
+      "match": "Doheny EP, Lowery MM",
+      "group": "Muscle activity",
+      "citation": "Doheny EP, Lowery MM, FitzPatrick DP, O'Malley MJ (2008). Effect of elbow joint angle on force–EMG relationships in human elbow flexor and extensor muscles. J Electromyogr Kinesiol 18:760–770.",
+      "url": "https://doi.org/10.1016/j.jelekin.2007.03.006",
+      "usedFor": "Biceps curl: muscle activity follows the force as a share of each angle's maximum, the effort the app shows."
+     },
+     {
+      "key": "Tsai 2020",
+      "match": "Tsai LC, Zhao Z",
+      "group": "Two-joint muscles and grip",
+      "citation": "Tsai LC, Zhao Z, Fridenmaker SM, Warren GL (2020). Enhancement of knee extension voluntary and electrically-evoked strength with the body tilted backward. Isokinet Exerc Sci 28:101–109.",
+      "url": "https://doi.org/10.3233/IES-193197",
+      "usedFor": "Leg extension: hip-angle check, knee extension 5–11% stronger with the seat back reclined."
+     }
   ],
   "resources": [
     {

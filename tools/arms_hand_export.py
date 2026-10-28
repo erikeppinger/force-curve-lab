@@ -3,6 +3,7 @@
 
     python tools/arms_hand_export.py Hand_Wrist_Model_for_development.osim data/opensim/arms-hand.json
     python tools/arms_hand_export.py Hand_Wrist_Model_for_development.osim data/opensim/arms-pinch-hand.json data/opensim/arms-pincer.json
+    python tools/arms_hand_export.py Hand_Wrist_Model_for_development.osim data/opensim/arms-pinch-hand-flat.json data/opensim/arms-pincer-flat.json
 
 LICENCE: the ARMS model (McFarland et al. 2021) is for NON-COMMERCIAL use only. The JSON this
 writes is derived from it and carries that restriction (stated in its `licence` field); the app
@@ -14,7 +15,10 @@ posture's "pose" in that JSON, e.g. the pinch lift's per block width) it writes,
 straight, y towards the palm, z towards the thumb side; right-handed, y = z × x):
 - joints: every finger's and the thumb's joint centres from the wrist to the fingertip;
 - muscles: every muscle's current path (points incl. wrapping), its maximum isometric force and
-  its active force at full activation (fibre-tendon equilibrium).
+  its active force at full activation (fibre-tendon equilibrium) and its tendon slack length (the
+  view draws that much of the path, from the insertion back, as tendon).
+With poses from tools/arms_pinch_contact.py, each posture's block face (index pad, normal towards
+the thumb, up along the face, top edge) is carried into the hand frame too, for js/handfig3d.js.
 """
 import json
 import math
@@ -111,8 +115,8 @@ def grip_poses():
         yield gname, p
 
 
-POSES = ((k, v["pose"]) for k, v in json.load(open(poses_file))["postures"].items()) if poses_file else grip_poses()
-for gname, p in POSES:
+POSES = ((k, v["pose"], v.get("face")) for k, v in json.load(open(poses_file))["postures"].items()) if poses_file else ((k, v, None) for k, v in grip_poses())
+for gname, p, fc in POSES:
     pose(p)
     fr = hand_frame()
     joints = {}
@@ -131,8 +135,13 @@ for gname, p in POSES:
         for k in range(path.getSize()):
             pp = path.get(k)
             pts.append(to_hand(list(pp.getLocationInGround(state).to_numpy()), fr))
-        mus[m.getName()] = {"path": pts, "max": round(m.getMaxIsometricForce(), 1), "active": round(F[m.getName()], 1)}
-    res["postures"][gname] = {"joints": joints, "muscles": mus}
+        mus[m.getName()] = {"path": pts, "max": round(m.getMaxIsometricForce(), 1), "active": round(F[m.getName()], 1), "tendon": round(m.getTendonSlackLength(), 4)}
+    face = None
+    if fc:  # the block face (tools/arms_pinch_contact.py), carried into the hand frame
+        o = to_hand(fc["point"], fr)
+        d = lambda v: [round(to_hand([fc["point"][i] + v[i] for i in range(3)], fr)[k] - o[k], 5) for k in range(3)]
+        face = {"point": o, "n": d(fc["n"]), "up": d(fc["up"]), "top": fc["top"], "contact": json.load(open(poses_file))["postures"][gname]["contact"]}
+    res["postures"][gname] = {"joints": joints, "muscles": mus, **({"face": face} if face else {})}
 with open(out, "w") as f:
     json.dump(res, f, separators=(",", ":"))
 print(f"wrote {out}")

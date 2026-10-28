@@ -157,7 +157,7 @@ export function renderView3d(svg, prims, cam, V) {
   };
   for (let i = items.length - 1; i >= 0; i--) {
     const p = items[i].p;
-    if (!p || p.kind !== "line" || p.top === true || !/(^| )muscle-(base|on)( |$)/.test(p.cls)) continue;
+    if (!p || p.kind !== "line" || p.top === true || !/(^| )(muscle|tendon)-(base|on|idle)( |$)/.test(p.cls)) continue;
     const hit = onPart(p);
     if (!hit) continue;
     const g = parts.get(hit.name);
@@ -195,7 +195,7 @@ export function renderView3d(svg, prims, cam, V) {
     const list = it.list.sort((a, b) => a.d - b.d).map((x) => x.p);
     const back = list.every((p) => /(^| )back( |$)/.test(p.cls ?? ""));
     // Its muscles on the far side first (the part then covers them), base before the activation shade.
-    const byDepth = (arr) => (arr ?? []).sort((a, b) => a.d - b.d || (/muscle-on/.test(a.p.cls) ? 1 : 0) - (/muscle-on/.test(b.p.cls) ? 1 : 0)).map((x) => x.p);
+    const byDepth = (arr) => (arr ?? []).sort((a, b) => a.d - b.d || (/(muscle|tendon)-on/.test(a.p.cls) ? 1 : 0) - (/(muscle|tendon)-on/.test(b.p.cls) ? 1 : 0)).map((x) => x.p);
     for (const p of byDepth(it.under)) draw(p, svg);
     const g = el("g", { class: back ? "part back" : "part" }, svg);
     const own = (p) => (back ? p.cls.replace(/(^| )back( |$)/, "$1").trim() : p.cls);
