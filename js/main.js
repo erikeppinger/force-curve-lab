@@ -105,6 +105,12 @@ async function loadExercise(id) {
   // Pinch lift, whole hand: the fingers use the edge lift's finger model.
   if (ex.pincer?.fingerData) ex.pincer.fingerModel = await fetch(ex.pincer.fingerData).then((r) => r.json()).catch(() => null);
   if (ex.pincer?.wholeData) ex.pincer.whole = await fetch(ex.pincer.wholeData).then((r) => r.json()).catch(() => null);
+  // A variant with its own posture brings its own ARMS data and whole-hand table (the four-finger pinch).
+  for (const v of ex.variants ?? []) {
+    if (v.pincer?.data) v.pincer.arms = await fetch(v.pincer.data).then((r) => r.json()).catch(() => null);
+    if (v.pincer?.wholeData) v.pincer.whole = await fetch(v.pincer.wholeData).then((r) => r.json()).catch(() => null);
+    if (v.pincer?.handData) v.pincer.hand = await fetch(v.pincer.handData).then((r) => r.json()).catch(() => null);
+  }
   // Core exercises: the OpenSim lumbar spine model's trunk muscles for the 3D trunk view (MIT licence).
   if (ex.trunk3d) ex.trunk3d.data = await (lumbarData ??= fetch("data/opensim/lumbar-muscles.json").then((r) => r.json()).catch(() => null));
   return ex;
@@ -155,7 +161,7 @@ const STACK_NOTE = "The weight stack rests on its pins until you lift it: the cu
 function setVariant(id, pulley, load, placement) {
   state.variantId = id;
   const v = variant();
-  $("angle-note").textContent = [state.exercise.angleNote, stackRests(state.exercise, v) ? STACK_NOTE : ""].filter(Boolean).join(" ");
+  $("angle-note").textContent = [v.angleNote ?? state.exercise.angleNote, stackRests(state.exercise, v) ? STACK_NOTE : ""].filter(Boolean).join(" ");
   applyRange(v);
   // Machines, cables and ankle weights need very different loads: use the variant's default.
   // A load from a link is kept inside the slider's range.
@@ -679,7 +685,8 @@ function renderSoon() {
 }
 
 function phaseAt(angle) {
-  return state.exercise.phases.find((p) => angle >= p.range[0] && angle <= p.range[1]) ?? state.exercise.phases.at(-1);
+  const phases = variant().phases ?? state.exercise.phases; // a variant may bring its own (a hold variant of a lift)
+  return phases.find((p) => angle >= p.range[0] && angle <= p.range[1]) ?? phases.at(-1);
 }
 
 /** Legend for the torque chart: one entry per joint for multi-joint lifts. */
@@ -825,7 +832,7 @@ const EDGE_VIEWS = {
   fingers: { label: "The four fingers on the edge, side view: tendons, pulleys and each finger's share of the block", hint: "Each finger in its own posture on the edge (wrist straight above its pad). Tendons drawn thicker the harder they pull (FDP purple, FDS blue); pulleys coloured from green to red by their share of the cadaver breaking load; arrows: each finger's share of the block." },
   hand: { label: "The hand from the front on the edge: each finger's share, the hand's tilt and the wrist's sideways load", hint: "Palm towards you, index finger on the left. Under each finger: its share of the block (arrow) and its effort; dashed = off the edge. The edge's shape under each finger follows the bars in the controls; the curved arrow at the wrist is its sideways load." },
   arm: { label: "The arm holding the block, from the front and from the side, with shoulder and elbow loads", hint: "As taught: the straight arm rests on the front of the hip and the block hangs between the legs, so the shoulder and elbow are only pulled. Turned out or forward from there (sliders), the block acts on a lever at the shoulder and elbow (joints coloured by effort)." },
-  muscles: { label: "The hand in 3D with every muscle along its path in the ARMS hand model, at the grip's preset posture", hint: "Bones and every muscle's path from the ARMS hand model (McFarland et al. 2021; non-commercial use only). The deep and superficial finger flexors are coloured by the load the edge-lift statics puts on them (share of that finger's maximum); the other muscles are shown grey, as paths only. Posture: the grip's preset, not the per-finger fit. Drag to turn." },
+  muscles: { label: "The hand in 3D with every muscle along its path in the ARMS hand model, at the grip's preset posture", hint: "Bones and every muscle's path from the ARMS hand model (McFarland et al. 2021; non-commercial use only). The deep and superficial finger flexors are coloured by the load the edge-lift statics puts on them (share of that finger's maximum); the other muscles are shown grey, as paths only. Thick lines are muscle bellies, thin ones tendons (their lengths from the model): in the hand nearly everything is tendon, since the long flexors' and extensors' bellies lie in the upper forearm, outside the frame; the finger flexor tendons run through the pulleys (A2, A4; not drawn). Posture: the grip's preset, not the per-finger fit. Drag to turn." },
 };
 
 /** Edge lift: summary strip, the selected view (fingers, hand, arm), tables and per-finger charts. */
@@ -977,18 +984,18 @@ function renderPinch() {
   );
   if (is3d(ex)) {
     // ARMS hand at the exported block width nearest the slider; muscles by the whole-hand model.
-    const geo = ex.handModel.geometry.postures;
+    const geo = (variant().pincer?.hand ?? ex.handModel.geometry).postures; // the variant's own posture (four-finger flat pads)
     const key = Object.keys(geo).reduce((a, k) => (Math.abs(+k.slice(1) - state.angle) < Math.abs(+a.slice(1) - state.angle) ? k : a));
-    const prims = [...handScene3d(geo[key], null, pinchValueOf(r.act)), ...pinchBlock(geo[key], +key.slice(1))];
+    const prims = [...handScene3d(geo[key], null, pinchValueOf(r.act)), ...pinchBlock(geo[key], +key.slice(1), r.shares ? Object.keys(r.shares) : ["index", "middle"])];
     $("figure-title").textContent = `Hand and block, 3D (${key.slice(1)} mm; drag to turn)`;
-    $("figure").setAttribute("aria-label", "The ARMS hand model holding the block, with its muscles shaded by effort");
+    $("figure").setAttribute("aria-label", "The ARMS hand model holding the block: muscle bellies (thick) and tendons (thin) shaded by effort");
     renderView3d($("figure"), prims, state.cam, bounds3d([prims.filter((p) => p.bone || p.block)], state.cam, 0.02));
   } else {
     $("figure-title").textContent = "Block and digits, front view";
     $("figure").setAttribute("aria-label", "The pinch block from the front with the thumb and the fingers pressing its faces");
     renderPinchView($("figure"), { r });
   }
-  const bands = ex.phases.map((p) => ({ from: p.range[0], to: p.range[1], label: p.name }));
+  const bands = (variant().phases ?? ex.phases).map((p) => ({ from: p.range[0], to: p.range[1], label: p.name }));
   const xs = (s, get) => s.map((x) => [x.widthMm, get(x)]);
   renderChart($("torque-chart"), { onScrub: scrubAngle,
     xRange: chartRange(), bands, marker: state.angle, xUnit: " mm", xStep: 10,
@@ -1100,7 +1107,7 @@ function renderView() {
     renderFigure($("figure"), { exercise: ex, variant: v, result: r, activation: act, pulley: state.pulley, bounds: frame });
   }
 
-  const bands = ex.phases.map((p) => ({ from: p.range[0], to: p.range[1], label: p.name }));
+  const bands = (v.phases ?? ex.phases).map((p) => ({ from: p.range[0], to: p.range[1], label: p.name }));
   const strength = main.map((s) => [s.angle, s.capacity]);
   const torqueSeries = [
     { points: strength, className: "strength" },

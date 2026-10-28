@@ -177,7 +177,23 @@ function analyzeWhole(ex, data, P, w, W, scale) {
  * level}. Returns the squeeze, the effort (squeeze ÷ capacity), the maximum block, the friction on
  * each face and the muscle activations at this load (null when the grip fails).
  */
+/**
+ * The exercise as one variant sees it: a variant's own `pincer` (the four-finger pinch's flat-pad
+ * posture, its ARMS data `arms` and whole-hand table `whole`) replaces the shared one's entries.
+ * Its id gets the variant's, so the per-exercise caches (the thumb's calibration) stay apart.
+ */
+const variantCache = new WeakMap();
+export function pinchVariant(ex, v) {
+  if (!v?.pincer) return ex;
+  if (!variantCache.has(v) || variantCache.get(v).base !== ex) {
+    const pincer = { ...ex.pincer, ...v.pincer, fingerModel: ex.pincer.fingerModel, whole: v.pincer.whole ?? null };
+    variantCache.set(v, { base: ex, ex: { ...ex, id: `${ex.id}/${v.id}`, pincer } });
+  }
+  return variantCache.get(v).ex;
+}
+
 export function analyzePinch(ex, data, v, widthMm, { loadKg, strengthPct = 100, placement } = {}) {
+  if (v.pincer) { data = v.pincer.arms ?? data; ex = pinchVariant(ex, v); }
   const P = { ...v.params, ...placement };
   if (P.level === "whole") {
     const w = widthMm / 1000;
@@ -203,7 +219,7 @@ export function analyzePinch(ex, data, v, widthMm, { loadKg, strengthPct = 100, 
 
 /** The lift across the block-width range (for the charts). */
 export function samplePinch(ex, data, v, opts, step = { ...v.params, ...opts?.placement }.level === "whole" ? 10 : 5) {
-  const [lo, hi] = ex.angleRange;
+  const [lo, hi] = v.angleRange ?? ex.angleRange; // the flat-pad pinch can't close below 30 mm
   const out = [];
   for (let mm = lo; mm <= hi + 1e-9; mm += step) out.push(analyzePinch(ex, data, v, mm, opts));
   return out;

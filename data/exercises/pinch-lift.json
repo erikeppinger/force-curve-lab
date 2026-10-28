@@ -167,8 +167,24 @@
       "id": "four-fingers",
       "name": "Thumb against four fingers",
       "equipment": "Pinch block on a loading pin",
-      "notes": "The usual pinch-block grip: the thumb on one face, all four fingers on the other. The thumb carries the whole squeeze alone; each finger carries a quarter of it.",
-      "params": {"fingers": 4, "mu": 0.6, "n": 1, "wrist": 0, "level": "whole"}
+      "notes": "The usual pinch-block grip, an extended palmar pinch: the thumb on one face, all four fingers on the other, lying along it. On narrow blocks (up to 50 mm) the whole finger lies on the face and the hand sits above the block, the web on its top edge; wider, the fingers bend at the middle joint and touch with the two outer segments; at 80 mm only the fingertips reach. The thumb carries the whole squeeze alone; the fingers share it. Up to 80 mm: on a wider block the model's thumb can't reach across.",
+      "params": {"fingers": 4, "mu": 0.6, "n": 1, "wrist": 0, "level": "whole"},
+      "angleRange": [20, 80],
+      "phases": [
+        {"name": "Whole finger", "range": [20, 55], "text": "The fingers lie straight along the face, the hand above the block with its web on the top edge; they push opposite the thumb, on the proximal phalanges and the fingertips."},
+        {"name": "Two segments", "range": [55, 75], "text": "The fingers bend at the middle joint: the middle and distal phalanges touch, and the middle phalanges take most of the push."},
+        {"name": "Fingertips", "range": [75, 80], "text": "Only the fingertips reach the face; the knuckles bend back (the little finger's most) so that all four touch."}
+      ],
+      "angleNote": "The slider sets the block's width (thickness between the thumb's face and the fingers' face). The hand's posture changes with it: on narrow blocks the fingers lie straight along the face, the hand above the block; wider, they bend at the middle joint and less of each finger touches. The thumb's base is set in the ARMS hand model so that the thumb pad sits that far across from the fingers' face; its muscles' leverage and force at that length come from the model. Climbers squeezed 5 and 8 cm holds about equally hard.",
+      "pincer": {
+        "index": {"mcp": [[20, 0], [30, 5], [40, 15], [50, 25], [60, 0], [70, 5], [80, 5]], "pip": [[20, 0], [30, 0], [40, 0], [50, 0], [60, 30], [70, 30], [80, 0]], "dip": [[20, 0], [30, 0], [40, 0], [50, 0], [60, 0], [70, 0], [80, 40]]},
+        "contact": [[20, "mcp"], [30, "mcp"], [40, "mcp"], [50, "mcp"], [60, "pip"], [70, "pip"], [80, "dip"]],
+        "data": "data/opensim/arms-pincer-flat.json",
+        "wholeData": "data/opensim/pinch-whole-flat.json",
+        "handData": "data/opensim/arms-pinch-hand-flat.json",
+        "postureNote": "Fingers lying along the face (estimate: no measured block postures exist). For each width the ARMS hand model is searched for the posture with the most finger on the face that still lets the thumb reach across: straight fingers (contact up to the knuckle) at 20–50 mm, bent at the middle joint (contact up to it) at 60–70 mm, the fingertips alone at 80 mm; then the least finger bending, then the least knuckle bending (the hand stays above the block, its web on the top edge, as in a plate pinch), then the thumb base where the thumb squeezes hardest (tools/arms_pinch_contact.py). Index knuckle 0° at 20 mm, 25° at 50 mm, 0–5° at 60–80 mm; the other fingers take the index's middle and end joints, their knuckles set so all four pads lie on one face (the little finger's bends back up to 26° at 80 mm). The thumb pad lies the block's width plus 16 mm of soft tissue (estimate) straight across the face, below its top edge, with the thumb's base at least 4° inside ARMS's ranges (it is weak at their ends; estimate); thumb MP 3.5° and IP 13.3° (Vigouroux et al. 2011, wide objects). In the force model every segment on the face may carry force anywhere along it, so the knuckle is balanced too: the long flexors with the finger model's moment arms, the interossei and lumbricals with ARMS's. Huang et al. (2026) describe the same trend in words for narrower holds (more flexion lifts the proximal and middle phalanges off), but report no angles. Moment arms and muscle forces: the ARMS hand model at these postures (NON-COMMERCIAL use only).",
+        "postureSource": "Huang Y, Li S, Peng Y, Yu J, Chen R, Ding X, et al. (2026). Mechanics and muscular activity characteristics of the pinch grip across varying hold widths and climber skill levels. J Sports Sci 44(4):431–442. doi:10.1080/02640414.2025.2585743 (Discussion: contact and finger flexion by hold width); thumb MP and IP: Vigouroux L, Domalain M, Berton E (2011). Effect of object width on muscle and joint forces during thumb-index finger grasping. J Appl Biomech 27(3):173–180; moment arms: McFarland DC, Binder-Markey BI, Nichols JA, Wohlman SJ, de Bruin M, Murray WM (2021). A musculoskeletal model of the hand and wrist capable of simulating functional tasks. bioRxiv 2021.12.28.474357 (NON-COMMERCIAL use only)"
+      }
     },
     {
       "id": "two-fingers",

@@ -9,6 +9,11 @@ const ex = JSON.parse(readFileSync(new URL("../data/exercises/pinch-lift.json", 
 ex.pincer.arms = JSON.parse(readFileSync(new URL(`../${ex.pincer.data}`, import.meta.url)));
 ex.pincer.fingerModel = JSON.parse(readFileSync(new URL(`../${ex.pincer.fingerData}`, import.meta.url)));
 ex.pincer.whole = JSON.parse(readFileSync(new URL(`../${ex.pincer.wholeData}`, import.meta.url)));
+// A variant with its own posture (the four-finger flat-pad pinch) brings its own ARMS data and table.
+for (const x of ex.variants.filter((y) => y.pincer?.data)) {
+  x.pincer.arms = JSON.parse(readFileSync(new URL(`../${x.pincer.data}`, import.meta.url)));
+  x.pincer.whole = JSON.parse(readFileSync(new URL(`../${x.pincer.wholeData}`, import.meta.url)));
+}
 const v = (id) => ex.variants.find((x) => x.id === id);
 const close = (a, b, tol = 1e-9) => assert.ok(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)), `${a} vs ${b}`);
 
@@ -94,12 +99,15 @@ test("whole hand: calibrated to the measured squeeze; the middle finger carries 
 });
 
 test("whole hand: the precomputed table matches the live model (rerun tools/pinch-table.mjs if not); strength scales the max block in proportion", async () => {
-  const { wholeMax, WHOLE } = await import("../js/pinchlift.js");
+  const { wholeMax, WHOLE, pinchVariant } = await import("../js/pinchlift.js");
   const { pinchHand } = await import("../js/pincer.js");
   const live = { ...ex, pincer: { ...ex.pincer, whole: null } };
   for (const [mm, mu, fingers] of [[60, 0.6, 4], [45, 0.6, 4], [85, 1.05, 2]]) {
     const r = analyzePinch(ex, ex.pincer.arms, v(fingers === 4 ? "four-fingers" : "two-fingers"), mm, { loadKg: 10, placement: { mu } });
-    const { Wmax } = wholeMax(live, ex.pincer.arms, mm / 1000, fingers, { thumb: mu, finger: mu }, 18);
+    // Four fingers: the flat-pad variant's own posture and data; two: the shared ones.
+    const vv = v(fingers === 4 ? "four-fingers" : "two-fingers");
+    const exV = vv.pincer ? pinchVariant(live, { ...vv, pincer: { ...vv.pincer, whole: null } }) : live;
+    const { Wmax } = wholeMax(exV, vv.pincer?.arms ?? ex.pincer.arms, mm / 1000, fingers, { thumb: mu, finger: mu }, 18);
     close(r.maxBlockKg, Wmax / 9.81, 0.04); // interpolation between table points
   }
   // The balance is linear in the forces: half the strength holds about half the weight.
@@ -112,7 +120,8 @@ test("whole hand: the precomputed table matches the live model (rerun tools/pinc
 test("charts: an infinite effort (no block holds at 110 mm) gives a finite axis with a few gridlines, not an endless loop", async () => {
   const { yScale } = await import("../js/chart.js");
   const { samplePinch } = await import("../js/pinchlift.js");
-  const s = samplePinch(ex, ex.pincer.arms, v("four-fingers"), { loadKg: 10, placement: v("four-fingers").params });
+  // Two fingers on the shared (tip-pinch) posture span nothing at 110 mm; the flat-pad four still holds a little there.
+  const s = samplePinch(ex, ex.pincer.arms, v("two-fingers"), { loadKg: 10, placement: v("two-fingers").params });
   const pts = s.map((x) => [x.widthMm, x.effort * 100]);
   assert.ok(pts.some((p) => p[1] === Infinity), "110 mm holds nothing");
   for (const yMax of [undefined, Infinity, Math.max(100, ...pts.map((p) => p[1]))]) {
@@ -140,4 +149,65 @@ test("3D hand: the block is as wide as the exported width; the whole-hand model'
   assert.equal(val("ECRL"), null); // wrist muscles: not in the model, drawn grey
   const prims = handScene3d(hand.postures.w60, null, val);
   assert.ok(prims.some((p) => p.cls === "muscle-on" && /FPL|thumb flexor/.test(p.title)));
+});
+
+test("four fingers: lying along the face (contact up to the knuckle on narrow blocks, the PIP on wider ones), its own ARMS data, table and 3D hand, 20–80 mm", async () => {
+  const four = v("four-fingers"), A = four.pincer.arms;
+  assert.deepEqual(four.angleRange, [20, 80]);
+  // The tables are the ARMS postures: the index's angles and the contact at every exported width, the thumb straight across (within 1 mm).
+  for (const [k, p] of Object.entries(A.postures)) {
+    const mm = A.widths[k];
+    if (mm > 80) continue;
+    const at = (t) => t.find(([w]) => w === mm)[1];
+    assert.equal(at(four.pincer.index.mcp), p.pose["2mcp_flexion"], k); assert.equal(at(four.pincer.index.pip), p.pose["2pm_flexion"], k); assert.equal(at(four.pincer.index.dip), p.pose["2md_flexion"], k);
+    assert.equal(at(four.pincer.contact), p.contact, k);
+    assert.equal(p.contact === "mcp", p.pose["2pm_flexion"] === 0 && p.pose["2md_flexion"] === 0, k); // the whole finger on the face only when straight
+    assert.ok(Math.abs(A.thumbBase[k].gapMm - mm) <= 1, k);
+  }
+  assert.equal(four.pincer.contact[0][1], "mcp"); // narrow: the whole finger on the face
+  // The 3D view: every finger pad 8 mm (its soft tissue) from the block's fingers' face, the thumb pad 8 mm from the other face.
+  const { pinchBlock } = await import("../js/handfig3d.js");
+  const fingers = ["index", "middle", "ring", "little"];
+  const hand = JSON.parse(readFileSync(new URL(`../${four.pincer.handData}`, import.meta.url)));
+  for (const key of ["w20", "w50", "w80"]) {
+    const P = hand.postures[key], J = P.joints, faces = pinchBlock(P, +key.slice(1), fingers);
+    assert.ok(P.face);
+    const plane = (fc) => { const [a, b, c] = fc.pts, u = [b.x - a.x, b.y - a.y, b.z - a.z], v = [c.x - a.x, c.y - a.y, c.z - a.z];
+      const n = [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]], l = Math.hypot(...n);
+      return ([x, y, z]) => Math.abs(((x - a.x) * n[0] + (-y - a.y) * n[1] + (-z - a.z) * n[2]) / l); }; // the view's frame: y, z turned
+    const pad = (q, r) => q.map((x, i) => x + 0.6 * (r[i] - x));
+    for (const f of fingers) close(plane(faces[0])(pad(J[f][3], J[f][4])), 0.008, 0.001);
+    close(plane(faces[1])(pad(J.thumb.at(-2), J.thumb.at(-1))), 0.008, 0.002);
+    if (P.face.contact === "mcp") close(plane(faces[0])(J.index[2]), 0.008, 0.002); // straight: the PIP on the face too
+  }
+  // The force model: every segment on the face may carry force; the knuckle is balanced.
+  const { pinchHand } = await import("../js/pincer.js");
+  const exV = (await import("../js/pinchlift.js")).pinchVariant(ex, four);
+  const h = pinchHand(exV, A, ex.pincer.fingerModel, 0.03, 0, { squeeze: 100, strength: four.pincer.whole.thumbScale });
+  assert.ok(h.holds && h.contact === "mcp");
+  for (const f of fingers) assert.equal(h.digits[f].segments.length, 3);
+  assert.ok(fingers.some((f) => h.digits[f].segments[0] + h.digits[f].segments[1] > 1), "some force off the fingertips");
+  // Its own table, calibrated to the same measured squeeze.
+  assert.ok(four.pincer.whole[4] && four.pincer.whole.thumbScale);
+  const r = analyzePinch(ex, ex.pincer.arms, four, 50, { loadKg: 15, placement: four.params });
+  assert.ok(r.maxBlockKg > 15);
+});
+
+test("3D hands: each muscle path splits into belly and tendon at the model's tendon length; the long finger flexors are tendon in the hand", async () => {
+  const { splitPath, handScene3d } = await import("../js/handfig3d.js");
+  const len = (p) => p.slice(1).reduce((s, q, i) => s + Math.hypot(q[0] - p[i][0], q[1] - p[i][1], q[2] - p[i][2]), 0);
+  const [b, t] = splitPath([[0, 0, 0], [0.1, 0, 0], [0.3, 0, 0]], 0.25);
+  close(len(t), 0.25, 1e-9); close(len(b), 0.05, 1e-9);
+  assert.deepEqual(splitPath([[0, 0, 0], [0.1, 0, 0]], 0.5), [[], [[0, 0, 0], [0.1, 0, 0]]]);
+  for (const file of ["data/opensim/arms-hand.json", ex.handModel.data]) {
+    const hand = JSON.parse(readFileSync(new URL(`../${file}`, import.meta.url)));
+    const P = Object.values(hand.postures)[0];
+    assert.ok(P.muscles.FDPM.tendon > 0.2 && P.muscles.LUMM.tendon < 0.01, file);
+    // The deep flexor: tendon from the wrist on (the hand frame's x: towards the fingers).
+    const [belly] = splitPath(P.muscles.FDPM.path, P.muscles.FDPM.tendon);
+    assert.ok(belly.every((q) => q[0] < P.joints.wrist[0]), file);
+    const prims = handScene3d(P, null, () => 0.5);
+    assert.ok(prims.some((p) => p.cls === "tendon-on tendon-fdp") && prims.some((p) => p.cls === "muscle-on"));
+    assert.ok(prims.filter((p) => p.bone).every((p) => /back/.test(p.cls))); // see-through: the far side shows
+  }
 });

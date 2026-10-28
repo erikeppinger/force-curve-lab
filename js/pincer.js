@@ -354,41 +354,119 @@ export function pinchHand(ex, data, edgeEx, w, W, { fingers = Object.keys(FINGER
   // postures). Small: ARMS's FDP and FDS stay at 93–99% from 20 to 110 mm.
   const M60 = musclesAt(data, 0.06);
   const fl = (n) => (M[n] && M60[n] ? (M[n].active / M[n].max) / (M60[n].active / M60[n].max) : 1);
-  // Rows: per finger PIP, DIP; then the thumb's three joints; then sideways and weight (or squeeze).
-  const fRows = fingers.length * 2, R = fRows + 3;
+  // Fingers lying along the face (a variant's `contact`): every segment on the face may carry
+  // force, so the knuckle is balanced too (else a push near it would cost nothing).
+  const contact = contactAt(P, w);
+  const J = contact ? 3 : 2; // rows per finger: [MCP,] PIP, DIP
+  // Rows: per finger; then the thumb's three joints; then sideways and weight (or squeeze); with
+  // contact, then the block's turning balance (in its plane).
+  const fRows = fingers.length * J, R = fRows + 3, turn = R + 2;
   const cols = [], cost = [], hi = [], names = [];
-  const row = () => new Array(R + 2).fill(0);
+  const row = () => new Array(R + (contact ? 3 : 2)).fill(0);
+  const thumbHeight = contact ? thumbHeightAt(data, w) : 0;
   const digits = [];
+  const armsCols = new Map(); // ARMS muscles by name (thumb muscles and the knuckles' small muscles)
+  const armsCol = (n) => { if (!armsCols.has(n)) { armsCols.set(n, row()); names.push(n); cols.push(armsCols.get(n)); cost.push(1); hi.push(1); } return armsCols.get(n); };
   fingers.forEach((id, i) => {
     const g = setFinger(edgeEx, id), T = refTension(edgeEx, id), r = g.momentArms;
     const L = g.lengths;
-    const d = chain([L.proximal, L.middle, L.distal], [a.mcp, a.pip, a.dip], P.padAlong, P.padDepth);
-    digits.push({ id, d, need: (s) => digitNeed(d, s).slice(1), rows: [2 * i, 2 * i + 1], mu: mu.finger, thumb: false });
+    const pip = J * i + J - 2, dip = pip + 1, mcp = contact ? J * i : null;
+    if (contact) {
+      for (const [k, s] of contactPoints(contact)) digits.push({ id, d: segmentContact([L.proximal, L.middle, L.distal], [a.mcp, a.pip, a.dip], k, s, P.padDepth), rows: [mcp, pip, dip], mu: mu.finger, thumb: false, seg: k,
+        height: heightOnFace([L.proximal, L.middle, L.distal], k, s, P.padAlong) });
+    } else {
+      const d = chain([L.proximal, L.middle, L.distal], [a.mcp, a.pip, a.dip], P.padAlong, P.padDepth);
+      digits.push({ id, d: { need: (s) => digitNeed(d, s).slice(1) }, rows: [pip, dip], mu: mu.finger, thumb: false });
+    }
     const sP = fingerStrength * fl(`FDP${SLIPS[id]}`), sS = fingerStrength * fl(`FDS${SLIPS[id]}`);
-    const fdp = row(); fdp[2 * i] = (r.fdpPip + bow(g.bowstring.fdp)) * T.fdp * sP; fdp[2 * i + 1] = r.fdpDip * T.fdp * sP;
-    const fds = row(); fds[2 * i] = (r.fdsPip + bow(g.bowstring.fds)) * T.fds * sS;
-    const ext = row(); ext[2 * i] = -r.fdsPip * T.fds * fingerStrength; // the extensor mechanism at the middle joint (estimate: as strong as the FDS there)
+    const fdp = row(); fdp[pip] = (r.fdpPip + bow(g.bowstring.fdp)) * T.fdp * sP; fdp[dip] = r.fdpDip * T.fdp * sP;
+    const fds = row(); fds[pip] = (r.fdsPip + bow(g.bowstring.fds)) * T.fds * sS;
+    const ext = row(); ext[pip] = -r.fdsPip * T.fds * fingerStrength; // the extensor mechanism at the middle joint (estimate: as strong as the FDS there)
+    if (contact) {
+      fdp[mcp] = r.fdpMcp * T.fdp * sP; fds[mcp] = r.fdsMcp * T.fds * sS;
+      // The knuckle's other flexors (interossei, lumbrical, the little finger's hypothenar muscles): ARMS, at its strength.
+      const coord = `${FINGERS[id].d}mcp_flexion`;
+      // (The first dorsal interosseus also moves the thumb: at the knuckle it keeps its ARMS strength, the thumb's calibration factor stays on the thumb.)
+      for (const [n, m] of Object.entries(M)) if (!/^(FDP|FDS|EDC|EIP|EDM)/.test(n) && (m.arms[coord] ?? 0) > 1e-4) armsCol(n)[mcp] = m.arms[coord] * m.active * fingerStrength;
+    }
     cols.push(fdp, fds, ext); cost.push(1, 1, 1); hi.push(1, 1, 1); names.push(`FDP_${id}`, `FDS_${id}`, `EXT_${id}`);
   });
-  const tNames = THUMB_MUSCLES.filter((n) => M[n]);
-  for (const n of tNames) { const col = row(); THUMB_COORDS.forEach((c, k) => { col[fRows + k] = M[n].arms[c] * M[n].active * thumbFactor(strength, n); }); cols.push(col); cost.push(1); hi.push(1); names.push(n); }
-  digits.push({ id: "thumb", d: G.thumb, need: (s) => digitNeed(G.thumb, s), rows: [fRows, fRows + 1, fRows + 2], mu: mu.thumb, thumb: true });
+  for (const n of THUMB_MUSCLES.filter((x) => M[x])) { const col = armsCol(n); THUMB_COORDS.forEach((c, k) => { col[fRows + k] = M[n].arms[c] * M[n].active * thumbFactor(strength, n); }); }
+  digits.push({ id: "thumb", d: { need: (s) => digitNeed(G.thumb, s) }, rows: [fRows, fRows + 1, fRows + 2], mu: mu.thumb, thumb: true, height: thumbHeight });
   const nm = cols.length;
   const edges = [];
   digits.forEach((g, i) => {
     for (const s of [1, -1]) {
       const col = row();
-      g.need(s * g.mu).forEach((v, k) => { col[g.rows[k]] = -v * FU; });
+      g.d.need(s * g.mu).forEach((v, k) => { col[g.rows[k]] = -v * FU; });
       col[R] = (g.thumb ? 1 : -1) * FU;
       col[R + 1] = (squeeze == null ? s * g.mu : g.thumb ? 1 : 0) * FU;
+      // Turning: Σ finger N·height = thumb N·height + (w/2)(thumb friction − finger friction) (the weight hangs from the middle), per cm.
+      if (contact) col[turn] = (g.thumb ? -1 : 1) * (g.height + (w / 2) * s * g.mu) * 100 * FU;
       cols.push(col); cost.push(1e-6 * FU * FU); hi.push(4000 / FU); edges.push({ i, s });
     }
   });
-  const b = [...new Array(R).fill(0), 0, squeeze == null ? W : squeeze];
+  const b = [...new Array(R).fill(0), 0, squeeze == null ? W : squeeze, ...(contact ? [0] : [])];
   const { x, residual } = boundedLeastSquares(cols, b, cost, cols.map(() => 0), hi);
   const out = Object.fromEntries(digits.map((g) => [g.id, { N: 0, T: 0 }]));
-  edges.forEach((e, k) => { const v = x[nm + k] * FU; const g = digits[e.i]; out[g.id].N += v; out[g.id].T += e.s * g.mu * v; });
-  return { holds: residual < 1e-3, act: Object.fromEntries(names.map((n, j) => [n, x[j]])), digits: out, squeezeN: out.thumb.N, residual };
+  edges.forEach((e, k) => {
+    const v = x[nm + k] * FU, g = digits[e.i];
+    out[g.id].N += v; out[g.id].T += e.s * g.mu * v;
+    if (g.seg != null) (out[g.id].segments ??= [0, 0, 0])[g.seg] += v; // N on the proximal, middle, distal phalanx
+  });
+  return { holds: residual < 1e-3, act: Object.fromEntries(names.map((n, j) => [n, x[j]])), digits: out, squeezeN: out.thumb.N, residual, contact };
+}
+
+/**
+ * The fingers' contact with the face at width w: "mcp" (straight, the whole finger on it), "pip"
+ * (the middle and distal phalanges) or "dip" (the distal phalanx), from the variant's table
+ * (pincer.contact: [[mm, mode], ...], the nearest width); null: the pad alone (pinchHand's default).
+ */
+export function contactAt(P, w) {
+  if (!P.contact) return null;
+  const mm = w * 1000;
+  return P.contact.reduce((best, c) => (Math.abs(c[0] - mm) < Math.abs(best[0] - mm) ? c : best))[1];
+}
+
+/** The thumb pad's height on the face above the index pad (m) at width w (tools/arms_pinch_contact.py, linear between widths). */
+function thumbHeightAt(data, w) {
+  const keys = Object.keys(data.thumbBase).sort((p, q) => data.widths[p] - data.widths[q]);
+  return interp(keys.map((k) => [data.widths[k], data.thumbBase[k].alongFaceMm / 1000]), w * 1000);
+}
+
+/** A contact's height on the face above the finger's pad (m): the segments on the face lie along it (estimate: every finger's pad at the index pad's height). */
+function heightOnFace(lengths, k, s, padAlong) {
+  const [Lp, Lm, Ld] = lengths;
+  return [padAlong * Ld + Lm + (1 - s) * Lp, padAlong * Ld + (1 - s) * Lm, (padAlong - s) * Ld][k];
+}
+
+/**
+ * Contact points on the face: two per segment on it, near its ends (fractions along it; the
+ * distal one's pad), so any mix of the two puts the push anywhere between. Segments: 0 proximal,
+ * 1 middle, 2 distal phalanx. Estimates.
+ */
+const SPANS = [[0.3, 0.9], [0.1, 0.9], [0.2, 0.8]];
+function contactPoints(mode) {
+  const segs = { mcp: [0, 1, 2], pip: [1, 2], dip: [2] }[mode];
+  return segs.flatMap((k) => SPANS[k].map((s) => [k, s]));
+}
+
+/**
+ * One contact on segment k of a finger chain (MCP at the origin), `s` along it, `depth` to the palm
+ * side: its joint moments per newton pressed into the face ([MCP, PIP, DIP]; joints beyond the
+ * segment carry none), friction `slip` along the segment as in digitNeed.
+ */
+function segmentContact(lengths, angles, k, s, depth) {
+  let phi = 0, p = { x: 0, y: 0 };
+  const joints = [];
+  for (let j = 0; j <= k; j++) { phi += rad(angles[j]); joints.push(p); if (j < k) p = add(p, dir(phi), lengths[j]); }
+  const volar = dir(phi + Math.PI / 2), c = add(add(p, dir(phi), s * lengths[k]), volar, depth);
+  return {
+    need: (slip) => {
+      const f = { x: -volar.x + slip * Math.cos(phi), y: -volar.y + slip * Math.sin(phi) };
+      return [0, 1, 2].map((j) => (j <= k ? -cross(sub(c, joints[j]), f) : 0));
+    },
+  };
 }
 
 /** The largest weight (N) the hand holds at width w (bisection on handHold). */

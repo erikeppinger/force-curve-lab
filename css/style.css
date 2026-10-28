@@ -14,6 +14,8 @@
   --muscle-on: #d23c3c;
   --muscle-base: #e9cfc8;
   --muscle-hold: #c27400;
+  --tendon-on: #9a7420;
+  --tendon-base: #e6dfcc;
   --body: #cfcac0;
   --bone: #868c95;
   --body-edge: #8d887d;
@@ -45,6 +47,8 @@
     --muscle-on: #ff5a50;
     --muscle-base: #5a3d3a;
     --muscle-hold: #ffb02e;
+    --tendon-on: #f2dc9b;
+    --tendon-base: #4d4739;
     --body: #565b63;
     --bone: #a3a9b2;
     --equipment: #9aa0a8;
@@ -74,6 +78,8 @@
   --muscle-on: #ff5a50;
   --muscle-base: #5a3d3a;
   --muscle-hold: #ffb02e;
+  --tendon-on: #f2dc9b;
+  --tendon-base: #4d4739;
   --body: #565b63;
   --bone: #a3a9b2;
   --equipment: #9aa0a8;
@@ -189,7 +195,10 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .muscle-base { stroke: var(--muscle-base); stroke-linecap: round; }
 #figure .muscle-on { stroke: var(--muscle-on); stroke-linecap: round; }
 #figure .muscle-hold { stroke: var(--muscle-hold); stroke-linecap: round; }
-#figure .tendon-idle { stroke: var(--muted); stroke-linecap: round; opacity: 0.45; }
+#figure .tendon-idle, #figure .muscle-idle { stroke: var(--muted); stroke-linecap: round; opacity: 0.45; }
+/* Tendons (the 3D hands): thinner than the bellies and in their own colour, shaded by the force they carry. */
+#figure .tendon-base { stroke: var(--tendon-base); stroke-linecap: round; }
+#figure .tendon-on { stroke: var(--tendon-on); stroke-linecap: round; }
 #figure .weight { fill: var(--equipment); }
 #figure .plate { fill-opacity: 0.3; }
 #figure .handle { fill: var(--cable); }
