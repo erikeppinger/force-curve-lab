@@ -32,7 +32,8 @@ for (const id of multi) {
     }
     for (const m of ex.muscles) {
       assert.ok(m.note && sorted(m.weight), m.id);
-      if (m.driver !== "none") for (const id of m.joints ?? [m.joint]) assert.ok(ex.joints.some((j) => j.id === id), `${m.id}: joint ${id}`);
+      if (!["none", "follows"].includes(m.driver)) for (const id of m.joints ?? [m.joint]) assert.ok(ex.joints.some((j) => j.id === id), `${m.id}: joint ${id}`);
+      if (m.follows || m.driver === "follows") assert.ok(ex.muscles.some((x) => x.id === m.follows?.muscle && x !== m) && sorted(m.follows.ratio), `${m.id}: follows`);
     }
     assert.ok(ex.variants.some((v) => v.id === ex.defaults.variant));
     const [lo, hi] = ex.angleRange;
@@ -79,7 +80,7 @@ for (const id of single) {
       if (m.driver === "hipModel") assert.ok(ex.hipModel?.source && Array.isArray(m.osim), `${m.id} osim`);
       else assert.ok(sorted(m.weight), m.id);
       assert.ok(m.note, `${m.id} note`);
-      assert.ok(["jointEffort", "stabiliserDemand", "hipModel"].includes(m.driver), `${m.id} driver`);
+      assert.ok(["jointEffort", "stabiliserDemand", "hipModel", "none", "follows"].includes(m.driver), `${m.id} driver`);
       if (m.driver === "stabiliserDemand") assert.ok(ex.stabiliserCapacityNm > 0);
       if (m.draw) assert.ok(m.draw.points || (["proximal", "distal"].includes(m.draw.seg) && (m.draw.along?.length === 2 || (m.draw.origin?.length === 2 && Number.isFinite(m.draw.insert)))), `${m.id} draw`);
     }

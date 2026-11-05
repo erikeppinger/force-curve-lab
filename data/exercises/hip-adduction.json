@@ -19,13 +19,13 @@
     "note": "Hip→knee and knee→ankle in metres, typical adult. The leg is modelled straight.",
     "massLabel": "leg"
   },
-  "defaults": {"loadKg": 5, "peakTorqueNm": 217, "variant": "cable", "bodyMassKg": 75},
+  "defaults": {"loadKg": 5, "peakTorqueNm": 130, "variant": "cable", "bodyMassKg": 75},
   "ui": {"load": [0, 80, 0.5], "strength": [60, 320]},
   "strengthCurve": {
     "label": "Hip adductor strength",
     "points": [[-15, 0.62], [0, 0.72], [15, 0.88], [25, 1], [40, 1]],
-    "note": "Relative isometric hip-adduction torque vs abduction angle: adductors are strongest when stretched (leg out) and weaker towards and past the middle. Shape read off the datasets Chen & Franklin collected (Fig. 6, top right: adduction moments fall roughly 25–35% from about 25° of abduction to neutral; individual datasets from nearly flat to steeper), so approximate; held flat beyond 40° (up to 60°, estimate) and below −15°. Peak torque default: Danneskiold-Samsøe et al.'s isometric mean for men aged 20–29, measured with the hip abducted 15–30° (women 124 Nm).",
-    "source": "Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183 (bioRxiv preprint, CC BY 4.0: Fig. 6, read off the figure); peak: Danneskiold-Samsøe B, Bartels EM, Bülow PM, Lund H, Stockmarr A, Holm CC, Wätjen I, Appleyard M, Bliddal H (2009). Isokinetic and isometric muscle strength in a healthy population with special reference to age and gender. Acta Physiol 197(Suppl 673):1–68 (isometric hip adduction, men 20–29: 217 Nm)"
+    "note": "Relative isometric hip-adduction torque vs abduction angle: adductors are strongest when stretched (leg out) and weaker towards and past the middle. Shape read off the datasets Chen & Franklin collected (Fig. 6, top right: adduction moments fall roughly 25–35% from about 25° of abduction to neutral; individual datasets from nearly flat to steeper), so approximate; held flat beyond 40° (up to 60°, estimate) and below −15°. Peak torque default 130 Nm (changed 2026-11-05; was 217 Nm): three studies found adduction about as strong as abduction with the leg near neutral (Thorborg et al. 2010: ratio 0.94–1.02 lying on the back, 1.16–1.22 on the side; Alvarenga et al. 2019: equal in young women; McNabb et al. 2024: about 80–100 N·m at 75 kg, a little below abduction). So adduction at neutral is taken as the hip abduction's 92 Nm there (110 Nm × 0.84), and the peak as that ÷ 0.72, this curve's neutral value: about 130 Nm. Danneskiold-Samsøe et al. measured 217 Nm in men aged 20–29 with the hip abducted 15–30° (women 124 Nm); why it is so much higher isn't known (machine or position), so it is kept only as an upper bound.",
+    "source": "Chen Z, Franklin DW (2025). Joint moment–angle/velocity relations in the hip, knee, and ankle: a meta-visualization of datasets. J Biomech 183 (bioRxiv preprint, CC BY 4.0: Fig. 6, read off the figure); cross-check: McNabb K, Sánchez MB, Selfe J, Reeves ND, Callaghan M (2024). Handheld dynamometry: validity and reliability of measuring hip joint rate of torque development and peak torque. PLoS ONE 19(8):e0308956. doi:10.1371/journal.pone.0308956 (Table 5: 30 adults, 13 of them men, isometric peak torque per kg of body mass); peak: Thorborg K, Petersen J, Magnusson SP, Hölmich P (2010). Clinical assessment of hip strength using a hand-held dynamometer is reliable. Scand J Med Sci Sports 20(3):493–501. doi:10.1111/j.1600-0838.2009.00958.x (Table 3: 9 adults, adduction/abduction ratio 0.94–1.02 lying on the back, 1.16–1.22 on the side); Alvarenga G, Kiyomoto HD, Martinez EC, Polesello G, Alves VLS (2019). Normative isometric hip muscle force values assessed by a manual dynamometer. Acta Ortop Bras 27(2):124–128. doi:10.1590/1413-785220192702202596 (52 young women: adductors and abductors both 16.9% of body weight); upper bound: Danneskiold-Samsøe B, Bartels EM, Bülow PM, Lund H, Stockmarr A, Holm CC, Wätjen I, Appleyard M, Bliddal H (2009). Isokinetic and isometric muscle strength in a healthy population with special reference to age and gender. Acta Physiol 197(Suppl 673):1–68 (isometric hip adduction, men 20–29: 217 Nm)"
   },
   "postures": {
     "standing": [
@@ -175,7 +175,7 @@
           }
         ]
       },
-      "defaultLoadKg": 20,
+      "defaultLoadKg": 12,
       "notes": "Seated, pads on the inside of the knees, the thighs squeeze together in a horizontal plane: the legs' own weight doesn't load the movement; the pad's cam does. The trunk-lean slider changes the hip bend; the adductors keep their leverage much better than the gluteus medius does in the abduction machine, so leaning shifts less here.",
       "hip": {"flexion": 90, "lean": true, "kneeBent": true, "balance": ["adduction"]},
       "params": {"lean": 0},

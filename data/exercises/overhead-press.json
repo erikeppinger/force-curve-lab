@@ -148,10 +148,24 @@
       "driver": "jointEffort",
       "joint": "shoulder-rotation",
       "weight": [[-60, 1], [180, 1]],
-      "note": "Internal rotator of the rotator cuff: holds the upper arm from turning outwards.",
-      "source": "TODO: check against EMG literature",
+      "note": "Internal rotator of the rotator cuff: holds the upper arm from turning outwards. In Townsend et al.'s military press (light dumbbells) it peaked at 56% of a manual muscle test against 62% for the anterior deltoid, so here it is at least 0.9 × the anterior deltoid (peak against peak: a rough ratio). Reinold et al.'s review also notes relatively high subscapularis activity in this press.",
+      "source": "Townsend H, Jobe FW, Pink M, Perry J (1991). Electromyographic analysis of the glenohumeral muscles during a baseball rehabilitation program. Am J Sports Med 19(3):264–272. doi:10.1177/036354659101900309 (15 men, fine-wire electrodes, light dumbbells; peak 30° arc, % of a manual muscle test); Reinold MM, Escamilla RF, Wilk KE (2009). Current concepts in the scientific and clinical rationale behind exercises for glenohumeral and scapulothoracic musculature. J Orthop Sports Phys Ther 39(2):105–117. doi:10.2519/jospt.2009.2835 (review: relatively high subscapularis activity in the military press, no values)",
       "sign": -1,
+      "follows": {"muscle": "anterior-deltoid", "ratio": [[0, 0.9], [100, 0.9]]},
       "draw3d": {"seg": "upperArm", "side": "anterior", "along": [-0.07, -0.01], "offset": 0.04, "w": 0.04}
+    },
+    {
+      "id": "supraspinatus",
+      "region": "shoulder",
+      "name": "Supraspinatus",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "follows",
+      "weight": [[0, 1], [180, 1]],
+      "follows": {"muscle": "anterior-deltoid", "ratio": [[0, 1.3], [100, 1.3]]},
+      "note": "Raises the arm with the deltoid and keeps the head of the humerus centred in the socket. In Townsend et al.'s military press (light dumbbells) it was the most active muscle measured: a peak of 80% of a manual muscle test, in the first 30° of the press, against 62% for the anterior deltoid later on. So here it is 1.3 × the anterior deltoid throughout (peak against peak: a rough ratio; the measured peak comes early). The model has no supraspinatus torque of its own: the ratio is all it has.",
+      "source": "Townsend H, Jobe FW, Pink M, Perry J (1991). Electromyographic analysis of the glenohumeral muscles during a baseball rehabilitation program. Am J Sports Med 19(3):264–272. doi:10.1177/036354659101900309 (15 men, fine-wire electrodes, light dumbbells; peak 30° arc, % of a manual muscle test)",
+      "draw3d": {"seg": "upperArm", "side": "lateral", "along": [-0.08, -0.01], "offset": 0.03, "w": 0.035}
     },
     {
       "id": "scapular-rotators",

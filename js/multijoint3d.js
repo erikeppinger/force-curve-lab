@@ -37,6 +37,8 @@ const weight = (at, kg) => ({ at, f: v3(0, -kg * G, 0) });
 export function moment3(about, forces) {
   return forces.reduce((M, { at, f }) => add3(M, cross3(sub3(at, about), f)), v3(0, 0, 0));
 }
+/** Σ F over point forces (the arm's: `moments.armForce`, for tools/mobl-cuff.mjs). */
+const sumF = (forces) => forces.reduce((t, { f }) => add3(t, f), v3(0, 0, 0));
 
 /**
  * Middle joint (knee or elbow) of a two-link chain from `base` to `end`: in the plane of the
@@ -190,6 +192,11 @@ export function holding({ pelvis, back, upperBack = back, S, loads = [], hands =
     { id: "upper-back", name: "Upper back (mid-back, whole trunk)", torque: ext(mid, [head, upper, ...arms, ...loads, ...hands]),
       note: "Thoracic extensors holding the upper trunk at mid-back (they keep the back from rounding further).",
       negative: "the load pulls the upper trunk back: abdominals hold it", draw: upperLine },
+    // The head held in line with the trunk (neutral neck, an assumption: looking up or down
+    // changes it), about the base of the neck at shoulder level.
+    { id: "neck", name: "Neck (extensors)", torque: ext(S, [head]),
+      note: "Neck extensors (splenius, semispinalis, upper trapezius) holding the head in line with the trunk as it leans forward.",
+      negative: "the trunk leans back: the neck flexors hold the head", draw: pair(add3(add3(S, upperBack, -0.03), post(upperBack), 0.07), add3(add3(S, upperBack, 0.1), post(upperBack), 0.06)) },
   ];
   if (hands.length) {
     // Forearm flexors: from below the elbow to the hand, on each side (shoulders at ±shoulderHalfWidth).
@@ -211,6 +218,14 @@ export function holding({ pelvis, back, upperBack = back, S, loads = [], hands =
         }),
         note: "Per arm: keeping the straight arm and the bar from swinging forward; 0 when the bar hangs under the shoulders.",
         negative: "the bar is behind the shoulders: the front of the shoulder holds it" });
+      // The hanging arm and its half of the bar pull each shoulder blade: along the trunk towards
+      // the hips (upper trapezius, levator scapulae: a shrug held) and, with the trunk leaning,
+      // away from the back (rhomboids, middle trapezius).
+      const pull = add3(armW.f, right.f);
+      const along = -dot3(pull, unit3(upperBack)), away = len3(add3(pull, unit3(upperBack), along));
+      out.push({ id: "shoulder-blades", name: "Shoulder blades (trapezius, rhomboids)", kgPerSide: len3(pull) / G,
+        note: `Per side: the hanging arm and half the bar pull the shoulder blade, ${(along / G).toFixed(1)} kg towards the hips (upper trapezius, levator scapulae) and ${(away / G).toFixed(1)} kg away from the back (rhomboids, middle trapezius).`,
+        draw: [1, -1].map((side) => [add3(add3(add3(S, upperBack, 0.1), post(upperBack), 0.05), Z, side * 0.03), add3(add3(S, post(upperBack), 0.04), Z, side * L.shoulderHalfWidth * 0.85)]) });
     }
   }
   return out;
@@ -228,6 +243,34 @@ const dot = (c, r, cls) => ({ kind: "dot", c, r, cls });
 const both = (p) => [p, mirror(p)];
 
 /** Both legs, feet included, from the right leg's points. */
+/**
+ * Both shoulder blades on the back of the ribcage (display only), so the shoulder-blade sliders
+ * show: a triangle (corner at the shoulder, top and bottom corners of the inner edge) with the
+ * spine of the shoulder blade across it. `top`: the trunk's axis at shoulder level; `back`, `belly`:
+ * the trunk's directions; `fwd`: how far the shoulders sit forward of neutral (m, + = reached
+ * forward / protracted, − = squeezed back). Reaching forward slides the blades out and round the
+ * ribs, squeezing brings their inner edges in towards the spine. `lift` (m, + = raised towards
+ * the head, − = pulled down) moves them along the trunk with the shoulders (pull-up, pulldown).
+ * `turn` (radians, + = upward rotation) turns them about the corner at the shoulder, the bottom
+ * corner swinging out and round the ribs, as when the arms go overhead.
+ */
+function scapulaPrims(top, back, belly, fwd, lift = 0, turn = 0) {
+  const R = 0.155; // the trunk's half-width (0.3 m) and a little: on its round surface
+  // Corners as (along the trunk, sideways from the spine measured round the ribs). The inner edge
+  // about 7 cm from the spine, moving out and in by as much as the shoulder moves forward and
+  // back; the corner at the shoulder stays at the trunk's side.
+  const inner = Math.max(0.03, 0.07 + fwd);
+  const RC = 0.2; // the upper back's curve sideways: flatter than the trunk's round outline
+  const at = (h, w, s) => add3(add3(add3(top, back, h + lift), belly, -(R - RC * (1 - Math.cos(w / RC)))), Z, s * RC * Math.sin(w / RC));
+  const c = Math.cos(turn), sn = Math.sin(turn), L0 = [-0.04, 0.14];
+  const turned = ([h, w]) => { const dh = h - L0[0], dw = w - L0[1]; return [L0[0] + dh * c + dw * sn, L0[1] + dw * c - dh * sn]; };
+  return [1, -1].flatMap((s) => {
+    const [lat, sup, inf] = [L0, [-0.02, inner], [-0.19, Math.min(0.14, inner + 0.02)]].map(turned).map(([h, w]) => at(h, w, s));
+    const spineIn = lerp3(sup, inf, 0.2);
+    return [{ kind: "poly", pts: [lat, sup, inf], cls: "scapula3d" }, L3(spineIn, lerp3(lat, sup, 0.15), 0.012, "scapula-spine")];
+  });
+}
+
 function legPrims(H, K, A, heel, toes) {
   return [false, true].flatMap((left) => {
     const t = left ? mirror : (p) => p;
@@ -552,12 +595,15 @@ export function bench3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       // The pectoralis' origins on the chest surface (right side; mirrored for the left): the collarbone's
       // inner half, and the breastbone at the shoulder line and lower down. Display only.
       chest: { points: [add3(add3(mid, sub3(S, mid), 0.45), front, 0.09), add3(add3(add3(mid, Z, 0.02), front, 0.11), toFeet, 0.04), add3(add3(add3(mid, Z, 0.02), front, 0.11), toFeet, 0.2)] },
+      trunk: { from: hips, to: mid, anterior: front, lateral: Z },
     },
-    moments: { shoulder: Msh, elbow: Mel },
+    moments: { shoulder: Msh, elbow: Mel, armForce: sumF([bar, arm.foreW, arm.upperW]) },
     scene: [
       { kind: "poly", pts: [[-0.4, -0.13], [0.75, -0.13], [0.75, 0.13], [-0.4, 0.13]].map(([a, b]) => add3(add3(benchTop, toFeet, a), Z, b)), cls: "plate3d bench3d" },
       ...[-0.25, 0.6].map((a) => L3(add3(benchTop, toFeet, a), v3(add3(benchTop, toFeet, a).x, 0, 0), 0.04, "equipment")),
       L3(mid, hips, 0.3, "body"), dot(head, 0.11, "body"), L3(mirror(S), S, 0.12, "body"),
+      // The shoulder blades on the bench, squeezed together and moved along the body by the sliders.
+      ...scapulaPrims(mid, neg3(toFeet), front, -(P.scapRetract ?? 0), P.scapElevate ?? 0),
       ...[false, true].flatMap((left) => [L3(add3(hips, Z, left ? -0.1 : 0.1), knee(left), 0.14, left ? "body back" : "body"), L3(knee(left), foot(left), 0.1, left ? "body back" : "body")]),
       ...[false, true].flatMap((left) => {
         const tf = left ? mirror : (p) => p, cls = left ? "body back" : "body";
@@ -657,7 +703,7 @@ export function press3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       forearm: { from: E, to: hand, anterior: unit3(cross3(dF, eFlex)), lateral: unit3(cross3(dF, cross3(Z, dF))) },
       trunk: trunkFrame(v3(0, hipY, 0), mid),
     },
-    moments: { shoulder: Msh, elbow: Mel },
+    moments: { shoulder: Msh, elbow: Mel, armForce: sumF([push, foreW, upperW]) },
     scene: [
       { kind: "poly", pts: [[-0.5, -0.5], [0.6, -0.5], [0.6, 0.5], [-0.5, 0.5]].map(([px, pz]) => v3(px, 0, pz)), cls: "floor3d" },
       ...(seated ? [
@@ -939,6 +985,12 @@ export function split3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     balance: { x: cop1.x, com: Q.com.x, ok },
     shares: { front: frontR / W }, pelvisShift: sol.t, com: Q.com, contacts: [cop1, cop2],
     sidePush: rho, frontal: { F1: Q.F1, F2: Q.F2, W, rearY, tipping: tipping(Q, rho) },
+    // Dumbbells hang from straight arms (grip, shoulder blades); a bar sits on the back. Both sides
+    // alike: the trunk's own sideways shift is left out.
+    holding: holding({ pelvis: Q.pelvis, back, S: Q.S, armCom: lerp3(Q.S, Q.bar, 0.45), kg, body,
+      ...(P.load === "hang"
+        ? { hang: true, hands: [1, -1].map((s) => ({ at: add3(Q.bar, Z, s * handZ), f: v3(0, (-loadKg * G) / 2, 0) })) }
+        : { loads: [weight(Q.bar, loadKg)] }) }),
     scene: [
       { kind: "poly", pts: [[-0.9, -0.5], [0.5, -0.5], [0.5, 0.5], [-0.9, 0.5]].map(([px, pz]) => v3(px, 0, pz)), cls: "floor3d" },
       ...(Rr.y > 0.2 ? [{ kind: "poly", pts: [[-0.25, -0.18], [0.08, -0.18], [0.08, 0.18], [-0.25, 0.18]].map(([px, pz]) => v3(Rr.x + px, Rr.y - 0.04, Rr.z + pz)), cls: "plate3d bench3d" },
@@ -1119,6 +1171,13 @@ export function row3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     elbow: { at: E, angle: angleBetween3(dU, dF), torque: -dot3(Mel, eFlex), ...toLine(E, line.at, line.dir) },
     "elbow-side": { at: E, angle: angleBetween3(dU, dF), torque: dot3(Mel, eSide) },
   };
+  // Lower back (L5/S1, whole trunk, spine held neutral): holding()'s moment of everything above it
+  // (trunk and head, both arms at their centre of mass, the load in both hands), now a joint with
+  // a strength, so it leaves the holding list. A chest pad carries the trunk: nothing.
+  const armCom = lerp3(upperW.at, foreW.at, m.forearmHand / (m.upperArm + m.forearmHand));
+  const hold = P.chestPad ? null : holding({ pelvis, back, S: add3(pelvis, back, L.trunk), armCom: v3(armCom.x, armCom.y, 0), kg, body, hands: [onHand, { at: mirror(onHand.at), f: mirror(onHand.f) }] });
+  const lowerBack = hold?.find((h) => h.id === "lower-back");
+  joints.lumbar = { at: add3(pelvis, back, body.trunkParts.l5s1), angle: 0, torque: lowerBack ? lowerBack.torque : 0, noDraw: true };
   // Hip, knee, ankle: from the legs (bent-over), or the trunk side (seated), or none (chest pad).
   const H = legs ? legs.H : add3(pelvis, Z, L.hipHalfWidth);
   if (legs) Object.assign(joints, { hip: legs.joints.hip, knee: legs.joints.knee, ankle: legs.joints.ankle });
@@ -1148,6 +1207,7 @@ export function row3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
     const padC = add3(lerp3(pelvis, add3(pelvis, back, L.trunk), 0.55), belly, 0.16);
     scene.push({ kind: "poly", pts: [[-0.3, -0.16], [0.25, -0.16], [0.25, 0.16], [-0.3, 0.16]].map(([a, b]) => add3(add3(padC, back, a), Z, b)), cls: "plate3d bench3d" });
   }
+  scene.push(...scapulaPrims(add3(pelvis, back, L.trunk), back, belly, (P.scapTravel ?? 0) * (0.5 - x / 100)));
   scene.push(L3(pelvis, add3(pelvis, back, L.trunk), 0.3, "body"), dot(add3(add3(pelvis, back, L.trunk), back, 0.22), 0.11, "body"), L3(shoulderL, S, 0.12, "body"),
     L3(S, E, 0.07, "body"), L3(E, hand, 0.06, "body"), L3(shoulderL, mirror(E), 0.07, "body back"), L3(mirror(E), mirror(hand), 0.06, "body back"));
   if (cable) {
@@ -1167,16 +1227,16 @@ export function row3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       upperArm: { from: S, to: E, anterior: unit3(cross3(dU, eFlex)), lateral: unit3(cross3(dU, cross3(Z, dU))) },
       forearm: { from: E, to: hand, anterior: unit3(cross3(dF, eFlex)), lateral: unit3(cross3(dF, cross3(Z, dF))) },
       trunk: { from: pelvis, to: add3(pelvis, back, L.trunk), anterior: belly, lateral: Z },
-      thigh: legs ? { from: legs.H, to: legs.K, anterior: belly, lateral: Z }
+      thigh: legs ? sideFrame(legs.H, legs.K)
         : sideFrame(H, P.chestPad ? v3(H.x + 0.02, H.y - L.thigh, H.z) : add3(H, v3(Math.cos(rad(-8)), Math.sin(rad(-8)), 0), L.thigh)),
     },
-    moments: { shoulder: Msh, elbow: Mel },
+    moments: { shoulder: Msh, elbow: Mel, armForce: sumF([upperW, foreW, onHand]) },
     balance,
     scene,
     forces: [{ at: hand, dir: unit3(onHand.f) }, { at: mirror(hand), dir: mirror(unit3(onHand.f)) }],
     parts: { hand, S, E },
     // Trunk held by the back unless a chest pad carries it; the hands hold the weight or the handle.
-    ...(P.chestPad ? {} : { holding: holding({ pelvis, back, S: add3(pelvis, back, L.trunk), armCom: v3(E.x, E.y, 0), kg, body, hands: [onHand, { at: mirror(onHand.at), f: mirror(onHand.f) }] }) }),
+    ...(hold ? { holding: hold.filter((h) => h.id !== "lower-back") } : {}),
     info: [{ text: `Elbows ${Math.round(Math.abs(flareTop))}° out from the trunk (front view of the upper arm).` },
       ...(P.chestPad ? [{ text: "The pad carries the trunk, so the hips and lower back don't have to hold it (hip torque shown as zero)." }] : []),
       ...info],
@@ -1302,6 +1362,9 @@ export function pull3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       L3(v3(hand.x, hand.y, -P.gripHalf - 0.12), v3(hand.x, hand.y, P.gripHalf + 0.12), 0.03, "equipment"), L3(v3(hand.x, hand.y, 0), B.pulley, 0.008, "cable"),
       L3(B.pulley, v3(0.95, B.pulley.y, 0), 0.05, "equipment"), L3(v3(0.95, B.pulley.y, 0), v3(0.95, 0, 0), 0.06, "equipment"));
   }
+  // The blades turn upwards with the arm overhead: the shoulder joint moves about 2.7° per degree of
+  // the blade's turn as the arms come down (Braman et al. 2009), so the blade turns elevation ÷ 3.7.
+  scene.push(...scapulaPrims(B.mid, up, front, 0, (P.scapTravel ?? 0) * (0.5 - x / 100), rad(elev / 3.7)));
   scene.push(L3(pelvis, add3(pelvis, up, L.trunk), 0.3, "body"), dot(head, 0.11, "body"), L3(mirror(S), S, 0.12, "body"),
     L3(S, E, 0.07, "body"), L3(E, hand, 0.06, "body"), L3(mirror(S), mirror(E), 0.07, "body back"), L3(mirror(E), mirror(hand), 0.06, "body back"),
     { kind: "line", a: B.start, b: B.end, w: 0.006, cls: "line-of-action" });
@@ -1313,7 +1376,10 @@ export function pull3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       trunk: { from: pelvis, to: add3(pelvis, up, L.trunk), anterior: front, lateral: Z },
       thigh: sideFrame(H, P.hang ? add3(H, legDir(B, pike), L.thigh) : add3(H, v3(1, 0, 0), L.thigh)),
     },
-    moments: { shoulder: Msh, elbow: Mel },
+    moments: { shoulder: Msh, elbow: Mel, armForce: sumF([upperW, foreW, onHand]) },
+    // Each hand holds the bar or handle: half the body (pull-up) or of the cable's pull (pulldown).
+    holding: [{ id: "grip", name: "Grip", kgPerHand: len3(onHand.f) / G, note: "The load each hand holds: the finger flexors hold it isometrically.",
+      draw: [false, true].map((left) => (left ? [mirror(lerp3(E, hand, 0.15)), mirror(lerp3(E, hand, 0.85))] : [lerp3(E, hand, 0.15), lerp3(E, hand, 0.85)])) }],
     scene,
     forces: [{ at: hand, dir: unit3(onHand.f) }, { at: mirror(hand), dir: mirror(unit3(onHand.f)) }],
     parts: { hand, S, E, lean: deg(lean), F },

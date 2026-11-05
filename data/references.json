@@ -290,6 +290,14 @@
       "usedFor": "Elbow strength by shoulder angle, elbow angle and grip (curls, triceps, pull-ups, pulldowns)."
     },
     {
+      "key": "Chen 2026",
+      "match": "Chen Y, Shen P",
+      "group": "Two-joint muscles and grip",
+      "citation": "Chen Y, Shen P, Dong G, Zou M, Huang S, Zhang Z, Liu C, Shi Z (2026). Effects of elbow angle and forearm rotation on elbow flexion torque and elbow-flexor surface electromyographic amplitudes. Front Physiol 17:1741384.",
+      "url": "https://doi.org/10.3389/fphys.2026.1741384",
+      "usedFor": "Elbow-flexion strength by grip at 60–105° (hammer curl's neutral-grip factor; reverse curl cross-check)."
+    },
+    {
       "key": "Kohn 2018",
       "match": "Kohn S",
       "group": "Two-joint muscles and grip",
@@ -462,7 +470,7 @@
       "group": "Body data",
       "citation": "Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079.",
       "url": "https://doi.org/10.1109/TBME.2016.2586891",
-      "usedFor": "Hip abduction and adduction: the OpenSim leg model's muscle paths and maximum forces, for each hip muscle's moment arm at any hip bend (seated machines, trunk lean) and the 3D muscle lines (Rajagopal2016.osim from opensim-org/opensim-models, MIT licence; the numbers used are in data/opensim/hip-muscles.json with the licence notice)."
+      "usedFor": "Hip abduction and adduction: the OpenSim leg model's muscle paths and maximum forces, for each hip muscle's moment arm at any hip bend (seated machines, trunk lean) and the 3D muscle lines (Rajagopal2016.osim from opensim-org/opensim-models, MIT licence; the numbers used are in data/opensim/hip-muscles.json with the licence notice). Also the plank's hip flexors (moment arm × force, least-effort sharing, tools/rajagopal-shares.mjs)."
     },
     {
       "key": "Uhlrich 2022",
@@ -561,12 +569,44 @@
       "usedFor": "Hip abduction and adduction: the hip muscles' moment arms with the hip straight, and which muscles keep or lose their abduction action as the hip bends (seated machines)."
     },
     {
+      "key": "Reinold 2009",
+      "match": "Reinold MM, Escamilla RF",
+      "group": "Muscle activity",
+      "citation": "Reinold MM, Escamilla RF, Wilk KE (2009). Current concepts in the scientific and clinical rationale behind exercises for glenohumeral and scapulothoracic musculature. J Orthop Sports Phys Ther 39(2):105–117.",
+      "url": "https://doi.org/10.2519/jospt.2009.2835",
+      "usedFor": "Cross-checks (a review): the shoulder blade's turn with the arm overhead (pull-up and pulldown figures), and what the rotator cuff does in rows, presses and push-ups."
+    },
+    {
+      "key": "Wattanaprakornkul 2011",
+      "match": "Wattanaprakornkul D, Halaki M",
+      "group": "Muscle activity",
+      "citation": "Wattanaprakornkul D, Halaki M, Cathers I, Ginn KA (2011). Direction-specific recruitment of rotator cuff muscles during bench press and row. J Electromyogr Kinesiol 21(6):1041–1049.",
+      "url": "https://doi.org/10.1016/j.jelekin.2011.09.002",
+      "usedFor": "Rotator cuff in the bench press and rows (fine-wire EMG): the cuff's least share of the pectoralis or lats, and the supraspinatus' share."
+    },
+    {
+      "key": "Wattanaprakornkul 2011 (flexion)",
+      "match": "Wattanaprakornkul D, Cathers I",
+      "group": "Muscle activity",
+      "citation": "Wattanaprakornkul D, Cathers I, Halaki M, Ginn KA (2011). The rotator cuff muscles have a direction specific recruitment pattern during shoulder flexion and extension exercises. J Sci Med Sport 14(5):376–382.",
+      "url": "https://doi.org/10.1016/j.jsams.2011.01.001",
+      "usedFor": "Rotator cuff in the front raise (fine-wire EMG, dumbbell raised forwards lying face down): its weights against the deltoid."
+    },
+    {
+      "key": "Townsend 1991",
+      "match": "Townsend H, Jobe FW",
+      "group": "Muscle activity",
+      "citation": "Townsend H, Jobe FW, Pink M, Perry J (1991). Electromyographic analysis of the glenohumeral muscles during a baseball rehabilitation program. Am J Sports Med 19(3):264–272.",
+      "url": "https://doi.org/10.1177/036354659101900309",
+      "usedFor": "Subscapularis and supraspinatus in the overhead press (fine-wire EMG, military press): their shares of the anterior deltoid."
+    },
+    {
       "key": "Braman 2009",
       "match": "Braman JP, Engel SC",
       "group": "Body data",
       "citation": "Braman JP, Engel SC, LaPrade RF, Ludewig PM (2009). In vivo assessment of scapulohumeral rhythm during unconstrained overhead reaching in asymptomatic subjects. J Shoulder Elbow Surg 18(6):960–967.",
       "url": "https://doi.org/10.1016/j.jse.2009.02.001",
-      "usedFor": "Shoulder raises and the straight-arm pulldown: how much of arm elevation is the shoulder blade turning (about 2.3 : 1 shoulder joint to shoulder blade when raising, 2.7 lowering; Inman's classic 2 : 1), noted as what the single-joint model leaves out."
+      "usedFor": "Shoulder raises and the straight-arm pulldown: how much of arm elevation is the shoulder blade turning (about 2.3 : 1 shoulder joint to shoulder blade when raising, 2.7 lowering; Inman's classic 2 : 1), noted as what the single-joint model leaves out. Also the pull-up and pulldown 3D figures: the shoulder blades drawn turned upwards by the arm's elevation ÷ 3.7 (the lowering ratio, as the pull brings the arms down; display only)."
     },
     {
       "key": "Latz 2019",
@@ -623,6 +663,86 @@
       "citation": "Danneskiold-Samsøe B, Bartels EM, Bülow PM, Lund H, Stockmarr A, Holm CC, Wätjen I, Appleyard M, Bliddal H (2009). Isokinetic and isometric muscle strength in a healthy population with special reference to age and gender. Acta Physiol 197(Suppl 673):1–68.",
       "url": "https://doi.org/10.1111/j.1748-1716.2009.02022.x",
       "usedFor": "Hip adduction and abduction peak torques for healthy young men (multi-joint lifts' sideways hip)."
+    },
+    {
+      "key": "Padovan 2025",
+      "match": "Padovan R, Cè E",
+      "group": "Muscle activity",
+      "citation": "Padovan R, Cè E, Longo S, Tornatore G, Esposito F, Coratella G (2025). High-density surface electromyography excitation of prime movers across scapular positions in the seated row. J Funct Morphol Kinesiol 11(1):6.",
+      "url": "https://doi.org/10.3390/jfmk11010006",
+      "usedFor": "Rows: posterior deltoid and middle trapezius at about 0.7 × the lats (surface EMG, seated row)."
+    },
+    {
+      "key": "Padovan 2026",
+      "match": "Padovan R, Cè E, Longo S, Tornatore G, Trentin C",
+      "group": "Muscle activity",
+      "citation": "Padovan R, Cè E, Longo S, Tornatore G, Trentin C, Esposito F, Coratella G (2026). High-density surface electromyography excitation of prime movers in the narrow vs. wide grip seated row exercise. J Hum Kinet 104:71–86.",
+      "url": "https://doi.org/10.5114/jhk/209550",
+      "usedFor": "Rows: grip width leaves the posterior deltoid alike; a wide grip brings in more trapezius."
+    },
+    {
+      "key": "de Abreu Vasconcelos 2023",
+      "match": "de Abreu Vasconcelos CMW",
+      "group": "Muscle activity",
+      "citation": "de Abreu Vasconcelos CMW, Lopes CR, Almeida VM, Krause Neto W, Soares E (2023). Effect of different grip position and shoulder-abduction angle on muscle strength and activation during the seated cable row. Int J Strength Cond 3(1).",
+      "url": "https://doi.org/10.47206/ijsc.v3i1.190",
+      "usedFor": "Rows: posterior deltoid and trapezius rise with the elbows out (direction)."
+    },
+    {
+      "key": "Dickie 2017",
+      "match": "Dickie JA",
+      "group": "Muscle activity",
+      "citation": "Dickie JA, Faulkner JA, Barnes MJ, Lark SD (2017). Electromyographic analysis of muscle activation during pull-up variations. J Electromyogr Kinesiol 32:30–36.",
+      "url": "https://doi.org/10.1016/j.jelekin.2016.11.004",
+      "usedFor": "Pull-ups and pulldowns: infraspinatus against the lats in four grips."
+    },
+    {
+      "key": "Thorborg 2010",
+      "match": "Thorborg K, Petersen J",
+      "group": "Strength curves",
+      "citation": "Thorborg K, Petersen J, Magnusson SP, Hölmich P (2010). Clinical assessment of hip strength using a hand-held dynamometer is reliable. Scand J Med Sci Sports 20(3):493–501.",
+      "url": "https://doi.org/10.1111/j.1600-0838.2009.00958.x",
+      "usedFor": "Hip adduction peak: adduction about as strong as abduction."
+    },
+    {
+      "key": "Alvarenga 2019",
+      "match": "Alvarenga G",
+      "group": "Strength curves",
+      "citation": "Alvarenga G, Kiyomoto HD, Martinez EC, Polesello G, Alves VLS (2019). Normative isometric hip muscle force values assessed by a manual dynamometer. Acta Ortop Bras 27(2):124–128.",
+      "url": "https://doi.org/10.1590/1413-785220192702202596",
+      "usedFor": "Hip adduction peak: adductors and abductors equally strong (young women)."
+    },
+    {
+      "key": "Juan-Recio 2025",
+      "match": "Juan-Recio C, Prat-Luri A",
+      "group": "Training context",
+      "citation": "Juan-Recio C, Prat-Luri A, Rondón-Espinosa H, Barbado D, Vera-Garcia FJ (2025). Effect of body position and support surface on the postural control challenge during the Pallof press exercise: a smartphone accelerometer-based study. Medicina 61(2):312.",
+      "url": "https://doi.org/10.3390/medicina61020312",
+      "usedFor": "Pallof press: typical training load (default 5 kg)."
+    },
+    {
+      "key": "De Los Ríos-Calonge 2026",
+      "match": "De Los Ríos-Calonge J",
+      "group": "Strength curves",
+      "citation": "De Los Ríos-Calonge J, Juan-Recio C, Miralles-Iborra A, Prat-Luri A, Barbado D, Vera-Garcia FJ (2026). A load-cell-based approach to assess maximal break force during the Pallof press: test–retest reliability and postural differences. Preprints 202606.1948 (not peer-reviewed).",
+      "url": "https://doi.org/10.20944/preprints202606.1948.v1",
+      "usedFor": "Pallof press: the sideways pull at which standing or kneeling lifters lose their stance (cross-check)."
+    },
+    {
+      "key": "Dodds 2014",
+      "match": "Dodds RM, Syddall HE",
+      "group": "Body data",
+      "citation": "Dodds RM, Syddall HE, Cooper R, et al. (2014). Grip strength across the life course: normative data from twelve British studies. PLoS ONE 9(12):e113637.",
+      "url": "https://doi.org/10.1371/journal.pone.0113637",
+      "usedFor": "The holding loads' grip effort: typical maximal grip (men 51 kg, women 31 kg)."
+    },
+    {
+      "key": "McNabb 2024",
+      "match": "McNabb K",
+      "group": "Strength curves",
+      "citation": "McNabb K, Sánchez MB, Selfe J, Reeves ND, Callaghan M (2024). Handheld dynamometry: validity and reliability of measuring hip joint rate of torque development and peak torque. PLoS ONE 19(8):e0308956.",
+      "url": "https://doi.org/10.1371/journal.pone.0308956",
+      "usedFor": "Cross-check of the hip adduction peak (it measured about half of the value used)."
     },
     {
       "key": "O'Connell 2021",

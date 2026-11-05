@@ -41,6 +41,7 @@ export function muscleActivation(exercise, variant, result, angleDeg) {
   if (exercise.model === "multi") {
     const acts = exercise.muscles.map((m) => {
       if (m.driver === "none") return { ...m, value: null };
+      if (m.driver === "follows") return { ...m, value: 0 }; // only its ratio of another muscle (below)
       // A muscle can serve several joint components (`joints`, e.g. the lats: shoulder extension
       // and adduction); it takes the largest demand among them.
       const mod = variant.muscleModifiers?.[m.id] ?? 1;
@@ -55,6 +56,16 @@ export function muscleActivation(exercise, variant, result, angleDeg) {
       }));
       return { ...m, value: Math.min(1, Math.max(0, value * mod)) };
     });
+    // `follows` { muscle, ratio }: at least that ratio (points by position) of another muscle's
+    // activation, as EMG measured it (the rotator cuff holding the humeral head against the
+    // pectoralis or lats). The muscle's own torque demand still counts where it is larger; with
+    // driver "follows" the ratio is all it has (no joint of its own, e.g. the supraspinatus).
+    for (const m of acts) {
+      if (!m.follows || m.value == null) continue;
+      const other = acts.find((x) => x.id === m.follows.muscle);
+      if (other?.value == null) continue;
+      m.value = Math.min(1, Math.max(m.value, other.value * interp(m.follows.ratio, angleDeg) * (variant.muscleModifiers?.[m.id] ?? 1)));
+    }
     // `coContract` { with, joint, share }: a muscle that also has to hold against another muscle's
     // pull at its joint (the quadriceps against the hamstrings at the knee in a hip thrust). Its
     // load is the net torque plus the other muscle's activation × the opposite direction's
@@ -78,6 +89,7 @@ export function muscleActivation(exercise, variant, result, angleDeg) {
   const geo = exercise.hipModel?.geometry;
   const hipActs = geo && result.hip ? hipActivations(exercise, variant, result, geo) : null;
   return exercise.muscles.map((m) => {
+    if (m.driver === "none") return { ...m, value: null }; // listed, not estimated (as in the multi-joint lifts)
     if (m.driver === "hipModel") return { ...m, value: hipActs && m.osim.length ? Math.min(1, groupActivation(m, hipActs, geo)) : null, parts: hipActs };
     const demand =
       m.driver === "stabiliserDemand"
