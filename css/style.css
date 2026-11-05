@@ -195,6 +195,12 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure .muscle-base { stroke: var(--muscle-base); stroke-linecap: round; }
 #figure .muscle-on { stroke: var(--muscle-on); stroke-linecap: round; }
 #figure .muscle-hold { stroke: var(--muscle-hold); stroke-linecap: round; }
+/* Shoulder blades on the back (3D rows): an outline, faintly filled, so the muscles under them show. */
+#figure .scapula3d { fill: var(--bone); fill-opacity: 0.25; stroke: var(--bone); stroke-width: 2; stroke-linejoin: round; }
+#figure .scapula-spine { stroke: var(--bone); stroke-linecap: round; }
+/* A muscle behind a body part, shown through it (view3d.js x-ray pass). */
+#figure .xray { opacity: 0.4; pointer-events: none; }
+#figure .scapula3d.xray { opacity: 0.75; }
 #figure .tendon-idle, #figure .muscle-idle { stroke: var(--muted); stroke-linecap: round; opacity: 0.45; }
 /* Tendons (the 3D hands): thinner than the bellies and in their own colour, shaded by the force they carry. */
 #figure .tendon-base { stroke: var(--tendon-base); stroke-linecap: round; }
@@ -292,6 +298,7 @@ input[type="range"]:disabled { opacity: 0.4; }
 .charts .line { fill: none; stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; }
 .charts .line.primary { stroke: var(--accent); }
 .charts .line.compare { stroke: var(--compare); stroke-dasharray: 7 5; }
+.charts .line.grip { stroke: var(--j-hip-frontal); }
 .charts .line.strength { stroke: var(--strength); stroke-width: 2; stroke-dasharray: 2 4; }
 .charts .marker { stroke: var(--text); stroke-width: 1.5; opacity: 0.5; }
 .charts .zero { stroke: var(--muted); stroke-width: 1; }

@@ -86,6 +86,18 @@
       "note": "Helps hold the soft elbow bend under load.",
       "source": "Campos YAC, Vianna JM, Guimarães MP, Oliveira JLD, Hernández-Mosqueira C, da Silva SF, Marchetti PH (2020). Different shoulder exercises affect the activation of deltoid portions in resistance-trained individuals. J Hum Kinet 75:5–14. doi:10.2478/hukin-2020-0033 (13 men, 60% 1RM, % of maximal isometric activation)",
       "draw": {"seg": "proximal", "along": [0.12, 0.26], "offset": 0.035, "w": 0.04, "layer": 2}
+    },
+    {
+      "id": "mid-back",
+      "region": "shoulder",
+      "regionPath": ["rhomboids", "middle-trapezius"],
+      "name": "Rhomboids, middle trapezius",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "none",
+      "weight": [[-90, 1], [90, 1]],
+      "note": "Hold the shoulder blades back on the ribcage as the arms open. Not estimated: the model turns the arm about a fixed shoulder and has no shoulder blade.",
+      "source": "Not modelled"
     }
   ],
   "phases": [

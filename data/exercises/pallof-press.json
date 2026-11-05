@@ -10,7 +10,7 @@
   "angleUnit": "%",
   "angleRange": [0, 100],
   "angleNote": "How far the hands press forward: 0% = hands at the chest, 100% = arms straight in front. The cable pulls sideways from an anchor beside you; the trunk must not turn.",
-  "defaults": {"loadKg": 10, "variant": "standing", "bodyMassKg": 75, "angle": 100},
+  "defaults": {"loadKg": 5, "variant": "standing", "bodyMassKg": 75, "angle": 100},
   "ui": {"load": [0, 40, 1]},
   "joints": [
     {
@@ -22,7 +22,7 @@
       "strength": {
         "points": [[0, 1]],
         "note": "Isometric trunk twisting with the trunk facing forward, men: 80 Nm (left 79, right 81; women 42–45 Nm), falling as the trunk is already turned (67 Nm at 20°). Seated with the hips and legs strapped, so standing, the hips may help (not modelled).",
-        "source": "Kumar S, Dufresne RM, Van Schoor T (1995). Human trunk strength profile in lateral flexion and axial rotation. Spine 20(2):169–177. doi:10.1097/00007632-199501150-00007"
+        "source": "Kumar S, Dufresne RM, Van Schoor T (1995). Human trunk strength profile in lateral flexion and axial rotation. Spine 20(2):169–177. doi:10.1097/00007632-199501150-00007; load and cross-check: Juan-Recio C, Prat-Luri A, Rondón-Espinosa H, Barbado D, Vera-Garcia FJ (2025). Effect of body position and support surface on the postural control challenge during the Pallof press exercise: a smartphone accelerometer-based study. Medicina 61(2):312. doi:10.3390/medicina61020312 (12 active adults; band set to 4–6 kg of sideways pull by body mass, 5 kg at 70–80 kg); De Los Ríos-Calonge J, Juan-Recio C, Miralles-Iborra A, Prat-Luri A, Barbado D, Vera-Garcia FJ (2026). A load-cell-based approach to assess maximal break force during the Pallof press: test–retest reliability and postural differences. Preprints 202606.1948 (not peer-reviewed). doi:10.20944/preprints202606.1948.v1 (Table 2: 22 active men; sideways force at the hands when posture is lost: seated 6.8, kneeling 8.4, half-kneeling 11.8, staggered 7.4, parallel stance 8.0 kg; tested in a cable woodchop position)"
       }
     },
     {
@@ -103,7 +103,7 @@
         "handHeight": 0.35,
         "anchor": {"x": -1.4, "y": 0.35}
       },
-      "notes": "Standing side-on to a cable at chest height, hands at the sternum, pressing straight forward. The hands are about 35 cm above the lower back (L5/S1)."
+      "notes": "Standing side-on to a cable at chest height, hands at the sternum, pressing straight forward. The hands are about 35 cm above the lower back (L5/S1). Default 5 kg: a typical training pull (Juan-Recio et al. 2025 set 4–6 kg by body mass). Standing, active men lost their stance at about 8 kg in a break test (De Los Ríos-Calonge et al. 2026, preprint)."
     },
     {
       "id": "half-kneeling",
@@ -114,7 +114,7 @@
         "handHeight": 0.35,
         "anchor": {"x": -1.4, "y": 0.35}
       },
-      "notes": "One knee down: the hips can't help by shifting, but the trunk's loads are the same as standing."
+      "notes": "One knee down: the hips can't help by shifting, but the trunk's loads are the same as standing. Yet people hold more this way: in a break test active men lost their stance at about 11.8 kg of sideways pull half-kneeling against 8.0 kg standing (De Los Ríos-Calonge et al. 2026, preprint, woodchop position), so the stance, not the trunk, limits the standing version first."
     }
   ],
   "hold": true,

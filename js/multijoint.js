@@ -419,6 +419,17 @@ function seatedRow(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
  * back at L5/S1 (whole trunk). All horizontal distances shrink with the cosine of the incline,
  * so a raised support makes every torque smaller. Optional plate on the back (mid-trunk).
  */
+/**
+ * Holding (isometric) load on the neck of a body lying face down (planks, back extension) or on its
+ * side: the head held in line with the trunk (neutral neck, an assumption), its centre of mass
+ * 13 cm along `dir` (shoulders → head) as in js/multijoint3d.js's holding().
+ */
+function neckHold(dir, headKg, side = false) {
+  return { id: "neck", name: side ? "Neck (side flexors, upper side)" : "Neck (extensors)", torque: headKg * G * 0.13 * Math.abs(dir.x),
+    note: side ? "Neck side flexors (upper trapezius, scalenes, sternocleidomastoid) holding the head up in line with the body."
+      : "Neck extensors (splenius, semispinalis, upper trapezius) holding the head in line with the trunk, face down." };
+}
+
 function plank(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
   const P = v.params;
   const L = body.lengths, m = body.mass, c = body.com, tp = body.trunkParts;
@@ -478,6 +489,11 @@ function plank(ex, v, x, { loadKg, bodyMassKg: kg, body }) {
       { a: { x: sup.x - 0.15, y: sup.y - 0.08 }, b: { x: sup.x - 0.15, y: 0 }, w: 0.04, cls: "equipment" }, { a: { x: sup.x + 0.35, y: sup.y - 0.08 }, b: { x: sup.x + 0.35, y: 0 }, w: 0.04, cls: "equipment" }] : [],
     balance: null,
     reactions: { toes: toeR, support: supR, weight: W },
+    // The trunk hangs between the shoulder blades on the supporting arm(s): what the support pushes
+    // up, less the arm's own weight, the serratus anterior holds against the ribcage.
+    holding: [neckHold(u, tp.head * kg, P.side),
+      { id: "shoulder-blades", name: "Shoulder blades (serratus anterior)", kgPerSide: (P.side ? supR : supR / 2) / G - (m.upperArm + m.forearmHand) * kg,
+        note: `Per supporting arm: the serratus anterior holds the ribcage up between the shoulder blades (as at the top of a push-up).` }],
     info: [{ text: `The body is tilted ${Math.round(incline)}° from horizontal. The ${what} ${what === "forearm" ? "carries" : "carry"} ${Math.round((100 * supR) / W)}% of the weight, the ${end} the rest.` }],
   };
 }
@@ -580,6 +596,7 @@ function backExtension(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       { a: add(add(H, n, 0.2), d, 0.1), b: add(add(A, n, 0.2), d, 0.02), w: 0.035, cls: "equipment" },
       { a: add(add(A, n, 0.2), d, 0.02), b: { x: add(add(A, n, 0.2), d, 0.02).x, y: 0 }, w: 0.04, cls: "equipment" }],
     balance: null,
+    holding: [neckHold(q, tp.head * kg)],
     info: [{ text: `Trunk bent ${Math.round(x)}° to the legs: ${Math.round(Math.max(0, hipFlex))}° at the hips, ${r < 0 ? `the lower back arched ${Math.round(-r)}°` : `${Math.round(r)}° in the lower back`}.` }],
   };
 }
@@ -602,6 +619,14 @@ export function analyzeMulti(exercise, variant, x, opts) {
     const curve = neg && j.negative.points ? j.negative.points : j.strength.points; // the other direction may have its own curve
     const capacity = interp(curve, s.angle) * (neg ? j.negative.peakTorqueNm : j.peakTorqueNm) * scale * posture;
     return { ...j, ...s, capacity, effort: (neg ? -s.torque : Math.max(0, s.torque)) / capacity, strengthScale: posture };
+  });
+  // Holding loads with a rough norm (body.holdingStrength: lower back, grip) get an effort too.
+  const norms = opts.body?.holdingStrength ?? {};
+  if (r.holding) r.holding = r.holding.map((h) => {
+    const n = norms[h.id];
+    if (!n) return h;
+    const cap = (n.nm ?? n.kgPerHand) * scale;
+    return { ...h, capacity: cap, effort: (n.nm != null ? Math.max(0, h.torque) : h.kgPerHand) / cap };
   });
   return r;
 }

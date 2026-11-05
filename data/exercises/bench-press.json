@@ -146,9 +146,10 @@
       "driver": "jointEffort",
       "joint": "shoulder-rotation",
       "weight": [[-60, 1], [180, 1]],
-      "note": "External rotators of the rotator cuff: hold the upper arm from turning inwards.",
-      "source": "TODO: check against EMG literature",
+      "note": "External rotators of the rotator cuff: hold the humeral head back against the pectoralis' forward pull, and the upper arm from turning inwards. EMG (Wattanaprakornkul et al.): the infraspinatus was the most active muscle measured in the press, 45% of maximum at 70% of the 1RM against 33% for the pectoralis, in the same pattern at every load, so here it is at least 1.4 × the pectoralis. Their press was seated on a machine, not a barbell bench.",
+      "source": "Wattanaprakornkul D, Halaki M, Cathers I, Ginn KA (2011). Direction-specific recruitment of rotator cuff muscles during bench press and row. J Electromyogr Kinesiol 21(6):1041–1049. doi:10.1016/j.jelekin.2011.09.002 (Fig. 5A: 15 adults, fine-wire electrodes in the cuff, seated machine press and row at 20, 50 and 70% of maximum load, % of maximal isometric activation; values read off the figure)",
       "sign": 1,
+      "follows": {"muscle": "pectoralis", "ratio": [[0, 1.4], [100, 1.4]]},
       "draw3d": {"seg": "upperArm", "side": "posterior", "along": [-0.07, -0.01], "offset": 0.05, "w": 0.04}
     },
     {
@@ -160,10 +161,37 @@
       "driver": "jointEffort",
       "joint": "shoulder-rotation",
       "weight": [[-60, 1], [180, 1]],
-      "note": "Internal rotator of the rotator cuff: holds the upper arm from turning outwards.",
-      "source": "TODO: check against EMG literature",
+      "note": "Internal rotator of the rotator cuff: holds the upper arm from turning outwards. EMG (Wattanaprakornkul et al.): about half the pectoralis' level in the press (17% against 33% of maximum at 70% of the 1RM), so here at least 0.5 × the pectoralis.",
+      "source": "Wattanaprakornkul D, Halaki M, Cathers I, Ginn KA (2011). Direction-specific recruitment of rotator cuff muscles during bench press and row. J Electromyogr Kinesiol 21(6):1041–1049. doi:10.1016/j.jelekin.2011.09.002 (Fig. 5A: 15 adults, fine-wire electrodes in the cuff, seated machine press and row at 20, 50 and 70% of maximum load, % of maximal isometric activation; values read off the figure)",
       "sign": -1,
+      "follows": {"muscle": "pectoralis", "ratio": [[0, 0.5], [100, 0.5]]},
       "draw3d": {"seg": "upperArm", "side": "anterior", "along": [-0.07, -0.01], "offset": 0.04, "w": 0.04}
+    },
+    {
+      "id": "supraspinatus",
+      "region": "shoulder",
+      "name": "Supraspinatus",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "follows",
+      "weight": [[0, 1], [180, 1]],
+      "follows": {"muscle": "pectoralis", "ratio": [[0, 0.9], [100, 0.9]]},
+      "note": "Keeps the head of the humerus centred in the socket. In the press it works at about the pectoralis' level (31% of maximum against 33% at 70% of the 1RM, 29% against 22% at 50%: Wattanaprakornkul et al.), so here 0.9 × the pectoralis. The model has no supraspinatus torque of its own: the ratio is all it has. Their press was seated on a machine, not a barbell bench.",
+      "source": "Wattanaprakornkul D, Halaki M, Cathers I, Ginn KA (2011). Direction-specific recruitment of rotator cuff muscles during bench press and row. J Electromyogr Kinesiol 21(6):1041–1049. doi:10.1016/j.jelekin.2011.09.002 (Fig. 5A: 15 adults, fine-wire electrodes in the cuff, seated machine press and row at 20, 50 and 70% of maximum load, % of maximal isometric activation; values read off the figure)",
+      "draw3d": {"seg": "upperArm", "side": "lateral", "along": [-0.08, -0.01], "offset": 0.03, "w": 0.035}
+    },
+    {
+      "id": "mid-back",
+      "region": "shoulder",
+      "regionPath": ["rhomboids", "middle-trapezius"],
+      "name": "Rhomboids, middle trapezius",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "none",
+      "weight": [[0, 1], [180, 1]],
+      "note": "Hold the shoulder blades pulled together and down against the bench (what the shoulder-blade sliders set). Not estimated: the model has no shoulder-blade muscles.",
+      "source": "Not modelled",
+      "draw3d": {"seg": "trunk", "side": "posterior", "along": [0.36, 0.5], "offset": 0.12, "w": 0.06, "spread": 0.05}
     }
   ],
   "phases": [

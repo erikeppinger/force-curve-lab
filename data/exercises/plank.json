@@ -73,9 +73,9 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "joint": "hip",
-      "weight": [[0, 1], [80, 1]],
-      "note": "Keeps the hips from sagging (the legs' end of the body pivots at the hips). Not measured with surface EMG (deep). Not measured in planks; in leg lifts it is highly active (Andersson et al., fine-wire EMG).",
-      "source": "TODO: no EMG of the iliopsoas in a plank found; Andersson EA, Nilsson J, Ma Z, Thorstensson A (1997). Abdominal and hip flexor muscle activation during various training exercises. Eur J Appl Physiol 75(2):115–123. doi:10.1007/s004210050135 (6 men, fine-wire EMG of the iliacus)",
+      "weight": [[0, 0.91], [80, 0.91]],
+      "note": "Keeps the hips from sagging (the legs' end of the body pivots at the hips). Deep, so not measured with surface EMG, and not measured in planks at all; in leg lifts it is highly active (Andersson et al., fine-wire EMG). Weight from the OpenSim leg model with the hip and knee straight: the hip flexors share the work by size and leverage, the iliopsoas at 0.91 of the hip's effort; the adductor longus and the small tensor fasciae latae and sartorius help too.",
+      "source": "Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079 (Rajagopal2016.osim, MIT licence; each muscle's moment arm × active force, shared for least summed squared activation: tools/rajagopal-shares.mjs); leg lifts: Andersson EA, Nilsson J, Ma Z, Thorstensson A (1997). Abdominal and hip flexor muscle activation during various training exercises. Eur J Appl Physiol 75(2):115–123. doi:10.1007/s004210050135",
       "draw": {"seg": "thigh", "along": [0.33, 0.46], "offset": -0.04, "w": 0.05}
     },
     {
@@ -86,9 +86,9 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "joint": "hip",
-      "weight": [[0, 0.6], [80, 0.6]],
-      "note": "The quadriceps head that also bends the hip; it helps hold the hips and keeps the knees straight.",
-      "source": "TODO: check against EMG literature",
+      "weight": [[0, 1.43], [80, 1.43]],
+      "note": "The quadriceps head that also bends the hip; it helps hold the hips and keeps the knees straight. In the OpenSim leg model it is the strongest single hip flexor with the hip straight, so it works harder than the iliopsoas here (1.43 of the hip's effort).",
+      "source": "Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079 (Rajagopal2016.osim, MIT licence; each muscle's moment arm × active force, shared for least summed squared activation: tools/rajagopal-shares.mjs)",
       "draw": {"seg": "thigh", "along": [0.06, 0.36], "offset": -0.05, "w": 0.05}
     }
   ],

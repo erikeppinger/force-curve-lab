@@ -153,12 +153,31 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
   dot(add3(S, v3(0, 0.2, 0)), 0.11, "body", torso);
 
   // The working limb (and its mirror image), joints, muscles. A working leg joins its thigh's part.
-  const limb = (pts, cls, part) => {
+  // A foot (knee at the base) is filled out round the ankle→ball line: ankle to heel, and the sole
+  // from the heel past the ball to the toe tips, all turned with the ankle; the ankle→ball line
+  // alone points 30° down with the foot flat, so it looked flat with the heel dropped.
+  let foot = null;
+  if (knee) {
+    const SOLE = 0.08, TOES = 0.05; // ball and heel below the ankle joint (segments.distal's note); toes past the ball
+    const turn = Math.atan2(t2.y - m2.y, t2.x - m2.x) - Math.atan2(-SOLE, L.footFront);
+    const c = Math.cos(turn), s = Math.sin(turn);
+    const off = sub3(chain[2], map2(t2)); // as the tip (out of plane)
+    const at = (x, y) => add3(map2({ x: m2.x + x * c - y * s, y: m2.y + x * s + y * c }), off);
+    // The toes bend at the ball: flat on the step when up on the toes, else along the sole.
+    const toe = s < 0 ? add3(chain[2], X, TOES) : at(L.footFront + TOES, -SOLE + 0.01);
+    foot = { heel: at(-L.heel, -SOLE + 0.02), toe };
+  }
+  const limb = (pts, ft, cls, part) => {
     line(pts[0], pts[1], 0.075, cls, { bone: true, part });
-    line(pts[1], pts[2], knee ? 0.08 : 0.06, cls, { bone: true, part });
+    line(pts[1], pts[2], knee ? 0.07 : 0.06, cls, { bone: true, part });
+    if (ft) {
+      line(pts[1], ft.heel, 0.07, cls, { part });
+      line(ft.heel, pts[2], 0.06, cls, { part });
+      line(pts[2], ft.toe, 0.045, cls, { part });
+    }
   };
-  limb(chain, "body", knee ? "legR" : "limbR");
-  if (both) limb(chain.map(mirror), "body back", knee ? "legL" : "limbL");
+  limb(chain, foot, "body", knee ? "legR" : "limbR");
+  if (both) limb(chain.map(mirror), foot && { heel: mirror(foot.heel), toe: mirror(foot.toe) }, "body back", knee ? "legL" : "limbL");
   const act = Object.fromEntries(activation.map((m) => [m.id, m.value ?? 0]));
   const segs = { proximal: [b2, m2], distal: [m2, t2] };
   for (const m of ex.muscles.filter((x) => x.draw)) {

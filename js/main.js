@@ -1151,7 +1151,7 @@ function renderView() {
  */
 function holdingPrims(list, samples) {
   if (!list?.length || !$("holding-toggle").checked) return [];
-  const size = (h) => Math.abs(h.kgPerHand ?? h.torque);
+  const size = (h) => Math.abs(h.kgPerHand ?? h.kgPerSide ?? h.torque);
   return list.filter((h) => h.draw).flatMap((h) => {
     const max = Math.max(1e-9, ...samples.map((s) => size(s.holding?.find((x) => x.id === h.id) ?? { torque: 0 })));
     const rel = Math.min(1, size(h) / max);
@@ -1164,18 +1164,18 @@ function holdingPrims(list, samples) {
 }
 
 /**
- * Holding (isometric) loads under the joint table: back extensors, grip, shoulders. Torques only:
- * no strength norms yet, so no effort. Switched off and on with the checkbox (remembered).
+ * Holding (isometric) loads under the joint table: back extensors, neck, grip, shoulders, shoulder blades. Torques or kg;
+ * an effort only where a rough norm exists (so far the grip). Switched off and on with the checkbox (remembered).
  */
 function renderHolding(list) {
   $("holding-switch").hidden = !list?.length;
   const show = Boolean(list?.length) && $("holding-toggle").checked;
   $("holding-rows").replaceChildren(...(!show ? [] : [
-    Object.assign(document.createElement("tr"), { className: "hold-head", innerHTML: '<th colspan="4" scope="rowgroup">Holding (isometric): no strength norms yet, so no effort</th>' }),
+    Object.assign(document.createElement("tr"), { className: "hold-head", innerHTML: '<th colspan="4" scope="rowgroup">Holding (isometric): effort from rough norms where there are any</th>' }),
     ...list.map((h) => {
       const tr = document.createElement("tr");
-      tr.title = h.note;
-      const cells = [h.name, h.kgPerHand != null ? `${h.kgPerHand.toFixed(1)} kg / hand` : `${Math.abs(h.torque).toFixed(0)} Nm`, "—", "—"];
+      tr.title = h.capacity ? `${h.note} Effort against a rough norm: ${h.kgPerHand != null ? `${h.capacity.toFixed(0)} kg` : `${h.capacity.toFixed(0)} Nm`}.` : h.note;
+      const cells = [h.name, h.kgPerHand != null ? `${h.kgPerHand.toFixed(1)} kg / hand` : h.kgPerSide != null ? `${h.kgPerSide.toFixed(1)} kg / side` : `${Math.abs(h.torque).toFixed(0)} Nm`, "—", h.effort != null ? `${Math.round(h.effort * 100)}%` : "—"];
       cells.forEach((t, i) => {
         const td = document.createElement(i ? "td" : "th");
         td.textContent = t;

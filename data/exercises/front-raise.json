@@ -137,6 +137,43 @@
         "layer": 0,
         "z3d": [0.09, 0.02]
       }
+    },
+    {
+      "id": "supraspinatus",
+      "region": "shoulder",
+      "name": "Supraspinatus",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "weight": [[0, 0.76], [45, 0.95], [90, 0.95], [160, 0.95]],
+      "note": "Raises the arm with the deltoid and keeps the head of the humerus centred in the socket. Raising a dumbbell forwards (lying face down, Wattanaprakornkul et al.'s flexion study) it worked at about the deltoid's level: 38% of maximum against 40% at 70% of the 1RM, 34% against 36% at 50%, so 0.95 × the deltoid. Weights = that ratio × the anterior deltoid's weights. Their deltoid electrode sat over the middle deltoid; against the anterior deltoid, the main mover here, the ratios are likely a little lower.",
+      "source": "Wattanaprakornkul D, Cathers I, Halaki M, Ginn KA (2011). The rotator cuff muscles have a direction specific recruitment pattern during shoulder flexion and extension exercises. J Sci Med Sport 14(5):376–382. doi:10.1016/j.jsams.2011.01.001 (Fig. 2: 15 adults, fine-wire electrodes in the cuff, dumbbell raised forwards lying face down at 20, 50 and 70% of maximum load, % of maximal isometric activation; values read off the figure; deltoid by a surface electrode over its middle part)",
+      "draw": {"points": [[-0.06, 0.05], [0.01, 0.04]], "w": 0.03, "layer": 1, "z3d": [0.1, 0.17]}
+    },
+    {
+      "id": "rotator-cuff-ext",
+      "region": "shoulder",
+      "regionPath": ["infraspinatus", "teres-minor"],
+      "name": "Infraspinatus, teres minor",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "weight": [[0, 0.96], [45, 1.2], [90, 1.2], [160, 1.2]],
+      "note": "Hold the head of the humerus back against the forward pull of the muscles raising the arm. Raising a dumbbell forwards (lying face down, Wattanaprakornkul et al.'s flexion study) the infraspinatus worked a little above the deltoid: 46% of maximum against 40% at 70% of the 1RM, 44% against 36% at 50%, so 1.2 × the deltoid. Weights = that ratio × the anterior deltoid's weights. Their deltoid electrode sat over the middle deltoid; against the anterior deltoid, the main mover here, the ratios are likely a little lower.",
+      "source": "Wattanaprakornkul D, Cathers I, Halaki M, Ginn KA (2011). The rotator cuff muscles have a direction specific recruitment pattern during shoulder flexion and extension exercises. J Sci Med Sport 14(5):376–382. doi:10.1016/j.jsams.2011.01.001 (Fig. 2: 15 adults, fine-wire electrodes in the cuff, dumbbell raised forwards lying face down at 20, 50 and 70% of maximum load, % of maximal isometric activation; values read off the figure; deltoid by a surface electrode over its middle part)",
+      "draw": {"points": [[-0.1, -0.06], [-0.02, 0.0]], "w": 0.04, "layer": 0, "z3d": [0.1, 0.16]}
+    },
+    {
+      "id": "subscapularis",
+      "region": "shoulder",
+      "name": "Subscapularis",
+      "wgerId": null,
+      "role": "Stabiliser",
+      "driver": "jointEffort",
+      "weight": [[0, 0.224], [45, 0.28], [90, 0.28], [160, 0.28]],
+      "note": "Internal rotator of the rotator cuff, on the front of the shoulder blade. Raising the arm forwards it stays low (11% of maximum against the deltoid's 40% at 70% of the 1RM: Wattanaprakornkul et al.'s flexion study), so 0.28 × the deltoid; it works far more pulling the arm back. Weights = that ratio × the anterior deltoid's weights. Their deltoid electrode sat over the middle deltoid; against the anterior deltoid, the main mover here, the ratios are likely a little lower.",
+      "source": "Wattanaprakornkul D, Cathers I, Halaki M, Ginn KA (2011). The rotator cuff muscles have a direction specific recruitment pattern during shoulder flexion and extension exercises. J Sci Med Sport 14(5):376–382. doi:10.1016/j.jsams.2011.01.001 (Fig. 2: 15 adults, fine-wire electrodes in the cuff, dumbbell raised forwards lying face down at 20, 50 and 70% of maximum load, % of maximal isometric activation; values read off the figure; deltoid by a surface electrode over its middle part)",
+      "draw": {"points": [[-0.04, -0.06], [0.01, -0.01]], "w": 0.035, "layer": 0, "z3d": [0.08, 0.15]}
     }
   ],
   "phases": [

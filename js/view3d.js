@@ -46,20 +46,25 @@ export function scene3d(exercise, result, activation) {
     const b = add3(add3(fr.from, dir, d.along[1]), off, d.offset);
     // A muscle from the trunk to a limb (`origin`, e.g. the pectoralis from the collarbone and breastbone):
     // a fan of fibres from the origin points to the insertion (`along[1]` on the segment), both sides.
+    // `host`: a trunk muscle is drawn with the trunk, not with a limb that happens to pass close by
+    // (the upper arm beside the back at the end of a row). Limb muscles near the shoulder keep the
+    // nearest body line (the shoulder bar), so they aren't covered by the trunk.
+    const own = d.seg === "trunk";
+    const host = own ? { a: fr.from, b: fr.to } : null, hostL = own ? { a: mirrorZ(fr.from), b: mirrorZ(fr.to) } : null;
     const ori = d.origin && result.frames[d.origin]?.points;
     if (ori) {
-      for (const o of ori) for (const [p, q] of result.asymmetric ? [[o, b]] : [[o, b], [mirrorZ(o), mirrorZ(b)]]) {
-        line(p, q, d.w, "muscle-base", { title: m.name });
-        line(p, q, d.w, "muscle-on", { opacity: act[m.id], title: `${m.name}: ${Math.round(act[m.id] * 100)}%` });
+      for (const o of ori) for (const [p, q, h] of result.asymmetric ? [[o, b, host]] : [[o, b, host], [mirrorZ(o), mirrorZ(b), hostL]]) {
+        line(p, q, d.w, "muscle-base", { title: m.name, host: h });
+        line(p, q, d.w, "muscle-on", { opacity: act[m.id], title: `${m.name}: ${Math.round(act[m.id] * 100)}%`, host: h });
       }
       continue;
     }
     const trunk = d.seg === "trunk";
-    const sides = trunk ? [[add3(a, fr.lateral, d.spread ?? 0.06), add3(b, fr.lateral, d.spread ?? 0.06)], [add3(a, fr.lateral, -(d.spread ?? 0.06)), add3(b, fr.lateral, -(d.spread ?? 0.06))]]
-      : result.asymmetric ? [[a, b]] : [[a, b], [mirrorZ(a), mirrorZ(b)]];
-    for (const [p, q] of sides) {
-      line(p, q, d.w, "muscle-base", { title: m.name });
-      line(p, q, d.w, "muscle-on", { opacity: act[m.id], title: `${m.name}: ${Math.round(act[m.id] * 100)}%` });
+    const sides = trunk ? [[add3(a, fr.lateral, d.spread ?? 0.06), add3(b, fr.lateral, d.spread ?? 0.06), host], [add3(a, fr.lateral, -(d.spread ?? 0.06)), add3(b, fr.lateral, -(d.spread ?? 0.06)), host]]
+      : result.asymmetric ? [[a, b, host]] : [[a, b, host], [mirrorZ(a), mirrorZ(b), hostL]];
+    for (const [p, q, h] of sides) {
+      line(p, q, d.w, "muscle-base", { title: m.name, host: h });
+      line(p, q, d.w, "muscle-on", { opacity: act[m.id], title: `${m.name}: ${Math.round(act[m.id] * 100)}%`, host: h });
     }
   }
   // External forces (the plate, the floor, the bar) and each joint's moment arm to the main one.
@@ -141,19 +146,26 @@ export function renderView3d(svg, prims, cam, V) {
   // far side. Sorted on their own they could fall behind the part's mean depth and vanish as the view
   // turned (a muscle on the front of the thigh, behind the leg's average depth seen from the side).
   const isBodyLine = (p) => p.kind === "line" && /(^| )body( |$)/.test(p.cls);
+  const closest = (p, q) => {
+    const ab = sub3(p.b, p.a), L2 = ab.x * ab.x + ab.y * ab.y + ab.z * ab.z || 1;
+    const t = Math.max(0, Math.min(1, ((q.x - p.a.x) * ab.x + (q.y - p.a.y) * ab.y + (q.z - p.a.z) * ab.z) / L2));
+    const c = add3(p.a, ab, t);
+    return { c, dist: Math.hypot(q.x - c.x, q.y - c.y, q.z - c.z) };
+  };
   const onPart = (m) => {
     const mid = { x: (m.a.x + m.b.x) / 2, y: (m.a.y + m.b.y) / 2, z: (m.a.z + m.b.z) / 2 };
     let best = null;
     for (const [name, g] of parts) for (const { p } of g.list) {
       if (!isBodyLine(p) || /ghost/.test(p.cls)) continue;
-      const ab = sub3(p.b, p.a), L2 = ab.x * ab.x + ab.y * ab.y + ab.z * ab.z || 1;
-      const t = Math.max(0, Math.min(1, ((mid.x - p.a.x) * ab.x + (mid.y - p.a.y) * ab.y + (mid.z - p.a.z) * ab.z) / L2));
-      const c = add3(p.a, ab, t), dist = Math.hypot(mid.x - c.x, mid.y - c.y, mid.z - c.z);
+      const { c, dist } = closest(p, mid);
+      // A muscle that names its segment (`host`) goes with the body line along that segment.
+      const fit = m.host ? Math.max(closest(p, m.host.a).dist, closest(p, m.host.b).dist) : dist;
+      if (m.host ? fit > 0.03 : dist >= p.w / 2 + 0.06) continue;
       // On the camera's side unless its offset from the limb's axis points well away from the camera:
       // a muscle at the limb's visible edge (offset across the view) stays on top.
-      if (dist < p.w / 2 + 0.06 && (!best || dist < best.dist)) best = { name, dist, front: px(mid).depth - px(c).depth >= -0.3 * dist };
+      if (!best || fit < best.fit) best = { name, fit, front: px(mid).depth - px(c).depth >= -0.3 * dist };
     }
-    return best;
+    return best ?? (m.host ? onPart({ ...m, host: null }) : null); // no line along it: the nearest one
   };
   for (let i = items.length - 1; i >= 0; i--) {
     const p = items[i].p;
@@ -170,7 +182,9 @@ export function renderView3d(svg, prims, cam, V) {
     const A = px(p.a), B = px(p.b);
     el("line", { x1: A.x, y1: A.y, x2: B.x, y2: B.y, class: cls.replace("body", "body-edge"), "stroke-width": p.w * S + Math.min(4, 0.3 * p.w * S) }, parent);
   };
+  const drawn = []; // everything in drawing order, for the x-ray pass below
   const draw = (p, parent, { withEdge = true, cls = p.cls } = {}) => {
+    drawn.push({ p, cls });
     if (p.kind === "poly") {
       el("polygon", { points: p.pts.map((q) => { const r = px(q); return `${r.x.toFixed(1)},${r.y.toFixed(1)}`; }).join(" "), class: cls }, parent);
     } else if (p.kind === "dot") {
@@ -203,6 +217,29 @@ export function renderView3d(svg, prims, cam, V) {
     for (const p of list) draw(p, g, { withEdge: false, cls: own(p) });
     for (const p of byDepth(it.over)) draw(p, svg);
   }
+  // X-ray: a muscle that an opaque body piece drawn after it covers (the arm beside the back at the
+  // end of a row, the trunk over the buttock) shows through faintly on top, so it never vanishes.
+  const covers = (q, P) => {
+    if (q.kind === "dot") { const c = px(q.c); return Math.hypot(P.x - c.x, P.y - c.y) < q.r * S; }
+    const A = px(q.a), B = px(q.b), ab = { x: B.x - A.x, y: B.y - A.y }, L2 = ab.x * ab.x + ab.y * ab.y || 1;
+    const t = Math.max(0, Math.min(1, ((P.x - A.x) * ab.x + (P.y - A.y) * ab.y) / L2));
+    return Math.hypot(P.x - A.x - ab.x * t, P.y - A.y - ab.y * t) < (q.w * S) / 2;
+  };
+  const opaque = (d) => (d.p.kind === "line" || d.p.kind === "dot") && /(^| )body( |$)/.test(d.cls) && !/(^| )(back|ghost)( |$)/.test(d.cls);
+  const xray = [];
+  drawn.forEach((d, i) => {
+    let pts;
+    if (d.p.kind === "line" && /(^| )muscle-(base|on)( |$)/.test(d.cls)) {
+      const A = px(d.p.a), B = px(d.p.b);
+      pts = [0.2, 0.5, 0.8].map((t) => ({ x: A.x + (B.x - A.x) * t, y: A.y + (B.y - A.y) * t }));
+    } else if (d.p.kind === "poly" && /(^| )scapula3d( |$)/.test(d.cls)) {
+      // The shoulder blades under a lifter lying on a bench: shown through the body too.
+      const Q = d.p.pts.map(px), c = { x: Q.reduce((s, q) => s + q.x, 0) / Q.length, y: Q.reduce((s, q) => s + q.y, 0) / Q.length };
+      pts = [c, ...Q.map((q) => ({ x: (q.x + c.x) / 2, y: (q.y + c.y) / 2 }))];
+    } else return;
+    if (drawn.slice(i + 1).some((q) => opaque(q) && pts.some((P) => covers(q.p, P)))) xray.push(d.p);
+  });
+  for (const p of xray) draw({ ...p, cls: `${p.cls} xray` }, svg);
   const defs = el("defs", {}, svg);
   const mk = el("marker", { id: "arrow", viewBox: "0 0 10 10", refX: 5, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto-start-reverse" }, defs);
   el("path", { d: "M0,0 L10,5 L0,10 z", class: "arrowhead" }, mk);

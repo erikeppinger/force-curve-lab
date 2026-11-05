@@ -12,7 +12,7 @@ const close = (a, b, eps = 1e-6) => assert.ok(Math.abs(a - b) < eps, `${a} ≉ $
 const opts = { loadKg: 60, bodyMassKg: 75, body };
 // These lifts run in 3D in the app; the side-view tests below check their 2D solvers.
 const TWO_D = { "romanian-deadlift": "standing", deadlift: "standing", "split-squat": "split", "hip-thrust": "hipThrust", "bent-over-row": "standing", "seated-row": "seatedRow" };
-const ONLY_3D = ["hip-frontal", "hip-rotation", "knee-frontal", "shoulder-h", "shoulder-rotation", "elbow-side"];
+const ONLY_3D = ["hip-frontal", "hip-rotation", "knee-frontal", "shoulder-h", "shoulder-rotation", "elbow-side", "lumbar"];
 const load2d = (id) => { const ex = load(id); return TWO_D[id] ? { ...ex, solver: TWO_D[id], joints: ex.joints.filter((j) => !ONLY_3D.includes(j.id)) } : ex; };
 const run = (id, vid, x, o = opts) => {
   const ex = load2d(id);
@@ -650,6 +650,27 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
 }
 
 // ---------- two-joint muscles in the multi-joint lifts ----------
+test("rotator cuff: at least its EMG ratio of the main mover (bench: pectoralis, rows: lats), more where the rotation torque asks for it", () => {
+  const acts = (id, vid, x) => { const ex = load(id), v = ex.variants.find((q) => q.id === vid), r = analyzeMulti(ex, v, x, { ...opts, loadKg: 40 }); return { ex, a: Object.fromEntries(muscleActivation(ex, v, r, x).map((m) => [m.id, m.value])) }; };
+  for (const [id, vid, prime] of [["bench-press", "flat", "pectoralis"], ["seated-row", "upright", "latissimus-dorsi"], ["overhead-press", "standing", "anterior-deltoid"]]) {
+    const { ex, a } = acts(id, vid, 50);
+    for (const m of ex.muscles.filter((q) => q.follows)) {
+      assert.equal(m.follows.muscle, prime);
+      assert.ok(a[m.id] >= Math.min(1, a[prime] * interp(m.follows.ratio, 50)) - 1e-12, `${id} ${m.id}`);
+    }
+  }
+  // Bench, flat: no rotation torque to speak of, so the cuff sits exactly on its ratio.
+  const { a } = acts("bench-press", "flat", 50);
+  close(a["rotator-cuff-ext"], Math.min(1, 1.4 * a.pectoralis), 1e-9);
+  // The supraspinatus has no torque of its own: exactly its ratio (bench 0.9, rows 0.16, press 1.3).
+  close(a.supraspinatus, 0.9 * a.pectoralis, 1e-9);
+  const row = acts("seated-row", "upright", 50).a, press = acts("overhead-press", "standing", 50).a;
+  close(row.supraspinatus, 0.16 * row["latissimus-dorsi"], 1e-9);
+  close(press.supraspinatus, Math.min(1, 1.3 * press["anterior-deltoid"]), 1e-9);
+  // Elbows out: the rotation torque mid-press asks the subscapularis for more than its ratio.
+  assert.ok(acts("bench-press", "elbows-out", 50).a.subscapularis > 0.5 * acts("bench-press", "elbows-out", 50).a.pectoralis + 0.1);
+});
+
 test("two-joint muscles: calf strength follows the knee angle, hamstring (knee-flexor) strength the hip angle", () => {
   const ex = load("squat"), sc = ex.jointScale;
   // Cresswell et al.: 134.9 Nm straight, 103.7 Nm at 90°, relative to ~112.4 Nm at the base curve's 50°.
@@ -711,6 +732,50 @@ test("holding loads: a load in the hands with the trunk horizontal gives W·d at
   const up = Object.fromEntries(holding({ pelvis, back: v3(0, 1, 0), S: v3(0, 1 + body.lengths.trunk, 0), kg: 0, body, hang: true,
     hands: [{ at: v3(0, 0.6, 0.2), f: v3(0, -W / 2, 0) }, { at: v3(0, 0.6, -0.2), f: v3(0, -W / 2, 0) }] }).map((x) => [x.id, x]));
   for (const id of ["lower-back", "upper-back", "shoulders"]) assert.ok(Math.abs(up[id].torque) < 1e-9, id);
+  // Massless body: the shoulder blades hold half the load, all of it away from the back with the
+  // trunk horizontal, all of it along the trunk upright.
+  close(h["shoulder-blades"].kgPerSide, 10, 1e-9);
+  assert.match(h["shoulder-blades"].note, /0\.0 kg towards the hips .* 10\.0 kg away/);
+  assert.match(up["shoulder-blades"].note, /10\.0 kg towards the hips .* 0\.0 kg away/);
+});
+
+test("holding loads everywhere the same physics applies: grip in pulls, dumbbells in the split squat, neck and shoulder blades in planks", () => {
+  const at = (id, vid, x, loadKg) => { const ex = load(id); return analyzeMulti(ex, ex.variants.find((v) => v.id === vid), x, { ...opts, loadKg }); };
+  const hold = (r, id) => r.holding.find((h) => h.id === id);
+  // Pull-up hanging still at the bottom: each hand holds half of body and load.
+  close(hold(at("pull-up", "pull-up", 0, 0), "grip").kgPerHand, 75 / 2, 0.5);
+  // Split squat with dumbbells: grip and shoulder blades like the deadlift's; with a bar, none.
+  close(hold(at("split-squat", "bulgarian", 50, 30), "grip").kgPerHand, 15, 1e-9);
+  assert.ok(hold(at("split-squat", "bulgarian", 50, 30), "shoulder-blades"));
+  assert.ok(!hold(at("split-squat", "split", 50, 30), "grip"));
+  // Plank: the support's push less the arm's weight, per arm; the neck holds the head out in front.
+  const p = at("plank", "forearm", 0, 0), m = body.mass;
+  close(hold(p, "shoulder-blades").kgPerSide, p.reactions.support / 2 / G - (m.upperArm + m.forearmHand) * 75, 1e-9);
+  assert.ok(hold(p, "neck").torque > 5 && hold(p, "neck").torque <= body.trunkParts.head * 75 * G * 0.13 + 1e-9);
+});
+
+test("holding loads: grip effort against the rough norm (51 kg per hand), scaled by the strength slider; none without a norm", () => {
+  const ex = load("deadlift"), v = ex.variants[0];
+  const at = (pct) => Object.fromEntries(analyzeMulti(ex, v, 50, { ...opts, loadKg: 100, strengthPct: pct }).holding.map((h) => [h.id, h]));
+  const h = at(100), half = at(50);
+  close(h.grip.effort, 50 / 51, 1e-9);
+  close(half.grip.effort, 2 * h.grip.effort, 1e-9);
+  for (const id of ["lower-back", "upper-back", "neck", "shoulder-blades"]) assert.equal(h[id].effort, undefined, id);
+});
+
+test("rows and pulls: rear deltoid, mid-back and pull-up cuff at least their EMG ratio of the lats", () => {
+  for (const [id, vid, m, k] of [["seated-row", "upright", "posterior-deltoid", 0.7], ["bent-over-row", "barbell", "mid-back", 0.7], ["pull-up", "pull-up", "rotator-cuff-ext", 0.6], ["lat-pulldown", "wide", "rotator-cuff-ext", 0.6]]) {
+    const ex = load(id), v = ex.variants.find((q) => q.id === vid), r = analyzeMulti(ex, v, 50, { ...opts, loadKg: 40 });
+    const a = Object.fromEntries(muscleActivation(ex, v, r, 50).map((q) => [q.id, q.value]));
+    assert.ok(a[m] >= Math.min(1, k * a["latissimus-dorsi"]) - 1e-12, `${id} ${m}`);
+  }
+});
+
+test("holding loads: the neck extensors hold the head's weight 0.13 m out with the trunk horizontal, nothing upright", async () => {
+  const { holding, v3 } = await import("../js/multijoint3d.js");
+  const kg = 75, pelvis = v3(0, 1, 0), at = (back, S) => holding({ pelvis, back, S, kg, body }).find((x) => x.id === "neck").torque;
+  close(at(v3(1, 0, 0), v3(body.lengths.trunk, 1, 0)), body.trunkParts.head * kg * G * 0.13, 1e-9);
+  close(at(v3(0, 1, 0), v3(0, 1 + body.lengths.trunk, 0)), 0, 1e-9);
 });
 
 test("holding loads: the RDL's lower-back moment grows with the hinge and stays below both hips together", () => {
@@ -790,4 +855,64 @@ test("knee direction: the quadriceps only work when the knee needs extending; in
   assert.ok(k.torque < 0);
   const h = muscleActivation(ex, v, r, 60).find((m) => m.id === "hamstrings");
   assert.ok(h.value >= Math.min(1, k.effort * interp(h.weight, k.angle)) - 1e-9);
+});
+
+test("rows: the shoulder blades (3D) slide out when reached forward and in towards the spine when squeezed", () => {
+  for (const id of ["bent-over-row", "seated-row"]) {
+    const ex = load(id), v = ex.variants[0];
+    const inner = (x, travel) => {
+      const blades = analyzeMulti(ex, v, x, { ...opts, loadKg: 40, placement: { scapTravel: travel } }).scene.filter((p) => p.cls === "scapula3d");
+      assert.equal(blades.length, 2);
+      return Math.min(...blades[0].pts.map((p) => Math.abs(p.z)));
+    };
+    assert.ok(inner(0, 0.08) > inner(0, 0) + 0.03 && inner(100, 0.08) < inner(100, 0) - 0.03, id);
+    close(inner(0, 0), inner(100, 0)); // no travel: they stay put
+  }
+});
+
+test("pull-up and pulldown: the shoulder blades (3D) ride up with the shoulders overhead and down at the end, turned upwards with the arms overhead", () => {
+  for (const id of ["pull-up", "lat-pulldown"]) {
+    const ex = load(id), v = ex.variants[0];
+    const blade = (x, travel) => {
+      const r = analyzeMulti(ex, v, x, { ...opts, loadKg: 40, placement: { scapTravel: travel } });
+      return { t: r.frames.trunk, pts: r.scene.find((p) => p.cls === "scapula3d").pts };
+    };
+    // Height of the corner at the shoulder (the turn's pivot) above the shoulders' level, along the trunk.
+    const lift = (x, travel) => {
+      const { t, pts } = blade(x, travel), up = { x: t.to.x - t.from.x, y: t.to.y - t.from.y, z: t.to.z - t.from.z }, n = Math.hypot(up.x, up.y, up.z);
+      return ((pts[0].x - t.to.x) * up.x + (pts[0].y - t.to.y) * up.y + (pts[0].z - t.to.z) * up.z) / n;
+    };
+    close(lift(0, 0.08) - lift(0, 0), 0.04, 1e-9);
+    close(lift(100, 0.08) - lift(100, 0), -0.04, 1e-9);
+    // Upward rotation (Braman et al.): the bottom corner further out with the arms overhead.
+    assert.ok(Math.abs(blade(0, 0).pts[2].z) > Math.abs(blade(100, 0).pts[2].z) + 0.03, id);
+  }
+});
+
+test("bench press: the shoulder blades (3D) squeeze together and move along the body with the sliders", () => {
+  const ex = load("bench-press"), v = ex.variants[0];
+  const blade = (placement) => analyzeMulti(ex, v, 50, { ...opts, loadKg: 40, placement }).scene.find((p) => p.cls === "scapula3d").pts;
+  const inner = (pts) => Math.abs(pts[1].z);
+  close(inner(blade({})) - inner(blade({ scapRetract: 0.04 })), 0.04, 0.003); // the inner edge 4 cm in (round the ribs)
+  // Down along the body = towards the feet (+x on a flat bench), by the slider's amount.
+  close(blade({ scapElevate: -0.03 })[0].x - blade({})[0].x, 0.03, 1e-9);
+});
+
+test("rows: the lower back (L5/S1) holds everything above it, against the measured lumbar strength; the erector spinae follow it", () => {
+  const at = (id, vid, x) => { const ex = load(id); return analyzeMulti(ex, ex.variants.find((v) => v.id === vid), x, { ...opts, loadKg: 40 }).joints.find((j) => j.id === "lumbar"); };
+  // Bent over: a flatter trunk asks more of the lower back; pulling the bar in asks less.
+  assert.ok(at("bent-over-row", "pendlay", 0).torque > at("bent-over-row", "barbell", 0).torque);
+  assert.ok(at("bent-over-row", "barbell", 100).torque < at("bent-over-row", "barbell", 0).torque);
+  // The whole trunk's moment is less than both hips' (the pelvis is below L5/S1) but of the same order.
+  const ex = load("bent-over-row"), r = analyzeMulti(ex, ex.variants[0], 50, { ...opts, loadKg: 40 });
+  const hip = r.joints.find((j) => j.id === "hip").torque, lum = r.joints.find((j) => j.id === "lumbar").torque;
+  assert.ok(lum < 2 * hip && lum > hip, `${lum} vs hips ${2 * hip}`);
+  // Seated: the cable's pull is largest with the arms reaching forward; a chest pad holds the trunk.
+  assert.ok(at("seated-row", "upright", 0).torque > at("seated-row", "upright", 100).torque);
+  assert.equal(at("seated-row", "chest-supported", 50).torque, 0);
+  // Strength: the back extension's lumbar curve at a neutral spine.
+  const lumbar = at("bent-over-row", "barbell", 50);
+  const be = load("back-extension").joints.find((j) => j.id === "lumbar");
+  close(lumbar.capacity, be.peakTorqueNm * be.strength.points.find(([a]) => a === 0)[1], 1e-6);
+  for (const id of ["bent-over-row", "seated-row"]) assert.equal(load(id).muscles.find((m) => m.id === "erector-spinae").joint, "lumbar");
 });

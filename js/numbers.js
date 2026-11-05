@@ -70,11 +70,16 @@ export function renderNumbers(box, ex, variant, { peakTorqueNm } = {}) {
     const how = [];
     if (m.driver === "none") how.push("not modelled");
     if (m.joints || m.joint) how.push(`follows ${(m.joints ?? [m.joint]).map((j) => (m.jointScale?.[j] ? `${j} × ${m.jointScale[j]}` : j)).join(", ")}`);
+    if (m.follows) {
+      const other = ex.muscles.find((x) => x.id === m.follows.muscle)?.name ?? m.follows.muscle, rs = m.follows.ratio.map(([, r]) => r);
+      how.push(`${m.driver === "follows" ? "" : "at least "}${rs.every((r) => r === rs[0]) ? `${rs[0]} ×` : "a ratio of"} ${other}`);
+    }
     if (m.sign || m.jointSign) how.push(m.jointSign ? `direction: ${Object.entries(m.jointSign).map(([j, s]) => `${j} ${s > 0 ? "+" : "−"}`).join(", ")}` : `only ${m.sign > 0 ? "positive" : "negative"} torque`);
     if (m.coContract) how.push(`co-contracts against ${m.coContract.with} at the ${m.coContract.joint} (share ${m.coContract.share ?? 1})`);
     const mods = (ex.variants ?? []).filter((v) => v.muscleModifiers?.[m.id] != null).map((v) => `${v.name}: × ${v.muscleModifiers[m.id]}`);
     const item = el("details", { className: "num-item" }, el("summary", {}, el("strong", { textContent: m.name }), how.length ? ` — ${how.join("; ")}` : ""));
-    if (Array.isArray(m.weight)) item.append(el("p", { className: "num-sub", textContent: "Weight (share of the joint's effort) by angle:" }), pointsTable(m.weight, { angleLabel: m.joint ?? "angle" }));
+    if (Array.isArray(m.weight) && m.driver !== "follows") item.append(el("p", { className: "num-sub", textContent: "Weight (share of the joint's effort) by angle:" }), pointsTable(m.weight, { angleLabel: m.joint ?? "angle" }));
+    if (m.follows) item.append(el("p", { className: "num-sub", textContent: "At least this ratio of that muscle's activation, by position:" }), pointsTable(m.follows.ratio, { angleLabel: "position" }));
     if (mods.length) item.append(el("p", { className: "num-sub", textContent: `Variant modifiers: ${mods.join(" · ")}` }));
     if (m.placementFactor) item.append(el("p", { className: "num-sub", textContent: `Set-up factor (${m.placementFactor.key}): ${m.placementFactor.values ? Object.entries(m.placementFactor.values).map(([k, v]) => `${k} × ${v}`).join(", ") : (m.placementFactor.points ?? []).map(([a, v]) => `${a}: × ${v}`).join(", ")}` }));
     item.append(...noteAndSource(m));

@@ -186,11 +186,15 @@ function bodyAround(r, exercise, activation, F, place) {
   for (const m of exercise.muscles.filter((x) => x.draw && r.segs[x.draw.seg] && x.draw.seg !== "trunk")) {
     const [from, to] = r.segs[m.draw.seg];
     const l = Math.hypot(to.x - from.x, to.y - from.y) || 1, u = { x: (to.x - from.x) / l, y: (to.y - from.y) / l }, n = { x: -u.y, y: u.x };
-    const at = (t) => ({ x: from.x + u.x * t + n.x * (m.draw.offset ?? 0), y: from.y + u.y * t + n.y * (m.draw.offset ?? 0) });
+    // Half the 2D figure's offset in its plane, and as much out to the side: on the limb's outer
+    // front or back, so a prone body (plank) doesn't hide the front of its thighs against the floor.
+    const off = (m.draw.offset ?? 0) / 2;
+    const at = (t) => ({ x: from.x + u.x * t + n.x * off, y: from.y + u.y * t + n.y * off });
     const v = act[m.id] ?? 0, title = `${m.name}: ${Math.round(v * 100)}%`;
     for (const s of [HIP, -HIP]) {
-      line(P(at(m.draw.along[0]), s), P(at(m.draw.along[1]), s), m.draw.w, "muscle-base", { title, top: 0.05 });
-      line(P(at(m.draw.along[0]), s), P(at(m.draw.along[1]), s), m.draw.w, "muscle-on", { opacity: v, title, top: 0.05 });
+      const side = s + Math.sign(s) * Math.abs(off);
+      line(P(at(m.draw.along[0]), side), P(at(m.draw.along[1]), side), m.draw.w, "muscle-base", { title, top: 0.05 });
+      line(P(at(m.draw.along[0]), side), P(at(m.draw.along[1]), side), m.draw.w, "muscle-on", { opacity: v, title, top: 0.05 });
     }
   }
   return out;
