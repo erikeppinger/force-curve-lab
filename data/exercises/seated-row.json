@@ -95,21 +95,11 @@
       "name": "Lower back (L5/S1)",
       "action": "Lumbar extension",
       "angleLabel": "lumbar flexion",
-      "peakTorqueNm": 465,
+      "peakTorqueNm": 270,
       "strength": {
-        "points": [
-          [-20, 0.44],
-          [-10, 0.48],
-          [0, 0.51],
-          [12, 0.64],
-          [24, 0.74],
-          [36, 0.81],
-          [48, 0.87],
-          [60, 0.93],
-          [72, 1]
-        ],
-        "note": "As in the back extension: isometric lumbar extension of 56 men by lumbar flexion (about 238 Nm upright, 465 Nm fully flexed). The rows hold the spine neutral (0°), so about 238 Nm. Measured seated on a machine with the pelvis strapped and the torso's weight counterbalanced, which may give less than a standing lifter can hold: the lower back's effort here is likely on the high side.",
-        "source": "Graves JE, Pollock ML, Carpenter DM, Leggett SH, Jones A, MacMillan M, Fulton M (1990). Quantitative assessment of full range-of-motion isometric lumbar extension strength. Spine 15(4):289–294. doi:10.1097/00007632-199004000-00008 (Fig. 4: 56 men, MedX machine, seated, pelvis and femurs restrained, torso weight counterbalanced)"
+        "points": [[-20, 1], [72, 1]],
+        "note": "A typical man's isometric lower-back (L5/S1) extension strength in lifting postures: about 270 N·m, where Tan et al. (295 N·m with the trunk bent 35°), Gallagher (265–270 N·m at 22.5–45°) and Mawston et al. (212–227 N·m in a maximal lift) roughly agree. Upright it is less (Tan et al. 150, Graves et al. 238 N·m). Dolan et al. measured 430 N·m pulling from the floor with the spine flexed (passive tissues add up to 120 N·m fully flexed), and national-level powerlifters reach up to about 990 N·m in deadlifts (Cholewicki et al.), so trained lifters are far stronger: use the strength slider. Taken as the same at every trunk angle (the spine is held neutral). Before 2026-11-05: Graves et al.'s seated machine values (about 238 N·m with the spine neutral), which isolate the back.",
+        "source": "Tan JC, Parnianpour M, Nordin M, Hofer H, Willems B (1993). Isometric maximal and submaximal trunk extension at different flexed positions in standing. Spine 18(16):2480–2490. doi:10.1097/00007632-199312000-00018 (Fig. 6: 31 men, standing, about L5/S1: about 150, 225 and 295 N·m upright, 15° and 35° bent, read off the figure); Gallagher S (1997). Trunk extension strength and muscle activity in standing and kneeling postures. Spine 22(16):1864–1872. doi:10.1097/00007632-199708150-00011 (Fig. 2: 21 men, standing, isometric medians about 200, 195 and 142 ft·lb, i.e. 270, 265 and 193 N·m, at 22.5°, 45° and 67.5° of trunk flexion, read off the figure); Mawston G, Holder L, O'Sullivan P, Boocock M (2021). Flexed lumbar spine postures are associated with greater strength and efficiency than lordotic postures during a maximal lift in pain-free individuals. Gait Posture 86:245–250. doi:10.1016/j.gaitpost.2021.02.029 (Table 2: 13 men, maximal lift: 212, 217 and 227 N·m with the back arched, mid-range and rounded); range: Dolan P, Mannion AF, Adams MA (1994). Passive tissues help the back muscles to generate extensor moments during lifting. J Biomech 27(8):1077–1085. doi:10.1016/0021-9290(94)90224-0 (Table 1: 23 men, isometric pull from the floor with the lumbar spine 70% flexed: 430 ± 116 N·m; women 245; passive tissues 25 N·m arched to 120 N·m fully flexed); Cholewicki J, McGill SM, Norman RW (1991). Lumbar spine loads during the lifting of extremely heavy weights. Med Sci Sports Exerc 23(10):1179–1186. doi:10.1249/00005768-199110000-00012 (national powerlifting championship deadlifts: L4/L5 moments up to 988 N·m on average for the heaviest lifts)"
       }
     }
   ],

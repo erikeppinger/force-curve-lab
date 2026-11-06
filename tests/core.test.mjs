@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { analyze, G } from "../js/physics.js";
+import { analyze, G, belowFloor } from "../js/physics.js";
 
 const load = (id) => JSON.parse(readFileSync(new URL(`../data/exercises/${id}.json`, import.meta.url)));
 const close = (a, b, tol = 1e-9) => assert.ok(Math.abs(a - b) <= tol * Math.max(1, Math.abs(b)), `${a} vs ${b}`);
@@ -144,4 +144,12 @@ test("hand-computed: Pallof press, the twist is the cable's sideways pull × the
     close(r.joints.find((j) => j.id === "rotation").torque, Fx * reach, 1e-9);
     close(r.joints.find((j) => j.id === "sidebend").torque, Fx * P.handHeight, 1e-9);
   }
+});
+
+test("lying leg raise: straight legs stay clear of the floor; knees bent 85° low down, the feet would sink below it (floor 13 cm under the hip, the feet 43 cm)", () => {
+  const ex = load("leg-raise"), v = ex.variants.find((x) => x.id === "lying");
+  const sink = (hip, knee) => belowFloor(ex, v, at(ex, "lying", hip, { placement: { knee } }).pose);
+  assert.equal(sink(0, 0), 0);
+  close(sink(0, 85), 0.43 - 0.13, 0.02);
+  assert.equal(sink(90, 85), 0);
 });

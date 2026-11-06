@@ -4,6 +4,7 @@
   "joint": "Hip, knee and ankle",
   "model": "multi",
   "solver": "hipThrust3d",
+  "legModel": {"data": "data/opensim/leg-paths.json", "note": "Leg muscles drawn along their paths in the Rajagopal et al. 2016 model (MIT licence), shaded by the exercise muscle they belong to. Display only."},
   "view": "3d",
   "angleLabel": "Hip angle",
   "concentric": "decrease",

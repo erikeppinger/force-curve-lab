@@ -562,7 +562,9 @@ function backExtension(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   // lower back (half of it from L5/S1 to mid-back) and the upper back (all of it), so the curve shows.
   const p = rot(up0, rad(hipFlex)), a = rot(up0, rad(hipFlex + r / 2)), q = rot(up0, rad(x)); // pelvis, lower back, upper back
   const legLen = L.thigh + L.shank;
-  const H = { x: 0, y: L.ankleHeight - d.y * legLen + 0.05 };
+  // Hips high enough that the trunk folded down clears the floor: on the 45° bench the feet stand on
+  // the floor, on the horizontal one the legs lie on a bench at hip height.
+  const H = { x: 0, y: P.bench === 45 ? L.ankleHeight - d.y * legLen + 0.05 : L.trunk + 0.45 };
   const K = add(H, d, L.thigh), A = add(H, d, legLen);
   const L5 = add(H, p, tp.l5s1);
   const M = add(L5, a, L.trunk / 2 - tp.l5s1); // mid-back
@@ -587,7 +589,7 @@ function backExtension(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
       lumbar: { at: L5, angle: r, ...lumbar },
     },
     segs: { thigh: [K, H], pelvis: [H, L5], trunk: [L5, M], upperBack: [M, S] },
-    draw: [{ a: A, b: K, w: 0.1, cls: "body" }, { a: K, b: H, w: 0.14, cls: "body" }, { a: { x: A.x - 0.02, y: A.y }, b: add(A, n, -0.12), w: 0.06, cls: "body" },
+    draw: [{ a: A, b: K, w: 0.1, cls: "body" }, { a: K, b: H, w: 0.14, cls: "body" }, { a: { x: A.x - 0.02, y: A.y }, b: add(A, n, 0.12), w: 0.06, cls: "body" }, // toes towards the legs' front, onto the foot plate
       { a: H, b: L5, w: 0.26, cls: "body", trunk: true }, { a: L5, b: M, w: 0.26, cls: "body", trunk: true }, { a: M, b: S, w: 0.26, cls: "body", trunk: true }, { circle: head, r: 0.11, cls: "body" }],
     arms: [{ from: S, to: chest, elbow: add(lerp(S, chest, 0.5), rot(q, Math.PI / 2), -0.12) }],
     loads: loadKg > 0 ? [{ at: plateAt, kind: "plate" }] : [],

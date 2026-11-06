@@ -64,7 +64,8 @@
       "role": "Synergist",
       "driver": "jointEffort",
       "weight": [[0, 0.65], [30, 0.85], [60, 0.95], [90, 0.95]],
-      "note": "Also abducts with the arm out to the side, and takes over when the arm turns in (thumbs down). Level with the thumbs forward: about as active as the middle deltoid (Coratella et al.: 52% vs 55% of maximum); the shape over the angle follows the middle deltoid (estimate).",
+      "note": "Also abducts with the arm out to the side, and takes over when the arm turns in (thumbs down). Level with the thumbs forward: about as active as the middle deltoid (Coratella et al.: 52% vs 55% of maximum); the shape over the angle follows the middle deltoid (estimate). On the incline bench it also holds the arms against the part of gravity pulling them towards the floor (horizontal abduction, physics).",
+      "cross": {"share": 1},
       "source": "Coratella G, Tornatore G, Longo S, Esposito F, Cè E (2020). An electromyographic analysis of lateral raise variations and frontal raise in competitive bodybuilders. Int J Environ Res Public Health 17(17):6015. doi:10.3390/ijerph17176015 (Discussion: deltoid sEMG RMS, % of maximal isometric, 10 male bodybuilders, seated, 8-RM, raise to 90°)",
       "placementFactor": {
         "key": "rotation",
@@ -260,6 +261,18 @@
       "defaultLoadKg": 3,
       "notes": "A lateral raise continued over the head, usually with the thumbs turned up (the arm rotated outwards) and light weights. The load's lever peaks at shoulder height and shrinks to zero overhead, so the hardest point is still around 90°; above it the shoulder blade does more and more of the turning (serratus anterior, trapezius). The arm-rotation setting starts at thumbs up, which shifts work to the front deltoid.",
       "params": {"rotation": "up"}
+    },
+    {
+      "id": "incline-chest",
+      "name": "Chest-supported incline lateral raise (45°)",
+      "equipment": "Dumbbell, lying chest-down on a 45° bench",
+      "gravity": {"x": 0, "y": -0.7071068},
+      "outOfPlane": {"g": 0.7071068, "capacityNm": 93, "note": "Lying chest-down on a 45° bench, the arms rise in a plane tilted 45° forward. The other 71% of gravity pulls the dumbbell and arm towards the floor, out of that plane: weight × distance from the shoulder at every angle, held by the rear deltoids (horizontal abduction), against a typical man's horizontal-abduction strength (Lategan: 93 Nm).", "source": "Lategan L (2002). Normative isokinetic torque values for rehabilitation in South Africa. DPhil thesis, University of Pretoria, Table 6.17 (103 men aged 16–29, isokinetic 60°/s, concentric, lying on the back with the arm out at 90°, not gravity-corrected). https://repository.up.ac.za/handle/2263/27346"},
+      "viewLabel": "Front view of the body (lying chest-down on a 45° bench)",
+      "load": {"type": "gravity"},
+      "notes": "Chest down on a 45° bench the arms rise in a plane tilted 45° forward, so only cos 45° = 71% of the weight acts in it: the side-raise torque on the lateral deltoid is 29% lower than standing. The other 71% pulls the arms towards the floor at every angle, from the very bottom: the rear deltoids hold it (horizontal abduction). So the work shifts from the lateral to the rear deltoids: the rear deltoids are busy from the start, where standing they rest, while the lateral deltoids get less. Physics; how hard against the rear deltoids' strength follows Lategan's horizontal-abduction values.",
+      "angleRange": [0, 90],
+      "params": {"rotation": "forward"}
     }
   ],
   "wger": {

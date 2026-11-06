@@ -218,6 +218,7 @@ export function trunkChainScene3d(data, exercise, variant, result, activation, g
   const line = (a, b, w, cls, extra) => out.push({ kind: "line", a, b, w, cls, ...extra });
   const HIP = 0.09, SH = 0.19;
   const P2 = ([x, y]) => ({ x, y });
+  const boards = [];
   // The still body: wide pieces (pelvis, trunk) as a see-through outline, limbs on both sides
   // (arms above the hips, legs below), equipment as two rails.
   for (const sh of exercise.postures?.[variant.posture] ?? []) {
@@ -227,7 +228,15 @@ export function trunkChainScene3d(data, exercise, variant, result, activation, g
       // Lying on the floor: the floor plane replaces the 2D floor line. Hanging: the bar runs across. Benches: two rails.
       if (variant.posture === "floor" || variant.posture === "lying") continue;
       if (variant.posture === "hanging") { const m = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; line(W(m, -0.45), W(m, 0.45), 0.035, "equipment"); continue; }
-      for (const z of [0.2, -0.2]) line(W(a, z), W(b, z), sh.w, "equipment");
+      // Benches: a long piece is the padded board (on two legs, added once the scene is turned),
+      // a short one a roller across the legs.
+      if (Math.hypot(b.x - a.x, b.y - a.y) > 0.5) {
+        out.push({ kind: "poly", pts: [W(a, -0.16), W(b, -0.16), W(b, 0.16), W(a, 0.16)], cls: "plate3d bench3d" });
+        boards.push([a, b]);
+      } else {
+        const m = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+        line(W(m, -0.2), W(m, 0.2), 0.08, "equipment");
+      }
       continue;
     }
     if (sh.w >= 0.18) { line(W(a), W(b), sh.w * 1.15, "body ghost", { part: "torso" }); continue; }
@@ -242,7 +251,7 @@ export function trunkChainScene3d(data, exercise, variant, result, activation, g
     out.push({ kind: "dot", c: W(h), r: SD?.head?.r ?? 0.11, cls: "body", part: "head" });
   } else {
     for (const z of [HIP, -HIP]) {
-      const o = { part: `leg${z > 0 ? "R" : "L"}` }, cls = z > 0 ? "body" : "body back";
+      const o = { part: `leg${z > 0 ? "R" : "L"}`, chain: true }, cls = z > 0 ? "body" : "body back";
       line(W(base, z), W(mid, z), SD?.w?.[0] ?? 0.14, cls, o);
       line(W(mid, z), W(tip, z), SD?.w?.[1] ?? 0.1, cls, o);
     }
@@ -255,8 +264,8 @@ export function trunkChainScene3d(data, exercise, variant, result, activation, g
       const at = (t) => ({ x: from.x + u.x * t + n.x * (m.draw.offset ?? 0), y: from.y + u.y * t + n.y * (m.draw.offset ?? 0) });
       const v = act[m.id] ?? 0, title = `${m.name}: ${Math.round(v * 100)}%`;
       for (const z of [HIP, -HIP]) {
-        line(W(at(m.draw.along[0]), z), W(at(m.draw.along[1]), z), m.draw.w, "muscle-base", { title, top: 0.05 });
-        line(W(at(m.draw.along[0]), z), W(at(m.draw.along[1]), z), m.draw.w, "muscle-on", { opacity: v, title, top: 0.05 });
+        line(W(at(m.draw.along[0]), z), W(at(m.draw.along[1]), z), m.draw.w, "muscle-base", { title, top: 0.05, chain: true });
+        line(W(at(m.draw.along[0]), z), W(at(m.draw.along[1]), z), m.draw.w, "muscle-on", { opacity: v, title, top: 0.05, chain: true });
       }
     }
   }
@@ -267,12 +276,20 @@ export function trunkChainScene3d(data, exercise, variant, result, activation, g
   const all = [...trunkScene3d(data, exercise, activation, place), ...out];
   // Turn the scene so gravity points down (lying: the back on the floor), and add the floor.
   const g = gravity ?? { x: 0, y: -1 };
-  const turned = Math.hypot(g.x, g.y) > 1e-9 ? mapPrims(all, rotZ(Math.atan2(-1, 0) - Math.atan2(g.y, g.x))) : all;
+  // No gravity in the plane: leave the scene (and the bench legs below) unturned.
+  const R = Math.hypot(g.x, g.y) > 1e-9 ? rotZ(Math.atan2(-1, 0) - Math.atan2(g.y, g.x)) : (p) => p;
+  const turned = mapPrims(all, R);
   if (variant.posture === "hanging") return turned;
-  const ys = turned.flatMap((p) => (p.kind === "line" ? [p.a.y - p.w / 2, p.b.y - p.w / 2] : p.kind === "dot" ? [p.c.y - p.r] : p.pts.map((q) => q.y)));
+  // The floor under the still body, not the moving legs: it stays put through the lift (as in the 2D figure).
+  const ys = turned.filter((p) => !p.chain).flatMap((p) => (p.kind === "line" ? [p.a.y - p.w / 2, p.b.y - p.w / 2] : p.kind === "dot" ? [p.c.y - p.r] : p.pts.map((q) => q.y)));
   const xs = turned.flatMap((p) => (p.kind === "line" ? [p.a.x, p.b.x] : p.kind === "dot" ? [p.c.x] : p.pts.map((q) => q.x)));
   const y0 = Math.min(...ys) - 0.005, x0 = Math.min(...xs) - 0.2, x1 = Math.max(...xs) + 0.2;
-  return [{ kind: "poly", pts: [[x0, -0.6], [x1, -0.6], [x1, 0.6], [x0, 0.6]].map(([x, z]) => ({ x, y: y0, z })), cls: "floor3d" }, ...turned];
+  // Bench legs: from a fifth and four fifths along each board down to the floor, both sides.
+  const legs = boards.flatMap(([a, b]) => [0.2, 0.8].flatMap((t) => [0.12, -0.12].map((z) => {
+    const q = R(W({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t }, z));
+    return { kind: "line", a: q, b: { x: q.x, y: y0, z: q.z }, w: 0.04, cls: "equipment" };
+  })));
+  return [{ kind: "poly", pts: [[x0, -0.6], [x1, -0.6], [x1, 0.6], [x0, 0.6]].map(([x, z]) => ({ x, y: y0, z })), cls: "floor3d" }, ...legs, ...turned];
 }
 
 /**

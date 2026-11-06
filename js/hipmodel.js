@@ -7,6 +7,8 @@
 // as in the model's hip joint. A muscle's moment arm about a coordinate q is −dL/dq (L = the
 // length of its path: straight segments between its points, wrapped over the model's cylinders).
 
+import { wrapOverCylinder } from "./wrap.js";
+
 const rad = (d) => (d * Math.PI) / 180;
 
 const rx = (a, [x, y, z]) => [x, y * Math.cos(a) - z * Math.sin(a), y * Math.sin(a) + z * Math.cos(a)];
@@ -18,49 +20,18 @@ export function femurToPelvis(p, { flexion = 0, adduction = 0, rotation = 0 }) {
   return rz(rad(flexion), rx(rad(adduction), ry(rad(rotation), p)));
 }
 
-/** Pelvis-frame point into the femur frame (inverse of femurToPelvis). */
-const pelvisToFemur = (p, { flexion = 0, adduction = 0, rotation = 0 }) => ry(-rad(rotation), rx(-rad(adduction), rz(-rad(flexion), p)));
-
 /**
- * Wrap one straight segment a → b (pelvis frame) over a cylinder, as OpenSim does: in the
- * cylinder's frame (axis = z) the path runs tangent to the circle, along the arc and tangent off
- * again; along the axis it rises evenly over the unrolled length. It wraps when the line cuts the
- * cylinder, or (with a `quadrant`) when it would pass on the forbidden side. Returns the points
- * to insert between a and b, or null.
+ * Wrap one straight segment a → b (pelvis frame) over a cylinder (js/wrap.js): the cylinder's
+ * centre and axes carried into the pelvis frame (a femur cylinder turns with the hip angles).
  */
 function wrapSegment(a, b, w, hip) {
   const [r0, r1, r2] = w.rotation;
-  const toBody = (p) => (w.body === "femur" ? pelvisToFemur(p, hip) : p);
   const fromBody = (p) => (w.body === "femur" ? femurToPelvis(p, hip) : p);
-  const toCyl = (p) => { const q = toBody(p); return rz(-r2, ry(-r1, rx(-r0, [q[0] - w.at[0], q[1] - w.at[1], q[2] - w.at[2]]))); };
-  const fromCyl = (q) => { const p = rx(r0, ry(r1, rz(r2, q))); return fromBody([p[0] + w.at[0], p[1] + w.at[1], p[2] + w.at[2]]); };
-  const P = toCyl(a), S = toCyl(b), r = w.radius;
-  const dp = Math.hypot(P[0], P[1]), ds = Math.hypot(S[0], S[1]);
-  if (dp <= r || ds <= r) return null;
-  const dx = S[0] - P[0], dy = S[1] - P[1];
-  const t = Math.max(0, Math.min(1, -(P[0] * dx + P[1] * dy) / (dx * dx + dy * dy || 1)));
-  const cx = P[0] + t * dx, cy = P[1] + t * dy;
-  const allowed = (ang) => ({ "+x": Math.cos(ang) > 0, "-x": Math.cos(ang) < 0, "+y": Math.sin(ang) > 0, "-y": Math.sin(ang) < 0 })[w.quadrant] ?? true;
-  if (Math.hypot(cx, cy) >= r && allowed(Math.atan2(cy, cx))) return null;
-  const tp = Math.atan2(P[1], P[0]), ts = Math.atan2(S[1], S[0]);
-  const ap = Math.acos(r / dp), as = Math.acos(r / ds);
-  const mod = (x) => ((x % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI);
-  const ways = [1, -1].map((s) => {
-    const a1 = tp + s * ap, a2 = ts - s * as;
-    const arc = mod(s * (a2 - a1));
-    return { s, a1, arc, len: Math.sqrt(dp * dp - r * r) + r * arc + Math.sqrt(ds * ds - r * r) };
-  });
-  const ok = ways.filter((x) => allowed(x.a1 + (x.s * x.arc) / 2));
-  const best = (ok.length ? ok : ways).reduce((m, x) => (x.len < m.len ? x : m));
-  const lp = Math.sqrt(dp * dp - r * r), L2 = best.len;
-  const n = Math.max(1, Math.ceil(best.arc / 0.3));
-  const pts = [];
-  for (let i = 0; i <= n; i++) {
-    const ang = best.a1 + (best.s * best.arc * i) / n;
-    const along = (lp + (r * best.arc * i) / n) / L2;
-    pts.push(fromCyl([r * Math.cos(ang), r * Math.sin(ang), P[2] + (S[2] - P[2]) * along]));
-  }
-  return pts;
+  const axis = (e) => fromBody(rx(r0, ry(r1, rz(r2, e)))); // a rotation only: no translation
+  const P = (q) => ({ x: q[0], y: q[1], z: q[2] });
+  const cyl = { c: P(fromBody(w.at)), ax: [[1, 0, 0], [0, 1, 0], [0, 0, 1]].map((e) => P(axis(e))), r: w.radius, quadrant: w.quadrant };
+  const pts = wrapOverCylinder(P(a), P(b), cyl);
+  return pts && pts.map((q) => [q.x, q.y, q.z]);
 }
 
 /** The muscle's path points in the pelvis frame, wrapped over its cylinders (`wraps` = geometry.wraps). */
@@ -224,25 +195,28 @@ export function hipScene3d(exercise, variant, result, { geometry, acts, muscles,
   const seated = Boolean(variant.hip?.kneeBent);
   const mirror = (p) => [p[0], p[1], 2 * half - p[2]];
   // A leg in the pelvis frame (hip, knee, ankle); seated, the lower leg hangs straight down.
+  // Heel and toes (x forward in the pelvis frame) show which way the body faces.
   const leg = (h) => {
     const knee = femurToPelvis([0, -L1, 0], h);
     const ankle = seated ? plus(knee, W_inv([0, -L2, 0])) : femurToPelvis([0, -L1 - L2, 0], h);
-    return [[0, 0, 0], knee, ankle];
+    const foot = (x) => (seated ? plus(ankle, W_inv([x, -0.05, 0])) : femurToPelvis([x, -L1 - L2 - 0.05, 0], h));
+    return [[0, 0, 0], knee, ankle, foot(-0.06), foot(0.14)];
   };
   const L3 = (a, b, w, cls, extra) => ({ kind: "line", a: v3(a), b: v3(b), w, cls, ...extra });
   const right = leg(hip);
   // The other leg: seated it mirrors the working one (both press the pads); otherwise it stays down.
   const left = (seated ? right : leg({ flexion: hip.flexion })).map(mirror);
-  const [H, K, A] = right.map(W);
-  const [lH, lK, lA] = left.map(W);
+  const [H, K, A, heel, toe] = right.map(W);
+  const [lH, lK, lA, lHeel, lToe] = left.map(W);
   const mid = W([0, 0, half]);
   const up = W([0, 1, 0]);
   const shoulder = plus(mid, up, 0.52);
   const prims = [
     L3(mid, shoulder, 0.3, "body"), { kind: "dot", c: v3(plus(shoulder, up, 0.2)), r: 0.11, cls: "body" },
+    { kind: "dot", c: v3(plus(plus(shoulder, up, 0.21), W([1, 0, 0]), 0.1)), r: 0.025, cls: "body" }, // nose: the way the body faces
     L3(plus(mid, plus(lH, mid, -1), 0.75), plus(mid, plus(H, mid, -1), 0.75), 0.16, "body"), // hips inside the trunk's outline (HIP_BAR in multijoint3d.js)
-    L3(lH, lK, 0.14, "body back"), L3(lK, lA, 0.1, "body back"),
-    L3(H, K, 0.14, "body"), L3(K, A, 0.1, "body"),
+    L3(lH, lK, 0.14, "body back"), L3(lK, lA, 0.1, "body back"), L3(lHeel, lToe, 0.06, "body back"), { kind: "dot", c: v3(lToe), r: 0.022, cls: "toe back" },
+    L3(H, K, 0.14, "body"), L3(K, A, 0.1, "body"), L3(heel, toe, 0.06, "body"), { kind: "dot", c: v3(toe), r: 0.022, cls: "toe" },
   ];
   // Muscles of the right leg along the model's path points (pelvis → femur), drawn over the body.
   for (const m of muscles) {

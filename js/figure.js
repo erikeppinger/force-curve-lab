@@ -289,12 +289,21 @@ export function renderFigure(svg, { exercise, variant: variant0, result, activat
   const mk = el("marker", { id: "arrow", viewBox: "0 0 10 10", refX: 5, refY: 5, markerWidth: 4, markerHeight: 4, orient: "auto-start-reverse" }, defs);
   el("path", { d: "M0,0 L10,5 L0,10 z", class: "arrowhead" }, mk);
 
+  figureInsets(svg, exercise, variant, result);
+}
+
+/**
+ * Insets in the figure's top right corner, for the 2D and the 3D figure alike (to the right of
+ * the drawing's current viewBox): the feet turned in or out (calf raise), a machine's cam.
+ */
+export function figureInsets(svg, exercise, variant, result) {
+  const width = Number(svg.getAttribute("viewBox").split(" ")[2]);
   // Toes in / out (calf raise): both feet from above in the top corner, turned by the slider.
   const footSpec = exercise.placement?.find((s) => s.key === "footAngle" && (!s.variants || s.variants.includes(variant.id)));
-  if (footSpec) footInset(svg, (V.x1 - V.x0) * S, Number(result.placement?.footAngle ?? variant.params?.footAngle ?? 0));
+  if (footSpec) footInset(svg, width, Number(result.placement?.footAngle ?? variant.params?.footAngle ?? 0));
   // A machine's cam (leg extension, leg curl ...): its shape and where the belt leaves it now.
   const prof = variant.load.type === "machine" ? camOf(variant.load, result.placement)?.points : null;
-  if (prof && result.angle != null) camInset(svg, (V.x1 - V.x0) * S, prof, result.angle, exercise.angleRange ?? [prof[0][0], prof.at(-1)[0]], exercise.angleSense ?? 1);
+  if (prof && result.angle != null) camInset(svg, width, prof, result.angle, exercise.angleRange ?? [prof[0][0], prof.at(-1)[0]], exercise.angleSense ?? 1);
 }
 
 /** Room for a 96 px inset in the figure's top right corner, outside the drawing. */

@@ -4,6 +4,7 @@
   "joint": "Shoulder extension",
   "movingJoint": "proximal",
   "view": "side",
+  "figure3d": {"kind": "chain", "base": "shoulder", "plane": "sagittal", "both": true, "start": "3d"},
   "angleLabel": "Shoulder angle",
   "concentric": "decrease",
   "angleRange": [0, 170],
@@ -56,7 +57,7 @@
       "weight": [[0, 0.7], [90, 1], [170, 1]],
       "note": "Main shoulder extensor; strongest pull with the arm high. Higher in the straight-arm pulldown than the barbell pullover, at either grip width (Muyor et al.).",
       "source": "Muyor JM, López-Miñarro PA, Alacid F (2022). Comparison of electromyographic activity during barbell pullover and straight arm pulldown exercises. Appl Sci 12(21):11138. doi:10.3390/app122111138 (20 adults, 30% of body mass)",
-      "draw": {"seg": "proximal", "origin": [-0.07, -0.42], "insert": 0.05, "offset": -0.02, "w": 0.07, "layer": 0}
+      "draw": {"seg": "proximal", "origin": [-0.07, -0.42], "insert": 0.05, "offset": -0.02, "w": 0.07, "layer": 0, "z3d": [0.06, 0.19]}
     },
     {
       "id": "teres-major",
@@ -68,7 +69,7 @@
       "weight": [[0, 0.6], [170, 0.8]],
       "note": "Works alongside the lats.",
       "source": "Signorile JF, Zink AJ, Szwed SP (2002). A comparative electromyographical investigation of muscle utilization patterns using various hand positions during the lat pull-down. J Strength Cond Res 16(4):539–546. doi:10.1519/00124278-200211000-00008 (10 men, 10RM)",
-      "draw": {"seg": "proximal", "origin": [-0.08, -0.13], "insert": 0.06, "offset": -0.02, "w": 0.04, "layer": 1}
+      "draw": {"seg": "proximal", "origin": [-0.08, -0.13], "insert": 0.06, "offset": -0.02, "w": 0.04, "layer": 1, "z3d": [0.12, 0.19]}
     },
     {
       "id": "triceps-long",
@@ -92,7 +93,7 @@
       "weight": [[0, 0.1], [90, 0.4], [170, 0.6]],
       "note": "Helps pull the arm down from overhead, mainly in the upper range. Higher in the barbell pullover than the straight-arm pulldown, mainly its sternal and lower parts (Muyor et al.).",
       "source": "Muyor JM, López-Miñarro PA, Alacid F (2022). Comparison of electromyographic activity during barbell pullover and straight arm pulldown exercises. Appl Sci 12(21):11138. doi:10.3390/app122111138 (20 adults, 30% of body mass)",
-      "draw": {"seg": "proximal", "origin": [0.09, -0.16], "insert": 0.05, "offset": 0.02, "w": 0.05, "layer": 1}
+      "draw": {"seg": "proximal", "origin": [0.09, -0.16], "insert": 0.05, "offset": 0.02, "w": 0.05, "layer": 1, "z3d": [0.03, 0.19]}
     },
     {
       "id": "lower-traps",

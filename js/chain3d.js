@@ -81,11 +81,11 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
   const { ex: X, ey: Y } = planeAxes(F.plane, yaw);
   const seated = /seated/.test(variant.posture ?? "");
   // Chest on an incline bench: the legs are drawn after the turn, standing on the floor.
-  const incline = variant.posture === "incline";
+  const incline = variant.posture === "incline" || Boolean(variant.outOfPlane);
   // Body points relative to the base joint (right side).
   // Toes turned in (calf raise): the feet stand further apart so the toes don't meet.
   const toesIn = F.base === "knee" && yaw < 0 ? Math.sin(rad(-yaw)) * (L.footFront + 0.04) : 0;
-  const base = F.base === "knee" ? v3(0, 0, L.hipHalfWidth + toesIn) : v3(0, 0, L.shoulderHalfWidth);
+  const base = F.base === "knee" ? v3(0, 0, L.hipHalfWidth + toesIn) : F.base === "hip" ? v3(0, 0, L.hipHalfWidth) : v3(0, 0, L.shoulderHalfWidth);
   const map2 = (p) => add3(add3(base, X, p.x), Y, p.y);
   const dir2 = (d) => add3(add3(v3(0, 0, 0), X, d.x), Y, d.y);
   const { base: b2, mid: m2, tip: t2 } = result.pose;
@@ -103,11 +103,36 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
   // The still body. Arms: shoulder at the base; legs: knee at the base. Each piece belongs to a
   // part (view3d.js draws a part's outline round the whole part, not round each piece).
   const knee = F.base === "knee";
+  const hipBase = F.base === "hip";
   const machine = /Machine|Smith/.test(variant.equipment ?? "");
-  let S, P;
+  let S, P, legHip = null, toeDir = null; // the working leg's hip and toes (leg model frames, below)
   const arm = (sh, hand, s) => line(sh, hand, 0.065, s > 0 ? "body" : "body back", { part: s > 0 ? "armR" : "armL" });
-  if (knee) {
+  if (hipBase) {
+    // The hip at the base (leg extension, leg curl, kickback): the trunk above it in the exercise's
+    // frame, the other leg and the arms by posture; the whole scene is turned by gravity below.
+    const posture = variant.posture ?? "standing";
+    P = v3(0, 0, 0);
+    S = v3(0, L.trunk, 0);
+    const lHip = v3(0, 0, -L.hipHalfWidth), o = { part: "legL" };
+    // The other leg: thigh forward when seated or kneeling on all fours, else straight on.
+    const lKnee = add3(lHip, posture === "seated" || posture === "quadruped" ? v3(L.thigh, 0, 0) : v3(0, -L.thigh, 0));
+    const lAnkle = add3(lKnee, v3(0, -L.shank, 0));
+    if (!both) {
+      line(lHip, lKnee, 0.14, "body back", o);
+      line(lKnee, lAnkle, 0.1, "body back", o);
+    }
+    // Arms: hanging by the sides (standing, seated), towards the floor (on all fours), past the head
+    // holding the handles (lying face down).
+    const reach = L.upperArm + L.forearm;
+    const hand = (s) => posture === "quadruped" ? v3(reach, L.trunk, s * L.shoulderHalfWidth) : posture === "prone" ? v3(0.05, L.trunk + reach * 0.85, s * (L.shoulderHalfWidth + 0.03)) : v3(0, L.trunk - reach, s * (L.shoulderHalfWidth + 0.06));
+    for (const s of [1, -1]) arm(v3(0, L.trunk, s * L.shoulderHalfWidth), hand(s), s);
+    if (posture === "seated") {
+      lines.push({ kind: "poly", pts: [[-0.12, -0.3], [L.thigh * 0.8, -0.3], [L.thigh * 0.8, 0.3], [-0.12, 0.3]].map(([x, z]) => v3(x, -0.1, z)), cls: "plate3d bench3d" });
+      lines.push({ kind: "poly", pts: [v3(-0.17, -0.08, -0.25), v3(-0.17, L.trunk * 0.9, -0.25), v3(-0.17, L.trunk * 0.9, 0.25), v3(-0.17, -0.08, 0.25)], cls: "plate3d bench3d" }); // backrest
+    }
+  } else if (knee) {
     const hip = seated ? v3(-L.thigh, 0, L.hipHalfWidth) : v3(0, L.thigh, L.hipHalfWidth);
+    legHip = hip;
     P = v3(hip.x, hip.y, 0);
     S = add3(P, v3(0, L.trunk, 0));
     line(hip, chain[0], 0.14, "body", { part: "legR" });
@@ -176,11 +201,25 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
       line(pts[2], ft.toe, 0.045, cls, { part });
     }
   };
-  limb(chain, foot, "body", knee ? "legR" : "limbR");
-  if (both) limb(chain.map(mirror), foot && { heel: mirror(foot.heel), toe: mirror(foot.toe) }, "body back", knee ? "legL" : "limbL");
+  limb(chain, foot, "body", knee || hipBase ? "legR" : "limbR");
+  if (both) limb(chain.map(mirror), foot && { heel: mirror(foot.heel), toe: mirror(foot.toe) }, "body back", knee || hipBase ? "legL" : "limbL");
+  if (hipBase) {
+    // The working foot: across the shin's front (toes forward with the shin hanging down).
+    const l = Math.hypot(t2.x - m2.x, t2.y - m2.y) || 1, u = { x: (t2.x - m2.x) / l, y: (t2.y - m2.y) / l }, n = { x: -u.y, y: u.x };
+    const at = (k) => add3(chain[2], dir2({ x: n.x * k + u.x * 0.04, y: n.y * k + u.y * 0.04 }));
+    toeDir = dir2(n);
+    line(at(-0.05), at(0.14), 0.06, "body", { part: "legR" });
+    if (both) line(mirror(at(-0.05)), mirror(at(0.14)), 0.06, "body back", { part: "legL" });
+  }
   const act = Object.fromEntries(activation.map((m) => [m.id, m.value ?? 0]));
   const segs = { proximal: [b2, m2], distal: [m2, t2] };
-  for (const m of ex.muscles.filter((x) => x.draw)) {
+  // Muscles the leg model draws along their paths (`legModel.map`, js/legmodel.js via view3d.js)
+  // are left out here.
+  // Only when this figure gives the leg model its frames (a hip- or knee-based chain, below), else
+  // these muscles would be drawn by neither.
+  const legReady = (hipBase && toeDir) || (knee && legHip && foot);
+  const modelled = new Set(ex.legModel?.geometry && legReady ? Object.keys(ex.legModel.map ?? {}) : []);
+  for (const m of ex.muscles.filter((x) => x.draw && !modelled.has(x.id))) {
     const d = m.draw;
     let a, b;
     if (d.points) [a, b] = d.points.map(([x, y]) => ({ x, y }));
@@ -243,7 +282,9 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
   // Turn the scene so the variant's gravity points down (lying, inclined); no gravity in the plane
   // (a horizontal movement): leave the body upright.
   const g = gravityOf(variant);
-  const G3 = dir2(g);
+  // Gravity partly out of the plane (variant `outOfPlane`: a lateral raise chest-down on an incline
+  // bench): its rest points forward of the body, so the body leans forward onto the bench.
+  const G3 = add3(dir2(g), cross3(Y, X), variant.outOfPlane?.g ?? 0);
   const R = len3(G3) > 1e-9 ? turnOnto(unit3(G3), v3(0, -1, 0), unit3(cross3(X, Y))) : (p) => p;
   const T = (p) => R(p);
   const prims = lines.map((p) => (p.kind === "line" ? { ...p, a: T(p.a), b: T(p.b) } : p.kind === "dot" ? { ...p, c: T(p.c) } : { ...p, pts: p.pts.map(T) }));
@@ -290,9 +331,9 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
     const c = at(0.75);
     scene.push({ kind: "line", a: add3(c, front, 0.03), b: v3(c.x, floorY, 0), w: 0.05, cls: "equipment" });
   }
-  if (lying) {
-    // A bench under the trunk.
-    const a = T(P), b = T(S), y = Math.min(a.y, b.y) - 0.16;
+  if (lying && variant.posture !== "quadruped") {
+    // A bench under the trunk (lying face down on a leg-curl bench: under the thighs too).
+    const a = hipBase ? T(v3(0, -L.thigh * 0.8, 0)) : T(P), b = T(S), y = Math.min(a.y, b.y) - 0.16;
     scene.push({ kind: "poly", pts: [[a.x, -0.17], [b.x, -0.17], [b.x, 0.17], [a.x, 0.17]].map(([x, z]) => v3(x, y, z)), cls: "plate3d bench3d" });
   }
   // A closed chain is drawn with the ball of the foot fixed (on the step's edge, the floor at
@@ -300,9 +341,18 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
   const D = type === "reaction" ? v3(-ball.x, -floorY, 0) : v3(0, 0, 0);
   const M = (p) => add3(p, D);
   const move = (p) => (p.kind === "line" ? { ...p, a: M(p.a), b: M(p.b) } : p.kind === "dot" ? { ...p, c: M(p.c) } : { ...p, pts: p.pts.map(M) });
+  // Frames for the leg model: hip at the base (thigh = chain[0..1], shank = chain[1..2]) or the knee
+  // at the base (calf raise: thigh from the hip drawn above, shank = chain[0..1], foot to the ball).
+  const F3 = (p) => M(T(p));
+  const legFrames = hipBase && toeDir ? { thigh: [chain[0], chain[1]], shank: [chain[1], chain[2]], foot: [chain[2], add3(chain[2], toeDir, 0.1)] }
+    // The calcaneus' forward axis is the sole (heel → toes), not the ankle → ball line, which points
+    // about 30° below it with the foot flat.
+    : knee && legHip && foot ? { thigh: [legHip, chain[0]], shank: [chain[0], chain[1]], foot: [chain[1], add3(chain[1], unit3(sub3(foot.toe, foot.heel)), 0.1)] } : null;
+  const frames = legFrames ? Object.fromEntries([...Object.entries(legFrames), ["trunk", [P, S]]].map(([k, [a, b]]) => [k, { from: F3(a), to: F3(b) }])) : {};
   return {
     scene: [...scene, ...prims].map(move),
-    frames: {},
+    frames,
+    asymmetric: !both,
     forces: forces.map((q) => ({ at: M(T(q.at)), dir: R(q.dir) })),
     joints: joints.map((j) => ({ ...j, at: M(T(j.at)), foot: M(T(j.foot)) })),
   };

@@ -4,6 +4,8 @@
   "joint": "Knee flexion",
   "movingJoint": "distal",
   "view": "side",
+  "legModel": {"data": "data/opensim/leg-paths.json", "map": {"hamstrings": ["bflh", "bfsh", "semimem", "semiten"], "gastrocnemius": ["gasmed", "gaslat"]}, "note": "In 3D these muscles are drawn along their paths in the Rajagopal et al. 2016 model (MIT licence), shaded by the exercise muscle they belong to. Display only."},
+  "figure3d": {"kind": "chain", "base": "hip", "plane": "sagittal", "both": true, "start": "3d"},
   "angleLabel": "Knee angle",
   "angleSense": -1,
   "angleRange": [0, 120],

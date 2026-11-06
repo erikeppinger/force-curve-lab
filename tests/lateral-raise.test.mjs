@@ -90,3 +90,22 @@ test("muscle activation stays in [0, 1] and follows effort", () => {
   const bottom = muscleActivation(ex, v("dumbbell"), analyze(ex, v("dumbbell"), 0, opts), 0);
   assert.ok(bottom.every((m) => m.value === 0), "dumbbell: nothing to do with the arm hanging");
 });
+
+test("chest-supported incline raise (45°): cos 45° of the side-raise torque; the rest pulls out of the plane, m·g·sin 45°·r at every angle, held by the rear deltoids", () => {
+  const s = Math.SQRT1_2;
+  const stand = analyze(ex, v("dumbbell"), 60, { ...opts, placement: v("dumbbell").params });
+  const inc = analyze(ex, v("incline-chest"), 60, { ...opts, placement: v("incline-chest").params });
+  assert.ok(Math.abs(inc.jointTorque - s * stand.jointTorque) < 1e-3 * stand.jointTorque);
+  // Out of the plane: load at the grip plus both arm segments at their centres of mass, about the shoulder.
+  const kgM = opts.loadKg * L + 75 * (mf[0] * cf[0] * L1 + mf[1] * (L1 + cf[1] * L2));
+  for (const a of [0, 45, 90]) {
+    const r = analyze(ex, v("incline-chest"), a, { ...opts, placement: v("incline-chest").params });
+    assert.ok(Math.abs(r.cross.torque - kgM * G * s) < 1e-6 * r.cross.torque, `${a}°`);
+    close(r.cross.effort, r.cross.torque / (93 * opts.peakTorqueNm / ex.defaults.peakTorqueNm));
+  }
+  assert.equal(stand.cross, undefined);
+  // The rear deltoid adds the out-of-plane hold: busy at the bottom, where standing it rests.
+  const post = (id, a) => muscleActivation(ex, v(id), analyze(ex, v(id), a, { ...opts, placement: v(id).params }), a).find((m) => m.id === "posterior-deltoid").value;
+  assert.equal(post("dumbbell", 0), 0);
+  assert.ok(post("incline-chest", 0) > 0.2);
+});
