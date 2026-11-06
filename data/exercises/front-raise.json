@@ -5,6 +5,7 @@
   "movingJoint": "proximal",
   "view": "side",
   "figure3d": {"kind": "chain", "base": "shoulder", "plane": "sagittal", "both": true, "start": "3d"},
+  "armModel": {"data": "data/opensim/arm-paths.json", "proSup": 90, "source": "Holzbaur KRS, Murray WM, Delp SL (2005). A model of the upper extremity for simulating musculoskeletal surgery and analyzing neuromuscular control. Ann Biomed Eng 33(6):829–840 (the Stanford-VA upper limb model, BSD licence).", "note": "In 3D these muscles are drawn along their paths in the Stanford-VA upper limb model (Holzbaur et al. 2005, BSD licence), shaded by the exercise muscle they belong to. Display only."},
   "angleLabel": "Shoulder angle",
   "angleRange": [0, 180],
   "angleNote": "Shoulder flexion: 0° = arm by your side, 90° = arm pointing forward at shoulder height, 180° = straight overhead (the overhead variant).",

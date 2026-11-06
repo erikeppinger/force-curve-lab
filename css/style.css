@@ -242,6 +242,10 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 28px
 #figure.draggable { cursor: grab; touch-action: pan-y; user-select: none; }
 .view-buttons { display: flex; gap: 6px; flex-wrap: wrap; margin: 4px 0 6px; }
 .view-buttons button { min-height: 36px; padding: 4px 12px; }
+/* The 3D zoom (−, +, Fit) on the camera buttons' row, set off by a gap. */
+#view-buttons:not([hidden]), #zoom3d-buttons { display: inline-flex; vertical-align: top; }
+#zoom3d-buttons { margin-left: 10px; }
+#zoom3d-buttons button { min-width: 36px; }
 .auto-toggle { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; min-height: 32px; }
 .auto-toggle input { width: 20px; height: 20px; }
 input[type="range"]:disabled { opacity: 0.4; }

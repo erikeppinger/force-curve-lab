@@ -16,6 +16,7 @@
 
 import { v3, add3, sub3, dot3, cross3, len3, unit3, mirror, HIP_BAR } from "./multijoint3d.js";
 import { gravityOf } from "./physics.js";
+import { ARM_MAP, proSupOf } from "./armmodel.js";
 
 const rad = (d) => (d * Math.PI) / 180;
 
@@ -218,7 +219,10 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
   // Only when this figure gives the leg model its frames (a hip- or knee-based chain, below), else
   // these muscles would be drawn by neither.
   const legReady = (hipBase && toeDir) || (knee && legHip && foot);
-  const modelled = new Set(ex.legModel?.geometry && legReady ? Object.keys(ex.legModel.map ?? {}) : []);
+  // The arm model (`armModel`, js/armmodel.js): shoulder at the base.
+  const armReady = Boolean(ex.armModel?.geometry) && !knee && !hipBase;
+  const modelled = new Set([...(ex.legModel?.geometry && legReady ? Object.keys(ex.legModel.map ?? {}) : []),
+    ...(armReady ? Object.keys({ ...ARM_MAP, ...ex.armModel.map }) : [])]);
   for (const m of ex.muscles.filter((x) => x.draw && !modelled.has(x.id))) {
     const d = m.draw;
     let a, b;
@@ -348,10 +352,15 @@ export function chainScene3d(ex, variant, result, { activation = [], pulley, bod
     // The calcaneus' forward axis is the sole (heel → toes), not the ankle → ball line, which points
     // about 30° below it with the foot flat.
     : knee && legHip && foot ? { thigh: [legHip, chain[0]], shank: [chain[0], chain[1]], foot: [chain[1], add3(chain[1], unit3(sub3(foot.toe, foot.heel)), 0.1)] } : null;
-  const frames = legFrames ? Object.fromEntries([...Object.entries(legFrames), ["trunk", [P, S]]].map(([k, [a, b]]) => [k, { from: F3(a), to: F3(b) }])) : {};
+  // Frames for the arm model (shoulder at the base: upper arm = chain[0..1], forearm = chain[1..2]),
+  // the trunk with its forward direction as turned.
+  const armFrames = armReady ? { upperArm: [chain[0], chain[1]], forearm: [chain[1], chain[2]] } : null;
+  const frames = legFrames || armFrames ? Object.fromEntries([...Object.entries(legFrames ?? armFrames), ["trunk", [P, S]]].map(([k, [a, b]]) => [k, { from: F3(a), to: F3(b) }])) : {};
+  if (armFrames) frames.trunk.forward = R(v3(1, 0, 0));
   return {
     scene: [...scene, ...prims].map(move),
     frames,
+    ...(armFrames ? { armRotation: { proSup: proSupOf(ex, variant) } } : {}),
     asymmetric: !both,
     forces: forces.map((q) => ({ at: M(T(q.at)), dir: R(q.dir) })),
     joints: joints.map((j) => ({ ...j, at: M(T(j.at)), foot: M(T(j.foot)) })),
