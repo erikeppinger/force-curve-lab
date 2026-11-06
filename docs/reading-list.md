@@ -245,7 +245,7 @@ Done since: bone lengths per finger and pulley positions (Lin et al. 1989), pull
 - Fetched by mistake, not needed: Youm et al. 1979 (forearm and elbow kinematics for prostheses), Wu et al. 2009 (thumb model).
 
 - **Chen & Franklin 2025, joint moments** (preprint, CC BY 4.0) and **Chen & Franklin 2025, moment arms** (Ann Biomed Eng 53:1757–1776, open access): read; used as a cross-check (`docs/model-limits.md`). Their raw data are still to get: moment arms at <https://doi.org/10.6084/m9.figshare.26018563>; the joint-moment data link is in the published J Biomech version (the preprint says "link-to-add"). Both are MATLAB `.mat` files.
-- **Rajagopal et al. 2016** (OpenSim full-body model): read; its hip muscles are in use (hip abduction and adduction), read from the model files (`Rajagopal2016.osim` plus the abductor paths of `RajagopalLaiUhlrich2023.osim`, kept in the papers folder `new/opensim-rajagopal/`, not in the repo).
+- **Rajagopal et al. 2016** (OpenSim full-body model): read; its hip muscles are in use (hip abduction and adduction), read from the model files (`Rajagopal2016.osim` plus the abductor paths of `RajagopalLaiUhlrich2023.osim`, kept in the papers folder `done/opensim-rajagopal/`, not in the repo).
 
 ## OpenSim: the next step
 
