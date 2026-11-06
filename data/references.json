@@ -473,6 +473,14 @@
       "usedFor": "Hip abduction and adduction: the OpenSim leg model's muscle paths and maximum forces, for each hip muscle's moment arm at any hip bend (seated machines, trunk lean) and the 3D muscle lines (Rajagopal2016.osim from opensim-org/opensim-models, MIT licence; the numbers used are in data/opensim/hip-muscles.json with the licence notice). Also the plank's hip flexors (moment arm × force, least-effort sharing, tools/rajagopal-shares.mjs), and the 3D leg lifts' muscle drawings (every leg muscle's path, data/opensim/leg-paths.json)."
     },
     {
+      "key": "Holzbaur 2005",
+      "match": "Holzbaur KR",
+      "group": "Body data",
+      "citation": "Holzbaur KRS, Murray WM, Delp SL (2005). A model of the upper extremity for simulating musculoskeletal surgery and analyzing neuromuscular control. Ann Biomed Eng 33(6):829–840.",
+      "url": "https://doi.org/10.1007/s10439-005-3320-7",
+      "usedFor": "The 3D arm lifts' muscle paths (shoulder, elbow and forearm muscles): the Stanford-VA upper limb model (BSD licence), read from its SIMM files by tools/simm_arm_paths.py."
+    },
+    {
       "key": "Uhlrich 2022",
       "match": "Uhlrich SD, Jackson RW",
       "group": "Body data",

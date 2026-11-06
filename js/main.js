@@ -92,17 +92,17 @@ function writeHash() {
 }
 
 // ---------- setup ----------
-const legPathData = new Map(); // leg-model files by URL (js/legmodel.js)
+const modelData = new Map(); // muscle-model files by URL (js/legmodel.js, js/armmodel.js)
 let lumbarData = null; // shared by the core exercises
 async function loadExercise(id) {
   const res = await fetch(`data/exercises/${id}.json`);
   const ex = await res.json();
   // Hip abduction / adduction: the OpenSim muscle geometry their activations and 3D figure use.
   if (ex.hipModel) ex.hipModel.geometry = await fetch(ex.hipModel.data).then((r) => r.json()).catch(() => null);
-  if (ex.legModel) {
-    // Shared by the leg lifts: one fetch per file.
-    if (!legPathData.has(ex.legModel.data)) legPathData.set(ex.legModel.data, fetch(ex.legModel.data).then((r) => r.json()).catch(() => null));
-    ex.legModel.geometry = await legPathData.get(ex.legModel.data);
+  // Leg and arm muscle paths, shared by the lifts: one fetch per file.
+  for (const mm of [ex.legModel, ex.armModel].filter(Boolean)) {
+    if (!modelData.has(mm.data)) modelData.set(mm.data, fetch(mm.data).then((r) => r.json()).catch(() => null));
+    mm.geometry = await modelData.get(mm.data);
   }
   // Edge lift: the ARMS hand model's bones and muscle paths for the 3D hand view (non-commercial).
   if (ex.handModel) ex.handModel.geometry = await fetch(ex.handModel.data).then((r) => r.json()).catch(() => null);
@@ -534,9 +534,11 @@ function syncViewButtons(ex) {
   $("view-buttons").querySelector('[data-cam="flat"]').setAttribute("aria-pressed", String(has3dSwitch(ex) && !state.chain3d));
   $("zoom-buttons").hidden = Boolean(ex.model) || ex.view === "3d" || is3d(ex); // the 3D hip view zooms to the hip
   $("figure").classList.toggle("draggable", is3d(ex));
+  $("zoom3d-buttons").hidden = !(is3d(ex));
 }
 
 function setExercise(id, h = {}) {
+  Object.assign(zoom3d, { k: 1, ox: 0, oy: 0 }); // a new figure starts whole
   const ex = (state.exercise = state.catalog[id]);
   const view = ex.view ?? "side";
   const ui = { load: [1, 30, 0.5], strength: [25, 110], ...ex.ui };
@@ -741,14 +743,14 @@ function renderMulti() {
       }
       bounds = curves().bounds3;
     }
-    renderView3d($("figure"), prims, state.cam, bounds);
+    draw3d($("figure"), prims, state.cam, bounds);
   } else if (ex.view === "3d") {
     // Bounds over the whole range for this camera, so the figure doesn't jump while animating.
     const camKey = `${state.cam.yaw},${state.cam.pitch}`;
     if (curves().camKey !== camKey) {
       Object.assign(curves(), { camKey, bounds3: bounds3d(main.filter((_, i) => i % 8 === 0 || i === main.length - 1).map((s) => scene3d(ex, s, act)), state.cam) });
     }
-    renderView3d($("figure"), [...scene3d(ex, r, act), ...holdingPrims(r.holding, main)], state.cam, curves().bounds3);
+    draw3d($("figure"), [...scene3d(ex, r, act), ...holdingPrims(r.holding, main)], state.cam, curves().bounds3);
   } else {
     renderMultiFigure($("figure"), { exercise: ex, variant: v, result: r, activation: act, bounds });
   }
@@ -889,10 +891,11 @@ function renderFinger() {
   $("figure-title").textContent = { fingers: "Fingers, side view", hand: "Hand, front view", arm: "Arm and body", muscles: "Hand muscles, 3D (drag to turn)" }[view];
   $("view-buttons").hidden = view !== "muscles";
   $("figure").classList.toggle("draggable", view === "muscles");
+  $("zoom3d-buttons").hidden = !(view === "muscles");
   if (view === "muscles") {
     const prims = handScene3d(ex.handModel.geometry.postures[v.id] ?? Object.values(ex.handModel.geometry.postures)[0], set.fingers);
     // Frame the hand (bones, small margin); forearm muscle paths run off the edge and are clipped.
-    renderView3d($("figure"), prims, state.cam, bounds3d([prims.filter((p) => p.bone)], state.cam, 0.025));
+    draw3d($("figure"), prims, state.cam, bounds3d([prims.filter((p) => p.bone)], state.cam, 0.025));
   } else if (view === "fingers") renderFingersView($("figure"), { set, exercise: ex, P, pipDeg: state.angle });
   else if (view === "hand") renderHandView($("figure"), { set, P });
   else renderArmView($("figure"), { arm: r.arm, P, loadKg: state.loadKg });
@@ -995,7 +998,7 @@ function renderPinch() {
     const prims = [...handScene3d(geo[key], null, pinchValueOf(r.act)), ...pinchBlock(geo[key], +key.slice(1), r.shares ? Object.keys(r.shares) : ["index", "middle"])];
     $("figure-title").textContent = `Hand and block, 3D (${key.slice(1)} mm; drag to turn)`;
     $("figure").setAttribute("aria-label", "The ARMS hand model holding the block: muscle bellies (thick) and tendons (thin) shaded by effort");
-    renderView3d($("figure"), prims, state.cam, bounds3d([prims.filter((p) => p.bone || p.block)], state.cam, 0.02));
+    draw3d($("figure"), prims, state.cam, bounds3d([prims.filter((p) => p.bone || p.block)], state.cam, 0.02));
   } else {
     $("figure-title").textContent = "Block and digits, front view";
     $("figure").setAttribute("aria-label", "The pinch block from the front with the thumb and the fingers pressing its faces");
@@ -1093,7 +1096,7 @@ function renderView() {
     const prims = scene(r);
     const camKey = `trunk ${state.cam.yaw},${state.cam.pitch}`;
     if (curves().camKey !== camKey) Object.assign(curves(), { camKey, bounds3: bounds3d(main.filter((_, i) => i % 6 === 0 || i === main.length - 1).map(scene), state.cam, 0.04) });
-    renderView3d($("figure"), prims, state.cam, curves().bounds3);
+    draw3d($("figure"), prims, state.cam, curves().bounds3);
   } else if (is3d(ex)) {
     // Hip model: 3D figure with the muscles along their model paths; other single-joint exercises:
     // the 2D chain in its plane on a 3D body (chain3d.js). Bounds over the range for this camera
@@ -1107,7 +1110,7 @@ function renderView() {
     }
     // Zoomed: a box around the hip, where the muscles are.
     const V = state.zoom ? { x0: -0.45, x1: 0.45, y0: -0.45, y1: 0.35 } : curves().bounds3;
-    renderView3d($("figure"), scene(r), state.cam, V);
+    draw3d($("figure"), scene(r), state.cam, V);
     figureInsets($("figure"), ex, v, r); // the machine's cam, the feet turned in or out, as in 2D
   } else {
     const frame = state.zoom ? zoomBounds(ex, v, main.map((s) => s.pose)) : bounds;
@@ -1406,22 +1409,115 @@ function bind() {
       render();
     });
   }
-  // Drag to turn the 3D view (horizontal drags only on touch, so the page still scrolls).
-  let drag = null;
-  $("figure").addEventListener("pointerdown", (e) => {
-    if (!is3d(state.exercise)) return;
-    drag = { x: e.clientX, y: e.clientY, cam: { ...state.cam } };
-    $("figure").setPointerCapture(e.pointerId);
+  // Drag to turn the 3D view (horizontal drags only on touch, so the page still scrolls). Zoomed in:
+  // Shift-drag or the middle button moves the view. Pinch or Ctrl + scroll to zoom, about the pointer.
+  const fig = $("figure"), redraw = () => { if (!state.playing) render(); };
+  const live3d = () => fig.classList.contains("draggable");
+  let drag = null, pinch = null;
+  const pointers = new Map();
+  fig.addEventListener("pointerdown", (e) => {
+    if (!live3d()) return;
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    try { fig.setPointerCapture(e.pointerId); } catch { /* not a live pointer (synthetic) */ }
+    if (pointers.size === 2) {
+      // Two fingers: pinch to zoom, move both to pan; the turn stops.
+      drag = null;
+      const [a, b] = [...pointers.values()];
+      pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+      return;
+    }
+    const pan = zoom3d.k > 1 && (e.shiftKey || e.button === 1);
+    drag = { x: e.clientX, y: e.clientY, cam: { ...state.cam }, pan };
+    if (pan) e.preventDefault();
   });
-  $("figure").addEventListener("pointermove", (e) => {
+  fig.addEventListener("pointermove", (e) => {
+    if (!pointers.has(e.pointerId)) return;
+    pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pinch && pointers.size === 2) {
+      const [a, b] = [...pointers.values()];
+      const d = Math.hypot(a.x - b.x, a.y - b.y), x = (a.x + b.x) / 2, y = (a.y + b.y) / 2;
+      const r = fig.getBoundingClientRect();
+      pan3d((x - pinch.x) / r.width, (y - pinch.y) / r.height);
+      const { fx, fy } = viewFraction(fig, x, y);
+      if (pinch.d > 0 && d > 0) zoom3dTo(zoom3d.k * (d / pinch.d), fx, fy);
+      pinch = { d, x, y };
+      redraw();
+      return;
+    }
     if (!drag) return;
-    state.cam.yaw = drag.cam.yaw - (e.clientX - drag.x) * 0.5;
-    state.cam.pitch = Math.max(-10, Math.min(90, drag.cam.pitch + (e.clientY - drag.y) * 0.5));
-    if (!state.playing) render();
+    if (drag.pan) {
+      const r = fig.getBoundingClientRect();
+      pan3d((e.clientX - drag.x) / r.width, (e.clientY - drag.y) / r.height);
+      drag.x = e.clientX; drag.y = e.clientY;
+    } else {
+      state.cam.yaw = drag.cam.yaw - (e.clientX - drag.x) * 0.5;
+      state.cam.pitch = Math.max(-10, Math.min(90, drag.cam.pitch + (e.clientY - drag.y) * 0.5));
+    }
+    redraw();
   });
-  const end = () => { drag = null; };
-  $("figure").addEventListener("pointerup", end);
-  $("figure").addEventListener("pointercancel", end);
+  const end = (e) => {
+    pointers.delete(e.pointerId);
+    if (pointers.size < 2) pinch = null;
+    if (!pointers.size) drag = null;
+  };
+  fig.addEventListener("pointerup", end);
+  fig.addEventListener("pointercancel", end);
+  fig.addEventListener("wheel", (e) => {
+    // Ctrl/⌘ + wheel (also what a trackpad pinch sends): a plain wheel still scrolls the page.
+    if (!live3d() || !(e.ctrlKey || e.metaKey)) return;
+    e.preventDefault();
+    const { fx, fy } = viewFraction(fig, e.clientX, e.clientY);
+    zoom3dTo(zoom3d.k * Math.exp(-e.deltaY * (e.deltaMode === 1 ? 0.05 : 0.0015)), fx, fy);
+    redraw();
+  }, { passive: false });
+  // Safari on a Mac sends a trackpad pinch as gesture events (other browsers: Ctrl + wheel, above).
+  let gesture = null;
+  fig.addEventListener("gesturestart", (e) => { if (!live3d()) return; e.preventDefault(); gesture = { k: zoom3d.k, ...viewFraction(fig, e.clientX, e.clientY) }; });
+  fig.addEventListener("gesturechange", (e) => {
+    if (!gesture) return;
+    e.preventDefault();
+    zoom3dTo(gesture.k * e.scale, gesture.fx, gesture.fy);
+    gesture = { ...gesture, k: zoom3d.k / e.scale, ...viewFraction(fig, e.clientX, e.clientY) };
+    redraw();
+  });
+  fig.addEventListener("gestureend", () => { gesture = null; });
+  $("zoom3d-in").addEventListener("click", () => { zoom3dTo(zoom3d.k * 1.5); redraw(); });
+  $("zoom3d-out").addEventListener("click", () => { zoom3dTo(zoom3d.k / 1.5); redraw(); });
+  $("zoom3d-fit").addEventListener("click", () => { zoom3dTo(1); redraw(); });
+}
+
+// ---------- 3D zoom ----------
+// On top of each 3D figure's own frame (the whole movement, or the hip view's box): `k` times
+// closer, the view's top-left corner a fraction (ox, oy) across and down that frame. Kept as
+// fractions, so turning the camera keeps the zoom; reset when the exercise changes.
+const zoom3d = { k: 1, ox: 0, oy: 0 };
+const ZOOM3D_MAX = 8;
+const clamp = (x, lo, hi) => Math.max(lo, Math.min(hi, x));
+function draw3d(svg, prims, cam, V) {
+  const w = V.x1 - V.x0, h = V.y1 - V.y0, { k, ox, oy } = zoom3d;
+  const x0 = V.x0 + ox * w, y1 = V.y1 - oy * h;
+  renderView3d(svg, prims, cam, k === 1 ? V : { x0, x1: x0 + w / k, y0: y1 - h / k, y1 });
+  $("zoom3d-in").disabled = k >= ZOOM3D_MAX - 1e-9;
+  $("zoom3d-out").disabled = $("zoom3d-fit").disabled = k === 1;
+}
+/** Zoom to `k`, keeping the point at (fx, fy) (fractions across and down the current view) in place. */
+function zoom3dTo(k, fx = 0.5, fy = 0.5) {
+  const k1 = clamp(k, 1, ZOOM3D_MAX);
+  const ux = zoom3d.ox + fx / zoom3d.k, uy = zoom3d.oy + fy / zoom3d.k;
+  Object.assign(zoom3d, { k: k1 < 1.02 ? 1 : k1, ox: clamp(ux - fx / k1, 0, 1 - 1 / k1), oy: clamp(uy - fy / k1, 0, 1 - 1 / k1) });
+  if (zoom3d.k === 1) Object.assign(zoom3d, { ox: 0, oy: 0 });
+}
+/** Move the zoomed view by (dx, dy), fractions of the current view (positive: the figure moves right / down). */
+function pan3d(dx, dy) {
+  zoom3d.ox = clamp(zoom3d.ox - dx / zoom3d.k, 0, 1 - 1 / zoom3d.k);
+  zoom3d.oy = clamp(zoom3d.oy - dy / zoom3d.k, 0, 1 - 1 / zoom3d.k);
+}
+/** A screen point as fractions across and down the figure's current view. */
+function viewFraction(svg, clientX, clientY) {
+  const vb = svg.viewBox.baseVal, m = svg.getScreenCTM();
+  if (!vb?.width || !m) return { fx: 0.5, fy: 0.5 };
+  const p = new DOMPoint(clientX, clientY).matrixTransform(m.inverse());
+  return { fx: clamp((p.x - vb.x) / vb.width, 0, 1), fy: clamp((p.y - vb.y) / vb.height, 0, 1) };
 }
 
 // ---------- references ----------

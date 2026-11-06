@@ -95,6 +95,12 @@
         <button type="button" class="secondary" data-cam="front">Front</button>
         <button type="button" class="secondary" data-cam="top">Top</button>
       </div>
+      <div id="zoom3d-buttons" class="view-buttons zoom3d" role="group" aria-label="Zoom" hidden>
+        <button type="button" class="secondary" id="zoom3d-out" aria-label="Zoom out" title="Zoom out (or pinch, or Ctrl + scroll on the figure)" disabled>−</button>
+        <button type="button" class="secondary" id="zoom3d-in" aria-label="Zoom in" title="Zoom in (or pinch, or Ctrl + scroll on the figure; zoomed in, Shift-drag moves the view)">+</button>
+        <button type="button" class="secondary" id="zoom3d-fit" title="Show the whole figure" disabled>Fit</button>
+        <span class="info"><button type="button" class="info-btn" aria-expanded="false" aria-controls="zoom3d-info" aria-label="How to zoom and move the 3D view">i</button><span id="zoom3d-info" class="info-text" role="tooltip"><strong>Zoom the 3D view</strong><br><b>Buttons:</b> − and + zoom out and in; Fit shows the whole figure again.<br><b>Windows, Linux:</b> Ctrl + mouse wheel, or pinch on the touchpad.<br><b>Mac:</b> pinch on the trackpad, or ⌘ + scroll.<br><b>Phone, tablet:</b> pinch with two fingers; move both fingers to shift the view.<br><b>Moving the zoomed view with a mouse:</b> Shift + drag (or drag with the wheel held down). A plain drag turns the figure; a plain scroll scrolls the page.</span></span>
+      </div>
       <div id="edge-summary" class="edge-summary" hidden></div>
       <div id="edge-tabs" class="view-buttons edge-tabs" role="tablist" aria-label="Edge lift view" hidden>
         <button type="button" class="secondary" role="tab" data-edge-view="fingers">Fingers</button>

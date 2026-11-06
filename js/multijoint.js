@@ -14,6 +14,7 @@
 // Pure functions only — imported by the browser UI and by node tests.
 
 import { G, interp, rangeOf } from "./physics.js";
+import { proSupOf } from "./armmodel.js";
 import { legPress3d, squat3d, bench3d, press3d, hinge3d, split3d, hipThrust3d, row3d, pull3d, jointScaleAt } from "./multijoint3d.js";
 export { jointScaleAt };
 
@@ -630,6 +631,8 @@ export function analyzeMulti(exercise, variant, x, opts) {
     const cap = (n.nm ?? n.kgPerHand) * scale;
     return { ...h, capacity: cap, effort: (n.nm != null ? Math.max(0, h.torque) : h.kgPerHand) / cap };
   });
+  // The arm model's forearm rotation for this variant's grip (js/armmodel.js, drawing only).
+  if (exercise.armModel) r.armRotation = { proSup: proSupOf(exercise, variant) };
   return r;
 }
 
