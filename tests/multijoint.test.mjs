@@ -451,13 +451,16 @@ test("glute bridge flags hip angles that would put the hips through the floor", 
     }
   });
 
-  test("3D overhead press: wide grip loads the side deltoid; behind the neck loads the external rotators and starts in extension", () => {
+  test("3D overhead press: wide grip loads the side deltoid; behind the neck starts in extension, the elbows out to the sides under the hands (no twisting load)", () => {
     const o = { ...opts, loadKg: 30 };
     for (const x of [10, 50]) {
       const s = at("standing", x, undefined, o), w = at("wide", x, undefined, o), b = at("behind-neck", x, undefined, o);
       assert.ok(J(w, "shoulder-abd").torque > 2 * J(s, "shoulder-abd").torque, `@${x}: abduction`);
-      assert.ok(J(b, "shoulder-rotation").torque > Math.abs(J(s, "shoulder-rotation").torque) + 5, `@${x}: rotation`);
       assert.ok(J(b, "shoulder-flex").torque < 0 && J(s, "shoulder-flex").torque > 0, `@${x}: flexion sign`);
+      // Elbows out beyond the shoulders and within 6 cm of the hands front to back: forearms near vertical.
+      const E = b.frames.upperArm.to, H = b.frames.forearm.to, S = b.frames.upperArm.from;
+      assert.ok(E.z > S.z + 0.15 && Math.abs(E.x - H.x) < 0.06, `@${x}: elbow`);
+      assert.ok(Math.abs(J(b, "shoulder-rotation").torque) < 1, `@${x}: rotation`);
     }
   });
 
@@ -754,13 +757,14 @@ test("holding loads everywhere the same physics applies: grip in pulls, dumbbell
   assert.ok(hold(p, "neck").torque > 5 && hold(p, "neck").torque <= body.trunkParts.head * 75 * G * 0.13 + 1e-9);
 });
 
-test("holding loads: grip effort against the rough norm (51 kg per hand), scaled by the strength slider; none without a norm", () => {
+test("holding loads: lower back against 270 Nm and grip against 51 kg per hand, scaled by the strength slider; none without a norm", () => {
   const ex = load("deadlift"), v = ex.variants[0];
   const at = (pct) => Object.fromEntries(analyzeMulti(ex, v, 50, { ...opts, loadKg: 100, strengthPct: pct }).holding.map((h) => [h.id, h]));
   const h = at(100), half = at(50);
+  close(h["lower-back"].effort, h["lower-back"].torque / 270, 1e-9);
   close(h.grip.effort, 50 / 51, 1e-9);
   close(half.grip.effort, 2 * h.grip.effort, 1e-9);
-  for (const id of ["lower-back", "upper-back", "neck", "shoulder-blades"]) assert.equal(h[id].effort, undefined, id);
+  for (const id of ["upper-back", "neck", "shoulder-blades"]) assert.equal(h[id].effort, undefined, id);
 });
 
 test("rows and pulls: rear deltoid, mid-back and pull-up cuff at least their EMG ratio of the lats", () => {
@@ -910,9 +914,21 @@ test("rows: the lower back (L5/S1) holds everything above it, against the measur
   // Seated: the cable's pull is largest with the arms reaching forward; a chest pad holds the trunk.
   assert.ok(at("seated-row", "upright", 0).torque > at("seated-row", "upright", 100).torque);
   assert.equal(at("seated-row", "chest-supported", 50).torque, 0);
-  // Strength: the back extension's lumbar curve at a neutral spine.
-  const lumbar = at("bent-over-row", "barbell", 50);
-  const be = load("back-extension").joints.find((j) => j.id === "lumbar");
-  close(lumbar.capacity, be.peakTorqueNm * be.strength.points.find(([a]) => a === 0)[1], 1e-6);
+  // Strength: the same lifting-posture norm as the holding loads' lower back.
+  close(at("bent-over-row", "barbell", 50).capacity, body.holdingStrength["lower-back"].nm, 1e-6);
   for (const id of ["bent-over-row", "seated-row"]) assert.equal(load(id).muscles.find((m) => m.id === "erector-spinae").joint, "lumbar");
+});
+
+test("hip thrust holding loads: with a massless body only the bench's push acts above L5/S1, so the lower back holds push × its horizontal distance from the shoulders", () => {
+  const ex = load("hip-thrust"), v = ex.variants.find((q) => q.id === "barbell");
+  for (const x of [0, 45]) {
+    const r = analyzeMulti(ex, v, x, { ...opts, loadKg: 60, bodyMassKg: 0 });
+    const { from: pelvis, to: Sm } = r.frames.trunk, R = r.reactions.shoulder;
+    const d = Math.hypot(Sm.x - pelvis.x, Sm.y - pelvis.y), l5x = pelvis.x + ((Sm.x - pelvis.x) / d) * body.trunkParts.l5s1;
+    const h = Object.fromEntries(r.holding.map((q) => [q.id, q]));
+    assert.ok(R > 0);
+    close(h["lower-back"].torque, R * (l5x - Sm.x), 1e-9);
+    assert.ok(h["lower-back"].torque > 0, "the back extensors hold it"); // the bench curls the trunk up
+    close(h.neck.torque, 0, 1e-12); // no head weight
+  }
 });

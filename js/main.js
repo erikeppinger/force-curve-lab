@@ -1,7 +1,7 @@
-import { analyze, sampleCurve, rangeOf, gravityOf, camOf, camChoice } from "./physics.js";
+import { analyze, sampleCurve, rangeOf, gravityOf, camOf, camChoice, belowFloor } from "./physics.js";
 import { muscleActivation } from "./muscles.js";
 import { renderChart } from "./chart.js";
-import { renderFigure, figureBounds, zoomBounds, viewTitle, renderMultiFigure, multiBounds } from "./figure.js";
+import { renderFigure, figureBounds, zoomBounds, viewTitle, renderMultiFigure, multiBounds, figureInsets } from "./figure.js";
 import { analyzeMulti, sampleMulti } from "./multijoint.js";
 import { CAMERAS, scene3d, bounds3d, renderView3d } from "./view3d.js";
 import { fetchExercise, descriptionParagraphs, bodyBackground, muscleOverlay, isBackMuscle } from "./wger.js";
@@ -92,12 +92,18 @@ function writeHash() {
 }
 
 // ---------- setup ----------
+const legPathData = new Map(); // leg-model files by URL (js/legmodel.js)
 let lumbarData = null; // shared by the core exercises
 async function loadExercise(id) {
   const res = await fetch(`data/exercises/${id}.json`);
   const ex = await res.json();
   // Hip abduction / adduction: the OpenSim muscle geometry their activations and 3D figure use.
   if (ex.hipModel) ex.hipModel.geometry = await fetch(ex.hipModel.data).then((r) => r.json()).catch(() => null);
+  if (ex.legModel) {
+    // Shared by the leg lifts: one fetch per file.
+    if (!legPathData.has(ex.legModel.data)) legPathData.set(ex.legModel.data, fetch(ex.legModel.data).then((r) => r.json()).catch(() => null));
+    ex.legModel.geometry = await legPathData.get(ex.legModel.data);
+  }
   // Edge lift: the ARMS hand model's bones and muscle paths for the 3D hand view (non-commercial).
   if (ex.handModel) ex.handModel.geometry = await fetch(ex.handModel.data).then((r) => r.json()).catch(() => null);
   // Pinch lift: the ARMS moment arms and muscle forces at the measured pinch postures (non-commercial).
@@ -1102,6 +1108,7 @@ function renderView() {
     // Zoomed: a box around the hip, where the muscles are.
     const V = state.zoom ? { x0: -0.45, x1: 0.45, y0: -0.45, y1: 0.35 } : curves().bounds3;
     renderView3d($("figure"), scene(r), state.cam, V);
+    figureInsets($("figure"), ex, v, r); // the machine's cam, the feet turned in or out, as in 2D
   } else {
     const frame = state.zoom ? zoomBounds(ex, v, main.map((s) => s.pose)) : bounds;
     renderFigure($("figure"), { exercise: ex, variant: v, result: r, activation: act, pulley: state.pulley, bounds: frame });
@@ -1139,8 +1146,14 @@ function renderView() {
   $("ro-limb").textContent = `Includes ${r.limbTorque.toFixed(1)} Nm from the ${ex.segments.massLabel ?? "limb"}'s own weight; the moment arm is the load's.`;
   $("ro-effort").textContent = `${(r.effort * 100).toFixed(0)}%`;
   $("ro-effort").classList.toggle("over", r.effort > 1);
-  $("ro-warning").hidden = !(r.effort > 1);
-  $("ro-warning").textContent = "Load exceeds strength at this angle — this is where the lift would fail.";
+  const over = r.effort > 1;
+  // A limb that would sink into the floor (e.g. a lying leg raise with the knees bent, low down).
+  const sink = belowFloor(ex, v, r.pose) > 0.03;
+  $("ro-warning").hidden = !over && !sink;
+  $("ro-warning").textContent = [
+    ...(sink ? [`The ${ex.segments.names?.[1]?.toLowerCase() ?? "limb"} would go through the floor here: with this set-up the movement can't start this low (the numbers are for the posture shown, not a real one).`] : []),
+    ...(over ? ["Load exceeds strength at this angle — this is where the lift would fail."] : []),
+  ].join(" ");
   renderPhase(ex);
   renderMuscles(act);
 }
@@ -1165,7 +1178,7 @@ function holdingPrims(list, samples) {
 
 /**
  * Holding (isometric) loads under the joint table: back extensors, neck, grip, shoulders, shoulder blades. Torques or kg;
- * an effort only where a rough norm exists (so far the grip). Switched off and on with the checkbox (remembered).
+ * an effort only where a rough norm exists (lower back, grip). Switched off and on with the checkbox (remembered).
  */
 function renderHolding(list) {
   $("holding-switch").hidden = !list?.length;

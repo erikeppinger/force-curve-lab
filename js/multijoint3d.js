@@ -146,6 +146,7 @@ function legComponents({ H, K, A, f, back, Mhip, Mknee, Mankle, knee, line }) {
     frames: {
       thigh: { from: H, to: K, anterior: unit3(cross3(dT, eFlex)), lateral: unit3(cross3(dT, cross3(Z, dT))) },
       shank: { from: K, to: A, anterior: unit3(cross3(dS, eFlex)), lateral: unit3(cross3(dS, cross3(Z, dS))) },
+      foot: { from: A, to: add3(A, f, 0.1) }, // for the leg model's ankle muscles (js/legmodel.js)
     },
   };
 }
@@ -654,7 +655,9 @@ export function press3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement }) {
   const hand = v3(start.x + (lockout.x - start.x) * k, start.y + (lockout.y - start.y) * k, P.gripHalf);
   // Of the two elbow positions that fit, take the one that puts the forearm closest to vertical
   // under the hand. Choosing the lower one instead flips sides where both are about level.
-  const { E, ok } = elbowUnderHand(S, hand, L.upperArm, L.forearm, P.elbowOut, "under");
+  // "auto": as close under the hand as the arm allows (as the bench's): the elbows go out to the
+  // sides when the hand can't be reached with the elbow straight under it (behind the neck).
+  const { E, ok } = P.elbowOut === "auto" ? elbowNearestUnder(S, hand, L.upperArm, L.forearm) : elbowUnderHand(S, hand, L.upperArm, L.forearm, P.elbowOut, "under");
 
   const Fv = (loadKg * G) / 2;
   const foreW = weight(lerp3(E, hand, c.forearmHand), m.forearmHand * kg);
@@ -1055,6 +1058,10 @@ export function hipThrust3d(ex, v, x, { loadKg, bodyMassKg: kg, body, placement 
     joints: leg.joints, frames: { ...leg.frames, trunk: trunkFrame(pelvis, Sm) },
     moments: { hip: leg.Mhip, knee: leg.Mknee, ankle: leg.Mankle },
     reactions: { shoulder: shoulderR, feet: feetR, weight: W },
+    // The trunk bridges from the bench to the hips: the bench's push on the shoulders and the upper
+    // body's weight bend it at L5/S1 (the back extensors hold it, or the abdominals when it turns
+    // the other way). The hands only steady the bar.
+    holding: holding({ pelvis, back: neg3(e), S: Sm, armCom, kg, body, loads: [{ at: Sm, f: v3(0, shoulderR, 0) }] }),
     scene: [
       { kind: "poly", pts: [[-0.7, -0.5], [0.7, -0.5], [0.7, 0.5], [-0.7, 0.5]].map(([px, pz]) => v3(px, 0, pz)), cls: "floor3d" },
       ...(Sm.y > 0.2 ? [{ kind: "poly", pts: [[-0.45, -0.25], [0.02, -0.25], [0.02, 0.25], [-0.45, 0.25]].map(([px, pz]) => v3(Sm.x + px, Sm.y - 0.1, pz)), cls: "plate3d bench3d" },

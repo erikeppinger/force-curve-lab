@@ -4,6 +4,8 @@
   "joint": "Hip extension",
   "movingJoint": "proximal",
   "view": "side",
+  "legModel": {"data": "data/opensim/leg-paths.json", "map": {"gluteus-maximus": ["glmax1", "glmax2", "glmax3"], "hamstrings": ["bflh", "bfsh", "semimem", "semiten"], "adductor-magnus": ["addmagDist", "addmagIsch", "addmagMid", "addmagProx"]}, "note": "In 3D these muscles are drawn along their paths in the Rajagopal et al. 2016 model (MIT licence), shaded by the exercise muscle they belong to. Display only."},
+  "figure3d": {"kind": "chain", "base": "hip", "plane": "sagittal", "both": false, "start": "3d"},
   "angleLabel": "Hip angle",
   "concentric": "decrease",
   "angleRange": [-25, 90],

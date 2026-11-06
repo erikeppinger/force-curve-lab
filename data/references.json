@@ -470,7 +470,7 @@
       "group": "Body data",
       "citation": "Rajagopal AS, Dembia CL, DeMers MS, Delp DD, Hicks JL, Delp SL (2016). Full-body musculoskeletal model for muscle-driven simulation of human gait. IEEE Trans Biomed Eng 63(10):2068–2079.",
       "url": "https://doi.org/10.1109/TBME.2016.2586891",
-      "usedFor": "Hip abduction and adduction: the OpenSim leg model's muscle paths and maximum forces, for each hip muscle's moment arm at any hip bend (seated machines, trunk lean) and the 3D muscle lines (Rajagopal2016.osim from opensim-org/opensim-models, MIT licence; the numbers used are in data/opensim/hip-muscles.json with the licence notice). Also the plank's hip flexors (moment arm × force, least-effort sharing, tools/rajagopal-shares.mjs)."
+      "usedFor": "Hip abduction and adduction: the OpenSim leg model's muscle paths and maximum forces, for each hip muscle's moment arm at any hip bend (seated machines, trunk lean) and the 3D muscle lines (Rajagopal2016.osim from opensim-org/opensim-models, MIT licence; the numbers used are in data/opensim/hip-muscles.json with the licence notice). Also the plank's hip flexors (moment arm × force, least-effort sharing, tools/rajagopal-shares.mjs), and the 3D leg lifts' muscle drawings (every leg muscle's path, data/opensim/leg-paths.json)."
     },
     {
       "key": "Uhlrich 2022",
@@ -735,6 +735,46 @@
       "citation": "Dodds RM, Syddall HE, Cooper R, et al. (2014). Grip strength across the life course: normative data from twelve British studies. PLoS ONE 9(12):e113637.",
       "url": "https://doi.org/10.1371/journal.pone.0113637",
       "usedFor": "The holding loads' grip effort: typical maximal grip (men 51 kg, women 31 kg)."
+    },
+    {
+      "key": "Tan 1993",
+      "match": "Tan JC, Parnianpour M",
+      "group": "Strength curves",
+      "citation": "Tan JC, Parnianpour M, Nordin M, Hofer H, Willems B (1993). Isometric maximal and submaximal trunk extension at different flexed positions in standing. Spine 18(16):2480–2490.",
+      "url": "https://doi.org/10.1097/00007632-199312000-00018",
+      "usedFor": "Lower back in lifting postures: extension strength upright and with the trunk bent 15° and 35°."
+    },
+    {
+      "key": "Gallagher 1997",
+      "match": "Gallagher S (1997)",
+      "group": "Strength curves",
+      "citation": "Gallagher S (1997). Trunk extension strength and muscle activity in standing and kneeling postures. Spine 22(16):1864–1872.",
+      "url": "https://doi.org/10.1097/00007632-199708150-00011",
+      "usedFor": "Lower back in lifting postures: standing extension strength at 22.5–67.5° of trunk flexion."
+    },
+    {
+      "key": "Mawston 2021",
+      "match": "Mawston G",
+      "group": "Strength curves",
+      "citation": "Mawston G, Holder L, O'Sullivan P, Boocock M (2021). Flexed lumbar spine postures are associated with greater strength and efficiency than lordotic postures during a maximal lift in pain-free individuals. Gait Posture 86:245–250.",
+      "url": "https://doi.org/10.1016/j.gaitpost.2021.02.029",
+      "usedFor": "Lower back in lifting postures: extensor moment in a maximal lift, back arched to rounded."
+    },
+    {
+      "key": "Dolan 1994",
+      "match": "Dolan P, Mannion AF",
+      "group": "Strength curves",
+      "citation": "Dolan P, Mannion AF, Adams MA (1994). Passive tissues help the back muscles to generate extensor moments during lifting. J Biomech 27(8):1077–1085.",
+      "url": "https://doi.org/10.1016/0021-9290(94)90224-0",
+      "usedFor": "Lower back: the upper end of the lifting-posture range (430 Nm) and the passive tissues' share."
+    },
+    {
+      "key": "Cholewicki 1991",
+      "match": "Cholewicki J, McGill SM",
+      "group": "Exercise biomechanics",
+      "citation": "Cholewicki J, McGill SM, Norman RW (1991). Lumbar spine loads during the lifting of extremely heavy weights. Med Sci Sports Exerc 23(10):1179–1186.",
+      "url": "https://doi.org/10.1249/00005768-199110000-00012",
+      "usedFor": "Lower back: what national-level powerlifters reach in deadlifts (for the strength slider)."
     },
     {
       "key": "McNabb 2024",

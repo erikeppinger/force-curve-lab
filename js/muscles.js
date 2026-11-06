@@ -103,7 +103,10 @@ export function muscleActivation(exercise, variant, result, angleDeg) {
     // angle: `points` by value), or with a choice (`values` by option, e.g. the arm's rotation).
     const pv = result.placement?.[m.placementFactor?.key] ?? variant.params?.[m.placementFactor?.key];
     const pf = !m.placementFactor ? 1 : m.placementFactor.values ? m.placementFactor.values[String(pv)] ?? 1 : interp(m.placementFactor.points, Number(pv ?? 0));
-    const value = Math.min(1, Math.max(0, demand * interp(m.weight, angleDeg) * mod * kf * pf));
+    let value = Math.min(1, Math.max(0, demand * interp(m.weight, angleDeg) * mod * kf * pf));
+    // `cross`: a muscle that also holds the load out of the movement's plane (variant `outOfPlane`);
+    // both loads act on it at once, so the two shares add.
+    if (m.cross && result.cross) value = Math.min(1, value + result.cross.effort * (m.cross.share ?? 1));
     return { ...m, value };
   });
 }

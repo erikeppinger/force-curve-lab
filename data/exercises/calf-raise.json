@@ -4,6 +4,7 @@
   "joint": "Ankle plantarflexion",
   "movingJoint": "distal",
   "view": "side",
+  "legModel": {"data": "data/opensim/leg-paths.json", "map": {"gastroc-medial": ["gasmed"], "gastroc-lateral": ["gaslat"], "soleus": ["soleus"]}, "note": "In 3D these muscles are drawn along their paths in the Rajagopal et al. 2016 model (MIT licence), shaded by the exercise muscle they belong to. Display only."},
   "figure3d": {
     "kind": "chain",
     "base": "knee",

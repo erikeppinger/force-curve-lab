@@ -166,6 +166,20 @@ export function leanFrame(spec, deg) {
   };
 }
 
+/**
+ * How far (m) the moving limb (its middle joint or tip) would sink below the floor, the lowest point
+ * of the still body's posture shapes along gravity (as the 2D figure draws it); 0 when it stays
+ * clear, or when nothing rests on a floor (hanging, closed chain).
+ */
+export function belowFloor(exercise, variant, pose) {
+  const g = gravityOf(variant), n = Math.hypot(g.x, g.y);
+  if (!n || variant.noFloor || variant.load?.type === "reaction") return 0;
+  const up = (p) => -(p.x * g.x + p.y * g.y) / n;
+  const pts = (exercise.postures?.[variant.posture] ?? []).flatMap((s) => (s.shape === "seg" ? [s.from, s.to] : [s.at])).map(([x, y]) => ({ x, y }));
+  if (!pts.length) return 0;
+  return Math.max(0, Math.min(...pts.map(up)) - Math.min(up(pose.mid), up(pose.tip)));
+}
+
 export function analyze(exercise0, variant0, angleDeg, opts0) {
   const { peakTorqueNm, bodyMassKg = 75 } = opts0;
   // A placement slider with `distalBend` (e.g. the kickback's knee bend, degrees of flexion) sets
@@ -202,6 +216,20 @@ export function analyze(exercise0, variant0, angleDeg, opts0) {
   const jointTorque = loadTorque + limbTorque;
   const stabilised = variant.proximalSupported || exercise.movingJoint === "proximal";
   const stabiliserDemand = stabilised ? 0 : Math.max(0, -cross(sub(f.at, p.base), f));
+  // `outOfPlane` (e.g. a lateral raise chest-down on an incline bench): the part of gravity
+  // (`g`, in g) normal to the movement's plane pulls the load and limbs out of it; every point at
+  // distance r from the joint adds m·g·r, all about the same axis for a straight limb. Held by other
+  // muscles (`capacityNm`, scaled like the strength slider): the variant's gravity carries the rest.
+  const oop = variant.outOfPlane;
+  const crossOut = oop ? (() => {
+    const { massFractions = [], comFractions = [] } = exercise.segments;
+    const pt = (from, to, c) => ({ x: from.x + (to.x - from.x) * c, y: from.y + (to.y - from.y) * c });
+    const masses = [...(variant.load.type === "gravity" ? [[f.at, opts.loadKg ?? 0]] : []), [pt(p.mid, p.tip, comFractions[1] ?? 0), (massFractions[1] ?? 0) * bodyMassKg],
+      ...(exercise.movingJoint === "proximal" ? [[pt(p.base, p.mid, comFractions[0] ?? 0), (massFractions[0] ?? 0) * bodyMassKg]] : [])];
+    const torque = masses.reduce((t, [at, kg]) => t + kg * G * oop.g * Math.hypot(at.x - p.joint.x, at.y - p.joint.y), 0);
+    const capacity = oop.capacityNm * (opts.peakTorqueNm ?? exercise.defaults?.peakTorqueNm ?? 1) / (exercise.defaults?.peakTorqueNm ?? 1);
+    return { torque, capacity, effort: torque / capacity };
+  })() : null;
 
   // Perpendicular from the joint onto the load's line of action = the moment arm.
   let momentArm = 0;
@@ -228,7 +256,7 @@ export function analyze(exercise0, variant0, angleDeg, opts0) {
 
   const pulley = variant.load.type === "cable" || variant.load.type === "band" ? (opts.pulley ?? variant.load.pulley) : undefined;
   if (leanDeg && pulley) p.pulley = pulley;
-  return { angle: angleDeg, pose: p, force: f, limbs, jointTorque, loadTorque, limbTorque, stabiliserDemand, momentArm, momentArmFoot, capacity, effort, strengthScale, placement: opts.placement, ...(hip ? { hip } : {}), ...(bendSpec ? { knee: bendVal, bend: bendVal, ...(outOfPlane ? { bendOutOfPlane: true } : {}) } : {}), ...(leanDeg ? { pulley, gravity: variant.gravity } : {}) };
+  return { angle: angleDeg, pose: p, force: f, limbs, jointTorque, loadTorque, limbTorque, stabiliserDemand, momentArm, momentArmFoot, capacity, effort, strengthScale, placement: opts.placement, ...(crossOut ? { cross: crossOut } : {}), ...(hip ? { hip } : {}), ...(bendSpec ? { knee: bendVal, bend: bendVal, ...(outOfPlane ? { bendOutOfPlane: true } : {}) } : {}), ...(leanDeg ? { pulley, gravity: variant.gravity } : {}) };
 }
 
 /** The variant's strength factor: `strengthScale.points` (by joint angle, or by `at[sc.by]`) or `.factor`; 1 if none. */

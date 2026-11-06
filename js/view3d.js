@@ -5,6 +5,7 @@
 // front), pitch tilts down (90 = from above).
 
 import { add3, sub3, unit3, v3 } from "./multijoint3d.js";
+import { legMusclePaths, LEG_MAP, LEG_MUSCLE_NAMES } from "./legmodel.js";
 
 const NS = "http://www.w3.org/2000/svg";
 const S = 150; // px per metre
@@ -38,7 +39,29 @@ export function scene3d(exercise, result, activation) {
   const act = Object.fromEntries(activation.map((m) => [m.id, m.value ?? 0]));
   const neg = (d) => v3(-d.x, -d.y, -d.z);
   const mirrorZ = (p) => v3(p.x, p.y, -p.z);
-  for (const m of exercise.muscles.filter((x) => x.draw3d && result.frames[x.draw3d.seg])) {
+  // Leg lifts with the leg model (`legModel` in the JSON): every model muscle along its path, shaded
+  // by the exercise muscle it belongs to; the bars of those muscles are left out. Model muscles no
+  // exercise muscle claims are drawn faintly, for orientation.
+  const legPaths = exercise.legModel?.geometry ? legMusclePaths(exercise.legModel.geometry, result.frames) : null;
+  const claimed = new Set();
+  if (legPaths) {
+    const map = exercise.legModel.map ?? LEG_MAP, owner = {};
+    for (const m of exercise.muscles) for (const n of map[m.id] ?? []) { owner[`${n}_r`] = m; claimed.add(m.id); }
+    for (const { name, fmax, pts } of legPaths) {
+      const m = owner[name], w = 0.006 + 0.00022 * Math.sqrt(fmax), short = name.replace(/_r$/, "");
+      const own = LEG_MUSCLE_NAMES[short] ?? short, Own = own[0].toUpperCase() + own.slice(1);
+      const title = m ? `${Own} · part of ${m.name}: ${Math.round((act[m.id] ?? 0) * 100)}%` : `${Own} (not estimated here)`;
+      for (const side of result.asymmetric ? [pts] : [pts, pts.map(mirrorZ)]) {
+        for (let i = 1; i < side.length; i++) {
+          if (m) {
+            line(side[i - 1], side[i], w, "muscle-base", { title, model: true });
+            line(side[i - 1], side[i], w, "muscle-on", { opacity: act[m.id] ?? 0, title, model: true });
+          } else line(side[i - 1], side[i], w * 0.7, "muscle-idle", { title, model: true });
+        }
+      }
+    }
+  }
+  for (const m of exercise.muscles.filter((x) => x.draw3d && result.frames[x.draw3d.seg] && !claimed.has(x.id))) {
     const d = m.draw3d, fr = result.frames[d.seg];
     const dir = unit3(sub3(fr.to, fr.from));
     const off = { anterior: fr.anterior, posterior: neg(fr.anterior), lateral: fr.lateral, medial: neg(fr.lateral) }[d.side];
