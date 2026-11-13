@@ -81,6 +81,25 @@ test("arm model lengths: elbow flexion shortens the biceps and brachialis and le
   assert.ok(L(up.LAT1.pts) > L(down.LAT1.pts) + 0.02);
 });
 
+test("arm model: no bulge at a nearly straight elbow (the elbow ellipsoid wraps in the plane of its surface normal, as OpenSim)", () => {
+  // OpenSim (MoBL-ARMS, same geometry) puts the brachioradialis at most 4.7 cm off the arm's axis;
+  // wrapping in the plane through the ellipsoid's centre sent it to 6.7 cm round the far end.
+  const off = (fr, pts) => {
+    const seg = (p, a, b) => {
+      const ab = { x: b.x - a.x, y: b.y - a.y, z: b.z - a.z }, ap = { x: p.x - a.x, y: p.y - a.y, z: p.z - a.z };
+      const t = Math.max(0, Math.min(1, (ap.x * ab.x + ap.y * ab.y + ap.z * ab.z) / (ab.x * ab.x + ab.y * ab.y + ab.z * ab.z)));
+      return Math.hypot(ap.x - ab.x * t, ap.y - ab.y * t, ap.z - ab.z * t);
+    };
+    return Math.max(...pts.map((p) => Math.min(seg(p, fr.upperArm.from, fr.upperArm.to), seg(p, fr.forearm.from, fr.forearm.to))));
+  };
+  for (const elbow of [5, 19, 36, 60]) {
+    const fr = arm({ elbow });
+    const p = paths(fr, { proSup: -90 });
+    assert.ok(off(fr, p.BRD.pts) < 0.05, `brachioradialis at elbow ${elbow}°: ${(off(fr, p.BRD.pts) * 100).toFixed(1)} cm`);
+    for (const n of ["BIClong", "BICshort", "BRA", "TRIlong", "TRIlat", "TRImed"]) assert.ok(off(fr, p[n].pts) < 0.045, `${n} at elbow ${elbow}°`);
+  }
+});
+
 test("forearm rotation by grip: curls from grip3d, rows and pulls from the variant", () => {
   const curl = load("biceps-curl");
   const byId = (ex, id) => ex.variants.find((q) => q.id === id);
