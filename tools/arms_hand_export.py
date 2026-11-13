@@ -115,7 +115,10 @@ def grip_poses():
         yield gname, p
 
 
-POSES = ((k, v["pose"], v.get("face")) for k, v in json.load(open(poses_file))["postures"].items()) if poses_file else ((k, v, None) for k, v in grip_poses())
+if poses_file:  # read once: the postures and their block faces
+    with open(poses_file) as f:
+        POSE_DATA = json.load(f)["postures"]
+POSES = ((k, v["pose"], v.get("face")) for k, v in POSE_DATA.items()) if poses_file else ((k, v, None) for k, v in grip_poses())
 for gname, p, fc in POSES:
     pose(p)
     fr = hand_frame()
@@ -140,7 +143,7 @@ for gname, p, fc in POSES:
     if fc:  # the block face (tools/arms_pinch_contact.py), carried into the hand frame
         o = to_hand(fc["point"], fr)
         d = lambda v: [round(to_hand([fc["point"][i] + v[i] for i in range(3)], fr)[k] - o[k], 5) for k in range(3)]
-        face = {"point": o, "n": d(fc["n"]), "up": d(fc["up"]), "top": fc["top"], "contact": json.load(open(poses_file))["postures"][gname]["contact"]}
+        face = {"point": o, "n": d(fc["n"]), "up": d(fc["up"]), "top": fc["top"], "contact": POSE_DATA[gname]["contact"]}
     res["postures"][gname] = {"joints": joints, "muscles": mus, **({"face": face} if face else {})}
 with open(out, "w") as f:
     json.dump(res, f, separators=(",", ":"))

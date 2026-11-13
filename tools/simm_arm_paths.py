@@ -66,7 +66,7 @@ def parse_jnt(path):
         pts = [tuple(float(v) for v in ln.strip().strip("()").split(",")) for ln in body if ln.strip().startswith("(")]
         funcs[name] = np.array(pts)
     joints = {}
-    for name, body in blocks(lines, "joint"):
+    for _name, body in blocks(lines, "joint"):
         j = {"axes": {}, "dof": {}}
         for ln in body:
             w = ln.split()
@@ -209,7 +209,7 @@ def main(src, out):
     EL = lambda q: M.world("ulna", [0, 0, 0], q)
     WR = lambda q: M.world("lunate", [0, 0, 0], q)
 
-    def anat(seg_R, y_world, z_world):
+    def anat(y_world, z_world):
         y = y_world / np.linalg.norm(y_world)
         z = z_world - y * (z_world @ y); z /= np.linalg.norm(z)
         x = np.cross(y, z)
@@ -221,12 +221,12 @@ def main(src, out):
             return GH(q), np.eye(3)
         Rh, _ = M.frame("humerus", q)
         if bone == "humerus":
-            return GH(q), anat(Rh, GH(q) - EL(q), Rh @ elbow_axis)
+            return GH(q), anat(GH(q) - EL(q), Rh @ elbow_axis)
         Ru, _ = M.frame("ulna", q)
         # The ulna's long axis: elbow -> wrist with the forearm neutral (fixed in the ulna).
         q_n = {**q, "pro_sup": 0.0}
         y_u = Ru.T @ (EL(q_n) - WR(q_n))  # in ulna coordinates (the same for any pro_sup)
-        return EL(q), anat(Ru, Ru @ y_u, Rh @ elbow_axis)
+        return EL(q), anat(Ru @ y_u, Rh @ elbow_axis)
 
     def host(seg):
         s = seg
