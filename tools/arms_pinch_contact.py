@@ -24,7 +24,6 @@ frame: point = the index pad, n towards the thumb, up = along the face towards t
 = the top edge's height above the pad) for tools/arms_hand_export.py.
 LICENCE: ARMS is NON-COMMERCIAL only; the JSON says so.
 """
-import itertools
 import json
 import math
 import sys
@@ -61,7 +60,7 @@ NEED = thumb_need()
 
 def bounded_ls(A, b):
     """min ||x||^2 / 2, A x = b, 0 <= x <= 1 (js/pincer.js boundedLeastSquares: Newton on the dual). Returns the relative residual."""
-    m, n = A.shape
+    m, _ = A.shape
     x_of = lambda y: np.clip(A.T @ y, 0, 1)
     phi = lambda y: sum((lambda t, x: t * x - x * x / 2)(t, min(1, max(0, t))) for t in A.T @ y) - b @ y
     y = np.linalg.solve(A @ A.T + 1e-9 * np.eye(m), b)
