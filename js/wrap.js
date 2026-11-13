@@ -74,10 +74,14 @@ export function wrapOverCylinder(a, b, { c, ax, r, quadrant }) {
 /**
  * Wrap a → b over an ellipsoid (centre `c`, axes `ax`, semi-axes `radii`; a sphere has three equal
  * ones) under the same rule as the cylinder: only where the line cuts it on the allowed side. The
- * ellipsoid is stretched into a unit sphere, the path runs over the great circle through both
- * points there (tangent on, arc, tangent off) and is stretched back: still tangent to the
- * ellipsoid, though not exactly the shortest path over it as OpenSim's is (checked against its
- * lengths, docs/model-limits.md). Returns the points to insert between a and b, or null.
+ * path runs in the plane through both points that holds the surface's outward direction where the
+ * line cuts deepest (as OpenSim does; for a sphere this is the plane through the centre): over the
+ * ellipse that plane cuts from the ellipsoid, tangent on, along it, tangent off. A plane through
+ * the centre instead would tip sideways on a long, thin ellipsoid (the elbow's, across the
+ * epicondyles) and send the path round its far end. Worked in the ellipsoid stretched into a unit
+ * sphere, where the ellipse becomes a circle (stretching keeps planes and tangents); checked
+ * against OpenSim's lengths and shapes (docs/model-limits.md). Returns the points to insert between
+ * a and b, or null.
  */
 export function wrapOverEllipsoid(a, b, { c, ax, radii }, quadrant) {
   const toUnit = (p) => { const d = sub(p, c); return [0, 1, 2].map((i) => dot(d, ax[i]) / radii[i]); };
@@ -86,16 +90,30 @@ export function wrapOverEllipsoid(a, b, { c, ax, radii }, quadrant) {
   const allowed = sideTest(quadrant);
   const C = cut(P, S, 1);
   if (!C || !allowed(C)) return null;
-  // The plane through the centre and both points: e1 towards P, e2 across, in that plane.
-  const np = Math.hypot(...P);
-  const e1 = P.map((v) => v / np);
-  const n = [P[1] * S[2] - P[2] * S[1], P[2] * S[0] - P[0] * S[2], P[0] * S[1] - P[1] * S[0]];
-  const nn = Math.hypot(...n);
-  if (nn < 1e-12) return null; // P, S and the centre in a line: no unique way round
-  const e2 = [n[1] * e1[2] - n[2] * e1[1], n[2] * e1[0] - n[0] * e1[2], n[0] * e1[1] - n[1] * e1[0]].map((v) => v / nn);
-  const in2 = (q) => [q.reduce((s, v, i) => s + v * e1[i], 0), q.reduce((s, v, i) => s + v * e2[i], 0)];
-  const at = (ang) => e1.map((v, i) => Math.cos(ang) * v + Math.sin(ang) * e2[i]);
-  const best = arcWay(in2(P), in2(S), 1, (ang) => allowed(at(ang)));
+  const crossA = (u, v) => [u[1] * v[2] - u[2] * v[1], u[2] * v[0] - u[0] * v[2], u[0] * v[1] - u[1] * v[0]];
+  const dotA = (u, v) => u[0] * v[0] + u[1] * v[1] + u[2] * v[2];
+  const unitA = (u) => { const l = Math.hypot(...u); return l > 1e-12 ? u.map((x) => x / l) : null; };
+  // The plane: through P and S, holding the real surface normal at M (the deepest cut, pushed out
+  // to the surface). A real point is c + Σ axᵢ·rᵢ·uᵢ, so the real normal at M is Σ axᵢ·Mᵢ/rᵢ, and a
+  // real direction Σ axᵢ·vᵢ appears in the unit frame as vᵢ/rᵢ: the normal's image is Mᵢ/rᵢ².
+  const cl = Math.hypot(...C);
+  const M = cl > 1e-9 ? C.map((x) => x / cl) : null;
+  const d = S.map((x, i) => x - P[i]);
+  // The plane's normal in the unit frame: across the path direction and the normal's image.
+  let N = M ? unitA(crossA(d, M.map((x, i) => x / (radii[i] * radii[i])))) : null;
+  if (!N) N = unitA(crossA(P, S)); // the line runs through the centre: fall back to the plane through it
+  if (!N) return null;
+  // That plane cuts the unit sphere in a circle: centre c0 (the plane's nearest point to the
+  // origin), radius rho.
+  const off = dotA(N, P), c0 = N.map((x) => x * off), rho = Math.sqrt(Math.max(0, 1 - off * off));
+  if (rho < 1e-9) return null;
+  const rel = (q) => q.map((x, i) => x - c0[i]);
+  const e1 = unitA(rel(P));
+  if (!e1) return null;
+  const e2 = crossA(N, e1);
+  const in2 = (q) => [dotA(rel(q), e1), dotA(rel(q), e2)];
+  const at = (ang) => c0.map((x, i) => x + rho * (Math.cos(ang) * e1[i] + Math.sin(ang) * e2[i]));
+  const best = arcWay(in2(P), in2(S), rho, (ang) => allowed(at(ang)));
   if (!best) return null;
   const k = Math.max(1, Math.ceil(best.arc / 0.25));
   const pts = [];
